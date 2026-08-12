@@ -1,24 +1,30 @@
 import { Logo } from "@/components/home/Logo";
 import { DISCLOSURELY_URL } from "@/lib/links";
 
+const footerLinks = {
+  product: [
+    { label: "Product", href: "#product" },
+    { label: "360° Feedback", href: "#feedback-360" },
+    { label: "Appraisals", href: "#appraisals" },
+    { label: "Pricing", href: "#pricing" },
+  ],
+  resources: [
+    { label: "360° Feedback Question Generator", href: "#resources" },
+    { label: "Employee Appraisal Template", href: "#resources" },
+    { label: "360° Feedback Template", href: "#resources" },
+    { label: "Appraisal Questions", href: "#resources" },
+  ],
+  company: [
+    { label: "Privacy", href: `${DISCLOSURELY_URL}/privacy` },
+    { label: "Terms", href: `${DISCLOSURELY_URL}/terms` },
+    { label: "Contact", href: `${DISCLOSURELY_URL}/contact` },
+  ],
+};
+
 const columns = [
-  {
-    heading: "Product",
-    links: ["Product", "360° Feedback", "Appraisals", "Pricing"],
-  },
-  {
-    heading: "Resources",
-    links: [
-      "360° Feedback Question Generator",
-      "Employee Appraisal Template",
-      "360° Feedback Template",
-      "Appraisal Questions",
-    ],
-  },
-  {
-    heading: "Company",
-    links: ["Privacy", "Terms", "Contact"],
-  },
+  { heading: "Product", links: footerLinks.product },
+  { heading: "Resources", links: footerLinks.resources },
+  { heading: "Company", links: footerLinks.company },
 ];
 
 export function Footer() {
@@ -39,13 +45,16 @@ export function Footer() {
                   {col.heading}
                 </p>
                 <ul className="mt-3 space-y-2">
-                  {col.links.map((l) => (
-                    <li key={l}>
+                  {col.links.map((link) => (
+                    <li key={link.label}>
                       <a
-                        href="#top"
+                        href={link.href}
                         className="text-xs text-muted-foreground transition-colors hover:text-foreground"
+                        {...(link.href.startsWith("http")
+                          ? { target: "_blank", rel: "noopener noreferrer" }
+                          : {})}
                       >
-                        {l}
+                        {link.label}
                       </a>
                     </li>
                   ))}
@@ -59,8 +68,6 @@ export function Footer() {
             Appraisal Software is a product by{" "}
             <a
               href={DISCLOSURELY_URL}
-              target="_blank"
-              rel="noopener noreferrer"
               className="font-medium text-foreground/80 underline decoration-border underline-offset-2 transition-colors hover:text-foreground"
             >
               Disclosurely

@@ -14,7 +14,7 @@ export function Feedback360() {
         <SectionHeading
           eyebrow="360° feedback"
           title="Feedback from every direction, in one place"
-          copy="Collect input from managers, colleagues, direct reports and the employee themselves — then see it side by side instead of buried in inboxes."
+          copy="Run structured 360° feedback campaigns with reusable question sets — including manager, peer and self-review templates — and bring responses together in one report."
           align="center"
         />
 

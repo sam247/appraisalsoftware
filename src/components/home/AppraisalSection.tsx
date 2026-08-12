@@ -70,8 +70,8 @@ export function AppraisalSection() {
                     Employee feedback
                   </p>
                   <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-                    “I'd like clearer targets for the second half and more time to plan the account
-                    reviews properly.”
+                    &ldquo;I&apos;d like clearer targets for the second half and more time to plan the account
+                    reviews properly.&rdquo;
                   </p>
                 </div>
               </div>

@@ -1,3 +1,5 @@
+import { DISCLOSURELY_URL } from "@/lib/links";
+
 export function Logo({ size = "md" }: { size?: "md" | "lg" }) {
   return (
     <span className="flex flex-col leading-none">
@@ -10,9 +12,12 @@ export function Logo({ size = "md" }: { size?: "md" | "lg" }) {
       >
         Appraisal Software
       </span>
-      <span className="mt-0.5 text-[10px] font-medium tracking-[0.16em] uppercase text-muted-foreground">
+      <a
+        href={DISCLOSURELY_URL}
+        className="mt-0.5 w-fit text-[10px] font-medium tracking-[0.16em] uppercase text-muted-foreground transition-colors hover:text-foreground"
+      >
         by Disclosurely
-      </span>
+      </a>
     </span>
   );
 }

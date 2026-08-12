@@ -98,8 +98,8 @@ const steps = [
   },
   {
     icon: Users,
-    title: "Choose reviewers",
-    copy: "Manager, peers, direct reports and self — in any mix.",
+    title: "Invite participants",
+    copy: "Send forms to teams and groups, with scheduled reminders as needed.",
   },
   {
     icon: ListChecks,
@@ -355,12 +355,11 @@ export function AnonymousSection() {
           <div>
             <Eyebrow>Anonymity</Eyebrow>
             <h2 className="mt-4 text-2xl font-semibold text-foreground sm:text-3xl">
-              Anonymous feedback where it's appropriate
+              Anonymous feedback where it&apos;s appropriate
             </h2>
             <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-              Choose per question set whether peer and direct-report responses are attributed or
-              anonymous, with minimum response thresholds so individuals can't be identified from a
-              report.
+              Choose whether responses are attributed or anonymous, with settings to help protect
+              respondent identity in shared reports.
             </p>
           </div>
           <div className="space-y-3 rounded-2xl border border-border bg-card p-5">
@@ -379,9 +378,6 @@ export function AnonymousSection() {
                 <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{c}</p>
               </div>
             ))}
-            <p className="text-[11px] text-muted-foreground">
-              Report shown only when 3+ responses are received.
-            </p>
           </div>
         </div>
       </div>
@@ -393,7 +389,7 @@ const resources = [
   {
     title: "360° Feedback Question Generator",
     copy: "Build a question set for any role in a couple of clicks.",
-    tag: "Free tool",
+    tag: "Tool",
   },
   {
     title: "Employee Appraisal Template",
@@ -424,21 +420,17 @@ export function ResourcesSection() {
         />
         <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {resources.map((r) => (
-            <a
+            <div
               key={r.title}
-              href="#resources"
-              className="group flex flex-col rounded-2xl border border-border bg-card p-5 transition-all duration-300 hover:-translate-y-1 hover:border-primary/40"
+              className="group flex flex-col rounded-2xl border border-border bg-card p-5"
             >
               <span className="w-fit rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
                 {r.tag}
               </span>
               <p className="mt-4 text-sm font-semibold text-foreground">{r.title}</p>
               <p className="mt-1.5 flex-1 text-xs leading-relaxed text-muted-foreground">{r.copy}</p>
-              <span className="mt-4 inline-flex items-center gap-1 text-xs font-semibold text-primary">
-                Open
-                <ArrowRight className="size-3 transition-transform duration-300 group-hover:translate-x-0.5" />
-              </span>
-            </a>
+              <span className="mt-4 text-xs font-semibold text-muted-foreground">Coming soon</span>
+            </div>
           ))}
         </div>
       </div>
@@ -454,8 +446,6 @@ export function PoweredBySection() {
           Appraisal Software is built by{" "}
           <a
             href={DISCLOSURELY_URL}
-            target="_blank"
-            rel="noopener noreferrer"
             className="underline decoration-border underline-offset-2 transition-colors hover:text-primary"
           >
             Disclosurely
@@ -485,11 +475,11 @@ export function CtaSection() {
         />
         <div className="relative">
           <h2 className="text-3xl font-semibold text-foreground sm:text-4xl">
-            Start your first appraisal cycle free
+            Start your first appraisal cycle
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-sm text-muted-foreground sm:text-base">
-            Set up a review period, invite reviewers and see the reports for yourself. Free to
-            start, no credit card required.
+            Set up a review period, invite participants and see the reports for yourself on
+            Disclosurely.
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Button size="lg" className="w-full rounded-full px-6 sm:w-auto" asChild>

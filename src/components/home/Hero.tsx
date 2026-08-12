@@ -83,8 +83,8 @@ export function Hero() {
             Employee Appraisal Software Built for Better Feedback
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-            Run employee appraisals, 360° feedback and structured performance reviews without
-            spreadsheets or complicated HR systems.
+            Run appraisal cycles, employee reviews, 360° feedback and structured performance reviews
+            without spreadsheets or complicated HR systems.
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Button size="lg" className="w-full rounded-full px-6 sm:w-auto" asChild>
@@ -105,7 +105,6 @@ export function Hero() {
               </a>
             </Button>
           </div>
-          <p className="mt-4 text-xs text-muted-foreground">No credit card required.</p>
         </div>
 
         <div className="relative mt-14 sm:mt-16">
@@ -161,7 +160,7 @@ export function Hero() {
                 </div>
                 <div className="space-y-3 rounded-xl border border-border bg-card p-3">
                   <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-                    Competency averages
+                    Rating averages
                   </p>
                   <ScoreBar label="Communication" value={86} />
                   <ScoreBar label="Collaboration" value={78} />
