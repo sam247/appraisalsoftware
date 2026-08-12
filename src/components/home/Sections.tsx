@@ -413,7 +413,7 @@ export function ResourcesSection() {
     <section id="resources" className="border-y border-border bg-surface/70 py-20 sm:py-24">
       <div className="mx-auto max-w-6xl px-5 lg:px-8">
         <SectionHeading
-          eyebrow="Free tools & resources"
+          eyebrow="Tools & resources"
           title="Useful whether or not you sign up"
           copy="Practical templates and tools for anyone running appraisals or 360° feedback."
           align="center"
@@ -484,7 +484,7 @@ export function CtaSection() {
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Button size="lg" className="w-full rounded-full px-6 sm:w-auto" asChild>
               <a href={DISCLOSURELY_START_FREE}>
-                Start free
+                Get started
                 <ArrowRight className="size-4" />
               </a>
             </Button>

@@ -89,7 +89,7 @@ export function Hero() {
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Button size="lg" className="w-full rounded-full px-6 sm:w-auto" asChild>
               <a href={DISCLOSURELY_START_FREE}>
-                Start your first cycle free
+                Start your first cycle
                 <ArrowRight className="size-4" />
               </a>
             </Button>

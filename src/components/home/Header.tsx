@@ -58,7 +58,7 @@ export function Header() {
             Sign in
           </a>
           <Button size="sm" className="rounded-full px-4" asChild>
-            <a href={DISCLOSURELY_START_FREE}>Start free</a>
+            <a href={DISCLOSURELY_START_FREE}>Get started</a>
           </Button>
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
@@ -86,7 +86,7 @@ export function Header() {
                   Sign in
                 </a>
                 <Button className="mt-3 rounded-full" asChild>
-                  <a href={DISCLOSURELY_START_FREE}>Start free</a>
+                  <a href={DISCLOSURELY_START_FREE}>Get started</a>
                 </Button>
               </div>
             </SheetContent>
