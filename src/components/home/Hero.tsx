@@ -1,4 +1,4 @@
-import { ArrowRight, Play } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   AvatarStack,
@@ -8,7 +8,7 @@ import {
   StatusChip,
   Avatar,
 } from "@/components/product/primitives";
-import { DISCLOSURELY_START_FREE } from "@/lib/links";
+import { EARLY_ACCESS_URL } from "@/lib/links";
 
 const rows: {
   name: string;
@@ -77,19 +77,23 @@ export function Hero() {
         <div className="reveal mx-auto max-w-3xl text-center">
           <span className="inline-flex items-center gap-2 rounded-full border border-border bg-card/70 px-3 py-1 text-xs font-medium text-muted-foreground backdrop-blur">
             <span className="size-1.5 rounded-full bg-positive" aria-hidden />
-            Appraisals & 360° feedback for UK teams
+            Simple annual appraisal software for UK teams
           </span>
           <h1 className="mt-6 text-4xl font-semibold text-foreground sm:text-5xl lg:text-[3.4rem] lg:leading-[1.05]">
-            Employee Appraisal Software Built for Better Feedback
+            Annual Appraisal Software for UK Teams
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-            Run appraisal cycles, employee reviews, 360° feedback and structured performance reviews
-            without spreadsheets or complicated HR systems.
+            Run annual appraisals, employee reviews and 360° feedback without spreadsheets, Word
+            forms or email chasing.
+          </p>
+          <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">
+            Built for HR managers, operations managers and business owners who need a clean appraisal
+            cycle — not a full HR system.
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Button size="lg" className="w-full rounded-full px-6 sm:w-auto" asChild>
-              <a href={DISCLOSURELY_START_FREE}>
-                Start your first cycle
+              <a href={EARLY_ACCESS_URL}>
+                Request early access
                 <ArrowRight className="size-4" />
               </a>
             </Button>
@@ -99,10 +103,7 @@ export function Hero() {
               className="w-full rounded-full border-border bg-card px-6 sm:w-auto"
               asChild
             >
-              <a href="#product">
-                <Play className="size-4" />
-                See how it works
-              </a>
+              <a href="#features">View appraisal features</a>
             </Button>
           </div>
         </div>

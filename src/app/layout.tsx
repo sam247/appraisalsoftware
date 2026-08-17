@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
 
 import { JsonLd } from "@/components/seo/JsonLd";
+import { websiteAndOrganizationGraph } from "@/lib/schema";
 import {
   isProductionDeployment,
   SITE_DESCRIPTION,
@@ -39,16 +40,13 @@ export const metadata: Metadata = {
     title: SITE_TITLE,
     description: SITE_DESCRIPTION,
   },
-  alternates: {
-    canonical: SITE_URL,
-  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en-GB" className={`${montserrat.variable} h-full antialiased`}>
       <body className="min-h-full bg-background text-foreground">
-        <JsonLd />
+        <JsonLd data={websiteAndOrganizationGraph()} />
         {children}
       </body>
     </html>

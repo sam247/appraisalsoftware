@@ -22,4 +22,6 @@ Connect this repo to Vercel, set the production domain to `appraisalsoftware.co.
 
 ## CTAs
 
-Primary sign-in / start-free links point to Disclosurely (`src/lib/links.ts`). Update those URLs when a dedicated appraisal signup path is ready.
+Primary CTA is **Request early access**, which points to Disclosurely contact (`src/lib/links.ts`) until a dedicated appraisal signup path is ready.
+
+Sign in still points to Disclosurely.

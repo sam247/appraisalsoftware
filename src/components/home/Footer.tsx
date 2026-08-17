@@ -1,18 +1,21 @@
+import Link from "next/link";
+
 import { Logo } from "@/components/home/Logo";
-import { DISCLOSURELY_URL } from "@/lib/links";
+import { DISCLOSURELY_URL, EARLY_ACCESS_URL } from "@/lib/links";
+import { ROUTES } from "@/lib/routes";
 
 const footerLinks = {
   product: [
-    { label: "Product", href: "#product" },
-    { label: "360° Feedback", href: "#feedback-360" },
-    { label: "Appraisals", href: "#appraisals" },
-    { label: "Pricing", href: "#pricing" },
+    { label: "Features", href: "/#features" },
+    { label: "Annual appraisal software", href: ROUTES.annualAppraisalSoftware },
+    { label: "Employee appraisal software", href: ROUTES.employeeAppraisalSoftware },
+    { label: "360 feedback software", href: ROUTES.feedback360Software },
+    { label: "Early access", href: EARLY_ACCESS_URL },
   ],
   resources: [
-    { label: "360° Feedback Question Generator", href: "#resources" },
-    { label: "Employee Appraisal Template", href: "#resources" },
-    { label: "360° Feedback Template", href: "#resources" },
-    { label: "Appraisal Questions", href: "#resources" },
+    { label: "Annual appraisal template", href: ROUTES.annualAppraisalTemplate },
+    { label: "Appraisal questions", href: ROUTES.appraisalQuestions },
+    { label: "360 feedback template", href: ROUTES.feedback360Template },
   ],
   company: [
     { label: "Privacy", href: `${DISCLOSURELY_URL}/privacy` },
@@ -33,9 +36,12 @@ export function Footer() {
       <div className="mx-auto max-w-6xl px-5 py-14 lg:px-8">
         <div className="grid gap-10 md:grid-cols-[1.2fr_2fr]">
           <div>
-            <Logo size="lg" />
+            <Link href={ROUTES.home}>
+              <Logo size="lg" />
+            </Link>
             <p className="mt-4 max-w-xs text-xs leading-relaxed text-muted-foreground">
-              Employee appraisal and 360° feedback software for UK organisations.
+              Simple annual appraisal software for UK teams. Not a full HR system — just a clean way
+              to run appraisal cycles.
             </p>
           </div>
           <div className="grid gap-8 sm:grid-cols-3">
@@ -47,15 +53,23 @@ export function Footer() {
                 <ul className="mt-3 space-y-2">
                   {col.links.map((link) => (
                     <li key={link.label}>
-                      <a
-                        href={link.href}
-                        className="text-xs text-muted-foreground transition-colors hover:text-foreground"
-                        {...(link.href.startsWith("http")
-                          ? { target: "_blank", rel: "noopener noreferrer" }
-                          : {})}
-                      >
-                        {link.label}
-                      </a>
+                      {link.href.startsWith("http") ? (
+                        <a
+                          href={link.href}
+                          className="text-xs text-muted-foreground transition-colors hover:text-foreground"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {link.label}
+                        </a>
+                      ) : (
+                        <Link
+                          href={link.href}
+                          className="text-xs text-muted-foreground transition-colors hover:text-foreground"
+                        >
+                          {link.label}
+                        </Link>
+                      )}
                     </li>
                   ))}
                 </ul>

@@ -1,5 +1,8 @@
+import Link from "next/link";
 import { Check } from "lucide-react";
+
 import { Panel, ScoreBar, SectionHeading, StatusChip } from "@/components/product/primitives";
+import { ROUTES } from "@/lib/routes";
 
 const questions = [
   { q: "What went well during this review period?", answered: true },
@@ -14,8 +17,8 @@ export function AppraisalSection() {
       <div className="mx-auto max-w-6xl px-5 lg:px-8">
         <SectionHeading
           eyebrow="Appraisals"
-          title="Structured employee reviews, not a blank document"
-          copy="Every appraisal follows the same clear shape: review period, questions, competencies, manager comments and the employee's own words — all captured in one record."
+          title="A structured annual review, not a blank document"
+          copy="Every appraisal follows the same shape: review period, questions, manager comments and the employee's own words — kept as one record."
         />
 
         <div className="mt-12 grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
@@ -104,6 +107,21 @@ export function AppraisalSection() {
             </Panel>
           </div>
         </div>
+        <p className="mt-8 text-sm text-muted-foreground">
+          <Link
+            href={ROUTES.annualAppraisalSoftware}
+            className="font-medium text-foreground underline decoration-border underline-offset-2 hover:text-primary"
+          >
+            How annual appraisal software works
+          </Link>
+          {" · "}
+          <Link
+            href={ROUTES.appraisalQuestions}
+            className="font-medium text-foreground underline decoration-border underline-offset-2 hover:text-primary"
+          >
+            Browse appraisal questions
+          </Link>
+        </p>
       </div>
     </section>
   );

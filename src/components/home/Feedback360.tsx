@@ -1,4 +1,7 @@
+import Link from "next/link";
+
 import { Panel, ScoreBar, SectionHeading, StatusChip } from "@/components/product/primitives";
+import { ROUTES } from "@/lib/routes";
 
 const sources = [
   { label: "Self", people: ["AH"], note: "1 response" },
@@ -12,9 +15,9 @@ export function Feedback360() {
     <section id="feedback-360" className="relative overflow-hidden bg-surface/70 py-20 sm:py-24">
       <div className="mx-auto max-w-6xl px-5 lg:px-8">
         <SectionHeading
-          eyebrow="360° feedback"
-          title="Feedback from every direction, in one place"
-          copy="Run structured 360° feedback campaigns with reusable question sets — including manager, peer and self-review templates — and bring responses together in one report."
+          eyebrow="Also included"
+          title="360° feedback when a review needs more than a manager form"
+          copy="Collect feedback from managers, peers and direct reports, keep responses with the appraisal record, and use anonymity where it helps people speak plainly."
           align="center"
         />
 
@@ -101,6 +104,21 @@ export function Feedback360() {
             </div>
           </Panel>
         </div>
+        <p className="mt-8 text-center text-sm text-muted-foreground">
+          <Link
+            href={ROUTES.feedback360Software}
+            className="font-medium text-foreground underline decoration-border underline-offset-2 hover:text-primary"
+          >
+            Read about 360 feedback software
+          </Link>
+          {" · "}
+          <Link
+            href={ROUTES.feedback360Template}
+            className="font-medium text-foreground underline decoration-border underline-offset-2 hover:text-primary"
+          >
+            Use the 360 feedback template
+          </Link>
+        </p>
       </div>
     </section>
   );

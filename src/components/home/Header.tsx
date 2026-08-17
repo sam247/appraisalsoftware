@@ -1,18 +1,20 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { Menu } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Logo } from "@/components/home/Logo";
-import { DISCLOSURELY_SIGN_IN, DISCLOSURELY_START_FREE } from "@/lib/links";
+import { DISCLOSURELY_SIGN_IN, EARLY_ACCESS_URL } from "@/lib/links";
+import { ROUTES } from "@/lib/routes";
 
 const nav = [
-  { label: "Product", href: "#product" },
-  { label: "360° Feedback", href: "#feedback-360" },
-  { label: "Appraisals", href: "#appraisals" },
-  { label: "Resources", href: "#resources" },
-  { label: "Pricing", href: "#pricing" },
+  { label: "Features", href: "/#features" },
+  { label: "Annual Appraisals", href: ROUTES.annualAppraisalSoftware },
+  { label: "360 Feedback", href: ROUTES.feedback360Software },
+  { label: "Templates", href: "/#resources" },
 ];
 
 export function Header() {
@@ -36,18 +38,18 @@ export function Header() {
       }
     >
       <div className="mx-auto flex h-18 max-w-6xl items-center gap-6 px-5 py-3 lg:px-8">
-        <a href="#top" className="shrink-0">
+        <Link href={ROUTES.home} className="shrink-0">
           <Logo />
-        </a>
+        </Link>
         <nav className="hidden flex-1 items-center justify-center gap-7 lg:flex">
           {nav.map((item) => (
-            <a
+            <Link
               key={item.label}
               href={item.href}
               className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
             >
               {item.label}
-            </a>
+            </Link>
           ))}
         </nav>
         <div className="ml-auto flex items-center gap-2 lg:ml-0">
@@ -58,7 +60,7 @@ export function Header() {
             Sign in
           </a>
           <Button size="sm" className="rounded-full px-4" asChild>
-            <a href={DISCLOSURELY_START_FREE}>Get started</a>
+            <a href={EARLY_ACCESS_URL}>Request early access</a>
           </Button>
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
@@ -69,14 +71,14 @@ export function Header() {
             <SheetContent side="right" className="w-[86%] max-w-xs">
               <div className="mt-8 flex flex-col gap-1">
                 {nav.map((item) => (
-                  <a
+                  <Link
                     key={item.label}
                     href={item.href}
                     onClick={() => setOpen(false)}
                     className="rounded-lg px-3 py-3 text-base font-medium text-foreground transition-colors hover:bg-surface"
                   >
                     {item.label}
-                  </a>
+                  </Link>
                 ))}
                 <a
                   href={DISCLOSURELY_SIGN_IN}
@@ -86,7 +88,7 @@ export function Header() {
                   Sign in
                 </a>
                 <Button className="mt-3 rounded-full" asChild>
-                  <a href={DISCLOSURELY_START_FREE}>Get started</a>
+                  <a href={EARLY_ACCESS_URL}>Request early access</a>
                 </Button>
               </div>
             </SheetContent>
