@@ -15,33 +15,33 @@ import { breadcrumbSchema, faqPageSchema, softwareApplicationSchema } from "@/li
 
 const TITLE = "360 Feedback Software for UK Teams | Appraisal Software";
 const DESCRIPTION =
-  "360 feedback software for UK teams. Collect manager, peer and direct-report feedback with reusable forms, response tracking and optional anonymity.";
+  "360 feedback software for UK teams. Subject-based reviews with self, manager, peer and direct-report input, Self vs Others reporting, reminders and privacy-conscious anonymity.";
 
 const faqs = [
   {
     question: "What is 360 feedback software?",
     answer:
-      "It is a way to collect structured comments from more than one person — typically a manager, peers and direct reports — and keep those responses with the review.",
+      "It is a way to collect structured comments about a person from more than one relationship — typically self, manager, peers and direct reports — then aggregate those responses into a report.",
   },
   {
     question: "Can 360° feedback be anonymous?",
     answer:
-      "Yes, where you choose it. Anonymity is optional. Use it when people need space to be specific, and keep named manager comments where accountability matters.",
+      "Yes. Feedback collection is privacy-conscious and can run anonymously by default where you choose it. Be clear with respondents about what they can expect before they start.",
+  },
+  {
+    question: "What is Self vs Others reporting?",
+    answer:
+      "When a self-assessment is included, results can compare how someone rated themselves with how others rated them — by overall score and by competency or question area.",
   },
   {
     question: "Is 360° feedback the main product?",
     answer:
-      "No. Appraisal Software is annual appraisal software first. 360° feedback is available when a review needs extra input, not as a separate platform.",
+      "No. Appraisal Software is annual appraisal software first. 360° feedback is a meaningful part of the product when a review needs multi-rater input, not a separate platform.",
   },
   {
     question: "Who can we collect feedback from?",
     answer:
-      "Managers, peers, direct reports and the employee themselves. You choose the respondents for each person in the cycle.",
-  },
-  {
-    question: "Can we reuse the same 360° form?",
-    answer:
-      "Yes. Save the question set and send it again. Start from the 360 feedback template if you do not want to write questions from scratch.",
+      "Self, manager, peers, direct reports and other relationships you assign for each subject in the campaign.",
   },
 ];
 
@@ -69,20 +69,20 @@ export default function Feedback360SoftwarePage() {
         ])}
       />
       <PageHero
-        eyebrow="Supporting use case"
+        eyebrow="Multi-rater feedback"
         title="360 Feedback Software"
-        description="Collect feedback from managers, peers and direct reports, track who has responded, and keep the comments with the review record."
+        description="Run subject-based 360 reviews with self-assessment and feedback from managers, peers and direct reports — then see Self vs Others results, completion and downloadable reports."
         breadcrumbs={[
           homeCrumb(),
           { label: "360 Feedback Software", href: ROUTES.feedback360Software },
         ]}
       />
 
-      <ContentSection title="Collect feedback from managers, peers and direct reports">
+      <ContentSection title="Subject-based 360 reviews">
         <p>
           360° feedback is useful when a manager form is not enough — for team leads, people managers
-          and anyone whose work is hard to see from one angle. The software part is simple: choose
-          the respondents, send the same questions, and wait for the responses to come in.
+          and anyone whose work is hard to see from one angle. Choose the subject, assign reviewers by
+          relationship, send the same questions, and wait for responses to come in.
         </p>
         <p>
           This sits next to{" "}
@@ -92,39 +92,36 @@ export default function Feedback360SoftwarePage() {
         </p>
       </ContentSection>
 
-      <ContentSection title="Use reusable 360° feedback forms">
+      <ContentSection title="Self-assessment and relationship-aware reviewers">
         <p>
-          Write a short, specific question set and reuse it. Long forms get abandoned. Vague forms
-          produce vague comments. Keep questions about observed behaviour, not personality.
+          Include a self-assessment when you want Self vs Others comparison. Invite managers, peers,
+          direct reports and other reviewers with the relationship that matches how they know the
+          subject — so the report stays interpretable.
         </p>
         <p>
           Start with the{" "}
           <TextLink href={ROUTES.feedback360Template}>360 feedback template</TextLink> if you want
-          example questions for managers, peers and direct reports.
+          example questions for different relationships.
         </p>
       </ContentSection>
 
-      <ContentSection title="Track responses">
+      <ContentSection title="Completion, reminders and anonymity">
         <p>
-          A 360° cycle fails in the same way a spreadsheet appraisal fails: you cannot see who still
-          owes a response. Track completion by person and by respondent so you know when the set is
-          complete enough to share.
+          A 360° campaign fails in the same way a spreadsheet appraisal fails: you cannot see who
+          still owes a response. Track completion by subject and by respondent, and send reminders
+          for outstanding forms.
+        </p>
+        <p>
+          Collection can be anonymous by default where you choose it, so peers and direct reports
+          can speak plainly. Reporting respects privacy states — share what is safe to share.
         </p>
       </ContentSection>
 
-      <ContentSection title="Optional anonymity">
+      <ContentSection title="Self vs Others reporting">
         <p>
-          Peers and direct reports often write more useful comments when the response is not named
-          in the shared report. Managers usually stay attributed. Choose anonymity per cycle, and
-          be honest with respondents about what they can expect.
-        </p>
-      </ContentSection>
-
-      <ContentSection title="Turn feedback into a useful review record">
-        <p>
-          The point of 360° feedback is not a stack of comments. It is a record the employee and
-          manager can use: strengths that show up more than once, a development area that is
-          specific, and a next step for the following period.
+          Aggregated results show overall scores, competency or area scoring, and how self-assessment
+          compares with feedback from others. Export PDF or CSV when you need a copy outside the
+          product.
         </p>
         <p>
           Keep that record with the appraisal, then return to{" "}
@@ -161,8 +158,8 @@ export default function Feedback360SoftwarePage() {
       />
 
       <CtaBand
-        title="Run a 360 feedback cycle"
-        copy="Request early access if you want reusable 360° forms, response tracking and a record you can keep with the appraisal."
+        title="Run a 360 feedback campaign"
+        copy="Book a walkthrough to see subject setup, anonymous collection, Self vs Others reporting and downloadable results."
         secondaryHref={ROUTES.feedback360Template}
         secondaryLabel="View the 360 template"
       />

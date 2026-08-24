@@ -15,7 +15,7 @@ import { breadcrumbSchema, faqPageSchema, softwareApplicationSchema } from "@/li
 
 const TITLE = "Employee Appraisal Software for UK Teams | Appraisal Software";
 const DESCRIPTION =
-  "Employee appraisal software for UK teams. Run employee reviews with consistent forms, manager and employee feedback, completion tracking and a clear record of each appraisal.";
+  "Employee appraisal software for UK teams. Run employee reviews with branded one-question forms, manager and employee feedback, completion tracking and a clear record of each appraisal.";
 
 const faqs = [
   {
@@ -71,7 +71,7 @@ export default function EmployeeAppraisalSoftwarePage() {
       <PageHero
         eyebrow="Employee reviews"
         title="Employee Appraisal Software"
-        description="Run employee appraisals with consistent forms, manager and employee feedback, completion tracking and a record of each review."
+        description="Run employee appraisals with branded one-question forms, manager and employee feedback, completion tracking and a record of each review."
         breadcrumbs={[
           homeCrumb(),
           { label: "Employee Appraisal Software", href: ROUTES.employeeAppraisalSoftware },
@@ -87,21 +87,22 @@ export default function EmployeeAppraisalSoftwarePage() {
         <p>
           Appraisal Software is{" "}
           <TextLink href={ROUTES.home}>simple annual appraisal software for UK teams</TextLink> that
-          also covers employee reviews more generally. Create a cycle, send the form, collect both
-          sides of the conversation, and keep the finished appraisal.
+          also covers employee reviews more generally. Create a campaign, send a branded form, collect
+          both sides of the conversation, and keep the finished appraisal.
         </p>
       </ContentSection>
 
-      <ContentSection title="Create consistent appraisal forms">
+      <ContentSection title="A respondent experience people finish">
         <p>
-          Write the questions once. Use the same form across the team so reviews are comparable, and
-          reuse it next time with only the changes you actually need.
+          Employees and managers open a modern form — your organisation branding, one question at a
+          time — instead of a long Word document or a form buried in email. That is where completion
+          actually improves.
         </p>
         <p>
-          A practical starting point is the{" "}
-          <TextLink href={ROUTES.appraisalQuestions}>appraisal questions</TextLink> list and the{" "}
-          <TextLink href={ROUTES.annualAppraisalTemplate}>annual appraisal template</TextLink>. Put
-          those questions into a reusable form rather than a new document for every person.
+          Write the questions once. Use the same form across the team so reviews are comparable, and
+          reuse it next time with only the changes you actually need. Start from the{" "}
+          <TextLink href={ROUTES.appraisalQuestions}>appraisal questions</TextLink> list or the{" "}
+          <TextLink href={ROUTES.annualAppraisalTemplate}>annual appraisal template</TextLink>.
         </p>
       </ContentSection>
 
@@ -113,16 +114,16 @@ export default function EmployeeAppraisalSoftwarePage() {
         </p>
         <p>
           If you also want input from peers or direct reports, that is a{" "}
-          <TextLink href={ROUTES.feedback360Software}>360° feedback</TextLink> step on the same
-          record — optional, not the main process.
+          <TextLink href={ROUTES.feedback360Software}>360° feedback</TextLink> step — optional, not
+          the main process.
         </p>
       </ContentSection>
 
       <ContentSection title="Track completion">
         <p>
-          Open a cycle and you should be able to answer a simple question: who is still outstanding?
-          Completion tracking shows who has finished, who has started and who has not opened the
-          form. Reminders go from there, rather than from a personal email thread.
+          Open a campaign and you should be able to answer a simple question: who is still
+          outstanding? Completion tracking shows who has finished, who has started and who has not
+          opened the form. Reminders go from there, rather than from a personal email thread.
         </p>
       </ContentSection>
 
@@ -163,7 +164,7 @@ export default function EmployeeAppraisalSoftwarePage() {
 
       <CtaBand
         title="Run employee appraisals without the spreadsheet"
-        copy="Request early access if you want a clean way to collect reviews and keep the records."
+        copy="Book a walkthrough to see the respondent experience, campaign tracking and review records."
         secondaryHref={ROUTES.annualAppraisalSoftware}
         secondaryLabel="See annual appraisals"
       />

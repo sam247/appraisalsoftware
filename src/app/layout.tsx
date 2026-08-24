@@ -42,7 +42,11 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
     <html lang="en-GB" className={`${montserrat.variable} h-full antialiased`}>
       <body className="min-h-full bg-background text-foreground">

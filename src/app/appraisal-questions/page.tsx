@@ -163,7 +163,7 @@ export default function AppraisalQuestionsPage() {
 
       <CtaBand
         title="Use these questions in your next cycle"
-        copy="Request early access to run the same question set as a reusable appraisal form."
+        copy="Book a walkthrough to run the same question set as a reusable appraisal form."
         secondaryHref={ROUTES.annualAppraisalSoftware}
         secondaryLabel="Annual appraisal software"
       />

@@ -7,14 +7,13 @@ import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Logo } from "@/components/home/Logo";
-import { DISCLOSURELY_SIGN_IN, EARLY_ACCESS_URL } from "@/lib/links";
+import { PRIMARY_CTA_LABEL, PRIMARY_CTA_URL, SIGN_IN_URL } from "@/lib/links";
 import { ROUTES } from "@/lib/routes";
 
 const nav = [
-  { label: "Features", href: "/#features" },
-  { label: "Annual Appraisals", href: ROUTES.annualAppraisalSoftware },
+  { label: "Appraisal Software", href: ROUTES.annualAppraisalSoftware },
   { label: "360 Feedback", href: ROUTES.feedback360Software },
-  { label: "Templates", href: "/#resources" },
+  { label: "Resources", href: "/#resources" },
 ];
 
 export function Header() {
@@ -33,11 +32,11 @@ export function Header() {
       className={
         "font-display sticky top-0 z-50 transition-colors duration-300 " +
         (scrolled
-          ? "border-b border-border bg-background/85 backdrop-blur-md"
+          ? "border-b border-border bg-background/90 backdrop-blur-md shadow-sm"
           : "border-b border-transparent bg-background")
       }
     >
-      <div className="mx-auto flex h-18 max-w-6xl items-center gap-6 px-5 py-3 lg:px-8">
+      <div className="mx-auto flex max-w-6xl items-center gap-6 px-5 py-3 lg:px-8">
         <Link href={ROUTES.home} className="shrink-0">
           <Logo />
         </Link>
@@ -54,13 +53,13 @@ export function Header() {
         </nav>
         <div className="ml-auto flex items-center gap-2 lg:ml-0">
           <a
-            href={DISCLOSURELY_SIGN_IN}
+            href={SIGN_IN_URL}
             className="hidden text-sm font-medium text-muted-foreground transition-colors hover:text-foreground sm:block"
           >
             Sign in
           </a>
-          <Button size="sm" className="rounded-full px-4" asChild>
-            <a href={EARLY_ACCESS_URL}>Request early access</a>
+          <Button size="sm" className="px-4" asChild>
+            <a href={PRIMARY_CTA_URL}>{PRIMARY_CTA_LABEL}</a>
           </Button>
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
@@ -81,14 +80,14 @@ export function Header() {
                   </Link>
                 ))}
                 <a
-                  href={DISCLOSURELY_SIGN_IN}
+                  href={SIGN_IN_URL}
                   onClick={() => setOpen(false)}
                   className="rounded-lg px-3 py-3 text-base font-medium text-muted-foreground"
                 >
                   Sign in
                 </a>
-                <Button className="mt-3 rounded-full" asChild>
-                  <a href={EARLY_ACCESS_URL}>Request early access</a>
+                <Button className="mt-3" asChild>
+                  <a href={PRIMARY_CTA_URL}>{PRIMARY_CTA_LABEL}</a>
                 </Button>
               </div>
             </SheetContent>

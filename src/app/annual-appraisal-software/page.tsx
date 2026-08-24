@@ -15,7 +15,7 @@ import { breadcrumbSchema, faqPageSchema, softwareApplicationSchema } from "@/li
 
 const TITLE = "Annual Appraisal Software for UK Teams | Appraisal Software";
 const DESCRIPTION =
-  "Annual appraisal software for UK teams. Set up forms, invite employees and managers, track completion and keep a clear record of each review.";
+  "Annual appraisal software for UK teams. Set up campaigns, invite employees and managers, track completion with reminders, and keep a clear record of each review.";
 
 const faqs = [
   {
@@ -71,7 +71,7 @@ export default function AnnualAppraisalSoftwarePage() {
       <PageHero
         eyebrow="For UK teams"
         title="Annual Appraisal Software"
-        description="Set up an annual appraisal cycle, send the same forms to employees and managers, track completion and keep a review record you can find again."
+        description="Set up an annual appraisal campaign, send branded forms to employees and managers, track completion with reminders, and keep a review record you can find again."
         breadcrumbs={[
           homeCrumb(),
           { label: "Annual Appraisal Software", href: ROUTES.annualAppraisalSoftware },
@@ -81,7 +81,7 @@ export default function AnnualAppraisalSoftwarePage() {
       <ContentSection title="What is annual appraisal software?">
         <p>
           Annual appraisal software is a place to run the yearly review, rather than a folder of Word
-          documents and a spreadsheet of names. You create a cycle, choose the form, add employees
+          documents and a spreadsheet of names. You create a campaign, choose the form, add employees
           and managers, then collect responses until the cycle is closed.
         </p>
         <p>
@@ -114,12 +114,13 @@ export default function AnnualAppraisalSoftwarePage() {
 
       <ContentSection title="How Appraisal Software helps">
         <p>
-          Create the cycle once. Everyone in it gets the same form. Employee and manager responses
-          sit on the same record. Completion is visible, so you are not guessing who is left.
+          Create the campaign once. Everyone in it gets the same form — one question at a time,
+          branded for your organisation. Employee and manager responses sit on the same record.
+          Completion is visible, so you are not guessing who is left.
         </p>
         <p>
           That is the whole point: run annual appraisals, employee reviews and 360° feedback without
-          spreadsheets, Word forms or email chasing.{" "}
+          spreadsheets, paperwork or a heavyweight HR system.{" "}
           <TextLink href={ROUTES.employeeAppraisalSoftware}>
             Employee appraisal software
           </TextLink>{" "}
@@ -128,35 +129,36 @@ export default function AnnualAppraisalSoftwarePage() {
         </p>
       </ContentSection>
 
-      <ContentSection title="Annual appraisal cycle workflow">
+      <ContentSection title="Annual appraisal campaign workflow">
         <ol className="list-decimal space-y-3 pl-5">
           <li>
-            <span className="font-medium text-foreground">Create the cycle.</span> Name it, set the
-            review period and choose the form.
+            <span className="font-medium text-foreground">Create the campaign.</span> Name it, set
+            open and close dates, and choose the form.
           </li>
           <li>
             <span className="font-medium text-foreground">Add employees and managers.</span> Each
             person has a reviewer and a form to complete.
           </li>
           <li>
-            <span className="font-medium text-foreground">Send the forms.</span> Include 360°
-            feedback only where you want extra input from peers or direct reports.
+            <span className="font-medium text-foreground">Send the forms.</span> Respondents open a
+            branded, one-question-at-a-time experience. Add 360° feedback only where you want peer or
+            direct-report input.
           </li>
           <li>
             <span className="font-medium text-foreground">Track and close.</span> Remind people who
-            have not responded, then keep the finished appraisal as the record for that year.
+            have not responded, then keep the finished appraisal as the record for that year —
+            including downloadable reports where you need them.
           </li>
         </ol>
       </ContentSection>
 
-      <ContentSection title="Features for annual reviews">
+      <ContentSection title="What you get for annual reviews">
         <ul className="list-disc space-y-2 pl-5">
           <li>Reusable appraisal forms so next year starts from last year’s questions.</li>
+          <li>Branded respondent forms — one question at a time.</li>
           <li>Manager and employee responses on one record.</li>
-          <li>Completion tracking across the cycle.</li>
-          <li>Email reminders for outstanding forms.</li>
-          <li>Reporting and export when you need a copy of the cycle.</li>
-          <li>Secure storage of the review, instead of a shared inbox.</li>
+          <li>Completion tracking and automated or manual reminders.</li>
+          <li>Reporting with PDF and CSV export.</li>
           <li>Optional anonymous 360° feedback where it is appropriate.</li>
         </ul>
       </ContentSection>
@@ -189,8 +191,8 @@ export default function AnnualAppraisalSoftwarePage() {
       />
 
       <CtaBand
-        title="Create your appraisal cycle"
-        copy="Request early access and we will help you set up the first annual cycle for your team."
+        title="Set up your next annual cycle"
+        copy="Book a walkthrough and we will show you campaign setup, the respondent experience and reporting for your team."
         secondaryHref={ROUTES.home}
         secondaryLabel="Back to homepage"
       />

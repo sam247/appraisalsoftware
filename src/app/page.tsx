@@ -3,15 +3,14 @@ import { Hero } from "@/components/home/Hero";
 import {
   CtaSection,
   DifferentiatorSection,
-  FeaturesSection,
-  PoweredBySection,
+  OwnershipSection,
   ResourcesSection,
+  RunAppraisalSection,
   SpreadsheetSection,
   WhoItsForSection,
-  WorkflowSection,
 } from "@/components/home/Sections";
-import { Feedback360 } from "@/components/home/Feedback360";
-import { AppraisalSection } from "@/components/home/AppraisalSection";
+import { CompleteAppraisalSection } from "@/components/home/AppraisalSection";
+import { UnderstandResultsSection } from "@/components/home/Feedback360";
 import { Footer } from "@/components/home/Footer";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { pageMetadata } from "@/lib/metadata";
@@ -37,15 +36,14 @@ export default function HomePage() {
       <Header />
       <main>
         <Hero />
-        <WorkflowSection />
-        <SpreadsheetSection />
-        <FeaturesSection />
-        <AppraisalSection />
-        <Feedback360 />
         <WhoItsForSection />
+        <SpreadsheetSection />
+        <RunAppraisalSection />
+        <CompleteAppraisalSection />
+        <UnderstandResultsSection />
         <DifferentiatorSection />
         <ResourcesSection />
-        <PoweredBySection />
+        <OwnershipSection />
         <CtaSection />
       </main>
       <Footer />

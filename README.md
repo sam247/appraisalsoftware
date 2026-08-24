@@ -1,6 +1,6 @@
 # Appraisal Software
 
-Marketing site for [appraisalsoftware.co.uk](https://appraisalsoftware.co.uk) — employee appraisal and 360° feedback software by [Disclosurely](https://disclosurely.com).
+Marketing site for [appraisalsoftware.co.uk](https://appraisalsoftware.co.uk) — specialist annual appraisal and 360° feedback acquisition for UK teams, powered by [Disclosurely](https://disclosurely.com).
 
 Built with Next.js (App Router) for Vercel.
 
@@ -22,6 +22,11 @@ Connect this repo to Vercel, set the production domain to `appraisalsoftware.co.
 
 ## CTAs
 
-Primary CTA is **Request early access**, which points to Disclosurely contact (`src/lib/links.ts`) until a dedicated appraisal signup path is ready.
+Configured in `src/lib/links.ts`:
 
-Sign in still points to Disclosurely.
+- **Primary (live):** Book a walkthrough → `https://disclosurely.com/demo`
+- **Secondary:** See how it works → `/#how-it-works`
+- **Sign in:** `https://app.disclosurely.com/auth/login`
+- **Reserved:** `TRY_APPRAISAL_*` constants for when genuine self-serve Appraisals onboarding exists — do not use while the primary destination is still the demo form
+
+External primary CTAs include short transition copy so visitors expect the Disclosurely domain.

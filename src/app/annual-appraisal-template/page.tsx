@@ -157,7 +157,7 @@ export default function AnnualAppraisalTemplatePage() {
 
       <CtaBand
         title="Create your appraisal cycle"
-        copy="Request early access and use this template as the starting form for your next annual cycle."
+        copy="Book a walkthrough and use this template as the starting form for your next annual cycle."
         secondaryHref={ROUTES.annualAppraisalSoftware}
         secondaryLabel="Annual appraisal software"
       />

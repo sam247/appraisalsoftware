@@ -2,7 +2,11 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { EARLY_ACCESS_URL } from "@/lib/links";
+import {
+  PRIMARY_CTA_LABEL,
+  PRIMARY_CTA_TRANSITION,
+  PRIMARY_CTA_URL,
+} from "@/lib/links";
 import { ROUTES } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 
@@ -49,7 +53,7 @@ export function PageHero({
 }) {
   return (
     <section className="border-b border-border bg-surface/50">
-      <div className="mx-auto max-w-3xl px-5 py-14 lg:px-8 lg:py-20">
+      <div className="mx-auto max-w-6xl px-5 py-14 lg:px-8 lg:py-20">
         {breadcrumbs && breadcrumbs.length > 0 ? (
           <nav aria-label="Breadcrumb" className="mb-6">
             <ol className="flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
@@ -69,14 +73,12 @@ export function PageHero({
           </nav>
         ) : null}
         {eyebrow ? (
-          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-primary">
-            {eyebrow}
-          </p>
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">{eyebrow}</p>
         ) : null}
-        <h1 className="mt-3 text-3xl font-semibold text-foreground sm:text-4xl lg:text-[2.75rem] lg:leading-[1.1]">
+        <h1 className="mt-3 max-w-3xl font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-[2.75rem] lg:leading-[1.1]">
           {title}
         </h1>
-        <p className="mt-5 text-base leading-relaxed text-muted-foreground sm:text-lg">
+        <p className="mt-5 max-w-3xl text-base leading-relaxed text-muted-foreground sm:text-lg">
           {description}
         </p>
       </div>
@@ -95,9 +97,11 @@ export function ContentSection({
 }) {
   return (
     <section id={id} className="border-b border-border py-12 sm:py-16">
-      <div className="mx-auto max-w-3xl px-5 lg:px-8">
-        <h2 className="text-2xl font-semibold text-foreground sm:text-3xl">{title}</h2>
-        <div className="mt-5 space-y-4 text-sm leading-relaxed text-muted-foreground sm:text-base">
+      <div className="mx-auto max-w-6xl px-5 lg:px-8">
+        <h2 className="max-w-3xl font-display text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+          {title}
+        </h2>
+        <div className="mt-5 max-w-3xl space-y-4 text-sm leading-relaxed text-muted-foreground sm:text-base">
           {children}
         </div>
       </div>
@@ -112,11 +116,13 @@ export function FaqSection({
 }) {
   return (
     <section className="border-b border-border py-12 sm:py-16">
-      <div className="mx-auto max-w-3xl px-5 lg:px-8">
-        <h2 className="text-2xl font-semibold text-foreground sm:text-3xl">FAQs</h2>
+      <div className="mx-auto max-w-6xl px-5 lg:px-8">
+        <h2 className="font-display text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+          FAQs
+        </h2>
         <dl className="mt-8 space-y-6">
           {items.map((item) => (
-            <div key={item.question} className="rounded-2xl border border-border bg-card p-5">
+            <div key={item.question} className="rounded-xl border border-border bg-card p-5">
               <dt className="text-base font-semibold text-foreground">{item.question}</dt>
               <dd className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.answer}</dd>
             </div>
@@ -130,26 +136,30 @@ export function FaqSection({
 export function CtaBand({
   title,
   copy,
-  primaryLabel = "Request early access",
+  primaryLabel = PRIMARY_CTA_LABEL,
   secondaryHref,
   secondaryLabel,
+  showTransition = true,
 }: {
   title: string;
   copy: string;
   primaryLabel?: string;
   secondaryHref?: string;
   secondaryLabel?: string;
+  showTransition?: boolean;
 }) {
   return (
     <section className="px-5 py-16 lg:px-8">
-      <div className="relative mx-auto max-w-3xl overflow-hidden rounded-3xl border border-primary/20 bg-primary/5 px-6 py-12 text-center sm:px-10">
-        <h2 className="text-2xl font-semibold text-foreground sm:text-3xl">{title}</h2>
+      <div className="relative mx-auto max-w-6xl overflow-hidden rounded-2xl border border-primary/20 bg-primary/5 px-6 py-12 text-center sm:px-10">
+        <h2 className="font-display text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+          {title}
+        </h2>
         <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base">
           {copy}
         </p>
         <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-          <Button size="lg" className="w-full rounded-full px-6 sm:w-auto" asChild>
-            <a href={EARLY_ACCESS_URL}>
+          <Button size="lg" className="w-full px-6 sm:w-auto" asChild>
+            <a href={PRIMARY_CTA_URL}>
               {primaryLabel}
               <ArrowRight className="size-4" />
             </a>
@@ -158,13 +168,18 @@ export function CtaBand({
             <Button
               size="lg"
               variant="outline"
-              className="w-full rounded-full border-border bg-card px-6 sm:w-auto"
+              className="w-full border-border bg-card px-6 sm:w-auto"
               asChild
             >
               <Link href={secondaryHref}>{secondaryLabel}</Link>
             </Button>
           ) : null}
         </div>
+        {showTransition ? (
+          <p className="mx-auto mt-4 max-w-md text-xs leading-relaxed text-muted-foreground">
+            {PRIMARY_CTA_TRANSITION}
+          </p>
+        ) : null}
       </div>
     </section>
   );
@@ -179,14 +194,16 @@ export function RelatedLinks({
 }) {
   return (
     <section className="border-b border-border bg-surface/50 py-12 sm:py-16">
-      <div className="mx-auto max-w-3xl px-5 lg:px-8">
-        <h2 className="text-2xl font-semibold text-foreground sm:text-3xl">{title}</h2>
+      <div className="mx-auto max-w-6xl px-5 lg:px-8">
+        <h2 className="font-display text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+          {title}
+        </h2>
         <ul className="mt-6 grid gap-3">
           {links.map((link) => (
             <li key={link.href}>
               <Link
                 href={link.href}
-                className="block rounded-2xl border border-border bg-card p-5 transition-colors hover:border-primary/40"
+                className="block rounded-xl border border-border bg-card p-5 transition-colors hover:border-primary/40"
               >
                 <p className="text-sm font-semibold text-foreground">{link.label}</p>
                 <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{link.copy}</p>

@@ -1,128 +1,111 @@
 import Link from "next/link";
-import { Check } from "lucide-react";
 
-import { Panel, ScoreBar, SectionHeading, StatusChip } from "@/components/product/primitives";
+import { Panel, SectionHeading } from "@/components/product/primitives";
 import { ROUTES } from "@/lib/routes";
 
-const questions = [
-  { q: "What went well during this review period?", answered: true },
-  { q: "Where did you find the biggest challenges?", answered: true },
-  { q: "Which objectives were met in full?", answered: true },
-  { q: "What support do you need next period?", answered: false },
-];
-
-export function AppraisalSection() {
+/**
+ * Complete the appraisal — branded one-question-at-a-time respondent experience.
+ * Major product differentiator visual.
+ */
+export function CompleteAppraisalSection() {
   return (
-    <section id="appraisals" className="py-20 sm:py-24">
+    <section id="complete" className="border-y border-border bg-surface/70 py-20 sm:py-24">
       <div className="mx-auto max-w-6xl px-5 lg:px-8">
-        <SectionHeading
-          eyebrow="Appraisals"
-          title="A structured annual review, not a blank document"
-          copy="Every appraisal follows the same shape: review period, questions, manager comments and the employee's own words — kept as one record."
-        />
-
-        <div className="mt-12 grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
-          <Panel title="Appraisal — Daniel Okoye" meta="Review period: Jan – Jun 2026">
-            <div className="space-y-5 p-5">
-              <div className="flex flex-wrap items-center gap-3 rounded-xl border border-border bg-surface p-4">
-                <span className="flex size-10 items-center justify-center rounded-full bg-primary/15 text-xs font-semibold text-primary">
-                  DO
-                </span>
-                <div className="mr-auto">
-                  <p className="text-sm font-semibold text-foreground">Daniel Okoye</p>
-                  <p className="text-[11px] text-muted-foreground">
-                    Account Manager · Reviewer: M. Chen
-                  </p>
-                </div>
-                <StatusChip status="In progress" />
-              </div>
-
-              <div>
-                <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-                  Questions
-                </p>
-                <ul className="mt-2 divide-y divide-border rounded-xl border border-border">
-                  {questions.map((item) => (
-                    <li key={item.q} className="flex items-center gap-3 px-3 py-2.5">
-                      <span
-                        className={
-                          "flex size-4.5 items-center justify-center rounded-full " +
-                          (item.answered ? "bg-positive/20 text-positive-foreground" : "bg-surface-2")
-                        }
-                      >
-                        {item.answered ? <Check className="size-3" /> : null}
-                      </span>
-                      <span className="text-xs text-foreground">{item.q}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="grid gap-3 sm:grid-cols-2">
-                <div className="rounded-xl border border-border p-4">
-                  <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-                    Manager feedback
-                  </p>
-                  <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-                    “Consistently strong with clients this period. Renewals up on last cycle. Next
-                    step is coaching the two new starters.”
-                  </p>
-                </div>
-                <div className="rounded-xl border border-warm/30 bg-warm/5 p-4">
-                  <p className="text-[11px] font-semibold uppercase tracking-wide text-warm-foreground">
-                    Employee feedback
-                  </p>
-                  <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-                    &ldquo;I&apos;d like clearer targets for the second half and more time to plan the account
-                    reviews properly.&rdquo;
-                  </p>
-                </div>
-              </div>
-            </div>
-          </Panel>
-
-          <div className="space-y-6">
-            <Panel title="Competencies">
-              <div className="space-y-3.5 p-5">
-                <ScoreBar label="Client relationships" value={92} />
-                <ScoreBar label="Commercial awareness" value={76} />
-                <ScoreBar label="Planning" value={58} />
-                <ScoreBar label="Coaching others" value={64} />
-              </div>
-            </Panel>
-            <Panel title="Completion status">
-              <div className="space-y-3 p-5 text-xs">
-                {[
-                  ["Self-assessment", "Complete"],
-                  ["Manager review", "In progress"],
-                  ["Review meeting", "Not started"],
-                  ["Sign-off", "Not started"],
-                ].map(([label, status]) => (
-                  <div key={label} className="flex items-center justify-between gap-3">
-                    <span className="text-foreground">{label}</span>
-                    <StatusChip status={status as "Complete"} />
+        <div className="grid gap-12 lg:grid-cols-2 lg:items-center lg:gap-16">
+          <div className="order-2 lg:order-1">
+            <Panel title="Your appraisal" meta="Acme Ltd" className="mx-auto max-w-md lg:max-w-none">
+              <div className="relative min-h-[22rem] p-5 sm:p-8">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2.5">
+                    <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-[10px] font-bold text-primary-foreground">
+                      AL
+                    </span>
+                    <div>
+                      <p className="text-xs font-semibold text-foreground">Acme Ltd</p>
+                      <p className="text-[10px] text-muted-foreground">Annual performance review</p>
+                    </div>
                   </div>
-                ))}
+                  <span className="text-[10px] font-medium text-muted-foreground">Question 3 of 8</span>
+                </div>
+
+                <div className="mt-4 h-1 overflow-hidden rounded-full bg-surface-2">
+                  <div className="h-full w-[37.5%] rounded-full bg-primary" />
+                </div>
+
+                <div className="mt-8">
+                  <p className="text-[11px] font-semibold uppercase tracking-wide text-primary">
+                    Performance
+                  </p>
+                  <h3 className="mt-2 text-lg font-semibold leading-snug text-foreground sm:text-xl">
+                    What went well during this review period?
+                  </h3>
+                  <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+                    Be specific about outcomes, delivery and how you worked with others.
+                  </p>
+                </div>
+
+                <div className="mt-6 rounded-xl border border-border bg-surface/80 p-4">
+                  <p className="text-sm leading-relaxed text-foreground/80">
+                    Renewals were ahead of target on my two largest accounts, and I onboarded two
+                    new starters without dropping service levels…
+                  </p>
+                  <span className="mt-3 inline-block h-4 w-0.5 animate-pulse bg-primary" aria-hidden />
+                </div>
+
+                <div className="mt-6 flex items-center justify-between gap-3">
+                  <span className="text-xs font-medium text-muted-foreground">Back</span>
+                  <span className="rounded-lg bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground">
+                    Continue
+                  </span>
+                </div>
+
+                <p className="mt-6 text-center text-[10px] text-muted-foreground">
+                  Responses stay with your organisation · Anonymous options available on 360
+                </p>
               </div>
             </Panel>
           </div>
+
+          <div className="order-1 lg:order-2">
+            <SectionHeading
+              eyebrow="Complete the appraisal"
+              title="One question at a time — branded for your organisation"
+              copy="Employees and reviewers open a clear, modern form: your logo and brand colour, one question per screen, and a calm path from welcome to done. No Word attachment. No lost email thread."
+            />
+            <ul className="mt-8 space-y-3 text-sm text-foreground">
+              {[
+                "Organisation logo and brand colour on the respond flow",
+                "One question at a time so forms get finished",
+                "Self-assessment and manager reviews on the same campaign",
+                "Anonymous collection available where you choose it for 360",
+              ].map((item) => (
+                <li key={item} className="flex items-start gap-3">
+                  <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-primary" aria-hidden />
+                  {item}
+                </li>
+              ))}
+            </ul>
+            <p className="mt-8 text-sm text-muted-foreground">
+              <Link
+                href={ROUTES.employeeAppraisalSoftware}
+                className="font-medium text-foreground underline decoration-border underline-offset-2 hover:text-primary"
+              >
+                Employee appraisal software
+              </Link>
+              {" · "}
+              <Link
+                href={ROUTES.appraisalQuestions}
+                className="font-medium text-foreground underline decoration-border underline-offset-2 hover:text-primary"
+              >
+                Browse appraisal questions
+              </Link>
+            </p>
+          </div>
         </div>
-        <p className="mt-8 text-sm text-muted-foreground">
-          <Link
-            href={ROUTES.annualAppraisalSoftware}
-            className="font-medium text-foreground underline decoration-border underline-offset-2 hover:text-primary"
-          >
-            How annual appraisal software works
-          </Link>
-          {" · "}
-          <Link
-            href={ROUTES.appraisalQuestions}
-            className="font-medium text-foreground underline decoration-border underline-offset-2 hover:text-primary"
-          >
-            Browse appraisal questions
-          </Link>
-        </p>
       </div>
     </section>
   );
 }
+
+/** Back-compat alias */
+export const AppraisalSection = CompleteAppraisalSection;

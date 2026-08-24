@@ -7,15 +7,15 @@ export type FaqItem = {
 };
 
 const SOFTWARE_FEATURES = [
-  "Appraisal cycles",
+  "Appraisal campaigns",
   "Reusable appraisal forms",
-  "360° feedback",
+  "360° feedback with Self vs Others",
+  "Branded one-question respondent forms",
   "Manager and employee responses",
   "Completion tracking",
   "Email reminders",
-  "Reporting and export",
-  "Secure review records",
-  "Optional anonymous feedback",
+  "Reporting and PDF/CSV export",
+  "Privacy-conscious anonymous feedback",
 ];
 
 export function websiteAndOrganizationGraph() {

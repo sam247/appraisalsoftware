@@ -159,7 +159,7 @@ export default function Feedback360TemplatePage() {
 
       <CtaBand
         title="Run a 360 feedback cycle"
-        copy="Request early access to send this template as a reusable form and track who has responded."
+        copy="Book a walkthrough to send this template as a reusable form and track who has responded."
         secondaryHref={ROUTES.feedback360Software}
         secondaryLabel="360 feedback software"
       />

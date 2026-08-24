@@ -1,16 +1,23 @@
 import Link from "next/link";
 
 import { Logo } from "@/components/home/Logo";
-import { DISCLOSURELY_URL, EARLY_ACCESS_URL } from "@/lib/links";
+import {
+  CONTACT_URL,
+  DISCLOSURELY_URL,
+  PRIMARY_CTA_LABEL,
+  PRIMARY_CTA_URL,
+  PRIVACY_URL,
+  PRODUCT_PAGE_URL,
+  TERMS_URL,
+} from "@/lib/links";
 import { ROUTES } from "@/lib/routes";
 
 const footerLinks = {
   product: [
-    { label: "Features", href: "/#features" },
     { label: "Annual appraisal software", href: ROUTES.annualAppraisalSoftware },
     { label: "Employee appraisal software", href: ROUTES.employeeAppraisalSoftware },
     { label: "360 feedback software", href: ROUTES.feedback360Software },
-    { label: "Early access", href: EARLY_ACCESS_URL },
+    { label: PRIMARY_CTA_LABEL, href: PRIMARY_CTA_URL },
   ],
   resources: [
     { label: "Annual appraisal template", href: ROUTES.annualAppraisalTemplate },
@@ -18,9 +25,10 @@ const footerLinks = {
     { label: "360 feedback template", href: ROUTES.feedback360Template },
   ],
   company: [
-    { label: "Privacy", href: `${DISCLOSURELY_URL}/privacy` },
-    { label: "Terms", href: `${DISCLOSURELY_URL}/terms` },
-    { label: "Contact", href: `${DISCLOSURELY_URL}/contact` },
+    { label: "Appraisals on Disclosurely", href: PRODUCT_PAGE_URL },
+    { label: "Privacy", href: PRIVACY_URL },
+    { label: "Terms", href: TERMS_URL },
+    { label: "Contact", href: CONTACT_URL },
   ],
 };
 
@@ -37,11 +45,18 @@ export function Footer() {
         <div className="grid gap-10 md:grid-cols-[1.2fr_2fr]">
           <div>
             <Link href={ROUTES.home}>
-              <Logo size="lg" />
+              <Logo size="lg" showAttribution={false} />
             </Link>
             <p className="mt-4 max-w-xs text-xs leading-relaxed text-muted-foreground">
-              Simple annual appraisal software for UK teams. Not a full HR system — just a clean way
-              to run appraisal cycles.
+              AppraisalSoftware.co.uk is the specialist site for annual appraisals and 360° feedback
+              for UK teams. The product is built and hosted by{" "}
+              <a
+                href={DISCLOSURELY_URL}
+                className="font-medium text-foreground/80 underline decoration-border underline-offset-2 hover:text-foreground"
+              >
+                Disclosurely
+              </a>
+              . Not a full HR system — just a clean way to run appraisal cycles.
             </p>
           </div>
           <div className="grid gap-8 sm:grid-cols-3">
@@ -79,7 +94,7 @@ export function Footer() {
         </div>
         <div className="mt-12 flex flex-col gap-2 border-t border-border pt-6 text-[11px] text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
           <p>
-            Appraisal Software is a product by{" "}
+            A product by{" "}
             <a
               href={DISCLOSURELY_URL}
               className="font-medium text-foreground/80 underline decoration-border underline-offset-2 transition-colors hover:text-foreground"

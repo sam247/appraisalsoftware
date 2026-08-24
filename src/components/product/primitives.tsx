@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { marketingType } from "@/lib/marketing-typography";
 
 export function Panel({
   className,
@@ -14,24 +15,26 @@ export function Panel({
   return (
     <div
       className={cn(
-        "overflow-hidden rounded-2xl border border-border bg-card shadow-[0_18px_50px_-28px_color-mix(in_oklab,var(--ink)_45%,transparent)]",
+        "overflow-hidden rounded-[1.1rem] border border-border bg-surface shadow-[0_34px_80px_-48px_rgba(15,23,42,0.55)]",
         className,
       )}
     >
-      <div className="flex items-center gap-2 border-b border-border bg-surface px-4 py-3">
-        <span className="size-2 rounded-full bg-warm/80" aria-hidden />
-        <span className="size-2 rounded-full bg-border" aria-hidden />
-        <span className="size-2 rounded-full bg-border" aria-hidden />
+      <div className="flex items-center gap-2 border-b border-border bg-card/80 px-4 py-3">
+        <span className="size-2 rounded-full bg-[#f87171]/80" aria-hidden />
+        <span className="size-2 rounded-full bg-[#fbbf24]/80" aria-hidden />
+        <span className="size-2 rounded-full bg-[#34d399]/80" aria-hidden />
         {title ? (
-          <span className="ml-2 truncate text-xs font-semibold text-foreground">{title}</span>
+          <span className="ml-2 truncate text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            {title}
+          </span>
         ) : null}
         {meta ? (
-          <span className="ml-auto hidden truncate text-[11px] text-muted-foreground sm:block">
+          <span className="ml-auto hidden truncate rounded-md bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary sm:block">
             {meta}
           </span>
         ) : null}
       </div>
-      {children}
+      <div className="bg-card">{children}</div>
     </div>
   );
 }
@@ -78,18 +81,20 @@ export function AvatarStack({ people }: { people: string[] }) {
 export function StatusChip({
   status,
 }: {
-  status: "Complete" | "In progress" | "Not started" | "Anonymous";
+  status: "Complete" | "In progress" | "Not started" | "Anonymous" | "Safe to share" | "Restricted";
 }) {
   const tones: Record<string, string> = {
     Complete: "bg-positive/15 text-positive-foreground",
     "In progress": "bg-primary/10 text-primary",
     "Not started": "bg-muted text-muted-foreground",
     Anonymous: "bg-warm/20 text-warm-foreground",
+    "Safe to share": "bg-positive/15 text-positive-foreground",
+    Restricted: "bg-warm/20 text-warm-foreground",
   };
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold whitespace-nowrap",
+        "inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-semibold whitespace-nowrap",
         tones[status],
       )}
     >
@@ -172,11 +177,7 @@ export function CompletionRing({
 }
 
 export function Eyebrow({ children }: { children: React.ReactNode }) {
-  return (
-    <span className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-primary">
-      {children}
-    </span>
-  );
+  return <span className={marketingType.eyebrow}>{children}</span>;
 }
 
 export function SectionHeading({
@@ -193,8 +194,8 @@ export function SectionHeading({
   return (
     <div className={cn("max-w-2xl", align === "center" && "mx-auto text-center")}>
       {eyebrow ? <Eyebrow>{eyebrow}</Eyebrow> : null}
-      <h2 className="mt-4 text-3xl font-semibold text-foreground sm:text-4xl">{title}</h2>
-      {copy ? <p className="mt-4 text-base leading-relaxed text-muted-foreground">{copy}</p> : null}
+      <h2 className={cn(marketingType.h2, eyebrow ? "mt-4" : undefined)}>{title}</h2>
+      {copy ? <p className={cn("mt-4", marketingType.body)}>{copy}</p> : null}
     </div>
   );
 }
