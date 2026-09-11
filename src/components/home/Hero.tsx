@@ -2,73 +2,41 @@ import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Avatar,
-  CompletionRing,
   Panel,
   StatusChip,
 } from "@/components/product/primitives";
 import {
   PRIMARY_CTA_LABEL,
-  PRIMARY_CTA_TRANSITION,
   PRIMARY_CTA_URL,
   SEE_HOW_IT_WORKS_HREF,
   SEE_HOW_IT_WORKS_LABEL,
 } from "@/lib/links";
 import { marketingType } from "@/lib/marketing-typography";
 
-const campaigns = [
-  {
-    name: "Annual appraisals 2026",
-    detail: "42 employees · Closes 30 Jun",
-    progress: 78,
-    status: "In progress" as const,
-    reminders: "12 reminders sent",
-  },
-  {
-    name: "360° feedback — Leadership",
-    detail: "9 subjects · 54 reviewers",
-    progress: 61,
-    status: "In progress" as const,
-    reminders: "Due in 5 days",
-  },
-  {
-    name: "Probation reviews Q1",
-    detail: "6 employees",
-    progress: 100,
-    status: "Complete" as const,
-    reminders: "Closed",
-  },
+const participants = [
+  { name: "Sarah Mitchell", role: "Account Manager", status: "Complete" as const },
+  { name: "James Cooper", role: "Engineering", status: "In progress" as const },
+  { name: "Priya Raman", role: "Marketing", status: "Not started" as const },
+  { name: "Daniel Okoye", role: "Operations", status: "Complete" as const },
+  { name: "Tom Whitfield", role: "Finance", status: "Complete" as const },
 ];
 
 export function Hero() {
   return (
-    <section id="top" className="relative overflow-hidden">
-      <div
-        className="pointer-events-none absolute inset-x-0 -top-40 h-[520px] opacity-70"
-        style={{
-          background:
-            "radial-gradient(60% 60% at 50% 40%, color-mix(in oklab, var(--primary) 16%, transparent), transparent 70%)",
-        }}
-        aria-hidden
-      />
-      <div
-        className="pointer-events-none absolute inset-0 grid-bg opacity-[0.3] [mask-image:linear-gradient(to_bottom,black,transparent_70%)]"
-        aria-hidden
-      />
-      <div className="relative mx-auto max-w-6xl px-5 pt-14 pb-16 sm:pt-20 lg:px-8 lg:pt-24">
-        <div className="reveal mx-auto max-w-3xl text-center">
-          <span className="inline-flex items-center gap-2 rounded-full border border-border bg-card/70 px-3 py-1 text-xs font-medium text-muted-foreground backdrop-blur">
-            <span className="size-1.5 rounded-full bg-positive" aria-hidden />
-            Simple annual appraisal software for UK teams
-          </span>
-          <h1 className={`mt-6 ${marketingType.h1Home}`}>
-            Annual Appraisal Software for UK Teams
+    <section className="relative overflow-hidden pb-20 pt-16 sm:pb-28 sm:pt-24 lg:pt-28">
+      <div className="mx-auto max-w-6xl px-5 lg:px-8">
+        {/* Copy block */}
+        <div className="reveal mx-auto max-w-[42rem] text-center">
+          <h1 className={marketingType.h1Home}>
+            Appraisals without
+            <br className="hidden sm:block" />
+            {" "}the HR system.
           </h1>
-          <p className={`mx-auto mt-5 max-w-2xl ${marketingType.lead}`}>
-            Run annual appraisals, employee reviews and 360° feedback without spreadsheets,
-            paperwork or a heavyweight HR system.
+          <p className={`mx-auto mt-5 max-w-lg ${marketingType.lead}`}>
+            Run annual appraisals, self-assessments and 360° feedback in one simple place.
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Button size="lg" className="w-full px-6 sm:w-auto" asChild>
+            <Button size="lg" className="w-full px-7 sm:w-auto" asChild>
               <a href={PRIMARY_CTA_URL}>
                 {PRIMARY_CTA_LABEL}
                 <ArrowRight className="size-4" />
@@ -77,79 +45,92 @@ export function Hero() {
             <Button
               size="lg"
               variant="outline"
-              className="w-full border-border bg-card px-6 sm:w-auto"
+              className="w-full px-7 sm:w-auto"
               asChild
             >
               <a href={SEE_HOW_IT_WORKS_HREF}>{SEE_HOW_IT_WORKS_LABEL}</a>
             </Button>
           </div>
-          <p className="mx-auto mt-4 max-w-md text-xs leading-relaxed text-muted-foreground">
-            {PRIMARY_CTA_TRANSITION}
-          </p>
         </div>
 
-        <div className="relative mt-14 sm:mt-16">
-          <Panel title="Appraisal campaigns" meta="2 active" className="reveal">
-            <div className="grid gap-0 lg:grid-cols-[1.4fr_1fr]">
-              <div className="border-b border-border p-4 sm:p-5 lg:border-r lg:border-b-0">
+        {/* Product demo — realistic campaign overview */}
+        <div className="reveal relative mx-auto mt-16 max-w-4xl sm:mt-20" style={{ animationDelay: "0.15s" }}>
+          <Panel title="Annual Appraisal 2026" meta="Live">
+            <div className="grid gap-0 lg:grid-cols-[1.3fr_1fr]">
+              {/* Left: campaign overview */}
+              <div className="border-b border-border p-5 sm:p-6 lg:border-r lg:border-b-0">
                 <div className="flex items-center justify-between gap-3">
-                  <h3 className="text-sm font-semibold text-foreground">Campaign status</h3>
-                  <span className="text-[11px] text-muted-foreground">Completion & reminders</span>
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">24 employees</p>
+                    <p className="mt-0.5 text-[11px] text-muted-foreground">
+                      Opens 1 May · Closes 30 Jun 2026
+                    </p>
+                  </div>
+                  <StatusChip status="Collecting" />
                 </div>
-                <div className="mt-3 divide-y divide-border">
-                  {campaigns.map((c) => (
-                    <div key={c.name} className="flex items-center gap-3 py-3.5">
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-xs font-semibold text-foreground">{c.name}</p>
-                        <p className="truncate text-[11px] text-muted-foreground">{c.detail}</p>
-                      </div>
-                      <div className="hidden w-20 sm:block">
-                        <div className="h-1.5 rounded-full bg-surface-2">
-                          <div
-                            className="h-1.5 rounded-full bg-primary"
-                            style={{ width: `${c.progress}%` }}
-                          />
-                        </div>
-                      </div>
-                      <StatusChip status={c.status} />
+
+                {/* Progress bar */}
+                <div className="mt-5">
+                  <div className="flex items-baseline justify-between gap-2">
+                    <span className="text-xs font-medium text-foreground">75% complete</span>
+                    <span className="text-[11px] text-muted-foreground">18 of 24</span>
+                  </div>
+                  <div className="mt-2 h-2 overflow-hidden rounded-full bg-surface-2">
+                    <div className="h-full w-[75%] rounded-full bg-primary" />
+                  </div>
+                </div>
+
+                {/* Status breakdown */}
+                <div className="mt-5 grid grid-cols-3 gap-2">
+                  {[
+                    { n: "18", label: "Completed", color: "text-primary" },
+                    { n: "4", label: "In progress", color: "text-warm-foreground" },
+                    { n: "2", label: "Not started", color: "text-muted-foreground" },
+                  ].map((stat) => (
+                    <div key={stat.label} className="rounded-lg border border-border p-2.5 text-center">
+                      <p className={`text-lg font-semibold tabular-nums ${stat.color}`}>{stat.n}</p>
+                      <p className="text-[10px] text-muted-foreground">{stat.label}</p>
                     </div>
                   ))}
                 </div>
-              </div>
-              <div className="space-y-4 bg-surface/50 p-4 sm:p-5">
-                <div className="flex items-center gap-4">
-                  <CompletionRing value={78} />
-                  <div className="text-xs text-muted-foreground">
-                    <p className="font-semibold text-foreground">Annual appraisals 2026</p>
-                    <p className="mt-1">33 of 42 complete</p>
-                    <p className="mt-1">9 outstanding · reminders scheduled</p>
-                  </div>
+
+                {/* Next reminder */}
+                <div className="mt-4 flex items-center gap-2 rounded-lg bg-surface px-3 py-2">
+                  <span className="size-1.5 rounded-full bg-primary" aria-hidden />
+                  <span className="text-[11px] text-muted-foreground">
+                    Next reminder: <span className="font-medium text-foreground">Monday 10am</span>
+                  </span>
                 </div>
-                <div className="rounded-xl border border-border bg-card p-3">
-                  <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-                    Next to chase
-                  </p>
-                  <ul className="mt-2 space-y-2">
-                    {[
-                      { name: "Daniel Okoye", role: "Manager review due" },
-                      { name: "Priya Raman", role: "Self-assessment open" },
-                      { name: "Tom Whitfield", role: "Not started" },
-                    ].map((row) => (
-                      <li key={row.name} className="flex items-center gap-2">
+              </div>
+
+              {/* Right: participant list */}
+              <div className="p-5 sm:p-6">
+                <div className="flex items-center justify-between gap-3">
+                  <p className="text-xs font-semibold text-foreground">Recent activity</p>
+                  <span className="text-[10px] text-muted-foreground">5 of 24</span>
+                </div>
+                <div className="mt-3 space-y-1">
+                  {participants.map((p) => (
+                    <div
+                      key={p.name}
+                      className="flex items-center justify-between gap-3 rounded-lg px-2 py-2 transition-colors hover:bg-surface"
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
                         <Avatar
-                          initials={row.name
+                          initials={p.name
                             .split(" ")
                             .map((n) => n[0])
                             .join("")}
-                          tone={row.name.length}
+                          tone={p.name.length}
                         />
                         <div className="min-w-0">
-                          <p className="truncate text-xs font-medium text-foreground">{row.name}</p>
-                          <p className="truncate text-[10px] text-muted-foreground">{row.role}</p>
+                          <p className="truncate text-xs font-medium text-foreground">{p.name}</p>
+                          <p className="truncate text-[10px] text-muted-foreground">{p.role}</p>
                         </div>
-                      </li>
-                    ))}
-                  </ul>
+                      </div>
+                      <StatusChip status={p.status} />
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>

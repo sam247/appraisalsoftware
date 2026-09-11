@@ -4,10 +4,11 @@ export const SITE_URL = "https://appraisalsoftware.co.uk/";
 
 export const SITE_NAME = "Appraisal Software";
 
-export const SITE_TITLE = "Annual Appraisal Software for UK Teams | Appraisal Software";
+export const SITE_TITLE =
+  "Appraisal Software — Appraisals Without the HR System";
 
 export const SITE_DESCRIPTION =
-  "Simple annual appraisal software for UK teams. Run annual appraisals, employee reviews and 360° feedback without spreadsheets, paperwork or a heavyweight HR system.";
+  "Simple appraisal and 360° feedback software for UK organisations. Create, send, collect and understand — without spreadsheets, paperwork or a heavyweight HR system.";
 
 export const isProductionDeployment =
   process.env.VERCEL_ENV === "production" || process.env.NODE_ENV === "production";

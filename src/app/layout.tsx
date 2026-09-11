@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Montserrat } from "next/font/google";
+import { Inter } from "next/font/google";
 
 import { JsonLd } from "@/components/seo/JsonLd";
 import { websiteAndOrganizationGraph } from "@/lib/schema";
@@ -12,10 +12,9 @@ import {
 } from "@/lib/site";
 import "./globals.css";
 
-const montserrat = Montserrat({
+const inter = Inter({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-montserrat",
+  variable: "--font-inter",
   display: "swap",
 });
 
@@ -23,7 +22,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: SITE_TITLE,
   description: SITE_DESCRIPTION,
-  authors: [{ name: "Disclosurely", url: "https://disclosurely.com/" }],
+  authors: [{ name: SITE_NAME, url: SITE_URL }],
   robots: isProductionDeployment
     ? { index: true, follow: true }
     : { index: false, follow: false },
@@ -48,7 +47,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en-GB" className={`${montserrat.variable} h-full antialiased`}>
+    <html lang="en-GB" className={`${inter.variable} h-full antialiased`}>
       <body className="min-h-full bg-background text-foreground">
         <JsonLd data={websiteAndOrganizationGraph()} />
         {children}

@@ -1,13 +1,15 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 import {
   ArrowRight,
-  BellRing,
-  Building2,
-  Briefcase,
-  CalendarClock,
-  FileSpreadsheet,
-  UserRound,
-  Users,
+  CalendarCheck,
+  CheckCircle2,
+  ClipboardList,
+  Mail,
+  BarChart3,
+  Send,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -19,256 +21,257 @@ import {
   StatusChip,
 } from "@/components/product/primitives";
 import {
-  DISCLOSURELY_URL,
   PRIMARY_CTA_LABEL,
-  PRIMARY_CTA_TRANSITION,
   PRIMARY_CTA_URL,
-  PRODUCT_PAGE_URL,
-  SEE_HOW_IT_WORKS_HREF,
-  SEE_HOW_IT_WORKS_LABEL,
 } from "@/lib/links";
 import { ROUTES } from "@/lib/routes";
 
-const replacements = [
-  "Word appraisal forms saved in shared drives",
-  "Spreadsheet trackers that go stale mid-cycle",
-  "Chasing managers and employees by email",
-  "Lost review records from last year",
-  "Inconsistent questions from team to team",
-];
+/* ═══════════════════════════════════════════════════
+   1. WHAT WOULD YOU LIKE TO RUN? — Interactive selector
+   ═══════════════════════════════════════════════════ */
 
-export function SpreadsheetSection() {
-  return (
-    <section id="replaces" className="py-20 sm:py-24">
-      <div className="mx-auto max-w-6xl px-5 lg:px-8">
-        <div className="grid gap-10 lg:grid-cols-2 lg:items-center lg:gap-16">
-          <div>
-            <SectionHeading
-              eyebrow="The problem"
-              title="The usual annual appraisal admin"
-              copy="Most UK teams already know how they want appraisals to work. The friction is the paperwork around them — not the conversation itself."
-            />
-            <ul className="mt-8 space-y-3">
-              {replacements.map((item) => (
-                <li key={item} className="flex items-start gap-3 text-sm text-foreground">
-                  <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-                    <ArrowRight className="size-3" />
-                  </span>
-                  {item}
-                </li>
-              ))}
-            </ul>
-            <p className="mt-6 text-sm leading-relaxed text-muted-foreground">
-              Prefer a starting form first? See the{" "}
-              <Link
-                href={ROUTES.annualAppraisalTemplate}
-                className="font-medium text-foreground underline decoration-border underline-offset-2 hover:text-primary"
-              >
-                annual appraisal template
-              </Link>{" "}
-              and{" "}
-              <Link
-                href={ROUTES.appraisalQuestions}
-                className="font-medium text-foreground underline decoration-border underline-offset-2 hover:text-primary"
-              >
-                appraisal questions
-              </Link>
-              .
-            </p>
-          </div>
-          <div className="relative">
-            <div className="absolute -top-4 left-3 right-10 rotate-[-3deg] rounded-xl border border-border bg-surface p-3 opacity-70">
-              <div className="flex items-center gap-2 text-[11px] font-medium text-muted-foreground">
-                <FileSpreadsheet className="size-3.5" />
-                appraisals_2026_FINAL_v7.xlsx
-              </div>
-              <div className="mt-2 space-y-1.5">
-                {[70, 45, 88, 30].map((w, i) => (
-                  <div key={i} className="h-2 rounded bg-surface-2" style={{ width: `${w}%` }} />
-                ))}
-              </div>
-            </div>
-            <Panel title="Replaced by campaigns" meta="Live" className="relative mt-16">
-              <div className="divide-y divide-border">
-                {[
-                  { name: "Annual appraisals 2026", n: "42 employees", p: 78, s: "In progress" as const },
-                  { name: "360° — Leadership", n: "9 subjects", p: 55, s: "In progress" as const },
-                  { name: "Probation reviews Q1", n: "6 employees", p: 100, s: "Complete" as const },
-                ].map((c) => (
-                  <div key={c.name} className="flex items-center gap-3 p-4">
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-xs font-semibold text-foreground">{c.name}</p>
-                      <p className="text-[11px] text-muted-foreground">{c.n}</p>
-                    </div>
-                    <div className="w-16">
-                      <div className="h-1.5 rounded-full bg-surface-2">
-                        <div className="h-1.5 rounded-full bg-primary" style={{ width: `${c.p}%` }} />
-                      </div>
-                    </div>
-                    <StatusChip status={c.s} />
-                  </div>
-                ))}
-              </div>
-            </Panel>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-const audiences = [
+const workflowTypes = [
   {
-    icon: UserRound,
-    title: "HR managers",
-    copy: "Run a consistent annual cycle without rebuilding a tracker each year.",
+    label: "Annual Appraisal",
+    description: "A yearly review between employee and manager. Set objectives, review performance, agree development goals.",
+    includes: ["Objectives review", "Performance feedback", "Development goals", "Manager comments"],
+    href: ROUTES.annualAppraisalSoftware,
+    linkLabel: "Annual appraisal software",
   },
   {
-    icon: Briefcase,
-    title: "Operations managers",
-    copy: "See which reviews are done and which still need a response.",
+    label: "360° Feedback",
+    description: "Collect structured feedback from self, manager, peers and direct reports. See Self vs Others results.",
+    includes: ["Multi-rater collection", "Self vs Others", "Anonymous options", "Aggregated reports"],
+    href: ROUTES.feedback360Software,
+    linkLabel: "360 feedback software",
   },
   {
-    icon: Building2,
-    title: "Business owners",
-    copy: "Keep appraisal records without buying a full HR suite for a small team.",
+    label: "Self Assessment",
+    description: "Employees reflect on their own performance before the review meeting. Paired with manager feedback.",
+    includes: ["Employee reflection", "Objective review", "Strengths and gaps", "Paired with manager"],
+    href: ROUTES.employeeAppraisalSoftware,
+    linkLabel: "Employee appraisal software",
+  },
+  {
+    label: "Employee Feedback",
+    description: "Collect structured feedback at any time — not just at annual review. Useful for projects and team health.",
+    includes: ["Flexible timing", "Reusable forms", "Completion tracking", "Feedback records"],
+    href: ROUTES.employeeAppraisalSoftware,
+    linkLabel: "Employee appraisal software",
+  },
+  {
+    label: "Probation Review",
+    description: "A focused review at the end of a probation period. Shorter form, clear outcome, stored with the employee.",
+    includes: ["Probation-specific form", "Clear pass/extend/fail", "Manager and employee input", "Record keeping"],
+    href: ROUTES.annualAppraisalTemplate,
+    linkLabel: "See templates",
   },
 ];
 
-export function WhoItsForSection() {
+export function WorkflowTypesSection() {
+  const [active, setActive] = useState(0);
+  const current = workflowTypes[active];
+
   return (
-    <section id="who-its-for" className="border-y border-border bg-surface/70 py-20 sm:py-24">
+    <section className="border-t border-border py-20 sm:py-24">
       <div className="mx-auto max-w-6xl px-5 lg:px-8">
         <SectionHeading
-          eyebrow="Who it is for"
-          title="Small and growing UK teams"
-          copy="Built for organisations that already run appraisals — or know they should — and want a simpler way to do it."
+          eyebrow="Flexible"
+          title="What would you like to run?"
           align="center"
         />
-        <div className="mt-12 grid gap-4 md:grid-cols-3">
-          {audiences.map((item) => (
-            <div key={item.title} className="rounded-xl border border-border bg-card p-6">
-              <span className="flex size-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                <item.icon className="size-4.5" />
-              </span>
-              <h3 className="mt-4 text-sm font-semibold text-foreground">{item.title}</h3>
-              <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{item.copy}</p>
-            </div>
+
+        {/* Selector pills */}
+        <div className="mt-10 flex flex-wrap justify-center gap-2">
+          {workflowTypes.map((wt, i) => (
+            <button
+              key={wt.label}
+              onClick={() => setActive(i)}
+              className={
+                "rounded-lg border px-4 py-2 text-[13px] font-medium transition-all cursor-pointer " +
+                (i === active
+                  ? "border-primary bg-primary/8 text-primary"
+                  : "border-border bg-card text-muted-foreground hover:border-foreground/15 hover:text-foreground")
+              }
+            >
+              {wt.label}
+            </button>
           ))}
         </div>
-        <p className="mx-auto mt-8 max-w-2xl text-center text-sm leading-relaxed text-muted-foreground">
-          If you want appraisals without a full HR suite, this is the fit. If you need payroll,
-          holidays and recruitment in the same product, look elsewhere.
-        </p>
+
+        {/* Content area */}
+        <div className="mx-auto mt-8 max-w-2xl rounded-2xl border border-border bg-card p-6 sm:p-8">
+          <p className="text-[15px] leading-relaxed text-foreground">
+            {current.description}
+          </p>
+          <div className="mt-5 grid grid-cols-2 gap-2">
+            {current.includes.map((item) => (
+              <div key={item} className="flex items-center gap-2 text-sm text-muted-foreground">
+                <CheckCircle2 className="size-3.5 shrink-0 text-primary" />
+                {item}
+              </div>
+            ))}
+          </div>
+          <div className="mt-6">
+            <Link
+              href={current.href}
+              className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
+            >
+              {current.linkLabel}
+              <ArrowRight className="size-3.5" />
+            </Link>
+          </div>
+        </div>
       </div>
     </section>
   );
 }
 
-const runPoints = [
+/* ═══════════════════════════════════════════════════
+   2. CREATE → SEND → COLLECT → UNDERSTAND
+   ═══════════════════════════════════════════════════ */
+
+const workflowSteps = [
   {
-    icon: CalendarClock,
-    title: "Set up the campaign",
-    copy: "Name the cycle, pick the form, set open and close dates.",
+    label: "Create",
+    icon: ClipboardList,
+    description: "Name the campaign, choose a form, set dates, add people.",
+    ui: {
+      title: "New campaign",
+      fields: [
+        { label: "Name", value: "Annual Appraisal 2026" },
+        { label: "Form", value: "Annual review template" },
+        { label: "Opens", value: "1 May 2026" },
+        { label: "Closes", value: "30 Jun 2026" },
+      ],
+      meta: "24 employees added",
+      action: "Launch campaign",
+    },
   },
   {
-    icon: Users,
-    title: "Add recipients",
-    copy: "Include employees, managers and — for 360 — the right reviewers.",
+    label: "Send",
+    icon: Send,
+    description: "Everyone gets a branded form — one question at a time.",
+    ui: {
+      title: "Sending invitations",
+      fields: [
+        { label: "Recipients", value: "24 employees" },
+        { label: "Form", value: "Annual review · 8 questions" },
+        { label: "Branded", value: "Your logo and colours" },
+        { label: "Format", value: "One question per screen" },
+      ],
+      meta: "24 of 24 delivered",
+      action: "View sent",
+    },
   },
   {
-    icon: BellRing,
-    title: "Track and remind",
-    copy: "Watch completion, send reminders, and close the cycle cleanly.",
+    label: "Collect",
+    icon: Mail,
+    description: "Track who has finished. Send reminders for the rest.",
+    ui: {
+      title: "Annual Appraisal 2026",
+      fields: [
+        { label: "Complete", value: "18 of 24" },
+        { label: "In progress", value: "4 employees" },
+        { label: "Not started", value: "2 employees" },
+        { label: "Next reminder", value: "Monday 10am" },
+      ],
+      meta: "75% complete",
+      action: "Send reminder",
+    },
+  },
+  {
+    label: "Understand",
+    icon: BarChart3,
+    description: "See results, compare Self vs Others, export reports.",
+    ui: {
+      title: "Campaign results",
+      fields: [
+        { label: "Responses", value: "24 of 24" },
+        { label: "Avg. score", value: "4.1 / 5.0" },
+        { label: "Reports", value: "PDF and CSV ready" },
+        { label: "360 view", value: "Self vs Others available" },
+      ],
+      meta: "Complete",
+      action: "Download reports",
+    },
   },
 ];
 
-export function RunAppraisalSection() {
+export function WorkflowStepsSection() {
+  const [active, setActive] = useState(0);
+  const current = workflowSteps[active];
+
   return (
-    <section id="how-it-works" className="py-20 sm:py-24">
+    <section id="how-it-works" className="bg-surface/60 py-20 sm:py-24">
       <div className="mx-auto max-w-6xl px-5 lg:px-8">
-        <div className="grid gap-12 lg:grid-cols-2 lg:items-center lg:gap-16">
-          <div>
-            <SectionHeading
-              eyebrow="Run the appraisal"
-              title="Campaigns, recipients, scheduling and reminders"
-              copy="Create an appraisal or 360 campaign once. Everyone gets the right form, completion stays visible, and reminders replace the chase email."
-            />
-            <ul className="mt-8 space-y-5">
-              {runPoints.map((point) => (
-                <li key={point.title} className="flex gap-4">
-                  <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                    <point.icon className="size-4.5" />
-                  </span>
-                  <div>
-                    <p className="text-sm font-semibold text-foreground">{point.title}</p>
-                    <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{point.copy}</p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-            <p className="mt-8 text-sm text-muted-foreground">
-              <Link
-                href={ROUTES.annualAppraisalSoftware}
-                className="font-medium text-foreground underline decoration-border underline-offset-2 hover:text-primary"
+        <SectionHeading
+          eyebrow="How it works"
+          title="Create. Send. Collect. Understand."
+          copy="Four steps from blank page to finished appraisal cycle. No spreadsheets. No email chasing."
+          align="center"
+        />
+
+        {/* Step tabs */}
+        <div className="mx-auto mt-12 flex max-w-lg justify-between">
+          {workflowSteps.map((step, i) => (
+            <button
+              key={step.label}
+              onClick={() => setActive(i)}
+              className="group flex flex-col items-center gap-2 cursor-pointer"
+            >
+              <span
+                className={
+                  "flex size-10 items-center justify-center rounded-full border-2 transition-all " +
+                  (i === active
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : i < active
+                      ? "border-primary bg-primary/10 text-primary"
+                      : "border-border bg-card text-muted-foreground group-hover:border-foreground/20")
+                }
               >
-                How annual appraisal software works
-              </Link>
-            </p>
-          </div>
-          <Panel title="Annual appraisals 2026" meta="In progress">
-            <div className="space-y-4 p-5">
-              <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-surface p-4">
-                <div>
-                  <p className="text-sm font-semibold text-foreground">42 employees</p>
-                  <p className="text-[11px] text-muted-foreground">Opens 1 May · Closes 30 Jun</p>
-                </div>
-                <StatusChip status="In progress" />
-              </div>
-              <div className="grid grid-cols-3 gap-2 text-center">
-                {[
-                  ["33", "Complete"],
-                  ["6", "In progress"],
-                  ["3", "Not started"],
-                ].map(([n, label]) => (
-                  <div key={label} className="rounded-xl border border-border p-3">
-                    <p className="text-lg font-semibold tabular-nums text-foreground">{n}</p>
-                    <p className="text-[10px] text-muted-foreground">{label}</p>
-                  </div>
-                ))}
-              </div>
-              <div className="rounded-xl border border-border p-4">
-                <div className="flex items-center justify-between gap-2">
-                  <p className="text-xs font-semibold text-foreground">Automated reminders</p>
-                  <BellRing className="size-3.5 text-primary" />
-                </div>
-                <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-                  Outstanding respondents get a reminder before the close date — without another
-                  spreadsheet chase.
-                </p>
-              </div>
-              <div className="space-y-2">
-                {[
-                  { name: "Amelia Hart", status: "Complete" as const },
-                  { name: "Daniel Okoye", status: "In progress" as const },
-                  { name: "Tom Whitfield", status: "Not started" as const },
-                ].map((row) => (
+                <step.icon className="size-4" />
+              </span>
+              <span
+                className={
+                  "text-[11px] font-semibold uppercase tracking-wide transition-colors " +
+                  (i === active ? "text-primary" : "text-muted-foreground")
+                }
+              >
+                {step.label}
+              </span>
+            </button>
+          ))}
+        </div>
+
+        {/* Connecting line */}
+        <div className="mx-auto mt-[-38px] mb-8 hidden max-w-lg lg:block">
+          <div className="mx-[50px] h-0.5 bg-border" />
+        </div>
+
+        {/* Step content — product UI */}
+        <div className="mx-auto mt-8 max-w-lg lg:mt-0">
+          <Panel title={current.ui.title} meta={current.ui.meta}>
+            <div className="p-5 sm:p-6">
+              <p className="text-sm leading-relaxed text-muted-foreground">
+                {current.description}
+              </p>
+              <div className="mt-5 space-y-3">
+                {current.ui.fields.map((field) => (
                   <div
-                    key={row.name}
-                    className="flex items-center justify-between gap-3 rounded-lg border border-border px-3 py-2"
+                    key={field.label}
+                    className="flex items-center justify-between gap-4 rounded-lg border border-border px-3 py-2.5"
                   >
-                    <div className="flex items-center gap-2">
-                      <Avatar
-                        initials={row.name
-                          .split(" ")
-                          .map((n) => n[0])
-                          .join("")}
-                      />
-                      <span className="text-xs font-medium text-foreground">{row.name}</span>
-                    </div>
-                    <StatusChip status={row.status} />
+                    <span className="text-xs text-muted-foreground">{field.label}</span>
+                    <span className="text-xs font-medium text-foreground">{field.value}</span>
                   </div>
                 ))}
+              </div>
+              <div className="mt-5">
+                <span className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground">
+                  {current.ui.action}
+                  <ArrowRight className="size-3" />
+                </span>
               </div>
             </div>
           </Panel>
@@ -278,42 +281,91 @@ export function RunAppraisalSection() {
   );
 }
 
-export function DifferentiatorSection() {
+/* ═══════════════════════════════════════════════════
+   3. POSITIONING — "You don't need another HR system"
+   ═══════════════════════════════════════════════════ */
+
+const hrSuiteItems = [
+  "Payroll",
+  "Recruitment",
+  "Absence management",
+  "Benefits",
+  "Learning",
+  "Workforce planning",
+  "Performance suite",
+  "Appraisals",
+];
+
+const appraisalItems = [
+  "Appraisals",
+  "360° Feedback",
+  "Employee Feedback",
+];
+
+export function PositioningSection() {
   return (
     <section className="py-20 sm:py-24">
       <div className="mx-auto max-w-6xl px-5 lg:px-8">
-        <div className="rounded-2xl border border-border bg-surface/70 p-6 sm:p-10 lg:grid lg:grid-cols-2 lg:gap-12 lg:p-12">
-          <div>
-            <Eyebrow>Why this exists</Eyebrow>
-            <h2 className="mt-4 font-display text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-              Not a full HR system. Just a clean way to run appraisal cycles.
-            </h2>
-            <p className="mt-4 text-sm leading-relaxed text-muted-foreground sm:text-base">
-              Appraisal Software does one job: help UK teams run annual appraisals, employee reviews
-              and 360° feedback without spreadsheets, Word forms or email chasing.
+        <SectionHeading
+          eyebrow="Why this exists"
+          title="You don't need another HR system."
+          copy="Most appraisal software is buried inside a platform you don't need. We built the appraisal part only."
+          align="center"
+        />
+
+        <div className="mx-auto mt-14 grid max-w-3xl gap-6 sm:grid-cols-2">
+          {/* Traditional HR suite */}
+          <div className="rounded-2xl border border-border bg-card p-6">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+              Traditional HR suite
             </p>
+            <ul className="mt-5 space-y-2.5">
+              {hrSuiteItems.map((item) => (
+                <li
+                  key={item}
+                  className={
+                    "flex items-center gap-2.5 text-sm " +
+                    (item === "Appraisals"
+                      ? "font-medium text-foreground"
+                      : "text-muted-foreground/60 line-through decoration-border")
+                  }
+                >
+                  <span
+                    className={
+                      "flex size-5 shrink-0 items-center justify-center rounded-full text-[10px] " +
+                      (item === "Appraisals" ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground/40")
+                    }
+                  >
+                    {item === "Appraisals" ? "✓" : "—"}
+                  </span>
+                  {item}
+                </li>
+              ))}
+            </ul>
           </div>
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:mt-0">
-            <div className="rounded-xl border border-border bg-card p-5">
-              <p className="text-xs font-semibold uppercase tracking-wide text-primary">Included</p>
-              <ul className="mt-3 space-y-2 text-sm text-foreground">
-                <li>Appraisal and 360 campaigns</li>
-                <li>Branded one-question forms</li>
-                <li>Completion tracking and reminders</li>
-                <li>Self vs Others reporting</li>
-              </ul>
-            </div>
-            <div className="rounded-xl border border-border bg-card p-5">
-              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                Not included
-              </p>
-              <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
-                <li>Payroll or holiday booking</li>
-                <li>Recruitment or onboarding</li>
-                <li>A wider HR suite to configure</li>
-                <li>A complicated performance platform</li>
-              </ul>
-            </div>
+
+          {/* Appraisal Software */}
+          <div className="rounded-2xl border-2 border-primary/30 bg-primary/[0.03] p-6">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-primary">
+              Appraisal Software
+            </p>
+            <ul className="mt-5 space-y-2.5">
+              {appraisalItems.map((item) => (
+                <li
+                  key={item}
+                  className="flex items-center gap-2.5 text-sm font-medium text-foreground"
+                >
+                  <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary text-[10px]">
+                    ✓
+                  </span>
+                  {item}
+                </li>
+              ))}
+            </ul>
+            <p className="mt-8 text-xs leading-relaxed text-muted-foreground">
+              No payroll. No absence. No recruitment. No configuration maze.
+              Just a clean way to run appraisal cycles.
+            </p>
           </div>
         </div>
       </div>
@@ -321,50 +373,178 @@ export function DifferentiatorSection() {
   );
 }
 
-const resources = [
+/* ═══════════════════════════════════════════════════
+   4. CAMPAIGN MANAGEMENT
+   ═══════════════════════════════════════════════════ */
+
+const campaignPeople = [
+  { name: "Amelia Hart", role: "Team Lead", status: "Complete" as const },
+  { name: "Daniel Okoye", role: "Product Manager", status: "Complete" as const },
+  { name: "James Cooper", role: "Engineering", status: "In progress" as const },
+  { name: "Priya Raman", role: "Marketing", status: "Not started" as const },
+];
+
+export function CampaignSection() {
+  return (
+    <section className="border-t border-border py-20 sm:py-24">
+      <div className="mx-auto max-w-6xl px-5 lg:px-8">
+        <div className="grid gap-12 lg:grid-cols-2 lg:items-center lg:gap-16">
+          <div>
+            <SectionHeading
+              eyebrow="Campaign management"
+              title="Know who's done and who's not."
+              copy="See completion across the whole cycle. Send reminders for outstanding forms instead of chasing by email."
+            />
+            <ul className="mt-8 space-y-3 text-sm text-foreground">
+              {[
+                "One view of every employee's status",
+                "Automated reminders before the close date",
+                "Manager and employee responses on the same record",
+                "Download reports when the cycle closes",
+              ].map((item) => (
+                <li key={item} className="flex items-start gap-3">
+                  <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-primary" aria-hidden />
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <Panel title="Annual Appraisal 2026" meta="75%">
+            <div className="p-5 sm:p-6">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-sm font-semibold text-foreground">24 people</p>
+                  <p className="text-[11px] text-muted-foreground">Closes 30 Jun 2026</p>
+                </div>
+                <StatusChip status="Collecting" />
+              </div>
+
+              <div className="mt-4 grid grid-cols-3 gap-2 text-center">
+                {[
+                  ["18", "Complete"],
+                  ["4", "In progress"],
+                  ["2", "Not started"],
+                ].map(([n, label]) => (
+                  <div key={label} className="rounded-lg border border-border p-2.5">
+                    <p className="text-lg font-semibold tabular-nums text-foreground">{n}</p>
+                    <p className="text-[10px] text-muted-foreground">{label}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-4 space-y-1">
+                {campaignPeople.map((p) => (
+                  <div
+                    key={p.name}
+                    className="flex items-center justify-between gap-3 rounded-lg px-2 py-2"
+                  >
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <Avatar
+                        initials={p.name.split(" ").map((n) => n[0]).join("")}
+                        tone={p.name.length}
+                      />
+                      <div className="min-w-0">
+                        <p className="truncate text-xs font-medium text-foreground">{p.name}</p>
+                        <p className="truncate text-[10px] text-muted-foreground">{p.role}</p>
+                      </div>
+                    </div>
+                    <StatusChip status={p.status} />
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-3 flex items-center gap-2 rounded-lg bg-surface px-3 py-2">
+                <CalendarCheck className="size-3.5 text-primary" />
+                <span className="text-[11px] text-muted-foreground">
+                  Next reminder: <span className="font-medium text-foreground">Monday</span>
+                </span>
+              </div>
+            </div>
+          </Panel>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ═══════════════════════════════════════════════════
+   5. TEMPLATES
+   ═══════════════════════════════════════════════════ */
+
+const templates = [
   {
-    title: "Annual appraisal template",
-    copy: "A simple annual appraisal form covering objectives, performance, development and next steps.",
-    tag: "Template",
+    name: "Annual Employee Appraisal",
+    questions: 8,
+    sections: ["Objectives", "Performance", "Development", "Next steps"],
     href: ROUTES.annualAppraisalTemplate,
   },
   {
-    title: "Appraisal questions",
-    copy: "Practical questions for UK teams, grouped by performance, objectives, strengths and development.",
-    tag: "Guide",
+    name: "Employee Self Assessment",
+    questions: 6,
+    sections: ["Performance", "Strengths", "Gaps", "Career goals"],
     href: ROUTES.appraisalQuestions,
   },
   {
-    title: "360° feedback template",
-    copy: "Example questions for managers, peers and direct reports, including optional anonymity.",
-    tag: "Template",
+    name: "Manager Review",
+    questions: 7,
+    sections: ["Performance", "Observations", "Support", "Recommendations"],
+    href: ROUTES.annualAppraisalSoftware,
+  },
+  {
+    name: "360 Leadership Feedback",
+    questions: 10,
+    sections: ["Communication", "Leadership", "Collaboration", "Development"],
     href: ROUTES.feedback360Template,
+  },
+  {
+    name: "Probation Review",
+    questions: 5,
+    sections: ["Role clarity", "Performance", "Support", "Outcome"],
+    href: ROUTES.annualAppraisalSoftware,
   },
 ];
 
-export function ResourcesSection() {
+export function TemplatesSection() {
   return (
-    <section id="resources" className="border-y border-border bg-surface/70 py-20 sm:py-24">
+    <section id="templates" className="bg-surface/60 py-20 sm:py-24">
       <div className="mx-auto max-w-6xl px-5 lg:px-8">
         <SectionHeading
-          eyebrow="Templates & questions"
-          title="Useful whether or not you book a walkthrough"
-          copy="Start with a form and a question set, then run the same structure in Appraisal Software."
+          eyebrow="Templates"
+          title="Start from a template. Reuse it next time."
+          copy="Pick a starting form, customise the questions, then use the same structure every cycle."
           align="center"
         />
-        <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {resources.map((r) => (
+
+        <div className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {templates.map((t) => (
             <Link
-              key={r.title}
-              href={r.href}
-              className="group flex flex-col rounded-xl border border-border bg-card p-5 transition-colors hover:border-primary/40"
+              key={t.name}
+              href={t.href}
+              className="group flex flex-col rounded-xl border border-border bg-card p-5 transition-all hover:border-primary/30 hover:shadow-sm"
             >
-              <span className="w-fit rounded-md bg-primary/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
-                {r.tag}
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-[10px] font-semibold uppercase tracking-wide text-primary">
+                  Template
+                </span>
+                <span className="text-[10px] text-muted-foreground">
+                  {t.questions} questions
+                </span>
+              </div>
+              <p className="mt-3 text-sm font-semibold text-foreground">{t.name}</p>
+              <div className="mt-3 flex flex-wrap gap-1.5">
+                {t.sections.map((s) => (
+                  <span
+                    key={s}
+                    className="rounded bg-surface px-2 py-0.5 text-[10px] font-medium text-muted-foreground"
+                  >
+                    {s}
+                  </span>
+                ))}
+              </div>
+              <span className="mt-4 text-xs font-medium text-primary opacity-0 transition-opacity group-hover:opacity-100">
+                Use this template →
               </span>
-              <p className="mt-4 text-sm font-semibold text-foreground">{r.title}</p>
-              <p className="mt-1.5 flex-1 text-xs leading-relaxed text-muted-foreground">{r.copy}</p>
-              <span className="mt-4 text-xs font-semibold text-primary">Read the page</span>
             </Link>
           ))}
         </div>
@@ -373,83 +553,144 @@ export function ResourcesSection() {
   );
 }
 
-export function OwnershipSection() {
-  return (
-    <section className="py-16 sm:py-20">
-      <div className="mx-auto max-w-3xl px-5 text-center lg:px-8">
-        <Eyebrow>Who makes it</Eyebrow>
-        <h2 className="mt-4 font-display text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-          Built and hosted by Disclosurely
-        </h2>
-        <p className="mt-4 text-sm leading-relaxed text-muted-foreground sm:text-base">
-          AppraisalSoftware.co.uk is the specialist acquisition site for annual appraisals and 360°
-          feedback. The product itself lives inside{" "}
-          <a
-            href={DISCLOSURELY_URL}
-            className="font-medium text-foreground underline decoration-border underline-offset-2 hover:text-primary"
-          >
-            Disclosurely
-          </a>
-          — a UK-focused employee integrity platform — with privacy-conscious feedback collection,
-          organisation branding, and controlled reporting.
-        </p>
-        <p className="mt-4 text-sm text-muted-foreground">
-          <a
-            href={PRODUCT_PAGE_URL}
-            className="font-medium text-foreground underline decoration-border underline-offset-2 hover:text-primary"
-          >
-            See Appraisals on Disclosurely
-          </a>
-        </p>
-      </div>
-    </section>
-  );
-}
+/* ═══════════════════════════════════════════════════
+   6. PRICING
+   ═══════════════════════════════════════════════════ */
 
-export function CtaSection() {
+export function PricingSection() {
   return (
-    <section id="walkthrough" className="px-5 pb-20 lg:px-8">
-      <div className="relative mx-auto max-w-6xl overflow-hidden rounded-2xl border border-primary/20 bg-primary/5 px-6 py-14 text-center sm:px-12">
-        <div
-          className="pointer-events-none absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(50% 80% at 50% 0%, color-mix(in oklab, var(--primary) 14%, transparent), transparent 70%)",
-          }}
-          aria-hidden
+    <section id="pricing" className="py-20 sm:py-24">
+      <div className="mx-auto max-w-6xl px-5 lg:px-8">
+        <SectionHeading
+          eyebrow="Pricing"
+          title="Simple software. Simple pricing."
+          copy="One plan. Everything included. No per-feature upgrades."
+          align="center"
         />
-        <div className="relative">
-          <h2 className="font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-            Ready to run your next appraisal cycle?
-          </h2>
-          <p className="mx-auto mt-4 max-w-xl text-sm text-muted-foreground sm:text-base">
-            Book a walkthrough and we will show you campaign setup, the respondent experience and
-            reporting for your team.
-          </p>
-          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Button size="lg" className="w-full px-6 sm:w-auto" asChild>
+
+        <div className="mx-auto mt-12 max-w-sm">
+          <div className="rounded-2xl border-2 border-primary/20 bg-card p-8 text-center">
+            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-primary">
+              All-inclusive
+            </p>
+            <p className="mt-6 text-[15px] leading-relaxed text-muted-foreground">
+              Campaigns, forms, 360° feedback, completion tracking, reminders, reports.
+            </p>
+            <div className="my-8 border-t border-border" />
+            <p className="text-sm font-semibold text-foreground">Pricing coming soon</p>
+            <p className="mt-2 text-xs text-muted-foreground">
+              We'll share pricing when the product launches.
+            </p>
+            <Button className="mt-6 w-full" asChild>
               <a href={PRIMARY_CTA_URL}>
                 {PRIMARY_CTA_LABEL}
                 <ArrowRight className="size-4" />
               </a>
             </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="w-full border-border bg-card px-6 sm:w-auto"
-              asChild
-            >
-              <a href={SEE_HOW_IT_WORKS_HREF}>{SEE_HOW_IT_WORKS_LABEL}</a>
-            </Button>
           </div>
-          <p className="mx-auto mt-4 max-w-md text-xs leading-relaxed text-muted-foreground">
-            {PRIMARY_CTA_TRANSITION}
-          </p>
         </div>
       </div>
     </section>
   );
 }
 
-/** @deprecated Prefer OwnershipSection — kept name alias for any leftover imports */
-export const PoweredBySection = OwnershipSection;
+/* ═══════════════════════════════════════════════════
+   7. FAQ
+   ═══════════════════════════════════════════════════ */
+
+const homeFaqs = [
+  {
+    question: "What is appraisal software?",
+    answer:
+      "Software for running employee appraisal cycles: create forms, send them to the right people, track who has finished, and keep a record of each review.",
+  },
+  {
+    question: "Can we run appraisals without a full HR system?",
+    answer:
+      "Yes. Appraisal Software does one job — appraisals and 360° feedback. No payroll, no absence management, no recruitment. If you already know how your appraisals should work, this is the process around them.",
+  },
+  {
+    question: "What types of review can we run?",
+    answer:
+      "Annual appraisals, employee self-assessments, manager reviews, 360° feedback, probation reviews, and any custom feedback form you create.",
+  },
+  {
+    question: "How does 360° feedback work?",
+    answer:
+      "Choose a subject, assign reviewers by relationship (self, manager, peers, direct reports), send the same form, and see aggregated results with Self vs Others comparison.",
+  },
+  {
+    question: "Is feedback anonymous?",
+    answer:
+      "Where you choose it. Peer and direct-report feedback can be collected anonymously. Manager comments are usually attributed. You decide before the campaign starts.",
+  },
+  {
+    question: "Who is this for?",
+    answer:
+      "UK organisations that already run appraisals — or know they should — and want a simpler way to do it. From 10-person businesses to 500-person organisations.",
+  },
+];
+
+export function HomeFaqSection() {
+  return (
+    <section id="faq" className="border-t border-border py-20 sm:py-24">
+      <div className="mx-auto max-w-6xl px-5 lg:px-8">
+        <SectionHeading
+          title="Frequently asked questions"
+          align="center"
+        />
+        <dl className="mx-auto mt-10 max-w-2xl space-y-4">
+          {homeFaqs.map((item) => (
+            <div key={item.question} className="rounded-xl border border-border bg-card p-5">
+              <dt className="text-[15px] font-semibold text-foreground">{item.question}</dt>
+              <dd className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.answer}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+    </section>
+  );
+}
+
+/* ═══════════════════════════════════════════════════
+   8. FINAL CTA
+   ═══════════════════════════════════════════════════ */
+
+export function FinalCtaSection() {
+  return (
+    <section className="px-5 pb-20 lg:px-8">
+      <div className="mx-auto max-w-6xl rounded-2xl border border-border bg-card px-6 py-16 text-center sm:px-12">
+        <h2 className="font-display text-[1.75rem] font-semibold leading-[1.12] tracking-[-0.03em] text-foreground sm:text-[2rem]">
+          Your next appraisal cycle
+          <br />
+          could be this simple.
+        </h2>
+        <p className="mx-auto mt-4 max-w-md text-[15px] text-muted-foreground">
+          Create the campaign. Send the forms. Collect the responses. Understand the results.
+        </p>
+        <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+          <Button size="lg" className="w-full px-7 sm:w-auto" asChild>
+            <a href={PRIMARY_CTA_URL}>
+              {PRIMARY_CTA_LABEL}
+              <ArrowRight className="size-4" />
+            </a>
+          </Button>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ═══════════════════════════════════════════════════
+   LEGACY EXPORTS — kept for any stale imports
+   ═══════════════════════════════════════════════════ */
+
+/** @deprecated Use named section exports. */
+export const SpreadsheetSection = CampaignSection;
+export const WhoItsForSection = WorkflowTypesSection;
+export const RunAppraisalSection = WorkflowStepsSection;
+export const DifferentiatorSection = PositioningSection;
+export const ResourcesSection = TemplatesSection;
+export const OwnershipSection = PositioningSection;
+export const CtaSection = FinalCtaSection;
+export const PoweredBySection = PositioningSection;

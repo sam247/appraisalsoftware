@@ -4,17 +4,19 @@ import { Panel, SectionHeading } from "@/components/product/primitives";
 import { ROUTES } from "@/lib/routes";
 
 /**
- * Complete the appraisal — branded one-question-at-a-time respondent experience.
- * Major product differentiator visual.
+ * Annual appraisals section — "Annual appraisals. Minus the annual headache."
+ * Shows the branded one-question-at-a-time respondent experience.
  */
 export function CompleteAppraisalSection() {
   return (
-    <section id="complete" className="border-y border-border bg-surface/70 py-20 sm:py-24">
+    <section className="border-t border-border py-20 sm:py-24">
       <div className="mx-auto max-w-6xl px-5 lg:px-8">
         <div className="grid gap-12 lg:grid-cols-2 lg:items-center lg:gap-16">
+          {/* Product demo */}
           <div className="order-2 lg:order-1">
             <Panel title="Your appraisal" meta="Acme Ltd" className="mx-auto max-w-md lg:max-w-none">
               <div className="relative min-h-[22rem] p-5 sm:p-8">
+                {/* Organisation header */}
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-2.5">
                     <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-[10px] font-bold text-primary-foreground">
@@ -25,13 +27,17 @@ export function CompleteAppraisalSection() {
                       <p className="text-[10px] text-muted-foreground">Annual performance review</p>
                     </div>
                   </div>
-                  <span className="text-[10px] font-medium text-muted-foreground">Question 3 of 8</span>
+                  <span className="text-[10px] font-medium text-muted-foreground">
+                    Question 3 of 8
+                  </span>
                 </div>
 
+                {/* Progress */}
                 <div className="mt-4 h-1 overflow-hidden rounded-full bg-surface-2">
                   <div className="h-full w-[37.5%] rounded-full bg-primary" />
                 </div>
 
+                {/* Question */}
                 <div className="mt-8">
                   <p className="text-[11px] font-semibold uppercase tracking-wide text-primary">
                     Performance
@@ -44,14 +50,19 @@ export function CompleteAppraisalSection() {
                   </p>
                 </div>
 
+                {/* Answer area */}
                 <div className="mt-6 rounded-xl border border-border bg-surface/80 p-4">
                   <p className="text-sm leading-relaxed text-foreground/80">
-                    Renewals were ahead of target on my two largest accounts, and I onboarded two
-                    new starters without dropping service levels…
+                    Renewals were ahead of target on my two largest accounts, and I onboarded two new
+                    starters without dropping service levels…
                   </p>
-                  <span className="mt-3 inline-block h-4 w-0.5 animate-pulse bg-primary" aria-hidden />
+                  <span
+                    className="mt-3 inline-block h-4 w-0.5 animate-pulse bg-primary"
+                    aria-hidden
+                  />
                 </div>
 
+                {/* Navigation */}
                 <div className="mt-6 flex items-center justify-between gap-3">
                   <span className="text-xs font-medium text-muted-foreground">Back</span>
                   <span className="rounded-lg bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground">
@@ -66,21 +77,25 @@ export function CompleteAppraisalSection() {
             </Panel>
           </div>
 
+          {/* Copy */}
           <div className="order-1 lg:order-2">
             <SectionHeading
-              eyebrow="Complete the appraisal"
-              title="One question at a time — branded for your organisation"
-              copy="Employees and reviewers open a clear, modern form: your logo and brand colour, one question per screen, and a calm path from welcome to done. No Word attachment. No lost email thread."
+              eyebrow="Annual appraisals"
+              title="Annual appraisals. Minus the annual headache."
+              copy="Employees and reviewers open a clean, modern form: your brand, one question per screen, a calm path from start to done. No Word attachment. No lost email thread."
             />
             <ul className="mt-8 space-y-3 text-sm text-foreground">
               {[
-                "Organisation logo and brand colour on the respond flow",
-                "One question at a time so forms get finished",
-                "Self-assessment and manager reviews on the same campaign",
+                "Your organisation logo and colour on the form",
+                "One question at a time so forms actually get finished",
+                "Self-assessment and manager review on the same campaign",
                 "Anonymous collection available where you choose it for 360",
               ].map((item) => (
                 <li key={item} className="flex items-start gap-3">
-                  <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-primary" aria-hidden />
+                  <span
+                    className="mt-1.5 size-1.5 shrink-0 rounded-full bg-primary"
+                    aria-hidden
+                  />
                   {item}
                 </li>
               ))}

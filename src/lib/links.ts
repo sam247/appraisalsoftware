@@ -1,32 +1,31 @@
-/** Parent product — Appraisal Software is powered by Disclosurely. */
+/** Parent team — subtle footer reference only. */
 export const DISCLOSURELY_URL = "https://disclosurely.com";
 
-/** Live Appraisals product page on Disclosurely (ownership / learn more). */
+/** Legacy product page on Disclosurely — retained for footer/company links. */
 export const PRODUCT_PAGE_URL = `${DISCLOSURELY_URL}/solutions/appraisals`;
 
 /**
- * Live primary commercial CTA.
- * Destination is the Disclosurely walkthrough/demo flow — label must stay truthful.
+ * Primary commercial CTA — standalone product.
+ * ponytail: placeholder until self-serve onboarding is live; swap for /start or signup URL.
  */
-export const PRIMARY_CTA_URL = `${DISCLOSURELY_URL}/demo`;
-export const PRIMARY_CTA_LABEL = "Book a walkthrough";
+export const PRIMARY_CTA_URL = "#start-free";
+export const PRIMARY_CTA_LABEL = "Start free";
 
-/** Short note shown near external primary CTAs so the domain change is expected. */
-export const PRIMARY_CTA_TRANSITION =
-  "Continues on Disclosurely — where Appraisal Software is built and hosted.";
+/** Kept empty — no transition copy needed for a standalone product. */
+export const PRIMARY_CTA_TRANSITION = "";
 
 /** In-page secondary CTA. */
 export const SEE_HOW_IT_WORKS_HREF = "/#how-it-works";
 export const SEE_HOW_IT_WORKS_LABEL = "See how it works";
 
 /**
- * Reserved for when genuine self-serve Appraisals onboarding/trial exists.
- * Do NOT use in UI while PRIMARY_CTA_URL is still the demo/walkthrough form.
+ * Reserved for when genuine self-serve onboarding/trial exists.
+ * Do NOT use in UI while PRIMARY_CTA_URL is still a placeholder.
  */
-export const TRY_APPRAISAL_URL = ""; // set when self-serve onboarding is live
+export const TRY_APPRAISAL_URL = "";
 export const TRY_APPRAISAL_LABEL = "Try appraisal software";
 
-/** App login (existing customers), not a try/signup path for Appraisals. */
+/** App login — existing customers. */
 export const SIGN_IN_URL = "https://app.disclosurely.com/auth/login";
 
 export const PRIVACY_URL = `${DISCLOSURELY_URL}/privacy`;

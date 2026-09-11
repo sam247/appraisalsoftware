@@ -69,13 +69,13 @@ export function softwareApplicationSchema({
     inLanguage: "en-GB",
     creator: {
       "@type": "Organization",
-      name: "Disclosurely",
-      url: DISCLOSURELY_URL,
+      name: SITE_NAME,
+      url: SITE_URL,
     },
     provider: {
       "@type": "Organization",
-      name: "Disclosurely",
-      url: DISCLOSURELY_URL,
+      name: SITE_NAME,
+      url: SITE_URL,
     },
   };
 }

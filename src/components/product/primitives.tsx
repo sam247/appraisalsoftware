@@ -1,6 +1,8 @@
 import { cn } from "@/lib/utils";
 import { marketingType } from "@/lib/marketing-typography";
 
+/* ─── App Window Panel ─── */
+
 export function Panel({
   className,
   children,
@@ -15,16 +17,16 @@ export function Panel({
   return (
     <div
       className={cn(
-        "overflow-hidden rounded-[1.1rem] border border-border bg-surface shadow-[0_34px_80px_-48px_rgba(15,23,42,0.55)]",
+        "overflow-hidden rounded-2xl border border-border bg-card shadow-[0_24px_64px_-16px_rgba(0,0,0,0.08)]",
         className,
       )}
     >
-      <div className="flex items-center gap-2 border-b border-border bg-card/80 px-4 py-3">
-        <span className="size-2 rounded-full bg-[#f87171]/80" aria-hidden />
-        <span className="size-2 rounded-full bg-[#fbbf24]/80" aria-hidden />
-        <span className="size-2 rounded-full bg-[#34d399]/80" aria-hidden />
+      <div className="flex items-center gap-2 border-b border-border px-4 py-2.5">
+        <span className="size-[7px] rounded-full bg-foreground/15" aria-hidden />
+        <span className="size-[7px] rounded-full bg-foreground/15" aria-hidden />
+        <span className="size-[7px] rounded-full bg-foreground/15" aria-hidden />
         {title ? (
-          <span className="ml-2 truncate text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          <span className="ml-1.5 truncate text-[11px] font-medium text-muted-foreground">
             {title}
           </span>
         ) : null}
@@ -34,15 +36,17 @@ export function Panel({
           </span>
         ) : null}
       </div>
-      <div className="bg-card">{children}</div>
+      <div>{children}</div>
     </div>
   );
 }
 
+/* ─── Avatar ─── */
+
 const avatarTones = [
-  "bg-primary/15 text-primary",
-  "bg-warm/25 text-warm-foreground",
-  "bg-positive/20 text-positive-foreground",
+  "bg-primary/12 text-primary",
+  "bg-warm/20 text-warm-foreground",
+  "bg-positive/15 text-positive-foreground",
   "bg-accent text-accent-foreground",
 ];
 
@@ -58,7 +62,7 @@ export function Avatar({
   return (
     <span
       className={cn(
-        "inline-flex size-7 shrink-0 items-center justify-center rounded-full text-[10px] font-semibold ring-2 ring-card",
+        "inline-flex size-7 shrink-0 items-center justify-center rounded-full text-[10px] font-semibold",
         avatarTones[tone % avatarTones.length],
         className,
       )}
@@ -70,26 +74,40 @@ export function Avatar({
 
 export function AvatarStack({ people }: { people: string[] }) {
   return (
-    <div className="flex -space-x-2">
+    <div className="flex -space-x-1.5">
       {people.map((p, i) => (
-        <Avatar key={p + i} initials={p} tone={i} />
+        <Avatar key={p + i} initials={p} tone={i} className="ring-2 ring-card" />
       ))}
     </div>
   );
 }
 
+/* ─── Status Chip ─── */
+
 export function StatusChip({
   status,
 }: {
-  status: "Complete" | "In progress" | "Not started" | "Anonymous" | "Safe to share" | "Restricted";
+  status:
+    | "Complete"
+    | "In progress"
+    | "Not started"
+    | "Anonymous"
+    | "Safe to share"
+    | "Restricted"
+    | "Draft"
+    | "Collecting"
+    | "Live";
 }) {
   const tones: Record<string, string> = {
-    Complete: "bg-positive/15 text-positive-foreground",
-    "In progress": "bg-primary/10 text-primary",
+    Complete: "bg-positive/12 text-positive-foreground",
+    "In progress": "bg-warm/15 text-warm-foreground",
     "Not started": "bg-muted text-muted-foreground",
-    Anonymous: "bg-warm/20 text-warm-foreground",
-    "Safe to share": "bg-positive/15 text-positive-foreground",
-    Restricted: "bg-warm/20 text-warm-foreground",
+    Anonymous: "bg-muted text-muted-foreground",
+    "Safe to share": "bg-positive/12 text-positive-foreground",
+    Restricted: "bg-warm/15 text-warm-foreground",
+    Draft: "bg-muted text-muted-foreground",
+    Collecting: "bg-primary/10 text-primary",
+    Live: "bg-primary/10 text-primary",
   };
   return (
     <span
@@ -102,6 +120,8 @@ export function StatusChip({
     </span>
   );
 }
+
+/* ─── Score Bar (360 Self vs Others) ─── */
 
 export function ScoreBar({
   label,
@@ -142,6 +162,8 @@ export function ScoreBar({
   );
 }
 
+/* ─── Completion Ring ─── */
+
 export function CompletionRing({
   value,
   label = "complete",
@@ -154,27 +176,43 @@ export function CompletionRing({
   const r = size / 2 - 7;
   const c = 2 * Math.PI * r;
   return (
-    <div className="relative inline-flex items-center justify-center" style={{ width: size, height: size }}>
+    <div
+      className="relative inline-flex items-center justify-center"
+      style={{ width: size, height: size }}
+    >
       <svg width={size} height={size} className="-rotate-90">
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" strokeWidth="7" className="stroke-surface-2" />
         <circle
           cx={size / 2}
           cy={size / 2}
           r={r}
           fill="none"
-          strokeWidth="7"
+          strokeWidth="6"
+          className="stroke-surface-2"
+        />
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={r}
+          fill="none"
+          strokeWidth="6"
           strokeLinecap="round"
           strokeDasharray={`${(value / 100) * c} ${c}`}
           className="stroke-primary"
         />
       </svg>
       <span className="absolute text-center">
-        <span className="block text-lg font-semibold tabular-nums text-foreground">{value}%</span>
-        <span className="block text-[9px] uppercase tracking-wide text-muted-foreground">{label}</span>
+        <span className="block text-lg font-semibold tabular-nums text-foreground">
+          {value}%
+        </span>
+        <span className="block text-[9px] uppercase tracking-wide text-muted-foreground">
+          {label}
+        </span>
       </span>
     </div>
   );
 }
+
+/* ─── Typography Primitives ─── */
 
 export function Eyebrow({ children }: { children: React.ReactNode }) {
   return <span className={marketingType.eyebrow}>{children}</span>;
@@ -194,7 +232,7 @@ export function SectionHeading({
   return (
     <div className={cn("max-w-2xl", align === "center" && "mx-auto text-center")}>
       {eyebrow ? <Eyebrow>{eyebrow}</Eyebrow> : null}
-      <h2 className={cn(marketingType.h2, eyebrow ? "mt-4" : undefined)}>{title}</h2>
+      <h2 className={cn(marketingType.h2, eyebrow ? "mt-3" : undefined)}>{title}</h2>
       {copy ? <p className={cn("mt-4", marketingType.body)}>{copy}</p> : null}
     </div>
   );

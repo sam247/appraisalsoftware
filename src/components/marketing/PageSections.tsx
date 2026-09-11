@@ -4,7 +4,6 @@ import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   PRIMARY_CTA_LABEL,
-  PRIMARY_CTA_TRANSITION,
   PRIMARY_CTA_URL,
 } from "@/lib/links";
 import { ROUTES } from "@/lib/routes";
@@ -52,7 +51,7 @@ export function PageHero({
   breadcrumbs?: { label: string; href: string }[];
 }) {
   return (
-    <section className="border-b border-border bg-surface/50">
+    <section className="border-b border-border">
       <div className="mx-auto max-w-6xl px-5 py-14 lg:px-8 lg:py-20">
         {breadcrumbs && breadcrumbs.length > 0 ? (
           <nav aria-label="Breadcrumb" className="mb-6">
@@ -73,12 +72,14 @@ export function PageHero({
           </nav>
         ) : null}
         {eyebrow ? (
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">{eyebrow}</p>
+          <p className="text-[0.6875rem] font-medium uppercase tracking-[0.14em] text-primary">
+            {eyebrow}
+          </p>
         ) : null}
-        <h1 className="mt-3 max-w-3xl font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-[2.75rem] lg:leading-[1.1]">
+        <h1 className="mt-3 max-w-3xl font-display text-[2rem] font-semibold leading-[1.1] tracking-[-0.035em] text-foreground sm:text-[2.5rem] lg:text-[2.75rem]">
           {title}
         </h1>
-        <p className="mt-5 max-w-3xl text-base leading-relaxed text-muted-foreground sm:text-lg">
+        <p className="mt-5 max-w-3xl text-[0.9375rem] leading-relaxed text-muted-foreground sm:text-base">
           {description}
         </p>
       </div>
@@ -98,10 +99,10 @@ export function ContentSection({
   return (
     <section id={id} className="border-b border-border py-12 sm:py-16">
       <div className="mx-auto max-w-6xl px-5 lg:px-8">
-        <h2 className="max-w-3xl font-display text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+        <h2 className="max-w-3xl font-display text-[1.5rem] font-semibold leading-[1.15] tracking-[-0.025em] text-foreground sm:text-[1.75rem]">
           {title}
         </h2>
-        <div className="mt-5 max-w-3xl space-y-4 text-sm leading-relaxed text-muted-foreground sm:text-base">
+        <div className="mt-5 max-w-3xl space-y-4 text-[0.9375rem] leading-relaxed text-muted-foreground sm:text-base">
           {children}
         </div>
       </div>
@@ -117,13 +118,13 @@ export function FaqSection({
   return (
     <section className="border-b border-border py-12 sm:py-16">
       <div className="mx-auto max-w-6xl px-5 lg:px-8">
-        <h2 className="font-display text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+        <h2 className="font-display text-[1.5rem] font-semibold leading-[1.15] tracking-[-0.025em] text-foreground sm:text-[1.75rem]">
           FAQs
         </h2>
-        <dl className="mt-8 space-y-6">
+        <dl className="mt-8 space-y-4">
           {items.map((item) => (
             <div key={item.question} className="rounded-xl border border-border bg-card p-5">
-              <dt className="text-base font-semibold text-foreground">{item.question}</dt>
+              <dt className="text-[15px] font-semibold text-foreground">{item.question}</dt>
               <dd className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.answer}</dd>
             </div>
           ))}
@@ -139,26 +140,24 @@ export function CtaBand({
   primaryLabel = PRIMARY_CTA_LABEL,
   secondaryHref,
   secondaryLabel,
-  showTransition = true,
 }: {
   title: string;
   copy: string;
   primaryLabel?: string;
   secondaryHref?: string;
   secondaryLabel?: string;
-  showTransition?: boolean;
 }) {
   return (
     <section className="px-5 py-16 lg:px-8">
-      <div className="relative mx-auto max-w-6xl overflow-hidden rounded-2xl border border-primary/20 bg-primary/5 px-6 py-12 text-center sm:px-10">
-        <h2 className="font-display text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+      <div className="mx-auto max-w-6xl rounded-2xl border border-border bg-card px-6 py-12 text-center sm:px-10">
+        <h2 className="font-display text-[1.5rem] font-semibold leading-[1.15] tracking-[-0.025em] text-foreground sm:text-[1.75rem]">
           {title}
         </h2>
-        <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base">
+        <p className="mx-auto mt-4 max-w-xl text-[15px] leading-relaxed text-muted-foreground">
           {copy}
         </p>
         <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-          <Button size="lg" className="w-full px-6 sm:w-auto" asChild>
+          <Button size="lg" className="w-full px-7 sm:w-auto" asChild>
             <a href={PRIMARY_CTA_URL}>
               {primaryLabel}
               <ArrowRight className="size-4" />
@@ -168,18 +167,13 @@ export function CtaBand({
             <Button
               size="lg"
               variant="outline"
-              className="w-full border-border bg-card px-6 sm:w-auto"
+              className="w-full px-7 sm:w-auto"
               asChild
             >
               <Link href={secondaryHref}>{secondaryLabel}</Link>
             </Button>
           ) : null}
         </div>
-        {showTransition ? (
-          <p className="mx-auto mt-4 max-w-md text-xs leading-relaxed text-muted-foreground">
-            {PRIMARY_CTA_TRANSITION}
-          </p>
-        ) : null}
       </div>
     </section>
   );
@@ -193,9 +187,9 @@ export function RelatedLinks({
   links: { href: string; label: string; copy: string }[];
 }) {
   return (
-    <section className="border-b border-border bg-surface/50 py-12 sm:py-16">
+    <section className="border-b border-border py-12 sm:py-16">
       <div className="mx-auto max-w-6xl px-5 lg:px-8">
-        <h2 className="font-display text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+        <h2 className="font-display text-[1.5rem] font-semibold leading-[1.15] tracking-[-0.025em] text-foreground sm:text-[1.75rem]">
           {title}
         </h2>
         <ul className="mt-6 grid gap-3">
@@ -203,7 +197,7 @@ export function RelatedLinks({
             <li key={link.href}>
               <Link
                 href={link.href}
-                className="block rounded-xl border border-border bg-card p-5 transition-colors hover:border-primary/40"
+                className="block rounded-xl border border-border bg-card p-5 transition-all hover:border-primary/30 hover:shadow-sm"
               >
                 <p className="text-sm font-semibold text-foreground">{link.label}</p>
                 <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{link.copy}</p>

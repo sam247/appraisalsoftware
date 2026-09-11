@@ -11,9 +11,10 @@ import { PRIMARY_CTA_LABEL, PRIMARY_CTA_URL, SIGN_IN_URL } from "@/lib/links";
 import { ROUTES } from "@/lib/routes";
 
 const nav = [
-  { label: "Appraisal Software", href: ROUTES.annualAppraisalSoftware },
+  { label: "Features", href: "/#how-it-works" },
   { label: "360 Feedback", href: ROUTES.feedback360Software },
-  { label: "Resources", href: "/#resources" },
+  { label: "Templates", href: "/#templates" },
+  { label: "Pricing", href: "/#pricing" },
 ];
 
 export function Header() {
@@ -30,31 +31,31 @@ export function Header() {
   return (
     <header
       className={
-        "font-display sticky top-0 z-50 transition-colors duration-300 " +
+        "sticky top-0 z-50 transition-all duration-300 " +
         (scrolled
-          ? "border-b border-border bg-background/90 backdrop-blur-md shadow-sm"
-          : "border-b border-transparent bg-background")
+          ? "border-b border-border bg-background/92 shadow-[0_1px_3px_rgba(0,0,0,0.04)] backdrop-blur-lg"
+          : "border-b border-transparent bg-transparent")
       }
     >
-      <div className="mx-auto flex max-w-6xl items-center gap-6 px-5 py-3 lg:px-8">
+      <div className="mx-auto flex max-w-6xl items-center gap-6 px-5 py-3.5 lg:px-8">
         <Link href={ROUTES.home} className="shrink-0">
           <Logo />
         </Link>
-        <nav className="hidden flex-1 items-center justify-center gap-7 lg:flex">
+        <nav className="hidden flex-1 items-center justify-center gap-8 lg:flex">
           {nav.map((item) => (
             <Link
               key={item.label}
               href={item.href}
-              className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+              className="text-[13px] font-medium text-muted-foreground transition-colors hover:text-foreground"
             >
               {item.label}
             </Link>
           ))}
         </nav>
-        <div className="ml-auto flex items-center gap-2 lg:ml-0">
+        <div className="ml-auto flex items-center gap-3 lg:ml-0">
           <a
             href={SIGN_IN_URL}
-            className="hidden text-sm font-medium text-muted-foreground transition-colors hover:text-foreground sm:block"
+            className="hidden text-[13px] font-medium text-muted-foreground transition-colors hover:text-foreground sm:block"
           >
             Sign in
           </a>

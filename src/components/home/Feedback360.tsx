@@ -16,38 +16,48 @@ const sources = [
   { label: "Direct reports", people: ["LT", "HW"], note: "2 responses" },
 ];
 
+const competencies = [
+  { label: "Communication", value: 88, compare: 72 },
+  { label: "Leadership", value: 70, compare: 62 },
+  { label: "Collaboration", value: 84, compare: 80 },
+  { label: "Decision Making", value: 82, compare: 74 },
+  { label: "Development", value: 78, compare: 68 },
+];
+
 /**
- * Understand the results — reporting, 360 Self vs Others, privacy, downloads.
+ * 360 Feedback section — "the strongest visual moment on the page."
+ * Shows Self vs Others reporting with competency bars and perspective breakdown.
  */
 export function UnderstandResultsSection() {
   return (
-    <section id="feedback-360" className="py-20 sm:py-24">
+    <section id="feedback-360" className="bg-surface/60 py-20 sm:py-24">
       <div className="mx-auto max-w-6xl px-5 lg:px-8">
         <SectionHeading
-          eyebrow="Understand the results"
-          title="Clear reporting — including 360 Self vs Others"
-          copy="See completion, competency or area scores, and how self-assessment compares with feedback from others. Share only what is safe to share."
+          eyebrow="360° feedback"
+          title="See the full picture. Instantly."
+          copy="Self-assessment compared with manager, peer and direct-report feedback. Aggregated results, competency scores, and reports you can share."
           align="center"
         />
 
-        <div className="mt-14 grid items-start gap-8 lg:grid-cols-[0.95fr_1.15fr]">
+        <div className="mt-14 grid items-start gap-8 lg:grid-cols-[0.9fr_1.1fr]">
+          {/* Left: 360 subject overview */}
           <div className="space-y-4">
             <div className="rounded-xl border border-border bg-card p-5 sm:p-6">
-              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                360 subject
+              <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+                Perspectives
               </p>
               <div className="mt-4 grid grid-cols-2 gap-3">
                 {sources.map((s) => (
                   <div key={s.label} className="rounded-xl border border-border bg-surface p-3">
-                    <div className="flex -space-x-2">
+                    <div className="flex -space-x-1.5">
                       {s.people.map((p, i) => (
                         <span
                           key={p}
                           className={
                             "inline-flex size-7 items-center justify-center rounded-full text-[10px] font-semibold ring-2 ring-surface " +
                             (i % 2 === 0
-                              ? "bg-primary/15 text-primary"
-                              : "bg-warm/25 text-warm-foreground")
+                              ? "bg-primary/12 text-primary"
+                              : "bg-warm/20 text-warm-foreground")
                           }
                         >
                           {p}
@@ -59,26 +69,33 @@ export function UnderstandResultsSection() {
                   </div>
                 ))}
               </div>
-              <div className="mt-4 flex items-center gap-3 rounded-xl border border-primary/20 bg-primary/5 p-3">
+
+              {/* Subject card */}
+              <div className="mt-4 flex items-center gap-3 rounded-xl border border-primary/20 bg-primary/[0.04] p-3">
                 <span className="flex size-9 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">
                   AH
                 </span>
                 <div className="flex-1">
                   <p className="text-sm font-semibold text-foreground">Amelia Hart</p>
-                  <p className="text-[11px] text-muted-foreground">7 of 7 responses · ready to report</p>
+                  <p className="text-[11px] text-muted-foreground">
+                    7 of 7 responses · ready to report
+                  </p>
                 </div>
                 <StatusChip status="Complete" />
               </div>
             </div>
+
             <ul className="space-y-2 px-1 text-sm text-muted-foreground">
-              <li>Subject-based 360 with self, manager, peer and direct-report relationships</li>
+              <li>Subject-based 360 with self, manager, peer and direct-report feedback</li>
               <li>Anonymous-by-default collection where you choose it</li>
               <li>PDF and CSV export from privacy-filtered results</li>
             </ul>
           </div>
 
+          {/* Right: 360 report panel */}
           <Panel title="360 report — Amelia Hart" meta="Aggregated">
             <div className="space-y-5 p-5">
+              {/* Badges */}
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="flex flex-wrap gap-2">
                   <StatusChip status="Safe to share" />
@@ -90,6 +107,7 @@ export function UnderstandResultsSection() {
                 </span>
               </div>
 
+              {/* Summary scores */}
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="rounded-xl border border-border bg-surface p-3">
                   <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
@@ -107,14 +125,14 @@ export function UnderstandResultsSection() {
                 </div>
               </div>
 
+              {/* Competency scores */}
               <div className="space-y-3.5 rounded-xl border border-border p-4">
                 <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-                  Area scores
+                  Competency scores
                 </p>
-                <ScoreBar label="Communication" value={88} compare={72} />
-                <ScoreBar label="Collaboration" value={84} compare={80} />
-                <ScoreBar label="Leadership" value={70} compare={62} />
-                <ScoreBar label="Problem solving" value={90} compare={84} />
+                {competencies.map((c) => (
+                  <ScoreBar key={c.label} label={c.label} value={c.value} compare={c.compare} />
+                ))}
                 <p className="flex flex-wrap items-center gap-3 pt-1 text-[10px] text-muted-foreground">
                   <span className="flex items-center gap-1">
                     <span className="size-2 rounded-full bg-primary" /> Others
@@ -125,14 +143,15 @@ export function UnderstandResultsSection() {
                 </p>
               </div>
 
+              {/* Peer comment */}
               <div className="rounded-xl border border-border bg-surface p-4">
                 <div className="flex items-center justify-between gap-2">
                   <p className="text-xs font-semibold text-foreground">Anonymous peer comment</p>
                   <StatusChip status="Anonymous" />
                 </div>
                 <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-                  “Amelia is the person everyone goes to when a project stalls. Would like to see her
-                  hand over more of the detail work so she has room to lead.”
+                  "Amelia is the person everyone goes to when a project stalls. Would like to see her
+                  hand over more of the detail work so she has room to lead."
                 </p>
               </div>
             </div>

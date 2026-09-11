@@ -1,13 +1,14 @@
 import { Header } from "@/components/home/Header";
 import { Hero } from "@/components/home/Hero";
 import {
-  CtaSection,
-  DifferentiatorSection,
-  OwnershipSection,
-  ResourcesSection,
-  RunAppraisalSection,
-  SpreadsheetSection,
-  WhoItsForSection,
+  WorkflowTypesSection,
+  WorkflowStepsSection,
+  PositioningSection,
+  CampaignSection,
+  TemplatesSection,
+  PricingSection,
+  HomeFaqSection,
+  FinalCtaSection,
 } from "@/components/home/Sections";
 import { CompleteAppraisalSection } from "@/components/home/AppraisalSection";
 import { UnderstandResultsSection } from "@/components/home/Feedback360";
@@ -36,15 +37,16 @@ export default function HomePage() {
       <Header />
       <main>
         <Hero />
-        <WhoItsForSection />
-        <SpreadsheetSection />
-        <RunAppraisalSection />
+        <WorkflowTypesSection />
+        <WorkflowStepsSection />
         <CompleteAppraisalSection />
         <UnderstandResultsSection />
-        <DifferentiatorSection />
-        <ResourcesSection />
-        <OwnershipSection />
-        <CtaSection />
+        <PositioningSection />
+        <CampaignSection />
+        <TemplatesSection />
+        <PricingSection />
+        <HomeFaqSection />
+        <FinalCtaSection />
       </main>
       <Footer />
     </div>
