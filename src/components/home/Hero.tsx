@@ -56,6 +56,22 @@ export function Hero() {
         {/* Product demo — realistic campaign overview */}
         <div className="reveal relative mx-auto mt-16 max-w-4xl sm:mt-20" style={{ animationDelay: "0.15s" }}>
           <Panel title="Annual Appraisal 2026" meta="Live">
+            {/* App nav — real software feel */}
+            <div className="flex items-center gap-1 border-b border-border px-4 sm:px-6">
+              {["Campaigns", "People", "Templates", "Results"].map((tab, i) => (
+                <span
+                  key={tab}
+                  className={
+                    "border-b-2 px-3 py-2.5 text-[11px] font-medium transition-colors " +
+                    (i === 0
+                      ? "border-primary text-foreground"
+                      : "border-transparent text-muted-foreground")
+                  }
+                >
+                  {tab}
+                </span>
+              ))}
+            </div>
             <div className="grid gap-0 lg:grid-cols-[1.3fr_1fr]">
               {/* Left: campaign overview */}
               <div className="border-b border-border p-5 sm:p-6 lg:border-r lg:border-b-0">
@@ -83,7 +99,7 @@ export function Hero() {
                 {/* Status breakdown */}
                 <div className="mt-5 grid grid-cols-3 gap-2">
                   {[
-                    { n: "18", label: "Completed", color: "text-primary" },
+                    { n: "18", label: "Completed", color: "text-positive-foreground" },
                     { n: "4", label: "In progress", color: "text-warm-foreground" },
                     { n: "2", label: "Not started", color: "text-muted-foreground" },
                   ].map((stat) => (
