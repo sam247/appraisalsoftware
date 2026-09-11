@@ -6,9 +6,8 @@ export const PRODUCT_PAGE_URL = `${DISCLOSURELY_URL}/solutions/appraisals`;
 
 /**
  * Primary commercial CTA — standalone product.
- * ponytail: placeholder until self-serve onboarding is live; swap for /start or signup URL.
  */
-export const PRIMARY_CTA_URL = "#start-free";
+export const PRIMARY_CTA_URL = "/signup";
 export const PRIMARY_CTA_LABEL = "Start free";
 
 /** Kept empty — no transition copy needed for a standalone product. */
@@ -26,7 +25,7 @@ export const TRY_APPRAISAL_URL = "";
 export const TRY_APPRAISAL_LABEL = "Try appraisal software";
 
 /** App login — existing customers. */
-export const SIGN_IN_URL = "https://app.disclosurely.com/auth/login";
+export const SIGN_IN_URL = "/login";
 
 export const PRIVACY_URL = `${DISCLOSURELY_URL}/privacy`;
 export const TERMS_URL = `${DISCLOSURELY_URL}/terms`;
