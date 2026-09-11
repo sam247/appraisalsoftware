@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { closeCampaign } from "../actions";
+import { closeCampaign, scheduleCampaign } from "../actions";
 import ActivateButton from "./activate-button";
 import AssignWizard from "./assign-wizard";
 import type {
@@ -105,9 +105,12 @@ export default async function CampaignDetailPage({
         </div>
 
         {/* Actions */}
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-2 shrink-0 flex-wrap justify-end">
           {campaign.status === "draft" && assignments.length > 0 && (
             <ActivateButton campaignId={id} />
+          )}
+          {campaign.status === "scheduled" && (
+            <ActivateButton campaignId={id} label="Send now" />
           )}
           {campaign.status === "active" && (
             <form action={doClose}>
@@ -126,6 +129,26 @@ export default async function CampaignDetailPage({
             )}
         </div>
       </div>
+
+      {campaign.schedule_error && (
+        <div className="mt-4 rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">
+          Schedule error: {campaign.schedule_error}
+        </div>
+      )}
+
+      {campaign.status === "scheduled" && campaign.opens_at && (
+        <div className="mt-4 rounded-lg border border-border bg-card px-4 py-3 text-sm text-muted-foreground">
+          Scheduled to send{" "}
+          {new Date(campaign.opens_at).toLocaleString("en-GB", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+          })}
+          . Invites queue automatically via the scheduler.
+        </div>
+      )}
 
       {/* Stats */}
       <div className="mt-6 grid gap-4 sm:grid-cols-3">
@@ -189,9 +212,34 @@ export default async function CampaignDetailPage({
       )}
 
       {campaign.status === "draft" && assignments.length > 0 && (
-        <div className="mt-4 rounded-lg border border-border bg-muted px-4 py-3 text-sm text-muted-foreground">
-          Ready to send? Click <strong>Send now</strong> to activate the
-          campaign and queue invite emails.
+        <div className="mt-4 space-y-3">
+          <div className="rounded-lg border border-border bg-muted px-4 py-3 text-sm text-muted-foreground">
+            Ready to send? Click <strong>Send now</strong> to activate and queue
+            invite emails, or schedule a send date below.
+          </div>
+          <form
+            action={scheduleCampaign.bind(null, id)}
+            className="rounded-xl border border-border bg-card px-4 py-4 flex flex-col sm:flex-row sm:items-end gap-3"
+          >
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-foreground mb-1.5">
+                Schedule send
+              </label>
+              <input
+                name="opens_at"
+                type="date"
+                required
+                className="w-full rounded-lg border border-input bg-surface px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              />
+              <p className="mt-1 text-xs text-muted-foreground">
+                Questions freeze when scheduled. Reminders every 3 days until
+                close.
+              </p>
+            </div>
+            <Button type="submit" variant="outline" size="sm">
+              Schedule
+            </Button>
+          </form>
         </div>
       )}
     </div>

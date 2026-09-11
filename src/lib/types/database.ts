@@ -598,8 +598,8 @@ export type Database = {
     Views: Record<string, never>;
     Functions: {
       bootstrap_organization: {
-        Args: { org_name: string };
-        Returns: string;
+        Args: { p_name: string; p_slug?: string | null };
+        Returns: Database["public"]["Tables"]["organizations"]["Row"];
       };
       is_org_admin: {
         Args: { p_organization_id: string };
@@ -636,6 +636,7 @@ export type Database = {
           closes_at: string | null;
           response_id: string;
           response_status: string;
+          org_name: string | null;
         }>;
       };
       respond_save: {
@@ -649,6 +650,32 @@ export type Database = {
       respond_get_questions: {
         Args: { p_raw_token: string };
         Returns: Array<CampaignQuestion>;
+      };
+      claim_email_outbox_batch: {
+        Args: { p_limit: number };
+        Returns: EmailOutbox[];
+      };
+      mark_email_outbox_result: {
+        Args: {
+          p_id: string;
+          p_ok: boolean;
+          p_provider_id: string | null;
+          p_error: string | null;
+          p_retry_at: string | null;
+        };
+        Returns: undefined;
+      };
+      claim_and_activate_due_campaigns: {
+        Args: { p_limit: number };
+        Returns: number;
+      };
+      close_due_campaigns: {
+        Args: { p_limit: number };
+        Returns: number;
+      };
+      enqueue_appraisal_reminders: {
+        Args: { p_limit: number };
+        Returns: number;
       };
     };
     Enums: Record<string, never>;

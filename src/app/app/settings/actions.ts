@@ -1,5 +1,6 @@
 "use server";
 
+import { getAppOrigin } from "@/lib/app-origin";
 import { requireOrgAdmin } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
@@ -48,7 +49,7 @@ export async function inviteAdmin(formData: FormData): Promise<void> {
     redirect("/app/settings?error=" + encodeURIComponent("Invite failed"));
   }
 
-  const inviteUrl = `${process.env.NEXT_PUBLIC_APP_ORIGIN ?? "http://localhost:3000"}/invite/${rawToken}`;
+  const inviteUrl = `${getAppOrigin()}/invite/${rawToken}`;
   revalidatePath("/app/settings");
   redirect(`/app/settings?inviteUrl=${encodeURIComponent(inviteUrl)}`);
 }

@@ -81,3 +81,36 @@ export const PHASE_2_STATUS = {
     "scheduler cron automation",
   ],
 } as const;
+
+export const PHASE_2_5_STATUS = {
+  shippedAt: "2026-09-11",
+  email:
+    "Real Resend via email_outbox → claim_email_outbox_batch → /api/cron/drain-outbox; provider_id + retries; no duplicate sends",
+  scheduler:
+    "/api/cron/scheduler every 5m: activate due scheduled, close due, enqueue cadence reminders, drain outbox",
+  reminders: "cadence every 3 days (DEFAULT_REMINDER_SETTINGS); never submitted/revoked/closed",
+  respondentUrl: "https://app.appraisalsoftware.co.uk/r/{token} via getAppOrigin()",
+  notIncluded: [
+    "360 / anonymity",
+    "groups",
+    "Stripe",
+    "AI",
+    "attachments/PDF",
+    "advanced analytics",
+    "Inngest/Temporal",
+  ],
+} as const;
+
+export const PHASE_2_5_SECURITY_REVIEW = {
+  reviewedAt: "2026-09-11",
+  rlsEnabledOnAllPublicTables: true,
+  respondentTokens: "SHA-256 hashed at rest; raw only in outbox payload + URL; never in structured logs",
+  outboxAuth: "claim/mark/schedule RPCs service_role only (revoked from anon/authenticated)",
+  cronAuth: "CRON_SECRET Bearer required in production",
+  urlGeneration: "getAppOrigin() from env — never Host header",
+  closedCampaignEnforced: "respond_resolve rejects non-active campaigns",
+  duplicateSubmit: "respond_resolve / respond_submit reject submitted assignments",
+  residualAdvisorNotes:
+    "respond_* SECURITY DEFINER remain anon-executable by design (token-gated). activate/freeze remain authenticated + is_org_admin.",
+  signOff: "Phase 2.5 productionisation security accepted for dogfood — configure Resend domain + secrets before live send",
+} as const;

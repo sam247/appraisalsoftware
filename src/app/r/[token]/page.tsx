@@ -15,6 +15,7 @@ interface ResolveRow {
   closes_at: string | null;
   response_id: string;
   response_status: string;
+  org_name?: string | null;
 }
 
 export default async function RespondPage({
@@ -83,6 +84,7 @@ export default async function RespondPage({
       questions={questions}
       relationship={ctx.relationship}
       alreadySubmitted={false}
+      orgName={ctx.org_name}
     />
   );
 }
