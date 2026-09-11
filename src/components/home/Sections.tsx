@@ -81,45 +81,48 @@ export function WorkflowTypesSection() {
           align="center"
         />
 
-        {/* Selector pills */}
-        <div className="mt-10 flex flex-wrap justify-center gap-2">
-          {workflowTypes.map((wt, i) => (
-            <button
-              key={wt.label}
-              onClick={() => setActive(i)}
-              className={
-                "rounded-lg border px-4 py-2 text-[13px] font-medium transition-all cursor-pointer " +
-                (i === active
-                  ? "border-primary bg-primary/8 text-primary"
-                  : "border-border bg-card text-muted-foreground hover:border-foreground/15 hover:text-foreground")
-              }
-            >
-              {wt.label}
-            </button>
-          ))}
-        </div>
-
-        {/* Content area */}
-        <div className="mx-auto mt-8 max-w-2xl rounded-2xl border border-border bg-card p-6 sm:p-8">
-          <p className="text-[15px] leading-relaxed text-foreground">
-            {current.description}
-          </p>
-          <div className="mt-5 grid grid-cols-2 gap-2">
-            {current.includes.map((item) => (
-              <div key={item} className="flex items-center gap-2 text-sm text-muted-foreground">
-                <CheckCircle2 className="size-3.5 shrink-0 text-primary" />
-                {item}
-              </div>
+        {/* 50/50 — vertical selector left, content right */}
+        <div className="mt-10 grid gap-6 lg:grid-cols-[1fr_1.5fr] lg:items-start lg:gap-12">
+          {/* Left: selector tabs */}
+          <div className="flex flex-wrap gap-2 lg:flex-col lg:gap-1">
+            {workflowTypes.map((wt, i) => (
+              <button
+                key={wt.label}
+                onClick={() => setActive(i)}
+                className={
+                  "rounded-lg border px-4 py-2.5 text-left text-[13px] font-medium transition-all cursor-pointer lg:w-full lg:px-4 lg:py-3 " +
+                  (i === active
+                    ? "border-primary bg-primary/8 text-primary"
+                    : "border-border bg-card text-muted-foreground hover:border-foreground/15 hover:text-foreground")
+                }
+              >
+                {wt.label}
+              </button>
             ))}
           </div>
-          <div className="mt-6">
-            <Link
-              href={current.href}
-              className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
-            >
-              {current.linkLabel}
-              <ArrowRight className="size-3.5" />
-            </Link>
+
+          {/* Right: content card */}
+          <div className="rounded-2xl border border-border bg-card p-6 sm:p-8">
+            <p className="text-[15px] leading-relaxed text-foreground">
+              {current.description}
+            </p>
+            <div className="mt-5 grid grid-cols-2 gap-2">
+              {current.includes.map((item) => (
+                <div key={item} className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <CheckCircle2 className="size-3.5 shrink-0 text-primary" />
+                  {item}
+                </div>
+              ))}
+            </div>
+            <div className="mt-6">
+              <Link
+                href={current.href}
+                className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
+              >
+                {current.linkLabel}
+                <ArrowRight className="size-3.5" />
+              </Link>
+            </div>
           </div>
         </div>
       </div>
@@ -212,51 +215,70 @@ export function WorkflowStepsSection() {
           align="center"
         />
 
-        {/* Step tabs */}
-        <div className="mx-auto mt-12 flex max-w-lg justify-between">
-          {workflowSteps.map((step, i) => (
-            <button
-              key={step.label}
-              onClick={() => setActive(i)}
-              className="group flex flex-col items-center gap-2 cursor-pointer"
-            >
-              <span
-                className={
-                  "flex size-10 items-center justify-center rounded-full border-2 transition-all " +
-                  (i === active
-                    ? "border-primary bg-primary text-primary-foreground"
-                    : i < active
-                      ? "border-primary bg-primary/10 text-primary"
-                      : "border-border bg-card text-muted-foreground group-hover:border-foreground/20")
-                }
-              >
-                <step.icon className="size-4" />
-              </span>
-              <span
-                className={
-                  "text-[11px] font-semibold uppercase tracking-wide transition-colors " +
-                  (i === active ? "text-primary" : "text-muted-foreground")
-                }
-              >
-                {step.label}
-              </span>
-            </button>
-          ))}
-        </div>
+        {/* 50/50 — steps left, product panel right */}
+        <div className="mt-12 grid gap-10 lg:grid-cols-2 lg:items-start lg:gap-16">
+          {/* Left: vertical step selector + description */}
+          <div className="space-y-6">
+            <div className="grid grid-cols-4 gap-2 lg:grid-cols-1 lg:gap-1">
+              {workflowSteps.map((step, i) => (
+                <button
+                  key={step.label}
+                  onClick={() => setActive(i)}
+                  className={
+                    "group flex items-center gap-3 rounded-xl px-3 py-3 text-left transition-all cursor-pointer lg:px-4 " +
+                    (i === active
+                      ? "bg-primary/[0.06]"
+                      : "hover:bg-surface")
+                  }
+                >
+                  <span
+                    className={
+                      "flex size-9 shrink-0 items-center justify-center rounded-full border-2 transition-all " +
+                      (i === active
+                        ? "border-primary bg-primary text-primary-foreground"
+                        : i < active
+                          ? "border-primary bg-primary/10 text-primary"
+                          : "border-border bg-card text-muted-foreground group-hover:border-foreground/20")
+                    }
+                  >
+                    <step.icon className="size-4" />
+                  </span>
+                  <div className="hidden min-w-0 lg:block">
+                    <span
+                      className={
+                        "text-[13px] font-semibold transition-colors " +
+                        (i === active ? "text-foreground" : "text-muted-foreground")
+                      }
+                    >
+                      {step.label}
+                    </span>
+                    {i === active && (
+                      <p className="mt-0.5 text-sm leading-relaxed text-muted-foreground">
+                        {current.description}
+                      </p>
+                    )}
+                  </div>
+                  <span
+                    className={
+                      "text-[11px] font-semibold lg:hidden " +
+                      (i === active ? "text-primary" : "text-muted-foreground")
+                    }
+                  >
+                    {step.label}
+                  </span>
+                </button>
+              ))}
+            </div>
+            {/* Mobile-only description */}
+            <p className="text-sm leading-relaxed text-muted-foreground lg:hidden">
+              {current.description}
+            </p>
+          </div>
 
-        {/* Connecting line */}
-        <div className="mx-auto mt-[-38px] mb-8 hidden max-w-lg lg:block">
-          <div className="mx-[50px] h-0.5 bg-border" />
-        </div>
-
-        {/* Step content — product UI */}
-        <div className="mx-auto mt-8 max-w-lg lg:mt-0">
+          {/* Right: product panel */}
           <Panel title={current.ui.title} meta={current.ui.meta}>
             <div className="p-5 sm:p-6">
-              <p className="text-sm leading-relaxed text-muted-foreground">
-                {current.description}
-              </p>
-              <div className="mt-5 space-y-3">
+              <div className="space-y-3">
                 {current.ui.fields.map((field) => (
                   <div
                     key={field.label}
@@ -313,7 +335,7 @@ export function PositioningSection() {
           align="center"
         />
 
-        <div className="mx-auto mt-14 grid max-w-3xl gap-6 sm:grid-cols-2">
+        <div className="mt-14 grid gap-6 sm:grid-cols-2">
           {/* Traditional HR suite */}
           <div className="rounded-2xl border border-border bg-card p-6">
             <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
@@ -568,13 +590,35 @@ export function PricingSection() {
           align="center"
         />
 
-        <div className="mx-auto mt-12 max-w-sm">
+        {/* 50/50 — text left, card right */}
+        <div className="mt-12 grid gap-10 lg:grid-cols-2 lg:items-center lg:gap-16">
+          <div>
+            <p className="text-[15px] leading-relaxed text-muted-foreground">
+              No per-feature add-ons. No surprise invoices. Everything your appraisal cycle needs in one plan — campaigns, forms, 360° feedback, completion tracking, reminders, and reports.
+            </p>
+            <ul className="mt-8 space-y-3 text-sm text-foreground">
+              {[
+                "Unlimited appraisal campaigns",
+                "360° feedback with Self vs Others",
+                "Completion tracking and reminders",
+                "Customisable form templates",
+                "PDF and CSV report exports",
+                "Branded respondent experience",
+              ].map((item) => (
+                <li key={item} className="flex items-start gap-3">
+                  <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+
           <div className="rounded-2xl border-2 border-primary/20 bg-card p-8 text-center">
             <p className="text-xs font-semibold uppercase tracking-[0.12em] text-primary">
               All-inclusive
             </p>
             <p className="mt-6 text-[15px] leading-relaxed text-muted-foreground">
-              Campaigns, forms, 360° feedback, completion tracking, reminders, reports.
+              One plan. Everything included.
             </p>
             <div className="my-8 border-t border-border" />
             <p className="text-sm font-semibold text-foreground">Pricing coming soon</p>
@@ -635,18 +679,25 @@ export function HomeFaqSection() {
   return (
     <section id="faq" className="border-t border-border py-20 sm:py-24">
       <div className="mx-auto max-w-6xl px-5 lg:px-8">
-        <SectionHeading
-          title="Frequently asked questions"
-          align="center"
-        />
-        <dl className="mx-auto mt-10 max-w-2xl space-y-4">
-          {homeFaqs.map((item) => (
-            <div key={item.question} className="rounded-xl border border-border bg-card p-5">
-              <dt className="text-[15px] font-semibold text-foreground">{item.question}</dt>
-              <dd className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.answer}</dd>
-            </div>
-          ))}
-        </dl>
+        {/* 50/50 — heading left, FAQs right */}
+        <div className="grid gap-10 lg:grid-cols-[1fr_1.6fr] lg:items-start lg:gap-16">
+          <div className="lg:sticky lg:top-24">
+            <SectionHeading
+              title="Frequently asked questions"
+            />
+            <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+              Common questions about running appraisals and 360° feedback with Appraisal Software.
+            </p>
+          </div>
+          <dl className="space-y-4">
+            {homeFaqs.map((item) => (
+              <div key={item.question} className="rounded-xl border border-border bg-card p-5">
+                <dt className="text-[15px] font-semibold text-foreground">{item.question}</dt>
+                <dd className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.answer}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
       </div>
     </section>
   );

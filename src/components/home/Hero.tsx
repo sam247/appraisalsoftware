@@ -54,7 +54,7 @@ export function Hero() {
         </div>
 
         {/* Product demo — realistic campaign overview */}
-        <div className="reveal relative mx-auto mt-16 max-w-4xl sm:mt-20" style={{ animationDelay: "0.15s" }}>
+        <div className="reveal relative mx-auto mt-16 sm:mt-20" style={{ animationDelay: "0.15s" }}>
           <Panel title="Annual Appraisal 2026" meta="Live">
             {/* App nav — real software feel */}
             <div className="flex items-center gap-1 border-b border-border px-4 sm:px-6">
@@ -99,7 +99,7 @@ export function Hero() {
                 {/* Status breakdown */}
                 <div className="mt-5 grid grid-cols-3 gap-2">
                   {[
-                    { n: "18", label: "Completed", color: "text-positive-foreground" },
+                    { n: "18", label: "Completed", color: "text-primary" },
                     { n: "4", label: "In progress", color: "text-warm-foreground" },
                     { n: "2", label: "Not started", color: "text-muted-foreground" },
                   ].map((stat) => (
