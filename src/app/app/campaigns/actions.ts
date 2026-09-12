@@ -1,7 +1,10 @@
 "use server";
 
 import { requireOrgAdmin } from "@/lib/auth/session";
-import { DEFAULT_REMINDER_SETTINGS } from "@/lib/schedule/decisions";
+import {
+  DEFAULT_REMINDER_SETTINGS,
+  sanitizeReminderSettings,
+} from "@/lib/schedule/decisions";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -30,10 +33,9 @@ export async function createCampaign(formData: FormData): Promise<void> {
       template_id: templateId,
       closes_at: closesAt ? endOfDayIso(closesAt) : null,
       opens_at: opensAt ? startOfDayIso(opensAt) : null,
-      reminder_settings: DEFAULT_REMINDER_SETTINGS as unknown as Record<
-        string,
-        unknown
-      >,
+      reminder_settings: sanitizeReminderSettings(
+        DEFAULT_REMINDER_SETTINGS,
+      ) as unknown as Record<string, unknown>,
       created_by: userId,
     })
     .select("id")
@@ -190,17 +192,29 @@ async function nudgeOutboxDrain(): Promise<void> {
 }
 
 // ---------------------------------------------------------------------------
-// Close campaign
+// Close campaign (revokes outstanding tokens — Disclosurely Feedback model)
 // ---------------------------------------------------------------------------
 export async function closeCampaign(campaignId: string): Promise<void> {
   const { org } = await requireOrgAdmin();
   const supabase = await createClient();
 
-  await supabase
+  const { data: campaign } = await supabase
     .from("campaigns")
-    .update({ status: "closed" })
+    .select("id")
     .eq("id", campaignId)
-    .eq("organization_id", org.id);
+    .eq("organization_id", org.id)
+    .single();
+
+  if (!campaign) return;
+
+  const { error } = await supabase.rpc("close_campaign", {
+    p_campaign_id: campaignId,
+  });
+  if (error) {
+    redirect(
+      `/app/campaigns/${campaignId}?error=${encodeURIComponent(error.message)}`,
+    );
+  }
 
   revalidatePath(`/app/campaigns/${campaignId}`);
 }
@@ -219,6 +233,13 @@ export async function scheduleCampaign(
   if (!opensAt) {
     redirect(
       `/app/campaigns/${campaignId}?error=${encodeURIComponent("Open date is required to schedule")}`,
+    );
+  }
+
+  const opensIso = startOfDayIso(opensAt);
+  if (!Number.isFinite(new Date(opensIso).getTime())) {
+    redirect(
+      `/app/campaigns/${campaignId}?error=${encodeURIComponent("Invalid send date")}`,
     );
   }
 
@@ -252,7 +273,7 @@ export async function scheduleCampaign(
     .from("campaigns")
     .update({
       status: "scheduled",
-      opens_at: startOfDayIso(opensAt),
+      opens_at: opensIso,
       send_claimed_at: null,
       schedule_error: null,
     })

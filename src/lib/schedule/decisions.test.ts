@@ -4,7 +4,9 @@ import {
   isSendDue,
   nextReminderDue,
   nextRetryAt,
+  sanitizeReminderSettings,
   shouldRetryOutbox,
+  validateSchedule,
 } from "@/lib/schedule/decisions";
 import {
   buildAppraisalInviteHtml,
@@ -126,6 +128,45 @@ describe("schedule decisions", () => {
     expect(shouldRetryOutbox(5)).toBe(false);
     const retry = nextRetryAt(3, now);
     expect(retry.getTime()).toBe(now.getTime() + 8 * 60_000);
+  });
+
+  it("sanitizeReminderSettings mirrors Feedback defaults", () => {
+    expect(sanitizeReminderSettings(null)).toEqual({ enabled: false });
+    expect(sanitizeReminderSettings({ enabled: true })).toEqual({
+      enabled: true,
+      strategy: "cadence",
+      cadenceDays: 3,
+      fired: [],
+    });
+    expect(
+      sanitizeReminderSettings({
+        enabled: true,
+        strategy: "before_close",
+        daysBeforeClose: [1, 3, 3],
+      }),
+    ).toEqual({
+      enabled: true,
+      strategy: "before_close",
+      daysBeforeClose: [3, 1],
+      fired: [],
+    });
+  });
+
+  it("validateSchedule requires future opens_at", () => {
+    expect(
+      validateSchedule({
+        opensAt: "2026-09-10T12:00:00.000Z",
+        closesAt: "2026-09-20T12:00:00.000Z",
+        now,
+      })?.field,
+    ).toBe("opens_at");
+    expect(
+      validateSchedule({
+        opensAt: "2026-09-12T12:00:00.000Z",
+        closesAt: "2026-09-20T12:00:00.000Z",
+        now,
+      }),
+    ).toBeNull();
   });
 });
 

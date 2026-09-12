@@ -673,6 +673,10 @@ export type Database = {
         Args: { p_limit: number };
         Returns: number;
       };
+      close_campaign: {
+        Args: { p_campaign_id: string };
+        Returns: undefined;
+      };
       enqueue_appraisal_reminders: {
         Args: { p_limit: number };
         Returns: number;

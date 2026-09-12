@@ -24,6 +24,70 @@ export const DEFAULT_REMINDER_SETTINGS: ReminderSettings = {
   cadenceDays: 3,
 };
 
+/**
+ * Normalise reminder_settings from client/storage input.
+ * Mirrors Disclosurely Feedback `sanitizeReminderSettings`.
+ */
+export function sanitizeReminderSettings(input: unknown): ReminderSettings {
+  if (!input || typeof input !== "object" || Array.isArray(input)) {
+    return { enabled: false };
+  }
+  const raw = input as ReminderSettings;
+  if (!raw.enabled) {
+    return {
+      enabled: false,
+      fired: Array.isArray(raw.fired) ? raw.fired.map(String) : [],
+    };
+  }
+
+  const strategy: ReminderStrategy =
+    raw.strategy === "before_close" ? "before_close" : "cadence";
+  const fired = Array.isArray(raw.fired)
+    ? raw.fired.map(String).filter((m) => m.startsWith("before_close:"))
+    : [];
+
+  if (strategy === "before_close") {
+    const days = (
+      Array.isArray(raw.daysBeforeClose) ? raw.daysBeforeClose : [3, 1]
+    )
+      .map(Number)
+      .filter((n) => Number.isFinite(n) && n > 0)
+      .sort((a, b) => b - a);
+    return {
+      enabled: true,
+      strategy: "before_close",
+      daysBeforeClose: days.length ? [...new Set(days)] : [3, 1],
+      fired,
+    };
+  }
+
+  const cadenceDays = Math.max(1, Number(raw.cadenceDays) || 3);
+  return { enabled: true, strategy: "cadence", cadenceDays, fired };
+}
+
+/** Validate a proposed schedule (opens_at required + future; closes after opens). */
+export function validateSchedule(params: {
+  opensAt: string | null | undefined;
+  closesAt: string | null | undefined;
+  now: Date;
+}): { field: string; message: string } | null {
+  const opensMs = toTime(params.opensAt);
+  if (opensMs === null) {
+    return { field: "opens_at", message: "A valid send time is required" };
+  }
+  if (opensMs <= params.now.getTime()) {
+    return { field: "opens_at", message: "Send time must be in the future" };
+  }
+  const closesMs = toTime(params.closesAt);
+  if (params.closesAt && closesMs === null) {
+    return { field: "closes_at", message: "Close time is invalid" };
+  }
+  if (closesMs !== null && closesMs <= opensMs) {
+    return { field: "closes_at", message: "Close time must be after the send time" };
+  }
+  return null;
+}
+
 function toTime(value: string | null | undefined): number | null {
   if (!value) return null;
   const t = new Date(value).getTime();

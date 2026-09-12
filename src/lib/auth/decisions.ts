@@ -87,9 +87,12 @@ export const PHASE_2_5_STATUS = {
   email:
     "Real Resend via email_outbox → claim_email_outbox_batch → /api/cron/drain-outbox; provider_id + retries; no duplicate sends",
   scheduler:
-    "/api/cron/scheduler every 5m: activate due scheduled, close due, enqueue cadence reminders, drain outbox",
-  reminders: "cadence every 3 days (DEFAULT_REMINDER_SETTINGS); never submitted/revoked/closed",
+    "/api/cron/scheduler every 5m: activate due scheduled, close due (revokes tokens), enqueue cadence reminders, drain outbox",
+  reminders:
+    "Disclosurely-shaped settings (cadence|before_close + sanitize); SQL enqueue is cadence MVP; never submitted/revoked/closed",
   respondentUrl: "https://app.appraisalsoftware.co.uk/r/{token} via getAppOrigin()",
+  disclosurelyAlignment:
+    "Behaviour mirrored (claim-lock, pure schedule helpers, env origin, hashed tokens, close→revoke). Transport differs: Appraisal uses outbox+drain; Disclosurely Feedback sends sync from edge.",
   notIncluded: [
     "360 / anonymity",
     "groups",
