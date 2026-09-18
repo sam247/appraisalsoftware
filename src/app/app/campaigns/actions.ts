@@ -4,6 +4,7 @@ import { requireOrgAdmin } from "@/lib/auth/session";
 import {
   DEFAULT_REMINDER_SETTINGS,
   sanitizeReminderSettings,
+  validateSchedule,
 } from "@/lib/schedule/decisions";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
@@ -22,6 +23,16 @@ export async function createCampaign(formData: FormData): Promise<void> {
   const opensAt = (formData.get("opens_at") as string | null) || null;
 
   if (!name) redirect("/app/campaigns/new?error=Name+is+required");
+
+  if (!templateId)
+    redirect("/app/campaigns/new?error=Choose+a+question+template");
+  const templateError = await validateTemplate(supabase, org.id, templateId);
+  if (templateError)
+    redirect(`/app/campaigns/new?error=${encodeURIComponent(templateError)}`);
+  if ((closesAt && !validDate(closesAt)) || (opensAt && !validDate(opensAt)))
+    redirect("/app/campaigns/new?error=Choose+a+valid+date");
+  if (closesAt && new Date(endOfDayIso(closesAt)).getTime() <= Date.now())
+    redirect("/app/campaigns/new?error=Close+date+must+be+in+the+future");
 
   const { data: campaign, error } = await supabase
     .from("campaigns")
@@ -74,18 +85,53 @@ export async function saveSubjectsAndAssignments(
   if (!campaign) return { error: "Campaign not found" };
   if (campaign.status !== "draft") return { error: "Campaign is not in draft" };
 
+  if (
+    new Set(subjects.map((s) => s.personId)).size !== subjects.length ||
+    subjects.some(
+      (s) => s.selfPersonId !== s.personId || s.managerPersonId === s.personId,
+    )
+  )
+    return {
+      error:
+        "Choose each employee once, with a different person as their manager.",
+    };
+  const personIds = [
+    ...new Set(
+      subjects.flatMap((s) => [
+        s.personId,
+        ...(s.managerPersonId ? [s.managerPersonId] : []),
+      ]),
+    ),
+  ];
+  if (personIds.length) {
+    const { data: validPeople, error } = await supabase
+      .from("people")
+      .select("id")
+      .eq("organization_id", org.id)
+      .in("id", personIds);
+    if (error || validPeople?.length !== personIds.length)
+      return {
+        error:
+          "One or more participants are unavailable. Reload and try again.",
+      };
+  }
+
   // Clear existing subjects + assignments (idempotent replace)
-  await supabase
+  const { error: clearAssignmentsError } = await supabase
     .from("campaign_assignments")
     .delete()
     .eq("campaign_id", campaignId)
     .eq("organization_id", org.id);
 
-  await supabase
+  if (clearAssignmentsError) return { error: clearAssignmentsError.message };
+
+  const { error: clearSubjectsError } = await supabase
     .from("campaign_subjects")
     .delete()
     .eq("campaign_id", campaignId)
     .eq("organization_id", org.id);
+
+  if (clearSubjectsError) return { error: clearSubjectsError.message };
 
   // Insert subjects
   const subjectRows = subjects.map((s) => ({
@@ -236,6 +282,8 @@ export async function scheduleCampaign(
     );
   }
 
+  if (!validDate(opensAt))
+    redirect(`/app/campaigns/${campaignId}?error=Invalid+send+date`);
   const opensIso = startOfDayIso(opensAt);
   if (!Number.isFinite(new Date(opensIso).getTime())) {
     redirect(
@@ -245,19 +293,40 @@ export async function scheduleCampaign(
 
   const { data: campaign } = await supabase
     .from("campaigns")
-    .select("id, status, template_id")
+    .select("id, status, template_id, closes_at")
     .eq("id", campaignId)
     .eq("organization_id", org.id)
     .single();
 
   if (!campaign) {
-    redirect(`/app/campaigns?error=${encodeURIComponent("Campaign not found")}`);
+    redirect(
+      `/app/campaigns?error=${encodeURIComponent("Campaign not found")}`,
+    );
   }
   if (campaign.status !== "draft" && campaign.status !== "scheduled") {
     redirect(
       `/app/campaigns/${campaignId}?error=${encodeURIComponent("Only draft campaigns can be scheduled")}`,
     );
   }
+
+  const scheduleError = validateSchedule({
+    opensAt: opensIso,
+    closesAt: campaign.closes_at,
+    now: new Date(),
+  });
+  if (scheduleError)
+    redirect(
+      `/app/campaigns/${campaignId}?error=${encodeURIComponent(scheduleError.message)}`,
+    );
+  const { count, error: participantError } = await supabase
+    .from("campaign_assignments")
+    .select("id", { count: "exact", head: true })
+    .eq("campaign_id", campaignId)
+    .eq("organization_id", org.id);
+  if (participantError || !count)
+    redirect(
+      `/app/campaigns/${campaignId}?error=Save+participants+before+scheduling`,
+    );
 
   // Freeze questions at schedule time (Architecture v1)
   const { error: freezeErr } = await supabase.rpc("freeze_campaign_questions", {
@@ -292,14 +361,87 @@ export async function scheduleCampaign(
 
 function startOfDayIso(dateInput: string): string {
   const d = new Date(dateInput);
-  if (!Number.isFinite(d.getTime())) return new Date().toISOString();
-  d.setHours(9, 0, 0, 0); // morning local → stored as absolute instant
+  d.setUTCHours(9, 0, 0, 0); // explicit UTC schedule shown in the product
   return d.toISOString();
 }
 
 function endOfDayIso(dateInput: string): string {
   const d = new Date(dateInput);
-  if (!Number.isFinite(d.getTime())) return new Date().toISOString();
-  d.setHours(23, 59, 0, 0);
+  d.setUTCHours(23, 59, 0, 0);
   return d.toISOString();
+}
+
+function validDate(value: string): boolean {
+  return (
+    /^\d{4}-\d{2}-\d{2}$/.test(value) &&
+    Number.isFinite(new Date(value).getTime()) &&
+    new Date(value).toISOString().slice(0, 10) === value
+  );
+}
+
+async function validateTemplate(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  organizationId: string,
+  templateId: string,
+): Promise<string | null> {
+  const { data: template, error } = await supabase
+    .from("templates")
+    .select("id")
+    .eq("id", templateId)
+    .eq("organization_id", organizationId)
+    .is("archived_at", null)
+    .single();
+  if (error || !template)
+    return "Choose an available template from your workspace.";
+  const { count, error: questionError } = await supabase
+    .from("template_questions")
+    .select("id", { count: "exact", head: true })
+    .eq("template_id", templateId)
+    .eq("organization_id", organizationId);
+  if (questionError || !count)
+    return "Add at least one question to this template before creating an appraisal.";
+  return null;
+}
+
+export async function setCampaignTemplate(
+  campaignId: string,
+  formData: FormData,
+): Promise<void> {
+  const { org } = await requireOrgAdmin();
+  const supabase = await createClient();
+  const templateId = String(formData.get("template_id") ?? "");
+  const error = await validateTemplate(supabase, org.id, templateId);
+  if (error)
+    redirect(`/app/campaigns/${campaignId}?error=${encodeURIComponent(error)}`);
+  const { data, error: updateError } = await supabase
+    .from("campaigns")
+    .update({ template_id: templateId })
+    .eq("id", campaignId)
+    .eq("organization_id", org.id)
+    .eq("status", "draft")
+    .is("questions_frozen_at", null)
+    .select("id")
+    .single();
+  if (updateError || !data)
+    redirect(
+      `/app/campaigns/${campaignId}?error=This+campaign+can+no+longer+be+edited`,
+    );
+  revalidatePath(`/app/campaigns/${campaignId}`);
+  redirect(`/app/campaigns/${campaignId}`);
+}
+
+export async function sendCampaign(
+  campaignId: string,
+  formData: FormData,
+): Promise<void> {
+  if (formData.get("delivery") === "later")
+    return scheduleCampaign(campaignId, formData);
+  if (formData.get("delivery") !== "now")
+    redirect(`/app/campaigns/${campaignId}?error=Choose+when+to+send`);
+  const result = await activateCampaign(campaignId);
+  if (result.error)
+    redirect(
+      `/app/campaigns/${campaignId}?error=${encodeURIComponent(result.error)}`,
+    );
+  redirect(`/app/campaigns/${campaignId}`);
 }

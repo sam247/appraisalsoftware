@@ -3,7 +3,7 @@
 import { requireOrgAdmin } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
-import type { QuestionType } from "@/lib/types/database";
+import { redirect } from "next/navigation";
 
 export async function createPerson(formData: FormData): Promise<void> {
   const { userId, org } = await requireOrgAdmin();
@@ -13,9 +13,10 @@ export async function createPerson(formData: FormData): Promise<void> {
   const fullName = (formData.get("full_name") as string | null)?.trim() || null;
   const jobTitle = (formData.get("job_title") as string | null)?.trim() || null;
 
-  if (!email) return;
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+    redirect("/app/people?error=Enter+a+valid+email+address");
 
-  await supabase.from("people").insert({
+  const { error } = await supabase.from("people").insert({
     organization_id: org.id,
     email,
     full_name: fullName,
@@ -23,7 +24,9 @@ export async function createPerson(formData: FormData): Promise<void> {
     created_by: userId,
   });
 
+  if (error) redirect(`/app/people?error=${encodeURIComponent(error.message)}`);
   revalidatePath("/app/people");
+  revalidatePath("/app");
 }
 
 export async function updatePerson(
@@ -40,9 +43,9 @@ export async function updatePerson(
     .eq("organization_id", org.id)
     .single();
 
-  if (!existing) return;
+  if (!existing) redirect("/app/people?error=Person+not+found");
 
-  await supabase
+  const { error } = await supabase
     .from("people")
     .update({
       full_name: (formData.get("full_name") as string | null)?.trim() || null,
@@ -51,18 +54,22 @@ export async function updatePerson(
     .eq("id", personId)
     .eq("organization_id", org.id);
 
+  if (error) redirect(`/app/people?error=${encodeURIComponent(error.message)}`);
   revalidatePath("/app/people");
+  revalidatePath("/app");
 }
 
 export async function archivePerson(personId: string): Promise<void> {
   const { org } = await requireOrgAdmin();
   const supabase = await createClient();
 
-  await supabase
+  const { error } = await supabase
     .from("people")
     .update({ archived_at: new Date().toISOString() })
     .eq("id", personId)
     .eq("organization_id", org.id);
 
+  if (error) redirect(`/app/people?error=${encodeURIComponent(error.message)}`);
   revalidatePath("/app/people");
+  revalidatePath("/app");
 }

@@ -25,7 +25,8 @@ export async function createTemplate(formData: FormData): Promise<void> {
     created_by: userId,
   });
 
-  if (error) redirect(`/app/templates?error=${encodeURIComponent(error.message)}`);
+  if (error)
+    redirect(`/app/templates?error=${encodeURIComponent(error.message)}`);
 
   revalidatePath("/app/templates");
 }
@@ -48,7 +49,8 @@ export async function archiveTemplate(templateId: string): Promise<void> {
     .update({ archived_at: new Date().toISOString() })
     .eq("id", templateId);
 
-  if (error) redirect(`/app/templates?error=${encodeURIComponent(error.message)}`);
+  if (error)
+    redirect(`/app/templates?error=${encodeURIComponent(error.message)}`);
 
   revalidatePath("/app/templates");
   redirect("/app/templates");
@@ -80,9 +82,15 @@ export async function upsertQuestion(
     "text",
     "nps",
   ];
-  const type: QuestionType = (VALID_TYPES as string[]).includes(rawType)
-    ? (rawType as QuestionType)
-    : "text";
+  if (!(VALID_TYPES as string[]).includes(rawType))
+    redirect(
+      `/app/templates/${templateId}?error=Choose+a+supported+question+type`,
+    );
+  const type = rawType as QuestionType;
+  if (!questionId && !["text", "rating"].includes(type))
+    redirect(
+      `/app/templates/${templateId}?error=New+questions+support+text+or+rating`,
+    );
   const helpText = (formData.get("help_text") as string | null)?.trim() || null;
   const required = formData.get("required") === "on";
   const sortOrder = parseInt(
@@ -90,16 +98,28 @@ export async function upsertQuestion(
     10,
   );
 
-  if (!prompt) redirect(`/app/templates/${templateId}?error=Prompt+is+required`);
+  if (!Number.isInteger(sortOrder) || sortOrder < 0)
+    redirect(`/app/templates/${templateId}?error=Invalid+question+order`);
+  if (!prompt)
+    redirect(`/app/templates/${templateId}?error=Prompt+is+required`);
 
   if (questionId) {
     const { error } = await supabase
       .from("template_questions")
-      .update({ prompt, type, help_text: helpText, required, sort_order: sortOrder })
+      .update({
+        prompt,
+        type,
+        help_text: helpText,
+        required,
+        sort_order: sortOrder,
+      })
       .eq("id", questionId)
       .eq("organization_id", org.id);
 
-    if (error) redirect(`/app/templates/${templateId}?error=${encodeURIComponent(error.message)}`);
+    if (error)
+      redirect(
+        `/app/templates/${templateId}?error=${encodeURIComponent(error.message)}`,
+      );
   } else {
     const { error } = await supabase.from("template_questions").insert({
       template_id: templateId,
@@ -113,7 +133,10 @@ export async function upsertQuestion(
       scale: {},
     });
 
-    if (error) redirect(`/app/templates/${templateId}?error=${encodeURIComponent(error.message)}`);
+    if (error)
+      redirect(
+        `/app/templates/${templateId}?error=${encodeURIComponent(error.message)}`,
+      );
   }
 
   revalidatePath(`/app/templates/${templateId}`);
@@ -141,7 +164,10 @@ export async function deleteQuestion(
     .eq("id", questionId)
     .eq("organization_id", org.id);
 
-  if (error) redirect(`/app/templates/${templateId}?error=${encodeURIComponent(error.message)}`);
+  if (error)
+    redirect(
+      `/app/templates/${templateId}?error=${encodeURIComponent(error.message)}`,
+    );
 
   revalidatePath(`/app/templates/${templateId}`);
 }

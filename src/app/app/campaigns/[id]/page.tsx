@@ -1,328 +1,375 @@
 import { requireOrgAdmin } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
-import { redirect, notFound } from "next/navigation";
+import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { closeCampaign, scheduleCampaign } from "../actions";
+import { closeCampaign, setCampaignTemplate } from "../actions";
 import ActivateButton from "./activate-button";
-import AssignWizard from "./assign-wizard";
+import DraftSetup from "./draft-setup";
+import SendControls from "./send-controls";
+import {
+  campaignLabels,
+  responseLabels,
+  campaignDate,
+  responseProgress,
+} from "../presentation";
 import type {
   Campaign,
   CampaignAssignment,
   CampaignSubject,
   Person,
+  TemplateQuestion,
+  Template,
 } from "@/lib/types/database";
 
 export default async function CampaignDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ error?: string }>;
 }) {
   const { id } = await params;
-
-  let orgAdmin;
-  try {
-    orgAdmin = await requireOrgAdmin();
-  } catch {
-    redirect("/login");
-  }
-
+  const { error } = await searchParams;
+  const { org } = await requireOrgAdmin();
   const supabase = await createClient();
-
-  const { data: rawCampaign } = await supabase
+  const result = await supabase
     .from("campaigns")
     .select("*")
     .eq("id", id)
-    .eq("organization_id", orgAdmin.org.id)
+    .eq("organization_id", org.id)
     .single();
-
-  if (!rawCampaign) notFound();
-  const campaign = rawCampaign as Campaign;
-
-  const { data: rawSubjects } = await supabase
-    .from("campaign_subjects")
-    .select("*")
-    .eq("campaign_id", id)
-    .eq("organization_id", orgAdmin.org.id);
-
-  const subjects = (rawSubjects ?? []) as CampaignSubject[];
-
-  const { data: rawAssignments } = await supabase
-    .from("campaign_assignments")
-    .select("*")
-    .eq("campaign_id", id)
-    .eq("organization_id", orgAdmin.org.id)
-    .order("created_at");
-
-  const assignments = (rawAssignments ?? []) as CampaignAssignment[];
-
-  // Fetch all people for wizard + display
-  const { data: rawPeople } = await supabase
-    .from("people")
-    .select("id, full_name, email, manager_person_id, job_title")
-    .eq("organization_id", orgAdmin.org.id)
-    .is("archived_at", null)
-    .order("full_name");
-
-  const people = (rawPeople ?? []) as Person[];
+  if (result.error && result.error.code !== "PGRST116")
+    throw new Error("Unable to load this campaign");
+  if (!result.data) notFound();
+  const campaign = result.data as Campaign;
+  const [
+    subjectResult,
+    assignmentResult,
+    peopleResult,
+    questionResult,
+    templateResult,
+  ] = await Promise.all([
+    supabase
+      .from("campaign_subjects")
+      .select("*")
+      .eq("campaign_id", id)
+      .eq("organization_id", org.id),
+    supabase
+      .from("campaign_assignments")
+      .select("*")
+      .eq("campaign_id", id)
+      .eq("organization_id", org.id)
+      .order("created_at"),
+    supabase
+      .from("people")
+      .select("*")
+      .eq("organization_id", org.id)
+      .order("full_name"),
+    campaign.questions_frozen_at
+      ? supabase
+          .from("campaign_questions")
+          .select("*")
+          .eq("campaign_id", id)
+          .eq("organization_id", org.id)
+          .order("sort_order")
+      : supabase
+          .from("template_questions")
+          .select("*")
+          .eq(
+            "template_id",
+            campaign.template_id ?? "00000000-0000-0000-0000-000000000000",
+          )
+          .eq("organization_id", org.id)
+          .order("sort_order"),
+    supabase
+      .from("templates")
+      .select("*")
+      .eq("organization_id", org.id)
+      .is("archived_at", null)
+      .order("name"),
+  ]);
+  if (
+    [
+      subjectResult,
+      assignmentResult,
+      peopleResult,
+      questionResult,
+      templateResult,
+    ].some((r) => r.error)
+  )
+    throw new Error("Unable to load campaign details");
+  const subjects = (subjectResult.data ?? []) as CampaignSubject[];
+  const assignments = (assignmentResult.data ?? []) as CampaignAssignment[];
+  const people = (peopleResult.data ?? []) as Person[];
+  const questions = (questionResult.data ?? []) as TemplateQuestion[];
+  const templates = (templateResult.data ?? []) as Template[];
   const peopleById = Object.fromEntries(people.map((p) => [p.id, p]));
-
-  // Completion counts
-  const submitted = assignments.filter((a) => a.status === "submitted").length;
-  const total = assignments.length;
-
-  const doClose = closeCampaign.bind(null, id);
-
+  const progress = responseProgress(assignments);
+  const ready =
+    subjects.length > 0 &&
+    assignments.length > 0 &&
+    questions.length > 0 &&
+    !!campaign.template_id;
+  const initialSubjects = subjects.map((s) => ({
+    personId: s.person_id,
+    managerPersonId:
+      assignments.find(
+        (a) =>
+          a.subject_person_id === s.person_id && a.relationship === "manager",
+      )?.respondent_person_id ?? null,
+  }));
   return (
     <div>
-      {/* Header */}
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <Link
-              href="/app/campaigns"
-              className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-            >
-              ← Campaigns
-            </Link>
-          </div>
-          <h1 className="font-display text-2xl font-semibold tracking-tight text-foreground">
+      <Link
+        href="/app/campaigns"
+        className="text-sm text-muted-foreground hover:text-primary"
+      >
+        ← Campaigns
+      </Link>
+      <div className="mt-5 flex flex-wrap justify-between items-start gap-5">
+        <div className="min-w-0">
+          <p className="text-sm font-medium text-primary mb-3">
+            {campaignLabels[campaign.status]}
+          </p>
+          <h1 className="font-display text-3xl sm:text-4xl font-semibold tracking-tight break-words">
             {campaign.name}
           </h1>
-          <div className="flex items-center gap-3 mt-1">
-            <StatusBadge status={campaign.status} />
-            {campaign.closes_at && (
-              <span className="text-xs text-muted-foreground">
-                Closes{" "}
-                {new Date(campaign.closes_at).toLocaleDateString("en-GB", {
-                  day: "numeric",
-                  month: "short",
-                  year: "numeric",
-                })}
-              </span>
-            )}
-          </div>
+          <p className="mt-4 text-muted-foreground">
+            Annual appraisal · Self and manager feedback
+            {campaign.closes_at
+              ? ` · Closes ${campaignDate(campaign.closes_at)}`
+              : ""}
+          </p>
         </div>
-
-        {/* Actions */}
-        <div className="flex items-center gap-2 shrink-0 flex-wrap justify-end">
-          {campaign.status === "draft" && assignments.length > 0 && (
-            <ActivateButton campaignId={id} />
+        {["active", "closed"].includes(campaign.status) &&
+          progress.complete > 0 && (
+            <Button asChild>
+              <Link href={`/app/campaigns/${id}/results`}>View results</Link>
+            </Button>
           )}
-          {campaign.status === "scheduled" && (
-            <ActivateButton campaignId={id} label="Send now" />
-          )}
-          {campaign.status === "active" && (
-            <form action={doClose}>
-              <Button variant="outline" size="sm" type="submit">
-                Close campaign
-              </Button>
-            </form>
-          )}
-          {(campaign.status === "active" || campaign.status === "closed") &&
-            submitted > 0 && (
-              <Link href={`/app/campaigns/${id}/results`}>
-                <Button variant="outline" size="sm">
-                  View results
-                </Button>
-              </Link>
-            )}
-        </div>
       </div>
-
+      {error && (
+        <p
+          role="alert"
+          className="mt-6 rounded-lg bg-destructive/5 p-4 text-sm text-destructive"
+        >
+          {error}
+        </p>
+      )}
       {campaign.schedule_error && (
-        <div className="mt-4 rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">
-          Schedule error: {campaign.schedule_error}
-        </div>
+        <p role="alert" className="mt-6 text-sm text-destructive">
+          Invitations could not be sent on schedule: {campaign.schedule_error}
+        </p>
       )}
-
       {campaign.status === "scheduled" && campaign.opens_at && (
-        <div className="mt-4 rounded-lg border border-border bg-card px-4 py-3 text-sm text-muted-foreground">
-          Scheduled to send{" "}
-          {new Date(campaign.opens_at).toLocaleString("en-GB", {
-            day: "numeric",
-            month: "short",
-            year: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-          })}
-          . Invites queue automatically via the scheduler.
-        </div>
-      )}
-
-      {/* Stats */}
-      <div className="mt-6 grid gap-4 sm:grid-cols-3">
-        <StatCard label="Subjects" value={subjects.length} />
-        <StatCard label="Assignments" value={total} />
-        <StatCard
-          label="Completed"
-          value={`${submitted} / ${total}`}
-          highlight={submitted > 0}
-        />
-      </div>
-
-      {/* Assignment list */}
-      {assignments.length > 0 && (
-        <div className="mt-8">
-          <h2 className="font-display text-sm font-semibold text-foreground mb-3">
-            Assignments
+        <section className="mt-8 rounded-xl bg-card p-6">
+          <h2 className="font-display text-lg font-semibold">
+            Scheduled for {campaignDate(campaign.opens_at)}
           </h2>
-          <div className="divide-y divide-border rounded-xl border border-border bg-card overflow-hidden">
-            {assignments.map((a) => {
-              const respondent = peopleById[a.respondent_person_id];
-              const subject = a.subject_person_id
-                ? peopleById[a.subject_person_id]
-                : null;
-              return (
-                <div
-                  key={a.id}
-                  className="flex items-center justify-between px-5 py-3.5"
-                >
-                  <div>
-                    <p className="text-sm font-medium text-foreground">
-                      {respondent?.full_name ?? respondent?.email ?? "Unknown"}
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      {a.relationship
-                        ? RELATIONSHIP_LABELS[a.relationship] ?? a.relationship
-                        : "—"}
-                      {subject
-                        ? ` · about ${subject.full_name ?? subject.email}`
-                        : ""}
-                    </p>
-                  </div>
-                  <AssignmentStatusBadge status={a.status} />
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* Wizard — only show when draft */}
-      {campaign.status === "draft" && (
-        <AssignWizard campaignId={id} people={people} />
-      )}
-
-      {campaign.status === "draft" && assignments.length === 0 && (
-        <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-          Add subjects above, then click{" "}
-          <strong>Send now</strong> to activate.
-        </div>
-      )}
-
-      {campaign.status === "draft" && assignments.length > 0 && (
-        <div className="mt-4 space-y-3">
-          <div className="rounded-lg border border-border bg-muted px-4 py-3 text-sm text-muted-foreground">
-            Ready to send? Click <strong>Send now</strong> to activate and queue
-            invite emails, or schedule a send date below.
-          </div>
-          <form
-            action={scheduleCampaign.bind(null, id)}
-            className="rounded-xl border border-border bg-card px-4 py-4 flex flex-col sm:flex-row sm:items-end gap-3"
-          >
-            <div className="flex-1">
-              <label className="block text-sm font-medium text-foreground mb-1.5">
-                Schedule send
-              </label>
-              <input
-                name="opens_at"
-                type="date"
-                required
-                className="w-full rounded-lg border border-input bg-surface px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-              />
-              <p className="mt-1 text-xs text-muted-foreground">
-                Questions freeze when scheduled. Reminders every 3 days until
-                close.
-              </p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Invitations will be queued automatically. The campaign questions are
+            locked.
+          </p>
+          <details className="mt-4">
+            <summary className="cursor-pointer text-sm text-primary">
+              Need to send earlier?
+            </summary>
+            <div className="mt-4">
+              <ActivateButton campaignId={id} label="Send now instead" />
             </div>
-            <Button type="submit" variant="outline" size="sm">
-              Schedule
+          </details>
+        </section>
+      )}
+      <nav
+        aria-label="Campaign sections"
+        className="mt-8 flex flex-wrap gap-6 border-b border-border pb-4 text-sm"
+      >
+        <a href="#overview" className="text-primary">
+          Overview
+        </a>
+        <a href="#participants">Participants</a>
+        <Link href={`/app/campaigns/${id}/results`}>Results</Link>
+      </nav>
+      <section id="overview" className="scroll-mt-20 mt-8">
+        <h2 className="sr-only">Campaign overview</h2>
+        <div className="flex flex-wrap gap-x-10 gap-y-5">
+          {[
+            [subjects.length, "People being reviewed"],
+            [progress.complete, "Responses complete"],
+            [progress.inProgress, "In progress"],
+            [progress.notStarted, "Not started"],
+          ].map(([value, label]) => (
+            <div key={label}>
+              <p className="font-display text-3xl font-semibold">{value}</p>
+              <p className="mt-2 text-sm text-muted-foreground">{label}</p>
+            </div>
+          ))}
+        </div>
+        {progress.total > 0 && (
+          <div className="mt-6">
+            <progress
+              aria-label="Response completion"
+              max={progress.total}
+              value={progress.complete}
+              className="h-2 w-full accent-primary"
+            />
+            <p className="mt-2 text-sm text-muted-foreground">
+              {progress.complete} of {progress.total} expected responses
+              complete
+              {progress.revoked
+                ? ` · ${progress.revoked} closed without submission`
+                : ""}
+            </p>
+          </div>
+        )}
+        {progress.attention > 0 && (
+          <p className="mt-4 text-sm text-destructive">
+            {progress.attention} invitation{progress.attention === 1 ? "" : "s"}{" "}
+            could not be delivered. Check the reviewer’s email address in
+            People.
+          </p>
+        )}
+      </section>
+      <section id="participants" className="mt-10 scroll-mt-20">
+        <h2 className="font-display text-xl font-semibold">Participants</h2>
+        {campaign.status === "draft" ? (
+          <DraftSetup
+            key={JSON.stringify(initialSubjects)}
+            campaignId={id}
+            people={people}
+            initialSubjects={initialSubjects}
+          >
+            <section className="mt-10 bg-card rounded-2xl p-6 sm:p-8">
+              <h2 className="font-display text-xl font-semibold">
+                Review before sending
+              </h2>
+              <p className="mt-3 text-sm text-muted-foreground">
+                {subjects.length} saved participants · {progress.total} email
+                invitations · {questions.length} questions
+              </p>
+              {(!campaign.template_id || !questions.length) && (
+                <form
+                  action={setCampaignTemplate.bind(null, id)}
+                  className="mt-5 space-y-3"
+                >
+                  <label
+                    htmlFor="repair-template"
+                    className="block text-sm font-medium"
+                  >
+                    Choose a question template to continue
+                  </label>
+                  <select
+                    id="repair-template"
+                    name="template_id"
+                    required
+                    className="w-full rounded-lg border border-input p-3 bg-surface"
+                  >
+                    <option value="">Choose a template</option>
+                    {templates.map((t) => (
+                      <option key={t.id} value={t.id}>
+                        {t.name}
+                      </option>
+                    ))}
+                  </select>
+                  <Button type="submit" variant="outline">
+                    Save template
+                  </Button>
+                </form>
+              )}
+              <details className="mt-5">
+                <summary className="cursor-pointer text-sm text-primary">
+                  Review campaign questions
+                </summary>
+                <ol className="mt-4 space-y-4 list-decimal pl-5">
+                  {questions.map((q) => (
+                    <li key={q.id} className="text-sm leading-relaxed">
+                      {q.prompt}
+                      {q.required && (
+                        <span className="text-muted-foreground">
+                          {" "}
+                          (required)
+                        </span>
+                      )}
+                    </li>
+                  ))}
+                </ol>
+                {campaign.template_id && !campaign.questions_frozen_at && (
+                  <Link
+                    href={`/app/templates/${campaign.template_id}`}
+                    className="mt-4 inline-block text-sm text-primary underline"
+                  >
+                    Edit this reusable template
+                  </Link>
+                )}
+              </details>
+              {ready ? (
+                <SendControls campaignId={id} />
+              ) : (
+                <p className="mt-6 text-sm text-muted-foreground">
+                  Save at least one participant and choose a template with
+                  questions before sending.
+                </p>
+              )}
+            </section>
+          </DraftSetup>
+        ) : (
+          <div className="mt-4 divide-y divide-border">
+            {assignments.map((a) => (
+              <div
+                key={a.id}
+                className="flex flex-wrap justify-between items-center gap-3 py-4"
+              >
+                <div className="min-w-0">
+                  <p className="font-medium break-words">
+                    {peopleById[a.respondent_person_id]?.full_name ??
+                      peopleById[a.respondent_person_id]?.email ??
+                      "Archived reviewer"}
+                  </p>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    {a.relationship === "self"
+                      ? "Self appraisal"
+                      : "Manager review"}{" "}
+                    ·{" "}
+                    {a.subject_person_id
+                      ? (peopleById[a.subject_person_id]?.full_name ??
+                        peopleById[a.subject_person_id]?.email ??
+                        "Archived employee")
+                      : "Employee review"}
+                  </p>
+                </div>
+                <span
+                  className={`text-sm ${a.status === "submitted" ? "text-primary" : a.status === "bounced" ? "text-destructive" : "text-muted-foreground"}`}
+                >
+                  {responseLabels[a.status] ?? a.status}
+                </span>
+              </div>
+            ))}
+            {!assignments.length && (
+              <p className="mt-4 text-muted-foreground">
+                No participants in this campaign.
+              </p>
+            )}
+          </div>
+        )}
+      </section>
+
+      {campaign.status === "active" && (
+        <details className="mt-10 border-t border-border pt-6">
+          <summary className="cursor-pointer text-sm text-muted-foreground">
+            Close this campaign
+          </summary>
+          <p className="mt-4 text-sm text-muted-foreground">
+            Closing prevents further submissions and removes access for
+            outstanding reviewers. Submitted results remain available.
+          </p>
+          <form action={closeCampaign.bind(null, id)} className="mt-4">
+            <Button variant="outline" type="submit">
+              Close campaign
             </Button>
           </form>
-        </div>
+        </details>
       )}
     </div>
   );
 }
-
-function StatusBadge({ status }: { status: string }) {
-  const colors: Record<string, string> = {
-    draft: "bg-muted text-muted-foreground",
-    scheduled: "bg-blue-50 text-blue-700",
-    active: "bg-emerald-50 text-emerald-700",
-    closed: "bg-muted text-muted-foreground",
-    archived: "bg-muted text-muted-foreground",
-  };
-  const labels: Record<string, string> = {
-    draft: "Draft",
-    scheduled: "Scheduled",
-    active: "Active",
-    closed: "Closed",
-    archived: "Archived",
-  };
-  return (
-    <span
-      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${colors[status] ?? "bg-muted text-muted-foreground"}`}
-    >
-      {labels[status] ?? status}
-    </span>
-  );
-}
-
-function AssignmentStatusBadge({ status }: { status: string }) {
-  const colors: Record<string, string> = {
-    pending: "bg-muted text-muted-foreground",
-    sent: "bg-blue-50 text-blue-600",
-    opened: "bg-blue-50 text-blue-700",
-    started: "bg-amber-50 text-amber-700",
-    submitted: "bg-emerald-50 text-emerald-700",
-    bounced: "bg-destructive/10 text-destructive",
-    revoked: "bg-muted text-muted-foreground line-through",
-  };
-  const labels: Record<string, string> = {
-    pending: "Pending",
-    sent: "Sent",
-    opened: "Opened",
-    started: "In progress",
-    submitted: "Submitted",
-    bounced: "Bounced",
-    revoked: "Revoked",
-  };
-  return (
-    <span
-      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${colors[status] ?? ""}`}
-    >
-      {labels[status] ?? status}
-    </span>
-  );
-}
-
-function StatCard({
-  label,
-  value,
-  highlight,
-}: {
-  label: string;
-  value: string | number;
-  highlight?: boolean;
-}) {
-  return (
-    <div
-      className={`rounded-xl border px-5 py-4 ${highlight ? "border-primary/30 bg-primary/5" : "border-border bg-card"}`}
-    >
-      <p className="text-xs text-muted-foreground">{label}</p>
-      <p className="mt-1 text-2xl font-display font-semibold text-foreground">
-        {value}
-      </p>
-    </div>
-  );
-}
-
-const RELATIONSHIP_LABELS: Record<string, string> = {
-  self: "Self",
-  manager: "Manager",
-  peer: "Peer",
-  direct_report: "Direct report",
-  other: "Other",
-};

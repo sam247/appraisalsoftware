@@ -8,10 +8,12 @@ export default function NavLink({
   href,
   label,
   exact,
+  onNavigate,
 }: {
   href: string;
   label: string;
   exact?: boolean;
+  onNavigate?: () => void;
 }) {
   const pathname = usePathname();
   const isActive = exact ? pathname === href : pathname.startsWith(href);
@@ -19,8 +21,10 @@ export default function NavLink({
   return (
     <Link
       href={href}
+      onClick={onNavigate}
+      aria-current={isActive ? "page" : undefined}
       className={cn(
-        "flex items-center rounded-md px-2.5 py-2 text-sm transition-colors",
+        "flex items-center rounded-lg px-4 py-3 text-sm transition-colors",
         isActive
           ? "bg-accent text-accent-foreground font-medium"
           : "text-muted-foreground hover:bg-surface hover:text-foreground",

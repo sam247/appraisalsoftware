@@ -2,15 +2,18 @@ import { requireOrgAdmin } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { redirect, notFound } from "next/navigation";
 import { upsertQuestion, archiveTemplate } from "../actions";
-import { Button } from "@/components/ui/button";
+import FormSubmit from "@/app/app/form-submit";
 import type { Template, TemplateQuestion } from "@/lib/types/database";
 
 export default async function TemplateDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ error?: string }>;
 }) {
   const { id } = await params;
+  const { error } = await searchParams;
 
   let orgAdmin;
   try {
@@ -55,17 +58,26 @@ export default async function TemplateDetailPage({
           )}
         </div>
         <form action={doArchive}>
-          <Button
+          <FormSubmit
             variant="outline"
             size="sm"
-            type="submit"
+
             className="text-muted-foreground"
           >
             Archive
-          </Button>
+          </FormSubmit>
         </form>
       </div>
 
+      {error && (
+        <p role="alert" className="mt-5 text-sm text-destructive">
+          {error}
+        </p>
+      )}
+      <p className="mt-6 text-sm text-muted-foreground">
+        Reusable questions for your appraisal campaigns. Changes apply to
+        drafts; sent and scheduled campaigns retain their own locked questions.
+      </p>
       {/* Questions */}
       <div className="mt-8 space-y-3">
         {questions.map((q: TemplateQuestion, idx) => (
@@ -77,7 +89,11 @@ export default async function TemplateDetailPage({
               {idx + 1}. {q.prompt}
             </p>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Type: {q.type}
+              {q.type === "text"
+                ? "Written response"
+                : q.type === "rating"
+                  ? "Rating"
+                  : q.type}
               {q.help_text ? ` · ${q.help_text}` : ""}
             </p>
           </div>
@@ -91,6 +107,7 @@ export default async function TemplateDetailPage({
         </h2>
         <form action={addQuestion} className="space-y-3">
           <input
+            aria-label="Question prompt"
             name="prompt"
             type="text"
             required
@@ -99,17 +116,16 @@ export default async function TemplateDetailPage({
           />
           <div className="flex flex-wrap gap-3">
             <select
+              aria-label="Response type"
               name="type"
               defaultValue="text"
               className="rounded-lg border border-input bg-surface px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
             >
               <option value="text">Open text</option>
               <option value="rating">Rating</option>
-              <option value="scale">Scale</option>
-              <option value="multiple_choice">Multiple choice</option>
-              <option value="yes_no">Yes / No</option>
             </select>
             <input
+              aria-label="Help text"
               name="help_text"
               type="text"
               placeholder="Help text (optional)"
@@ -119,15 +135,9 @@ export default async function TemplateDetailPage({
               <input name="required" type="checkbox" defaultChecked />
               Required
             </label>
-            <input
-              name="sort_order"
-              type="hidden"
-              value={questions.length}
-            />
+            <input name="sort_order" type="hidden" value={questions.length} />
           </div>
-          <Button type="submit" size="sm">
-            Add question
-          </Button>
+          <FormSubmit size="sm">Add question</FormSubmit>
         </form>
       </div>
     </div>

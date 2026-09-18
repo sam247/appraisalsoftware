@@ -2,7 +2,7 @@ import { requireOrgAdmin } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { createTemplate } from "./actions";
-import { Button } from "@/components/ui/button";
+import FormSubmit from "@/app/app/form-submit";
 import Link from "next/link";
 import type { Template } from "@/lib/types/database";
 
@@ -20,27 +20,29 @@ export default async function TemplatesPage({
 
   const params = await searchParams;
   const supabase = await createClient();
-  const { data: rawTemplates } = await supabase
+  const { data: rawTemplates, error: templateError } = await supabase
     .from("templates")
     .select("*")
     .eq("organization_id", orgAdmin.org.id)
     .is("archived_at", null)
     .order("created_at");
 
+  if (templateError) throw new Error("Unable to load templates");
   const templates = (rawTemplates ?? []) as Template[];
 
   return (
     <div>
-      <h1 className="font-display text-2xl font-semibold tracking-tight text-foreground">
+      <h1 className="font-display text-3xl font-semibold tracking-tight text-foreground">
         Templates
       </h1>
       <p className="mt-1 text-sm text-muted-foreground">
-        Build and manage appraisal question sets.
+        Reusable starting points for thoughtful annual appraisals. Choose one
+        when creating a campaign.
       </p>
 
       {params.error && (
         <div className="mt-4 rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">
-          {decodeURIComponent(params.error)}
+          {params.error}
         </div>
       )}
 
@@ -51,6 +53,7 @@ export default async function TemplatesPage({
         </h2>
         <form action={createTemplate} className="flex flex-wrap gap-3">
           <input
+            aria-label="Template name"
             name="name"
             type="text"
             required
@@ -58,14 +61,13 @@ export default async function TemplatesPage({
             className="flex-1 min-w-40 rounded-lg border border-input bg-surface px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
           />
           <input
+            aria-label="Template description"
             name="description"
             type="text"
             placeholder="Description (optional)"
             className="flex-1 min-w-40 rounded-lg border border-input bg-surface px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
           />
-          <Button type="submit" size="sm">
-            Create
-          </Button>
+          <FormSubmit size="sm">Create</FormSubmit>
         </form>
       </div>
 
@@ -88,12 +90,14 @@ export default async function TemplatesPage({
                     {t.name}
                   </p>
                   {t.description && (
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-sm text-muted-foreground">
                       {t.description}
                     </p>
                   )}
                 </div>
-                <span className="text-xs text-muted-foreground">Edit →</span>
+                <span className="text-sm text-muted-foreground">
+                  View questions →
+                </span>
               </Link>
             ))}
           </div>

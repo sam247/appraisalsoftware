@@ -28,18 +28,20 @@ export default async function ResultsPage({
 
   const supabase = await createClient();
 
-  const { data: rawCampaign } = await supabase
+  const { data: rawCampaign, error: campaignError } = await supabase
     .from("campaigns")
     .select("*")
     .eq("id", id)
     .eq("organization_id", orgAdmin.org.id)
     .single();
 
+  if (campaignError && campaignError.code !== "PGRST116")
+    throw new Error("Unable to load campaign results");
   if (!rawCampaign) notFound();
   const campaign = rawCampaign as Campaign;
 
   // Questions
-  const { data: rawQuestions } = await supabase
+  const { data: rawQuestions, error: questionsError } = await supabase
     .from("campaign_questions")
     .select("*")
     .eq("campaign_id", id)
@@ -47,7 +49,7 @@ export default async function ResultsPage({
   const questions = (rawQuestions ?? []) as CampaignQuestion[];
 
   // Subjects
-  const { data: rawSubjects } = await supabase
+  const { data: rawSubjects, error: subjectsError } = await supabase
     .from("campaign_subjects")
     .select("*")
     .eq("campaign_id", id)
@@ -55,7 +57,7 @@ export default async function ResultsPage({
   const subjects = (rawSubjects ?? []) as CampaignSubject[];
 
   // Submitted assignments
-  const { data: rawAssignments } = await supabase
+  const { data: rawAssignments, error: assignmentsError } = await supabase
     .from("campaign_assignments")
     .select("*")
     .eq("campaign_id", id)
@@ -65,14 +67,14 @@ export default async function ResultsPage({
 
   // Responses
   const assignmentIds = assignments.map((a) => a.id);
-  const { data: rawResponses } =
+  const { data: rawResponses, error: responsesError } =
     assignmentIds.length > 0
       ? await supabase
           .from("responses")
           .select("*")
           .in("assignment_id", assignmentIds)
           .eq("status", "submitted")
-      : { data: [] };
+      : { data: [], error: null };
   const responses = (rawResponses ?? []) as Response[];
   const responseByAssignmentId = Object.fromEntries(
     responses.map((r) => [r.assignment_id, r]),
@@ -80,23 +82,37 @@ export default async function ResultsPage({
 
   // Answers
   const responseIds = responses.map((r) => r.id);
-  const { data: rawAnswers } =
+  const { data: rawAnswers, error: answersError } =
     responseIds.length > 0
       ? await supabase
           .from("response_answers")
           .select("*")
           .in("response_id", responseIds)
-      : { data: [] };
+      : { data: [], error: null };
   const answers = (rawAnswers ?? []) as ResponseAnswer[];
 
   // People
-  const { data: rawPeople } = await supabase
+  const { data: rawPeople, error: peopleError } = await supabase
     .from("people")
     .select("id, full_name, email")
-    .eq("organization_id", orgAdmin.org.id)
-    .is("archived_at", null);
-  const people = (rawPeople ?? []) as Pick<Person, "id" | "full_name" | "email">[];
+    .eq("organization_id", orgAdmin.org.id);
+  const people = (rawPeople ?? []) as Pick<
+    Person,
+    "id" | "full_name" | "email"
+  >[];
   const peopleById = Object.fromEntries(people.map((p) => [p.id, p]));
+
+  if (
+    [
+      questionsError,
+      subjectsError,
+      assignmentsError,
+      responsesError,
+      answersError,
+      peopleError,
+    ].some(Boolean)
+  )
+    throw new Error("Unable to load campaign responses");
 
   // Build lookup: responseId → answers
   const answersByResponseId: Record<string, ResponseAnswer[]> = {};
@@ -110,7 +126,8 @@ export default async function ResultsPage({
     return (
       <div className="text-center py-16">
         <p className="text-sm text-muted-foreground">
-          No questions were frozen for this campaign.
+          Questions and results will appear once this appraisal has been sent or
+          scheduled.
         </p>
         <Link
           href={`/app/campaigns/${id}`}
@@ -132,15 +149,18 @@ export default async function ResultsPage({
           ← {campaign.name}
         </Link>
       </div>
-      <h1 className="font-display text-2xl font-semibold tracking-tight text-foreground">
+      <h1 className="font-display text-3xl font-semibold tracking-tight text-foreground">
         Results
       </h1>
       <p className="mt-1 text-sm text-muted-foreground">
-        Self vs manager responses per subject — identified mode.
+        Employee reflection and manager feedback, side by side. Use the
+        responses to guide your review conversation.
       </p>
 
       {subjects.length === 0 ? (
-        <p className="mt-8 text-sm text-muted-foreground">No subjects.</p>
+        <p className="mt-8 text-sm text-muted-foreground">
+          No participants in this campaign.
+        </p>
       ) : (
         <div className="mt-8 space-y-10">
           {subjects.map((subject) => {
@@ -187,13 +207,13 @@ export default async function ResultsPage({
                 className="rounded-xl border border-border bg-card overflow-hidden"
               >
                 <div className="px-5 py-4 border-b border-border">
-                  <h2 className="font-display text-base font-semibold text-foreground">
+                  <h2 className="font-display text-xl font-semibold text-foreground">
                     {person?.full_name ?? person?.email ?? subject.person_id}
                   </h2>
                   <p className="text-xs text-muted-foreground mt-0.5">
                     Manager:{" "}
                     {managerPerson
-                      ? managerPerson.full_name ?? managerPerson.email
+                      ? (managerPerson.full_name ?? managerPerson.email)
                       : "—"}
                   </p>
                 </div>
@@ -208,7 +228,7 @@ export default async function ResultsPage({
                         <p className="text-sm font-medium text-foreground mb-3">
                           {q.prompt}
                         </p>
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid sm:grid-cols-2 gap-5">
                           <ResponseCell
                             label="Self"
                             answer={selfAns}
@@ -243,7 +263,7 @@ function ResponseCell({
   submitted: boolean;
 }) {
   return (
-    <div className="rounded-lg border border-border bg-surface px-4 py-3">
+    <div className="rounded-lg bg-surface px-5 py-4">
       <p className="text-xs font-medium text-muted-foreground mb-1.5">
         {label}
       </p>
@@ -251,7 +271,8 @@ function ResponseCell({
         <p className="text-xs text-muted-foreground italic">Not submitted</p>
       ) : !answer ? (
         <p className="text-xs text-muted-foreground italic">Skipped</p>
-      ) : answer.numeric_value !== null && answer.numeric_value !== undefined ? (
+      ) : answer.numeric_value !== null &&
+        answer.numeric_value !== undefined ? (
         <p className="text-xl font-display font-semibold text-foreground">
           {answer.numeric_value}
           <span className="text-xs font-normal text-muted-foreground ml-1">
@@ -259,7 +280,9 @@ function ResponseCell({
           </span>
         </p>
       ) : answer.text_value ? (
-        <p className="text-sm text-foreground">{answer.text_value}</p>
+        <p className="text-sm leading-relaxed whitespace-pre-wrap break-words text-foreground">
+          {answer.text_value}
+        </p>
       ) : (
         <p className="text-xs text-muted-foreground italic">No answer</p>
       )}

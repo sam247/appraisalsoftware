@@ -14,7 +14,7 @@ type MemberWithProfile = {
 export default async function SettingsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; invite?: string }>;
+  searchParams: Promise<{ error?: string; inviteUrl?: string }>;
 }) {
   let orgAdmin;
   try {
@@ -49,18 +49,18 @@ export default async function SettingsPage({
 
       {params.error && (
         <div className="rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">
-          {decodeURIComponent(params.error)}
+          {params.error}
         </div>
       )}
 
-      {params.invite && (
+      {params.inviteUrl && (
         <div className="rounded-lg border border-border bg-accent/30 px-4 py-3 text-sm text-foreground">
           <p className="font-medium mb-1">Invite link generated</p>
           <p className="font-mono text-xs break-all text-muted-foreground">
-            {decodeURIComponent(params.invite)}
+            {params.inviteUrl}
           </p>
           <p className="mt-1 text-xs text-muted-foreground">
-            Copy and share this link — email delivery is not configured in Phase 1.
+            Copy and share this link with your colleague.
           </p>
         </div>
       )}
@@ -146,7 +146,8 @@ export default async function SettingsPage({
           </Button>
         </form>
         <p className="mt-2 text-xs text-muted-foreground">
-          Invite link is generated; email delivery is not configured in Phase 1.
+          Create an invite link to copy and share with another workspace
+          administrator.
         </p>
       </section>
     </div>

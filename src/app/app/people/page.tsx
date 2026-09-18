@@ -1,8 +1,8 @@
 import { requireOrgAdmin } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { createPerson } from "./actions";
-import { Button } from "@/components/ui/button";
+import { createPerson, updatePerson, archivePerson } from "./actions";
+import FormSubmit from "@/app/app/form-submit";
 import type { Person } from "@/lib/types/database";
 
 export default async function PeoplePage({
@@ -19,31 +19,32 @@ export default async function PeoplePage({
 
   const params = await searchParams;
   const supabase = await createClient();
-  const { data: rawPeople } = await supabase
+  const { data: rawPeople, error: peopleError } = await supabase
     .from("people")
     .select("*")
     .eq("organization_id", orgAdmin.org.id)
     .is("archived_at", null)
     .order("full_name");
 
+  if (peopleError) throw new Error("Unable to load people");
   const people = (rawPeople ?? []) as Person[];
 
   return (
     <div>
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-display text-2xl font-semibold tracking-tight text-foreground">
+          <h1 className="font-display text-3xl font-semibold tracking-tight text-foreground">
             People
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Manage the people in your appraisal cycles.
+            Keep employees and reviewers ready for your next appraisal.
           </p>
         </div>
       </div>
 
       {params.error && (
         <div className="mt-4 rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">
-          {decodeURIComponent(params.error)}
+          {params.error}
         </div>
       )}
 
@@ -54,12 +55,14 @@ export default async function PeoplePage({
         </h2>
         <form action={createPerson} className="flex flex-wrap gap-3">
           <input
+            aria-label="Full name"
             name="full_name"
             type="text"
             placeholder="Full name"
             className="flex-1 min-w-32 rounded-lg border border-input bg-surface px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
           />
           <input
+            aria-label="Email address"
             name="email"
             type="email"
             required
@@ -67,14 +70,13 @@ export default async function PeoplePage({
             className="flex-1 min-w-40 rounded-lg border border-input bg-surface px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
           />
           <input
+            aria-label="Job title"
             name="job_title"
             type="text"
             placeholder="Job title (optional)"
             className="flex-1 min-w-32 rounded-lg border border-input bg-surface px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
           />
-          <Button type="submit" size="sm">
-            Add
-          </Button>
+          <FormSubmit size="sm">Add</FormSubmit>
         </form>
       </div>
 
@@ -98,18 +100,57 @@ export default async function PeoplePage({
 
 function PersonRow({ person }: { person: Person }) {
   return (
-    <div className="flex items-center justify-between px-5 py-3.5">
-      <div>
-        <p className="text-sm font-medium text-foreground">
-          {person.full_name ?? person.email}
-        </p>
-        {person.full_name && (
-          <p className="text-xs text-muted-foreground">{person.email}</p>
-        )}
-        {person.job_title && (
-          <p className="text-xs text-muted-foreground">{person.job_title}</p>
-        )}
+    <div className="px-5 py-5">
+      <div className="flex flex-wrap justify-between gap-4">
+        <div className="min-w-0">
+          <p className="font-display text-lg font-semibold break-words">
+            {person.full_name ?? person.email}
+          </p>
+          <p className="mt-1 text-sm text-muted-foreground break-words">
+            {person.email}
+            {person.job_title ? ` · ${person.job_title}` : ""}
+          </p>
+        </div>
       </div>
+      <details className="mt-4">
+        <summary className="text-sm text-primary cursor-pointer">
+          Edit person
+        </summary>
+        <form
+          action={updatePerson.bind(null, person.id)}
+          className="mt-4 flex flex-wrap gap-3"
+        >
+          <label className="text-sm flex-1 min-w-40">
+            Full name
+            <input
+              name="full_name"
+              defaultValue={person.full_name ?? ""}
+              className="mt-2 w-full rounded-lg border border-input bg-surface p-3"
+            />
+          </label>
+          <label className="text-sm flex-1 min-w-40">
+            Job title
+            <input
+              name="job_title"
+              defaultValue={person.job_title ?? ""}
+              className="mt-2 w-full rounded-lg border border-input bg-surface p-3"
+            />
+          </label>
+          <FormSubmit className="self-end">Save changes</FormSubmit>
+        </form>
+        <details className="mt-5">
+          <summary className="text-sm text-muted-foreground cursor-pointer">
+            Archive person
+          </summary>
+          <p className="mt-3 text-sm text-muted-foreground">
+            Remove this person from new campaign selections. Existing campaigns
+            and results remain available.
+          </p>
+          <form action={archivePerson.bind(null, person.id)} className="mt-3">
+            <FormSubmit variant="outline">Confirm archive</FormSubmit>
+          </form>
+        </details>
+      </details>
     </div>
   );
 }
