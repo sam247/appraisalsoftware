@@ -70,6 +70,11 @@ try {
     "-f",
     join(root, "supabase/tests/production_safeguards.sql"),
   ]);
+  run("psql", [
+    ...args,
+    "-f",
+    join(root, "supabase/tests/360_privacy_foundation.sql"),
+  ]);
   // A held activation lock must serialize participant editing, not allow a late replacement.
   const lockFile = join(dir, "activation.sql");
   writeFileSync(
@@ -205,7 +210,7 @@ try {
     /Invalid or closed appraisal link/,
   );
   console.log(
-    "PASS: PostgreSQL migrations, atomic rollback, tenancy, permissions, GMT/BST conversion, scheduling rollback, annual respondent/results/close path, activation/edit and submit/save races.",
+    "PASS: PostgreSQL migrations, private 360 grants/RLS, immutable contracts, closed-only/cohort-safe reports, launch guards, atomic rollback, tenancy, GMT/BST scheduling, annual respondent/results/close path, activation/edit and submit/save races.",
   );
 } finally {
   if (started) run("pg_ctl", ["-D", dir, "-m", "immediate", "-w", "stop"]);
