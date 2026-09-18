@@ -4,7 +4,6 @@ import { requireOrgAdmin } from "@/lib/auth/session";
 import {
   DEFAULT_REMINDER_SETTINGS,
   sanitizeReminderSettings,
-  validateSchedule,
 } from "@/lib/schedule/decisions";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
@@ -31,7 +30,21 @@ export async function createCampaign(formData: FormData): Promise<void> {
     redirect(`/app/campaigns/new?error=${encodeURIComponent(templateError)}`);
   if ((closesAt && !validDate(closesAt)) || (opensAt && !validDate(opensAt)))
     redirect("/app/campaigns/new?error=Choose+a+valid+date");
-  if (closesAt && new Date(endOfDayIso(closesAt)).getTime() <= Date.now())
+  const timezone = org.timezone || "Europe/London";
+  const closeInstant = closesAt ? await resolveDate(closesAt) : null;
+  const openInstant = opensAt ? await resolveDate(opensAt) : null;
+  async function resolveDate(date: string) {
+    const { data, error } = await supabase.rpc("campaign_date_instants", {
+      p_date: date,
+      p_timezone: timezone,
+    });
+    if (error || !data?.[0])
+      redirect(
+        `/app/campaigns/new?error=${encodeURIComponent(error?.message ?? "Unable to resolve campaign date")}`,
+      );
+    return data[0] as { opens_at: string; closes_at: string };
+  }
+  if (closeInstant && new Date(closeInstant.closes_at).getTime() <= Date.now())
     redirect("/app/campaigns/new?error=Close+date+must+be+in+the+future");
 
   const { data: campaign, error } = await supabase
@@ -42,8 +55,9 @@ export async function createCampaign(formData: FormData): Promise<void> {
       campaign_type: "annual_appraisal",
       status: "draft",
       template_id: templateId,
-      closes_at: closesAt ? endOfDayIso(closesAt) : null,
-      opens_at: opensAt ? startOfDayIso(opensAt) : null,
+      closes_at: closeInstant?.closes_at ?? null,
+      opens_at: openInstant?.opens_at ?? null,
+      timezone,
       reminder_settings: sanitizeReminderSettings(
         DEFAULT_REMINDER_SETTINGS,
       ) as unknown as Record<string, unknown>,
@@ -71,119 +85,23 @@ export async function saveSubjectsAndAssignments(
     managerPersonId: string | null;
   }>,
 ): Promise<{ error?: string }> {
-  const { org } = await requireOrgAdmin();
+  await requireOrgAdmin();
   const supabase = await createClient();
 
-  // Verify campaign belongs to org
-  const { data: campaign } = await supabase
-    .from("campaigns")
-    .select("id, organization_id, status")
-    .eq("id", campaignId)
-    .eq("organization_id", org.id)
-    .single();
-
-  if (!campaign) return { error: "Campaign not found" };
-  if (campaign.status !== "draft") return { error: "Campaign is not in draft" };
-
+  // The database derives tenancy, validates input and holds the activation lock.
   if (
-    new Set(subjects.map((s) => s.personId)).size !== subjects.length ||
-    subjects.some(
-      (s) => s.selfPersonId !== s.personId || s.managerPersonId === s.personId,
-    )
+    !Array.isArray(subjects) ||
+    subjects.some((s) => !s || s.selfPersonId !== s.personId)
   )
-    return {
-      error:
-        "Choose each employee once, with a different person as their manager.",
-    };
-  const personIds = [
-    ...new Set(
-      subjects.flatMap((s) => [
-        s.personId,
-        ...(s.managerPersonId ? [s.managerPersonId] : []),
-      ]),
-    ),
-  ];
-  if (personIds.length) {
-    const { data: validPeople, error } = await supabase
-      .from("people")
-      .select("id")
-      .eq("organization_id", org.id)
-      .in("id", personIds);
-    if (error || validPeople?.length !== personIds.length)
-      return {
-        error:
-          "One or more participants are unavailable. Reload and try again.",
-      };
-  }
-
-  // Clear existing subjects + assignments (idempotent replace)
-  const { error: clearAssignmentsError } = await supabase
-    .from("campaign_assignments")
-    .delete()
-    .eq("campaign_id", campaignId)
-    .eq("organization_id", org.id);
-
-  if (clearAssignmentsError) return { error: clearAssignmentsError.message };
-
-  const { error: clearSubjectsError } = await supabase
-    .from("campaign_subjects")
-    .delete()
-    .eq("campaign_id", campaignId)
-    .eq("organization_id", org.id);
-
-  if (clearSubjectsError) return { error: clearSubjectsError.message };
-
-  // Insert subjects
-  const subjectRows = subjects.map((s) => ({
-    campaign_id: campaignId,
-    organization_id: org.id,
-    person_id: s.personId,
-  }));
-
-  if (subjectRows.length > 0) {
-    const { error: subErr } = await supabase
-      .from("campaign_subjects")
-      .insert(subjectRows);
-    if (subErr) return { error: subErr.message };
-  }
-
-  // Build assignments: self + manager for each subject
-  const assignmentRows: Array<{
-    campaign_id: string;
-    organization_id: string;
-    respondent_person_id: string;
-    subject_person_id: string;
-    relationship: string;
-  }> = [];
-
-  for (const s of subjects) {
-    // Self assignment — subject reviews themselves
-    assignmentRows.push({
-      campaign_id: campaignId,
-      organization_id: org.id,
-      respondent_person_id: s.selfPersonId,
-      subject_person_id: s.personId,
-      relationship: "self",
-    });
-
-    // Manager assignment
-    if (s.managerPersonId) {
-      assignmentRows.push({
-        campaign_id: campaignId,
-        organization_id: org.id,
-        respondent_person_id: s.managerPersonId,
-        subject_person_id: s.personId,
-        relationship: "manager",
-      });
-    }
-  }
-
-  if (assignmentRows.length > 0) {
-    const { error: asnErr } = await supabase
-      .from("campaign_assignments")
-      .insert(assignmentRows);
-    if (asnErr) return { error: asnErr.message };
-  }
+    return { error: "Invalid participant selection" };
+  const { error } = await supabase.rpc("save_appraisal_participants", {
+    p_campaign_id: campaignId,
+    p_participants: subjects.map((s) => ({
+      person_id: s.personId,
+      manager_person_id: s.managerPersonId,
+    })),
+  });
+  if (error) return { error: error.message };
 
   revalidatePath(`/app/campaigns/${campaignId}`);
   return {};
@@ -272,7 +190,7 @@ export async function scheduleCampaign(
   campaignId: string,
   formData: FormData,
 ): Promise<void> {
-  const { org } = await requireOrgAdmin();
+  await requireOrgAdmin();
   const supabase = await createClient();
 
   const opensAt = (formData.get("opens_at") as string | null)?.trim();
@@ -284,91 +202,17 @@ export async function scheduleCampaign(
 
   if (!validDate(opensAt))
     redirect(`/app/campaigns/${campaignId}?error=Invalid+send+date`);
-  const opensIso = startOfDayIso(opensAt);
-  if (!Number.isFinite(new Date(opensIso).getTime())) {
-    redirect(
-      `/app/campaigns/${campaignId}?error=${encodeURIComponent("Invalid send date")}`,
-    );
-  }
-
-  const { data: campaign } = await supabase
-    .from("campaigns")
-    .select("id, status, template_id, closes_at")
-    .eq("id", campaignId)
-    .eq("organization_id", org.id)
-    .single();
-
-  if (!campaign) {
-    redirect(
-      `/app/campaigns?error=${encodeURIComponent("Campaign not found")}`,
-    );
-  }
-  if (campaign.status !== "draft" && campaign.status !== "scheduled") {
-    redirect(
-      `/app/campaigns/${campaignId}?error=${encodeURIComponent("Only draft campaigns can be scheduled")}`,
-    );
-  }
-
-  const scheduleError = validateSchedule({
-    opensAt: opensIso,
-    closesAt: campaign.closes_at,
-    now: new Date(),
-  });
-  if (scheduleError)
-    redirect(
-      `/app/campaigns/${campaignId}?error=${encodeURIComponent(scheduleError.message)}`,
-    );
-  const { count, error: participantError } = await supabase
-    .from("campaign_assignments")
-    .select("id", { count: "exact", head: true })
-    .eq("campaign_id", campaignId)
-    .eq("organization_id", org.id);
-  if (participantError || !count)
-    redirect(
-      `/app/campaigns/${campaignId}?error=Save+participants+before+scheduling`,
-    );
-
-  // Freeze questions at schedule time (Architecture v1)
-  const { error: freezeErr } = await supabase.rpc("freeze_campaign_questions", {
+  const { error } = await supabase.rpc("schedule_appraisal_campaign", {
     p_campaign_id: campaignId,
+    p_send_date: opensAt,
   });
-  if (freezeErr) {
-    redirect(
-      `/app/campaigns/${campaignId}?error=${encodeURIComponent(freezeErr.message)}`,
-    );
-  }
-
-  const { error } = await supabase
-    .from("campaigns")
-    .update({
-      status: "scheduled",
-      opens_at: opensIso,
-      send_claimed_at: null,
-      schedule_error: null,
-    })
-    .eq("id", campaignId)
-    .eq("organization_id", org.id);
-
-  if (error) {
+  if (error)
     redirect(
       `/app/campaigns/${campaignId}?error=${encodeURIComponent(error.message)}`,
     );
-  }
 
   revalidatePath(`/app/campaigns/${campaignId}`);
   redirect(`/app/campaigns/${campaignId}`);
-}
-
-function startOfDayIso(dateInput: string): string {
-  const d = new Date(dateInput);
-  d.setUTCHours(9, 0, 0, 0); // explicit UTC schedule shown in the product
-  return d.toISOString();
-}
-
-function endOfDayIso(dateInput: string): string {
-  const d = new Date(dateInput);
-  d.setUTCHours(23, 59, 0, 0);
-  return d.toISOString();
 }
 
 function validDate(value: string): boolean {

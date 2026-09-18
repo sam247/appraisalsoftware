@@ -231,11 +231,13 @@ export default async function ResultsPage({
                         <div className="grid sm:grid-cols-2 gap-5">
                           <ResponseCell
                             label="Self"
+                            maximum={Number(q.scale.max ?? 5)}
                             answer={selfAns}
                             submitted={!!selfResponse}
                           />
                           <ResponseCell
                             label="Manager"
+                            maximum={Number(q.scale.max ?? 5)}
                             answer={mgrAns}
                             submitted={!!managerResponse}
                           />
@@ -257,10 +259,12 @@ function ResponseCell({
   label,
   answer,
   submitted,
+  maximum,
 }: {
   label: string;
   answer: ResponseAnswer | undefined;
   submitted: boolean;
+  maximum: number;
 }) {
   return (
     <div className="rounded-lg bg-surface px-5 py-4">
@@ -276,12 +280,18 @@ function ResponseCell({
         <p className="text-xl font-display font-semibold text-foreground">
           {answer.numeric_value}
           <span className="text-xs font-normal text-muted-foreground ml-1">
-            / 5
+            / {maximum}
           </span>
         </p>
       ) : answer.text_value ? (
         <p className="text-sm leading-relaxed whitespace-pre-wrap break-words text-foreground">
           {answer.text_value}
+        </p>
+      ) : answer.choice_values.length > 0 ? (
+        <p className="text-sm leading-relaxed text-foreground">
+          {answer.choice_values.every((value) => typeof value === "string")
+            ? answer.choice_values.join(", ")
+            : "Unsupported choice format"}
         </p>
       ) : (
         <p className="text-xs text-muted-foreground italic">No answer</p>
