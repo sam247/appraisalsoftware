@@ -14,7 +14,7 @@ export const PRIMARY_CTA_LABEL = "Start free";
 export const PRIMARY_CTA_TRANSITION = "";
 
 /** In-page secondary CTA. */
-export const SEE_HOW_IT_WORKS_HREF = "/#how-it-works";
+export const SEE_HOW_IT_WORKS_HREF = "/how-it-works";
 export const SEE_HOW_IT_WORKS_LABEL = "See how it works";
 
 /**

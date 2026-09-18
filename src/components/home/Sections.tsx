@@ -15,7 +15,6 @@ import {
 import { Button } from "@/components/ui/button";
 import {
   Avatar,
-  Eyebrow,
   Panel,
   SectionHeading,
   StatusChip,
@@ -40,8 +39,8 @@ const workflowTypes = [
   },
   {
     label: "360° Feedback",
-    description: "Collect structured feedback from self, manager, peers and direct reports. See Self vs Others results.",
-    includes: ["Multi-rater collection", "Self vs Others", "Anonymous options", "Aggregated reports"],
+    description: "Planned: collect feedback from self, manager, peers and direct reports. Prepare now with free 360 resources.",
+    includes: ["Planned multi-rater collection", "Planned Self vs Others", "Planned anonymity controls", "Free preparation resources"],
     href: ROUTES.feedback360Software,
     linkLabel: "360 feedback software",
   },
@@ -63,8 +62,8 @@ const workflowTypes = [
     label: "Probation Review",
     description: "A focused review at the end of a probation period. Shorter form, clear outcome, stored with the employee.",
     includes: ["Probation-specific form", "Clear pass/extend/fail", "Manager and employee input", "Record keeping"],
-    href: ROUTES.annualAppraisalTemplate,
-    linkLabel: "See templates",
+    href: ROUTES.probationReviewTemplate,
+    linkLabel: "Probation review template",
   },
 ];
 
@@ -81,6 +80,7 @@ export function WorkflowTypesSection() {
           align="center"
         />
 
+        <noscript><div className="mt-6 space-y-4">{workflowTypes.slice(1).map((workflow) => <p key={workflow.label}><Link className="underline" href={workflow.href}>{workflow.label}</Link>: {workflow.description}</p>)}</div></noscript>
         {/* 50/50 — vertical selector left, content right */}
         <div className="mt-10 grid gap-6 lg:grid-cols-[1fr_1.5fr] lg:items-start lg:gap-12">
           {/* Left: selector tabs */}
@@ -88,7 +88,8 @@ export function WorkflowTypesSection() {
             {workflowTypes.map((wt, i) => (
               <button
                 key={wt.label}
-                onClick={() => setActive(i)}
+                aria-pressed={i === active}
+                  onClick={() => setActive(i)}
                 className={
                   "rounded-lg border px-4 py-2.5 text-left text-[13px] font-medium transition-all cursor-pointer lg:w-full lg:px-4 lg:py-3 " +
                   (i === active
@@ -154,14 +155,14 @@ const workflowSteps = [
   {
     label: "Send",
     icon: Send,
-    description: "Everyone gets a branded form — one question at a time.",
+    description: "Employees and managers receive a structured question form.",
     ui: {
       title: "Sending invitations",
       fields: [
         { label: "Recipients", value: "24 employees" },
         { label: "Form", value: "Annual review · 8 questions" },
-        { label: "Branded", value: "Your logo and colours" },
-        { label: "Format", value: "One question per screen" },
+        { label: "Reviewers", value: "Employee and manager" },
+        { label: "Format", value: "Structured questions" },
       ],
       meta: "24 of 24 delivered",
       action: "View sent",
@@ -186,17 +187,17 @@ const workflowSteps = [
   {
     label: "Understand",
     icon: BarChart3,
-    description: "See results, compare Self vs Others, export reports.",
+    description: "Read employee and manager answers side by side.",
     ui: {
       title: "Campaign results",
       fields: [
         { label: "Responses", value: "24 of 24" },
         { label: "Avg. score", value: "4.1 / 5.0" },
-        { label: "Reports", value: "PDF and CSV ready" },
-        { label: "360 view", value: "Self vs Others available" },
+        { label: "Results", value: "Self vs Manager answers" },
+        { label: "360 view", value: "Planned addition" },
       ],
       meta: "Complete",
-      action: "Download reports",
+      action: "Review answers",
     },
   },
 ];
@@ -223,9 +224,10 @@ export function WorkflowStepsSection() {
               {workflowSteps.map((step, i) => (
                 <button
                   key={step.label}
+                  aria-pressed={i === active}
                   onClick={() => setActive(i)}
                   className={
-                    "group flex items-center gap-3 rounded-xl px-3 py-3 text-left transition-all cursor-pointer lg:px-4 " +
+                    "group flex min-w-0 flex-col items-center gap-2 rounded-xl px-1 py-3 text-center transition-all cursor-pointer lg:flex-row lg:gap-3 lg:px-4 lg:text-left " +
                     (i === active
                       ? "bg-primary/[0.06]"
                       : "hover:bg-surface")
@@ -276,7 +278,7 @@ export function WorkflowStepsSection() {
           </div>
 
           {/* Right: product panel */}
-          <Panel title={current.ui.title} meta={current.ui.meta}>
+          <Panel title={current.ui.title} meta={`Illustrative example · ${current.ui.meta}`}>
             <div className="p-5 sm:p-6">
               <div className="space-y-3">
                 {current.ui.fields.map((field) => (
@@ -320,8 +322,8 @@ const hrSuiteItems = [
 
 const appraisalItems = [
   "Appraisals",
-  "360° Feedback",
-  "Employee Feedback",
+  "Employee self-assessments",
+  "Manager responses",
 ];
 
 export function PositioningSection() {
@@ -422,7 +424,7 @@ export function CampaignSection() {
                 "One view of every employee's status",
                 "Automated reminders before the close date",
                 "Manager and employee responses on the same record",
-                "Download reports when the cycle closes",
+                "Read employee and manager answers when responses arrive",
               ].map((item) => (
                 <li key={item} className="flex items-start gap-3">
                   <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-primary" aria-hidden />
@@ -432,7 +434,7 @@ export function CampaignSection() {
             </ul>
           </div>
 
-          <Panel title="Annual Appraisal 2026" meta="75%">
+          <Panel title="Annual Appraisal 2026" meta="Illustrative example">
             <div className="p-5 sm:p-6">
               <div className="flex items-center justify-between gap-3">
                 <div>
@@ -505,13 +507,13 @@ const templates = [
     name: "Employee Self Assessment",
     questions: 6,
     sections: ["Performance", "Strengths", "Gaps", "Career goals"],
-    href: ROUTES.appraisalQuestions,
+    href: ROUTES.selfAppraisalTemplate,
   },
   {
-    name: "Manager Review",
+    name: "Personal Development Plan",
     questions: 7,
-    sections: ["Performance", "Observations", "Support", "Recommendations"],
-    href: ROUTES.annualAppraisalSoftware,
+    sections: ["Goal", "Practice", "Support", "Progress"],
+    href: ROUTES.personalDevelopmentPlanTemplate,
   },
   {
     name: "360 Leadership Feedback",
@@ -523,7 +525,7 @@ const templates = [
     name: "Probation Review",
     questions: 5,
     sections: ["Role clarity", "Performance", "Support", "Outcome"],
-    href: ROUTES.annualAppraisalSoftware,
+    href: ROUTES.probationReviewTemplate,
   },
 ];
 
@@ -538,6 +540,7 @@ export function TemplatesSection() {
           align="center"
         />
 
+        <p className="mt-6 text-center text-sm"><Link className="underline underline-offset-4" href="/templates">Browse all free templates</Link></p>
         <div className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {templates.map((t) => (
             <Link
@@ -550,7 +553,7 @@ export function TemplatesSection() {
                   Template
                 </span>
                 <span className="text-[10px] text-muted-foreground">
-                  {t.questions} questions
+                  Copy or print
                 </span>
               </div>
               <p className="mt-3 text-sm font-semibold text-foreground">{t.name}</p>
@@ -585,8 +588,8 @@ export function PricingSection() {
       <div className="mx-auto max-w-6xl px-5 lg:px-8">
         <SectionHeading
           eyebrow="Pricing"
-          title="Simple software. Simple pricing."
-          copy="One plan. Everything included. No per-feature upgrades."
+          title="A focused appraisal product."
+          copy="Pricing details will be published when confirmed."
           align="center"
         />
 
@@ -594,16 +597,16 @@ export function PricingSection() {
         <div className="mt-12 grid gap-10 lg:grid-cols-2 lg:items-center lg:gap-16">
           <div>
             <p className="text-[15px] leading-relaxed text-muted-foreground">
-              No per-feature add-ons. No surprise invoices. Everything your appraisal cycle needs in one plan — campaigns, forms, 360° feedback, completion tracking, reminders, and reports.
+              The current workflow focuses on employee and manager appraisal campaigns. Start with reusable questions, collect responses and review both perspectives. Final pricing and plan limits have not been announced.
             </p>
             <ul className="mt-8 space-y-3 text-sm text-foreground">
               {[
-                "Unlimited appraisal campaigns",
-                "360° feedback with Self vs Others",
+                "Appraisal campaigns",
+                "Employee self-assessments and manager responses",
                 "Completion tracking and reminders",
                 "Customisable form templates",
-                "PDF and CSV report exports",
-                "Branded respondent experience",
+                "Self vs Manager results",
+                "Structured respondent forms",
               ].map((item) => (
                 <li key={item} className="flex items-start gap-3">
                   <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />
@@ -615,15 +618,15 @@ export function PricingSection() {
 
           <div className="rounded-2xl border-2 border-primary/20 bg-card p-8 text-center">
             <p className="text-xs font-semibold uppercase tracking-[0.12em] text-primary">
-              All-inclusive
+              Current workflow
             </p>
             <p className="mt-6 text-[15px] leading-relaxed text-muted-foreground">
-              One plan. Everything included.
+              Employee and manager appraisals.
             </p>
             <div className="my-8 border-t border-border" />
             <p className="text-sm font-semibold text-foreground">Pricing coming soon</p>
             <p className="mt-2 text-xs text-muted-foreground">
-              We'll share pricing when the product launches.
+              We will share pricing when the product launches.
             </p>
             <Button className="mt-6 w-full" asChild>
               <a href={PRIMARY_CTA_URL}>
@@ -651,27 +654,27 @@ const homeFaqs = [
   {
     question: "Can we run appraisals without a full HR system?",
     answer:
-      "Yes. Appraisal Software does one job — appraisals and 360° feedback. No payroll, no absence management, no recruitment. If you already know how your appraisals should work, this is the process around them.",
+      "Yes. Appraisal Software focuses on employee and manager appraisals. 360 collection is planned. No payroll, no absence management, no recruitment. If you already know how your appraisals should work, this is the process around them.",
   },
   {
     question: "What types of review can we run?",
     answer:
-      "Annual appraisals, employee self-assessments, manager reviews, 360° feedback, probation reviews, and any custom feedback form you create.",
+      "The current workflow supports employee self-assessments and manager reviews using reusable questions. You can adapt the questions for your review process. Multi-rater 360 collection is planned.",
   },
   {
     question: "How does 360° feedback work?",
     answer:
-      "Choose a subject, assign reviewers by relationship (self, manager, peers, direct reports), send the same form, and see aggregated results with Self vs Others comparison.",
+      "A 360 exercise gathers observations from several relationships. Our free guides and forms help you prepare; peer and direct-report collection and Self vs Others reporting are planned product additions.",
   },
   {
     question: "Is feedback anonymous?",
     answer:
-      "Where you choose it. Peer and direct-report feedback can be collected anonymously. Manager comments are usually attributed. You decide before the campaign starts.",
+      "Current appraisals use identified employee and manager responses. Anonymity controls for 360 feedback are planned and are not currently available.",
   },
   {
     question: "Who is this for?",
     answer:
-      "UK organisations that already run appraisals — or know they should — and want a simpler way to do it. From 10-person businesses to 500-person organisations.",
+      "UK organisations that already run appraisals — or know they should — and want a simpler way to do it. Especially owners, managers and small HR teams seeking a focused review process.",
   },
 ];
 

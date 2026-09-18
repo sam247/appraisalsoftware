@@ -64,8 +64,8 @@
   --popover-foreground: oklch(0.14 0.01 75);
 
   /* Jade green primary — completion, progress, action */
-  --primary: oklch(0.635 0.185 158);
-  --primary-hover: oklch(0.575 0.175 158);
+  --primary: oklch(0.46 0.12 158);
+  --primary-hover: oklch(0.40 0.10 158);
   --primary-foreground: oklch(0.99 0.005 155);
 
   --secondary: oklch(0.965 0.005 85);
@@ -176,4 +176,22 @@
     animation-duration: 0.001ms !important;
     transition-duration: 0.001ms !important;
   }
+}
+
+/* Resource anchors stay visible beneath the sticky navigation. */
+main section[id] { scroll-margin-top: 6rem; }
+:focus-visible { outline: 2px solid var(--foreground); outline-offset: 4px; }
+
+@media print {
+  @page { margin: 16mm; }
+  body { background: white; color: black; }
+  .no-print, .template-page .template-support { display: none !important; }
+  .resource-page { background: white; }
+  .resource-page section { padding-block: 12pt; border-color: #aaa; }
+  .resource-page section > div { padding-inline: 0; }
+  .template-block { break-inside: avoid; background: white; border-color: #aaa; }
+  .template-block dd { min-height: 22pt; border-color: #aaa; }
+  .resource-page p, .resource-page dt { color: black; }
+  .resource-page nav { display: none; }
+  .reveal { animation: none; }
 }

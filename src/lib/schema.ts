@@ -7,16 +7,28 @@ export type FaqItem = {
 };
 
 const SOFTWARE_FEATURES = [
-  "Appraisal campaigns",
-  "Reusable appraisal forms",
-  "360° feedback with Self vs Others",
-  "Branded one-question respondent forms",
-  "Manager and employee responses",
+  "Annual appraisal campaigns",
+  "Reusable appraisal questions",
+  "Employee self-assessments and manager responses",
   "Completion tracking",
-  "Email reminders",
-  "Reporting and PDF/CSV export",
-  "Privacy-conscious anonymous feedback",
+  "Email invitations and reminders",
+  "Self vs Manager results",
 ];
+
+export function articleSchema({ title, description, path, dateModified }: { title: string; description: string; path: string; dateModified: string }) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: title,
+    description,
+    mainEntityOfPage: absoluteUrl(path),
+    image: absoluteUrl(`/social/${path.replace(/^\//, "")}.png`),
+    dateModified,
+    inLanguage: "en-GB",
+    author: { "@type": "Organization", name: "Appraisal Software team", url: SITE_URL },
+    publisher: { "@id": `${SITE_URL}#organization` },
+  };
+}
 
 export function websiteAndOrganizationGraph() {
   return {

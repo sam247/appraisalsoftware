@@ -5,16 +5,16 @@ import Link from "next/link";
 import { Menu } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { Logo } from "@/components/home/Logo";
 import { PRIMARY_CTA_LABEL, PRIMARY_CTA_URL, SIGN_IN_URL } from "@/lib/links";
 import { ROUTES } from "@/lib/routes";
 
 const nav = [
-  { label: "Features", href: "/#how-it-works" },
+  { label: "Appraisals", href: ROUTES.annualAppraisalSoftware },
   { label: "360 Feedback", href: ROUTES.feedback360Software },
-  { label: "Templates", href: "/#templates" },
-  { label: "Pricing", href: "/#pricing" },
+  { label: "Templates", href: ROUTES.templates },
+  { label: "Resources", href: ROUTES.resources },
 ];
 
 export function Header() {
@@ -31,7 +31,7 @@ export function Header() {
   return (
     <header
       className={
-        "sticky top-0 z-50 transition-all duration-300 " +
+        "no-print sticky top-0 z-50 transition-all duration-300 " +
         (scrolled
           ? "border-b border-border bg-background/92 shadow-[0_1px_3px_rgba(0,0,0,0.04)] backdrop-blur-lg"
           : "border-b border-transparent bg-transparent")
@@ -41,7 +41,7 @@ export function Header() {
         <Link href={ROUTES.home} className="shrink-0">
           <Logo />
         </Link>
-        <nav className="hidden flex-1 items-center justify-center gap-8 lg:flex">
+        <nav aria-label="Main navigation" className="hidden flex-1 items-center justify-center gap-8 lg:flex">
           {nav.map((item) => (
             <Link
               key={item.label}
@@ -52,6 +52,7 @@ export function Header() {
             </Link>
           ))}
         </nav>
+        <noscript><nav aria-label="Navigation without JavaScript" className="flex flex-wrap gap-3 text-xs lg:hidden">{nav.map((item) => <a key={item.label} href={item.href} className="underline">{item.label}</a>)}</nav></noscript>
         <div className="ml-auto flex items-center gap-3 lg:ml-0">
           <a
             href={SIGN_IN_URL}
@@ -69,6 +70,8 @@ export function Header() {
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="w-[86%] max-w-xs">
+              <SheetTitle className="sr-only">Site navigation</SheetTitle>
+              <SheetDescription className="sr-only">Browse appraisal pages, templates and resources.</SheetDescription>
               <div className="mt-8 flex flex-col gap-1">
                 {nav.map((item) => (
                   <Link

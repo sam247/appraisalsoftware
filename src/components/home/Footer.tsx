@@ -4,8 +4,6 @@ import { Logo } from "@/components/home/Logo";
 import {
   CONTACT_URL,
   DISCLOSURELY_URL,
-  PRIMARY_CTA_LABEL,
-  PRIMARY_CTA_URL,
   PRIVACY_URL,
   TERMS_URL,
 } from "@/lib/links";
@@ -16,9 +14,11 @@ const footerLinks = {
     { label: "Annual appraisal software", href: ROUTES.annualAppraisalSoftware },
     { label: "Employee appraisal software", href: ROUTES.employeeAppraisalSoftware },
     { label: "360 feedback software", href: ROUTES.feedback360Software },
-    { label: PRIMARY_CTA_LABEL, href: PRIMARY_CTA_URL },
+    { label: "How it works", href: ROUTES.howItWorks },
   ],
   resources: [
+    { label: "All templates", href: ROUTES.templates },
+    { label: "Resource library", href: ROUTES.resources },
     { label: "Annual appraisal template", href: ROUTES.annualAppraisalTemplate },
     { label: "Appraisal questions", href: ROUTES.appraisalQuestions },
     { label: "360 feedback template", href: ROUTES.feedback360Template },
@@ -38,7 +38,7 @@ const columns = [
 
 export function Footer() {
   return (
-    <footer className="border-t border-border">
+    <footer className="no-print border-t border-border">
       <div className="mx-auto max-w-6xl px-5 py-14 lg:px-8">
         <div className="grid gap-10 md:grid-cols-[1.2fr_2fr]">
           <div>
@@ -46,8 +46,8 @@ export function Footer() {
               <Logo size="lg" />
             </Link>
             <p className="mt-4 max-w-xs text-xs leading-relaxed text-muted-foreground">
-              Simple appraisal and 360° feedback software for UK organisations. Create, send,
-              collect and understand — without the heavyweight HR system.
+              Appraisal software for UK teams, with free review templates and practical
+              guides. Run employee and manager reviews without a heavyweight HR system.
             </p>
           </div>
           <div className="grid gap-8 sm:grid-cols-3">

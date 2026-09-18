@@ -1,8 +1,11 @@
+import type { Metadata } from "next";
 import { requireOrgAdmin } from "@/lib/auth/session";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import NavLink from "./nav-link";
 import { Logo } from "@/components/home/Logo";
+
+export const metadata: Metadata = { robots: { index: false, follow: false } };
 
 const NAV = [
   { href: "/app", label: "Overview", exact: true },

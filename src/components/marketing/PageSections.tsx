@@ -44,15 +44,17 @@ export function PageHero({
   title,
   description,
   breadcrumbs,
+  compact = false,
 }: {
   eyebrow?: string;
   title: string;
   description: string;
   breadcrumbs?: { label: string; href: string }[];
+  compact?: boolean;
 }) {
   return (
     <section className="border-b border-border">
-      <div className="mx-auto max-w-6xl px-5 py-14 lg:px-8 lg:py-20">
+      <div className={cn("mx-auto max-w-6xl px-5 lg:px-8", compact ? "py-8 sm:py-10" : "py-14 lg:py-20")}>
         {breadcrumbs && breadcrumbs.length > 0 ? (
           <nav aria-label="Breadcrumb" className="mb-6">
             <ol className="flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
@@ -148,7 +150,7 @@ export function CtaBand({
   secondaryLabel?: string;
 }) {
   return (
-    <section className="px-5 py-16 lg:px-8">
+    <section className="no-print px-5 py-16 lg:px-8">
       <div className="mx-auto max-w-6xl rounded-2xl border border-border bg-card px-6 py-12 text-center sm:px-10">
         <h2 className="font-display text-[1.5rem] font-semibold leading-[1.15] tracking-[-0.025em] text-foreground sm:text-[1.75rem]">
           {title}

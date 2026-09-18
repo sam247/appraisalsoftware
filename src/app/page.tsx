@@ -12,6 +12,7 @@ import {
 } from "@/components/home/Sections";
 import { CompleteAppraisalSection } from "@/components/home/AppraisalSection";
 import { UnderstandResultsSection } from "@/components/home/Feedback360";
+import { RelatedLinks } from "@/components/marketing/PageSections";
 import { Footer } from "@/components/home/Footer";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { pageMetadata } from "@/lib/metadata";
@@ -45,6 +46,12 @@ export default function HomePage() {
         <CampaignSection />
         <TemplatesSection />
         <PricingSection />
+        <RelatedLinks title="Prepare for a useful review" links={[
+          { href: "/annual-appraisal-guide", label: "Annual appraisal guide", copy: "Plan the preparation, meeting and follow-up." },
+          { href: "/appraisal-answers", label: "Employee appraisal answers", copy: "Use evidence to explain achievements and development needs." },
+          { href: "/appraisal-comments", label: "Manager appraisal comments", copy: "Write observations that help the next conversation." },
+          { href: "/resources", label: "All appraisal resources", copy: "Find practical guides, original examples and free forms." },
+        ]} />
         <HomeFaqSection />
         <FinalCtaSection />
       </main>

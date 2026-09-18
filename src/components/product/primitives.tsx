@@ -21,7 +21,7 @@ export function Panel({
         className,
       )}
     >
-      <div className="flex items-center gap-2 border-b border-border px-4 py-2.5">
+      <div className="flex flex-wrap items-center gap-2 border-b border-border px-4 py-2.5">
         <span className="size-[7px] rounded-full bg-foreground/15" aria-hidden />
         <span className="size-[7px] rounded-full bg-foreground/15" aria-hidden />
         <span className="size-[7px] rounded-full bg-foreground/15" aria-hidden />
@@ -31,7 +31,7 @@ export function Panel({
           </span>
         ) : null}
         {meta ? (
-          <span className="ml-auto hidden truncate rounded-md bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary sm:block">
+          <span className="basis-full rounded-md bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary sm:ml-auto sm:basis-auto">
             {meta}
           </span>
         ) : null}

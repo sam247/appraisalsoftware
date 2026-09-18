@@ -1,168 +1,18 @@
-import {
-  ContentSection,
-  CtaBand,
-  FaqSection,
-  PageHero,
-  RelatedLinks,
-  TextLink,
-  homeCrumb,
-} from "@/components/marketing/PageSections";
 import { SiteChrome } from "@/components/layout/SiteChrome";
+import { ContentSection, PageHero, RelatedLinks, TextLink, homeCrumb } from "@/components/marketing/PageSections";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { pageMetadata } from "@/lib/metadata";
-import { ROUTES } from "@/lib/routes";
-import { breadcrumbSchema, faqPageSchema, softwareApplicationSchema } from "@/lib/schema";
+import { breadcrumbSchema } from "@/lib/schema";
 
-const TITLE = "360 Feedback Software for UK Teams | Appraisal Software";
-const DESCRIPTION =
-  "360 feedback software for UK teams. Subject-based reviews with self, manager, peer and direct-report input, Self vs Others reporting, reminders and privacy-conscious anonymity.";
-
-const faqs = [
-  {
-    question: "What is 360 feedback software?",
-    answer:
-      "It is a way to collect structured comments about a person from more than one relationship — typically self, manager, peers and direct reports — then aggregate those responses into a report.",
-  },
-  {
-    question: "Can 360° feedback be anonymous?",
-    answer:
-      "Yes. Feedback collection is privacy-conscious and can run anonymously by default where you choose it. Be clear with respondents about what they can expect before they start.",
-  },
-  {
-    question: "What is Self vs Others reporting?",
-    answer:
-      "When a self-assessment is included, results can compare how someone rated themselves with how others rated them — by overall score and by competency or question area.",
-  },
-  {
-    question: "Is 360° feedback the main product?",
-    answer:
-      "No. Appraisal Software is annual appraisal software first. 360° feedback is a meaningful part of the product when a review needs multi-rater input, not a separate platform.",
-  },
-  {
-    question: "Who can we collect feedback from?",
-    answer:
-      "Self, manager, peers, direct reports and other relationships you assign for each subject in the campaign.",
-  },
-];
-
-export const metadata = pageMetadata({
-  title: TITLE,
-  description: DESCRIPTION,
-  path: ROUTES.feedback360Software,
-});
-
-export default function Feedback360SoftwarePage() {
-  return (
-    <SiteChrome>
-      <JsonLd
-        data={softwareApplicationSchema({
-          path: ROUTES.feedback360Software,
-          name: "360 Feedback Software",
-          description: DESCRIPTION,
-        })}
-      />
-      <JsonLd data={faqPageSchema(faqs)} />
-      <JsonLd
-        data={breadcrumbSchema([
-          { name: "Home", path: ROUTES.home },
-          { name: "360 Feedback Software", path: ROUTES.feedback360Software },
-        ])}
-      />
-      <PageHero
-        eyebrow="Multi-rater feedback"
-        title="360 Feedback Software"
-        description="Run subject-based 360 reviews with self-assessment and feedback from managers, peers and direct reports — then see Self vs Others results, completion and downloadable reports."
-        breadcrumbs={[
-          homeCrumb(),
-          { label: "360 Feedback Software", href: ROUTES.feedback360Software },
-        ]}
-      />
-
-      <ContentSection title="Subject-based 360 reviews">
-        <p>
-          360° feedback is useful when a manager form is not enough — for team leads, people managers
-          and anyone whose work is hard to see from one angle. Choose the subject, assign reviewers by
-          relationship, send the same questions, and wait for responses to come in.
-        </p>
-        <p>
-          This sits next to{" "}
-          <TextLink href={ROUTES.annualAppraisalSoftware}>annual appraisal software</TextLink>, not
-          instead of it. Most teams still run a yearly employee and manager review. Add 360° input
-          where it changes the quality of the conversation.
-        </p>
-      </ContentSection>
-
-      <ContentSection title="Self-assessment and relationship-aware reviewers">
-        <p>
-          Include a self-assessment when you want Self vs Others comparison. Invite managers, peers,
-          direct reports and other reviewers with the relationship that matches how they know the
-          subject — so the report stays interpretable.
-        </p>
-        <p>
-          Start with the{" "}
-          <TextLink href={ROUTES.feedback360Template}>360 feedback template</TextLink> if you want
-          example questions for different relationships.
-        </p>
-      </ContentSection>
-
-      <ContentSection title="Completion, reminders and anonymity">
-        <p>
-          A 360° campaign fails in the same way a spreadsheet appraisal fails: you cannot see who
-          still owes a response. Track completion by subject and by respondent, and send reminders
-          for outstanding forms.
-        </p>
-        <p>
-          Collection can be anonymous by default where you choose it, so peers and direct reports
-          can speak plainly. Reporting respects privacy states — share what is safe to share.
-        </p>
-      </ContentSection>
-
-      <ContentSection title="Self vs Others reporting">
-        <p>
-          Aggregated results show overall scores, competency or area scoring, and how self-assessment
-          compares with feedback from others. Export PDF or CSV when you need a copy outside the
-          product.
-        </p>
-        <p>
-          Keep that record with the appraisal, then return to{" "}
-          <TextLink href={ROUTES.home}>Appraisal Software</TextLink> when you want the wider annual
-          cycle rather than a one-off 360° request.
-        </p>
-      </ContentSection>
-
-      <FaqSection
-        items={faqs.map((faq) => ({
-          question: faq.question,
-          answer: faq.answer,
-        }))}
-      />
-
-      <RelatedLinks
-        links={[
-          {
-            href: ROUTES.feedback360Template,
-            label: "360 feedback template",
-            copy: "Example questions for managers, peers and direct reports.",
-          },
-          {
-            href: ROUTES.annualAppraisalSoftware,
-            label: "Annual appraisal software",
-            copy: "Run the yearly review cycle that 360° feedback can sit inside.",
-          },
-          {
-            href: ROUTES.home,
-            label: "Appraisal Software homepage",
-            copy: "Simple annual appraisal software for UK teams.",
-          },
-        ]}
-      />
-
-      <CtaBand
-        title="Run a 360 feedback campaign"
-        copy="Book a walkthrough to see subject setup, anonymous collection, Self vs Others reporting and downloadable results."
-        secondaryHref={ROUTES.feedback360Template}
-        secondaryLabel="View the 360 template"
-      />
-    </SiteChrome>
-  );
-}
+const title = "360 Feedback Software for UK Teams | Planned Features";
+const description = "Explore the planned 360 feedback workflow for Appraisal Software and prepare with free templates and questions. Multi-rater collection and anonymity are not yet available.";
+export const metadata = pageMetadata({ title, description, path: "/360-feedback-software" });
+export default function Page() { return <SiteChrome>
+  <JsonLd data={breadcrumbSchema([{ name: "Home", path: "/" }, { name: "360 Feedback Software", path: "/360-feedback-software" }])} />
+  <PageHero eyebrow="Planned product capability" title="360 Feedback Software" description={description} breadcrumbs={[homeCrumb(), { label: "360 Feedback Software", href: "/360-feedback-software" }]} />
+  <ContentSection title="What is available now?"><p>Appraisal Software currently supports employee self-assessments and manager responses within appraisal campaigns. Peer and direct-report collection, anonymity controls, Self vs Others analytics and PDF/CSV exports are planned; they are not available in the current product.</p><p>For the implemented review workflow, see <TextLink href="/how-it-works">how Appraisal Software works</TextLink>. You can use the free resources below to prepare a 360 exercise independently while the product capability is being developed.</p></ContentSection>
+  <ContentSection title="What 360 feedback software should help you do"><p>A multi-rater process collects observations about a subject from people who see their work from different perspectives. The useful parts are choosing relevant reviewers, asking observable questions, tracking responses and discussing themes with the subject.</p><p>For UK small teams, the challenge is often coordinating the exercise without creating a large administrative process. A focused question set and a clear explanation of privacy matter more than a long report.</p></ContentSection>
+  <ContentSection title="The planned workflow"><ol className="list-decimal space-y-3 pl-5"><li>Choose the subject and a short form that matches the development purpose.</li><li>Assign reviewers by relationship: self, manager, peers and direct reports.</li><li>Explain who will see the responses and how names will be handled before collecting feedback.</li><li>Track completion and remind outstanding reviewers.</li><li>Compare perspectives and agree practical development actions.</li></ol><p>This describes the intended product direction, not a promise of a release date or final feature set.</p></ContentSection>
+  <ContentSection title="Anonymity and reporting need clear rules"><p>Removing names alone does not guarantee anonymity. Small groups and distinctive comments can identify a reviewer. The planned controls need to support the expectations explained to respondents.</p><p>Self vs Others comparisons can highlight differences in perspective. They should start a conversation, rather than label one group’s rating as the truth. Our <TextLink href="/360-feedback-examples">fictional feedback examples</TextLink> show how to interpret themes carefully.</p></ContentSection>
+  <RelatedLinks title="Prepare your 360 process now" links={[{ href: "/360-feedback-template", label: "360 feedback template", copy: "Copy or print a form with an example rating scale." }, { href: "/360-feedback-questions", label: "360 feedback questions", copy: "Select prompts by behaviour and reviewer relationship." }, { href: "/360-degree-feedback", label: "What is 360 degree feedback?", copy: "Understand the purpose, process and limitations." }]} />
+</SiteChrome>; }

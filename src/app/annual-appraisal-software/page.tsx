@@ -36,12 +36,12 @@ const faqs = [
   {
     question: "How do we know who has completed their appraisal?",
     answer:
-      "Each cycle shows who has finished, who has started and who has not responded. You can send a reminder for outstanding forms instead of chasing by email.",
+      "Each cycle shows completed and outstanding responses. Configured reminders help follow up outstanding forms.",
   },
   {
     question: "Can 360° feedback sit inside the annual cycle?",
     answer:
-      "Yes, if you want it. Most teams run a manager and employee form first. Add peer or direct-report feedback where it is useful, not as the default for every role.",
+      "The current product collects employee and manager responses. Peer and direct-report collection and anonymity are planned. Prepare the questions now, but do not rely on those features for the current cycle.",
   },
 ];
 
@@ -71,7 +71,7 @@ export default function AnnualAppraisalSoftwarePage() {
       <PageHero
         eyebrow="For UK teams"
         title="Annual Appraisal Software"
-        description="Set up an annual appraisal campaign, send branded forms to employees and managers, track completion with reminders, and keep a review record you can find again."
+        description="Set up an annual appraisal campaign, send structured forms to employees and managers, track completion with reminders, and keep a review record you can find again."
         breadcrumbs={[
           homeCrumb(),
           { label: "Annual Appraisal Software", href: ROUTES.annualAppraisalSoftware },
@@ -114,12 +114,12 @@ export default function AnnualAppraisalSoftwarePage() {
 
       <ContentSection title="How Appraisal Software helps">
         <p>
-          Create the campaign once. Everyone in it gets the same form — one question at a time,
-          branded for your organisation. Employee and manager responses sit on the same record.
+          Create the campaign once. Everyone in it gets the same form — structured questions,
+          tailored to your review. Employee and manager responses sit on the same record.
           Completion is visible, so you are not guessing who is left.
         </p>
         <p>
-          That is the whole point: run annual appraisals, employee reviews and 360° feedback without
+          That is the whole point: run annual appraisals and employee reviews without
           spreadsheets, paperwork or a heavyweight HR system.{" "}
           <TextLink href={ROUTES.employeeAppraisalSoftware}>
             Employee appraisal software
@@ -127,6 +127,11 @@ export default function AnnualAppraisalSoftwarePage() {
           covers the broader review process if you also run probation or mid-year reviews in the same
           way.
         </p>
+      </ContentSection>
+
+      <ContentSection title="Plan the cycle before sending invitations">
+        <p>Agree the review period, who is in the cycle and which managers will respond. Share the questions before the meetings so employees have time to prepare evidence. Set a realistic collection window and leave time for discussion afterwards.</p>
+        <p>A useful cycle is more than completed forms. Arrange the meetings, agree next-period actions and book a progress check. The <TextLink href="/annual-appraisal-guide">annual appraisal guide</TextLink> covers that preparation and follow-up.</p>
       </ContentSection>
 
       <ContentSection title="Annual appraisal campaign workflow">
@@ -141,13 +146,12 @@ export default function AnnualAppraisalSoftwarePage() {
           </li>
           <li>
             <span className="font-medium text-foreground">Send the forms.</span> Respondents open a
-            branded, one-question-at-a-time experience. Add 360° feedback only where you want peer or
-            direct-report input.
+            structured question form for the current employee and manager flow.
           </li>
           <li>
             <span className="font-medium text-foreground">Track and close.</span> Remind people who
             have not responded, then keep the finished appraisal as the record for that year —
-            including downloadable reports where you need them.
+            with employee and manager answers available in the results view.
           </li>
         </ol>
       </ContentSection>
@@ -155,11 +159,11 @@ export default function AnnualAppraisalSoftwarePage() {
       <ContentSection title="What you get for annual reviews">
         <ul className="list-disc space-y-2 pl-5">
           <li>Reusable appraisal forms so next year starts from last year’s questions.</li>
-          <li>Branded respondent forms — one question at a time.</li>
+          <li>Structured employee and manager response forms.</li>
           <li>Manager and employee responses on one record.</li>
-          <li>Completion tracking and automated or manual reminders.</li>
-          <li>Reporting with PDF and CSV export.</li>
-          <li>Optional anonymous 360° feedback where it is appropriate.</li>
+          <li>Completion tracking and configured campaign reminders.</li>
+          <li>Self vs Manager results by subject and question.</li>
+          <li>360 collection, anonymity and exports are planned additions.</li>
         </ul>
       </ContentSection>
 
@@ -192,7 +196,7 @@ export default function AnnualAppraisalSoftwarePage() {
 
       <CtaBand
         title="Set up your next annual cycle"
-        copy="Book a walkthrough and we will show you campaign setup, the respondent experience and reporting for your team."
+        copy="Create a reusable form, assign employees and managers, and collect both perspectives for your next annual review."
         secondaryHref={ROUTES.home}
         secondaryLabel="Back to homepage"
       />

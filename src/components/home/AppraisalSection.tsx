@@ -15,7 +15,7 @@ export function CompleteAppraisalSection() {
         <div className="grid gap-12 lg:grid-cols-2 lg:items-center lg:gap-16">
           {/* Product demo */}
           <div className="order-2 lg:order-1">
-            <Panel title="Your appraisal" meta="Preview" className="mx-auto max-w-md lg:max-w-none">
+            <Panel title="Your appraisal" meta="Planned form design · example" className="mx-auto max-w-md lg:max-w-none">
               <div className="relative min-h-[22rem] p-5 sm:p-8">
                 {/* Organisation header */}
                 <div className="flex items-center justify-between gap-3">
@@ -69,7 +69,7 @@ export function CompleteAppraisalSection() {
                 </div>
 
                 <p className="mt-6 text-center text-[10px] text-muted-foreground">
-                  Responses stay with your organisation · Anonymous options available on 360
+                  Illustrative form design · current responses are identified
                 </p>
               </div>
             </Panel>
@@ -80,14 +80,14 @@ export function CompleteAppraisalSection() {
             <SectionHeading
               eyebrow="Annual appraisals"
               title="Annual appraisals. Minus the annual headache."
-              copy="Employees and reviewers open a clean, modern form: your brand, one question per screen, a calm path from start to done. No Word attachment. No lost email thread."
+              copy="Collect employee and manager responses with clear questions. The panel shows a planned form design; the current app uses structured question forms."
             />
             <ul className="mt-8 space-y-3 text-sm text-foreground">
               {[
-                "Your organisation logo and colour on the form",
-                "One question at a time so forms actually get finished",
+                "Reusable questions tailored to the review",
+                "Employee and manager preparation before the meeting",
                 "Self-assessment and manager review on the same campaign",
-                "Anonymous collection available where you choose it for 360",
+                "Identified responses in the current appraisal workflow",
               ].map((item) => (
                 <li key={item} className="flex items-start gap-3">
                   <span

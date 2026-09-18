@@ -6,16 +6,21 @@ export const ROUTES = {
   annualAppraisalTemplate: "/annual-appraisal-template",
   appraisalQuestions: "/appraisal-questions",
   feedback360Template: "/360-feedback-template",
+  templates: "/templates",
+  resources: "/resources",
+  howItWorks: "/how-it-works",
+  annualAppraisalGuide: "/annual-appraisal-guide",
+  selfAppraisalTemplate: "/self-appraisal-template",
+  appraisalAnswers: "/appraisal-answers",
+  appraisalComments: "/appraisal-comments",
+  appraisalObjectives: "/appraisal-objectives",
+  personalDevelopmentPlanTemplate: "/personal-development-plan-template",
+  feedback360Guide: "/360-degree-feedback",
+  feedback360Questions: "/360-feedback-questions",
+  feedback360Examples: "/360-feedback-examples",
+  probationReviewTemplate: "/probation-review-template",
 } as const;
 
 export type RoutePath = (typeof ROUTES)[keyof typeof ROUTES];
 
-export const INDEXABLE_PATHS: RoutePath[] = [
-  ROUTES.home,
-  ROUTES.annualAppraisalSoftware,
-  ROUTES.employeeAppraisalSoftware,
-  ROUTES.feedback360Software,
-  ROUTES.annualAppraisalTemplate,
-  ROUTES.appraisalQuestions,
-  ROUTES.feedback360Template,
-];
+export const INDEXABLE_PATHS: RoutePath[] = Object.values(ROUTES);

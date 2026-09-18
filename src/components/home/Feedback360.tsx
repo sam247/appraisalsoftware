@@ -33,9 +33,9 @@ export function UnderstandResultsSection() {
     <section id="feedback-360" className="bg-surface/60 py-20 sm:py-24">
       <div className="mx-auto max-w-6xl px-5 lg:px-8">
         <SectionHeading
-          eyebrow="360° feedback"
-          title="See the full picture. Instantly."
-          copy="Self-assessment compared with manager, peer and direct-report feedback. Aggregated results, competency scores, and reports you can share."
+          eyebrow="360° feedback · planned"
+          title="Prepare for more perspectives."
+          copy="Multi-rater collection and Self vs Others reporting are planned. This fictional illustration shows the intended direction, not features available in the current app."
           align="center"
         />
 
@@ -87,13 +87,13 @@ export function UnderstandResultsSection() {
 
             <ul className="space-y-2 px-1 text-sm text-muted-foreground">
               <li>Subject-based 360 with self, manager, peer and direct-report feedback</li>
-              <li>Anonymous-by-default collection where you choose it</li>
-              <li>PDF and CSV export from privacy-filtered results</li>
+              <li>Planned anonymity controls; current appraisals are identified</li>
+              <li>PDF and CSV exports are planned</li>
             </ul>
           </div>
 
           {/* Right: 360 report panel */}
-          <Panel title="360 report — Amelia Hart" meta="Aggregated">
+          <Panel title="360 report — Amelia Hart" meta="Planned report · fictional example">
             <div className="space-y-5 p-5">
               {/* Badges */}
               <div className="flex flex-wrap items-center justify-between gap-3">
@@ -103,7 +103,7 @@ export function UnderstandResultsSection() {
                 </div>
                 <span className="inline-flex items-center gap-1.5 rounded-lg border border-border px-2.5 py-1 text-[11px] font-semibold text-foreground">
                   <Download className="size-3" />
-                  Download PDF
+                  PDF export · planned
                 </span>
               </div>
 
@@ -150,8 +150,8 @@ export function UnderstandResultsSection() {
                   <StatusChip status="Anonymous" />
                 </div>
                 <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-                  "Amelia is the person everyone goes to when a project stalls. Would like to see her
-                  hand over more of the detail work so she has room to lead."
+                  &ldquo;Amelia is the person everyone goes to when a project stalls. Would like to see her
+                  hand over more of the detail work so she has room to lead.&rdquo;
                 </p>
               </div>
             </div>

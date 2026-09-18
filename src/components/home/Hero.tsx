@@ -28,12 +28,12 @@ export function Hero() {
         {/* Copy block */}
         <div className="reveal mx-auto max-w-[42rem] text-center">
           <h1 className={marketingType.h1Home}>
-            Appraisals without
+            Appraisal software without
             <br className="hidden sm:block" />
-            {" "}the HR system.
+            {" "}the heavyweight HR system.
           </h1>
           <p className={`mx-auto mt-5 max-w-lg ${marketingType.lead}`}>
-            Run annual appraisals, self-assessments and 360° feedback in one simple place.
+            Run employee and manager appraisals in one simple place. Prepare with free templates and practical guidance for UK teams.
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Button size="lg" className="w-full px-7 sm:w-auto" asChild>
@@ -55,7 +55,7 @@ export function Hero() {
 
         {/* Product demo — realistic campaign overview */}
         <div className="reveal relative mx-auto mt-16 sm:mt-20" style={{ animationDelay: "0.15s" }}>
-          <Panel title="Annual Appraisal 2026" meta="Live">
+          <Panel title="Annual Appraisal 2026" meta="Illustrative example">
             {/* App nav — real software feel */}
             <div className="flex items-center gap-1 border-b border-border px-4 sm:px-6">
               {["Campaigns", "People", "Templates", "Results"].map((tab, i) => (

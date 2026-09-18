@@ -5,13 +5,16 @@ export const SITE_URL = "https://appraisalsoftware.co.uk/";
 export const SITE_NAME = "Appraisal Software";
 
 export const SITE_TITLE =
-  "Appraisal Software — Appraisals Without the HR System";
+  "Appraisal Software for UK Teams | Appraisals & 360 Feedback";
 
 export const SITE_DESCRIPTION =
-  "Simple appraisal and 360° feedback software for UK organisations. Create, send, collect and understand — without spreadsheets, paperwork or a heavyweight HR system.";
+  "Appraisal software for UK teams. Run employee and manager reviews with reusable forms and completion tracking, and explore free appraisal and 360 feedback resources.";
 
-export const isProductionDeployment =
-  process.env.VERCEL_ENV === "production" || process.env.NODE_ENV === "production";
+export function isIndexableDeployment(environment: string | undefined, nodeEnvironment: string | undefined): boolean {
+  return environment ? environment === "production" : nodeEnvironment === "production";
+}
+
+export const isProductionDeployment = isIndexableDeployment(process.env.VERCEL_ENV, process.env.NODE_ENV);
 
 export function absoluteUrl(path: RoutePath | string = "/"): string {
   const origin = SITE_URL.replace(/\/$/, "");

@@ -10,7 +10,7 @@ import { SiteChrome } from "@/components/layout/SiteChrome";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { pageMetadata } from "@/lib/metadata";
 import { ROUTES } from "@/lib/routes";
-import { breadcrumbSchema } from "@/lib/schema";
+import { articleSchema, breadcrumbSchema } from "@/lib/schema";
 
 const TITLE = "Appraisal Questions for UK Teams | Appraisal Software";
 const DESCRIPTION =
@@ -107,6 +107,7 @@ export default function AppraisalQuestionsPage() {
           { name: "Appraisal Questions", path: ROUTES.appraisalQuestions },
         ])}
       />
+      <JsonLd data={articleSchema({ title: "Appraisal Questions for UK Teams", description: DESCRIPTION, path: ROUTES.appraisalQuestions, dateModified: "2026-09-18" })} />
       <PageHero
         eyebrow="Question bank"
         title="Appraisal questions"
@@ -117,6 +118,10 @@ export default function AppraisalQuestionsPage() {
         ]}
       />
 
+      <nav aria-label="Question groups" className="no-print mx-auto max-w-6xl px-5 py-8 lg:px-8">
+        <p className="text-xs text-muted-foreground">Written and reviewed by the Appraisal Software team · 18 September 2026</p>
+        <ul className="mt-4 flex flex-wrap gap-4 text-sm">{groups.map((group, index) => <li key={group.title}><a className="underline underline-offset-4" href={`#question-group-${index + 1}`}>{group.title}</a></li>)}</ul>
+      </nav>
       <ContentSection title="How to use these questions">
         <p>
           Ten to fifteen questions is enough for an annual appraisal. Repeat the same set across the
@@ -130,8 +135,13 @@ export default function AppraisalQuestionsPage() {
         </p>
       </ContentSection>
 
-      {groups.map((group) => (
-        <ContentSection key={group.title} title={group.title}>
+      <ContentSection title="Separate employee prompts from manager observations">
+        <p>Employees can explain their contribution, what they learned and the support they need. Managers should describe what they observed against the agreed expectations. Ask both sides for examples; do not turn the form into a list of personality ratings.</p>
+        <p>For wording, see <TextLink href="/appraisal-answers">employee self-appraisal answers</TextLink> and <TextLink href="/appraisal-comments">manager appraisal comments</TextLink>.</p>
+      </ContentSection>
+
+      {groups.map((group, index) => (
+        <ContentSection key={group.title} id={`question-group-${index + 1}`} title={group.title}>
           <p>{group.intro}</p>
           <ul className="list-disc space-y-2 pl-5">
             {group.questions.map((question) => (
@@ -163,7 +173,7 @@ export default function AppraisalQuestionsPage() {
 
       <CtaBand
         title="Use these questions in your next cycle"
-        copy="Book a walkthrough to run the same question set as a reusable appraisal form."
+        copy="Give employees and managers a focused set of prompts in Appraisal Software, then collect both perspectives before the review."
         secondaryHref={ROUTES.annualAppraisalSoftware}
         secondaryLabel="Annual appraisal software"
       />

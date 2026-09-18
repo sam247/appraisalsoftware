@@ -20,13 +20,12 @@ Open [http://localhost:3000](http://localhost:3000).
 
 Connect this repo to Vercel, set the production domain to `appraisalsoftware.co.uk`, and deploy.
 
-## CTAs
+## Frontend content and CTAs
 
-Configured in `src/lib/links.ts`:
+Primary product CTA: **Start free → `/signup`**. Sign in links to `/login`.
 
-- **Primary (live):** Book a walkthrough → `https://disclosurely.com/demo`
-- **Secondary:** See how it works → `/#how-it-works`
-- **Sign in:** `https://app.disclosurely.com/auth/login`
-- **Reserved:** `TRY_APPRAISAL_*` constants for when genuine self-serve Appraisals onboarding exists — do not use while the primary destination is still the demo form
+Templates provide ungated HTML forms with copy and browser print/save-as-PDF controls. Resource pages lead with useful content and have at most one contextual product bridge. 360 resources explain planned capability rather than promising current collection.
 
-External primary CTAs include short transition copy so visitors expect the Disclosurely domain.
+The marketing sitemap contains 20 distinct pages, maintained through the existing route list. Preview deployments and auth/app/invitation/respondent surfaces are noindex. No backend or app behaviour was changed for this release.
+
+See [SEO frontend handoff](docs/SEO_FRONTEND.md) for the GSC baseline, intent map, adjacent keyword research and post-publication measurement schedule.

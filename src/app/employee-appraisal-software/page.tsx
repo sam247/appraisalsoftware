@@ -15,7 +15,7 @@ import { breadcrumbSchema, faqPageSchema, softwareApplicationSchema } from "@/li
 
 const TITLE = "Employee Appraisal Software for UK Teams | Appraisal Software";
 const DESCRIPTION =
-  "Employee appraisal software for UK teams. Run employee reviews with branded one-question forms, manager and employee feedback, completion tracking and a clear record of each appraisal.";
+  "Employee appraisal software for UK teams. Run employee reviews with structured question forms, manager and employee feedback, completion tracking and a clear record of each appraisal.";
 
 const faqs = [
   {
@@ -71,7 +71,7 @@ export default function EmployeeAppraisalSoftwarePage() {
       <PageHero
         eyebrow="Employee reviews"
         title="Employee Appraisal Software"
-        description="Run employee appraisals with branded one-question forms, manager and employee feedback, completion tracking and a record of each review."
+        description="Run employee appraisals with structured question forms, manager and employee feedback, completion tracking and a record of each review."
         breadcrumbs={[
           homeCrumb(),
           { label: "Employee Appraisal Software", href: ROUTES.employeeAppraisalSoftware },
@@ -87,16 +87,14 @@ export default function EmployeeAppraisalSoftwarePage() {
         <p>
           Appraisal Software is{" "}
           <TextLink href={ROUTES.home}>simple annual appraisal software for UK teams</TextLink> that
-          also covers employee reviews more generally. Create a campaign, send a branded form, collect
+          also covers employee reviews more generally. Create a campaign, send a structured form, collect
           both sides of the conversation, and keep the finished appraisal.
         </p>
       </ContentSection>
 
       <ContentSection title="A respondent experience people finish">
         <p>
-          Employees and managers open a modern form — your organisation branding, one question at a
-          time — instead of a long Word document or a form buried in email. That is where completion
-          actually improves.
+          Employees and managers open a structured question form instead of a long Word document or a form buried in email. Keep prompts focused so people can prepare clear, useful answers.
         </p>
         <p>
           Write the questions once. Use the same form across the team so reviews are comparable, and
@@ -113,17 +111,20 @@ export default function EmployeeAppraisalSoftwarePage() {
           later.
         </p>
         <p>
-          If you also want input from peers or direct reports, that is a{" "}
-          <TextLink href={ROUTES.feedback360Software}>360° feedback</TextLink> step — optional, not
-          the main process.
+          If you also want input from peers or direct reports, that is a planned{" "}
+          <TextLink href={ROUTES.feedback360Software}>360° feedback</TextLink> addition. Current campaigns support self and manager responses; multi-rater collection is not yet available.
         </p>
+      </ContentSection>
+
+      <ContentSection title="Help both people prepare">
+        <p>Employees need prompts that help them explain achievements, difficulties and support needs. Managers need space for observed results and concrete examples. Keep those voices distinct before discussing the review together.</p>
+        <p>Use <TextLink href="/appraisal-answers">employee self-appraisal examples</TextLink> to help employees prepare, and <TextLink href="/appraisal-comments">manager comment examples</TextLink> for observations grounded in evidence.</p>
       </ContentSection>
 
       <ContentSection title="Track completion">
         <p>
           Open a campaign and you should be able to answer a simple question: who is still
-          outstanding? Completion tracking shows who has finished, who has started and who has not
-          opened the form. Reminders go from there, rather than from a personal email thread.
+          outstanding? Completion tracking shows completed and outstanding responses. Reminders go from there, rather than from a personal email thread.
         </p>
       </ContentSection>
 
@@ -164,7 +165,7 @@ export default function EmployeeAppraisalSoftwarePage() {
 
       <CtaBand
         title="Run employee appraisals without the spreadsheet"
-        copy="Book a walkthrough to see the respondent experience, campaign tracking and review records."
+        copy="Prepare your questions and collect employee and manager responses in Appraisal Software."
         secondaryHref={ROUTES.annualAppraisalSoftware}
         secondaryLabel="See annual appraisals"
       />

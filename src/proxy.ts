@@ -13,7 +13,7 @@ export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
   // Protect /app/* — redirect unauthenticated visitors to /login
-  if (pathname.startsWith("/app")) {
+  if (pathname === "/app" || pathname.startsWith("/app/")) {
     if (!user) {
       const loginUrl = new URL("/login", request.url);
       loginUrl.searchParams.set("next", pathname);
