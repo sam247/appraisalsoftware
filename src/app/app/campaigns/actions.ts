@@ -21,6 +21,41 @@ export async function createCampaign(formData: FormData): Promise<void> {
   const closesAt = (formData.get("closes_at") as string | null) || null;
   const opensAt = (formData.get("opens_at") as string | null) || null;
 
+  if (
+    formData.has("campaign_type") &&
+    !["annual_appraisal", "feedback_360"].includes(
+      String(formData.get("campaign_type")),
+    )
+  )
+    redirect("/app/campaigns/new?error=Unsupported+campaign+type");
+  if (formData.get("campaign_type") === "feedback_360") {
+    if (formData.get("privacy_ack") !== "on")
+      redirect(
+        "/app/campaigns/new?type=360&error=Read+and+accept+the+anonymity+policy",
+      );
+    if (process.env.ENABLE_360_FEEDBACK !== "true")
+      redirect("/app/campaigns/new?error=360+feedback+is+not+enabled");
+    if (!name || !templateId || (closesAt && !validDate(closesAt)))
+      redirect(
+        "/app/campaigns/new?type=360&error=Check+the+name,+template+and+date",
+      );
+    const { data, error } = await supabase.rpc("create_feedback_360", {
+      p_name: name,
+      p_subject: String(formData.get("subject_id") || ""),
+      p_template: templateId,
+      p_close_date: closesAt,
+      p_reviewers: formData.getAll("reviewer_id").map((id) => ({
+        person_id: String(id),
+        relationship: String(formData.get(`relationship_${id}`) || "peer"),
+      })),
+    });
+    if (error)
+      redirect(
+        `/app/campaigns/new?type=360&error=${encodeURIComponent(error.message)}`,
+      );
+    redirect(`/app/campaigns/${data}`);
+  }
+
   if (!name) redirect("/app/campaigns/new?error=Name+is+required");
 
   if (!templateId)

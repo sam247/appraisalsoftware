@@ -30,9 +30,16 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
+  if (!body || typeof body !== "object")
+    return NextResponse.json({ error: "Missing fields" }, { status: 400 });
   const { action, token, answers } = body;
 
-  if (!token || !action || !Array.isArray(answers)) {
+  if (
+    typeof token !== "string" ||
+    !token ||
+    !action ||
+    !Array.isArray(answers)
+  ) {
     return NextResponse.json({ error: "Missing fields" }, { status: 400 });
   }
 
@@ -41,6 +48,33 @@ export async function POST(req: NextRequest) {
   }
 
   const supabase = await createClient();
+  const { data: kind, error: kindError } = await supabase.rpc(
+    "respond_campaign_kind",
+    { p_raw_token: token },
+  );
+  if (kindError)
+    return NextResponse.json(
+      { error: "Invalid or expired personal link" },
+      { status: 422 },
+    );
+  if (kind === "feedback_360") {
+    const { error } = await supabase.rpc("feedback_360_write", {
+      p_raw_token: token,
+      p_answers: answers as unknown as Record<string, unknown>[],
+      p_submit: action === "submit",
+    });
+    return error
+      ? NextResponse.json(
+          {
+            error:
+              error.message === "Please answer every required question"
+                ? error.message
+                : "Feedback could not be saved. This request may have closed or been submitted; reopen your personal link to check.",
+          },
+          { status: 422 },
+        )
+      : NextResponse.json({ ok: true });
+  }
   const rpcName = action === "submit" ? "respond_submit" : "respond_save";
 
   const { error } = await supabase.rpc(rpcName, {

@@ -32,7 +32,9 @@ export default function CampaignList({
                   {campaign.name}
                 </h3>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  Annual appraisal
+                  {campaign.campaign_type === "feedback_360"
+                    ? "Anonymous 360"
+                    : "Annual appraisal"}
                   {campaign.status === "scheduled" && campaign.opens_at
                     ? ` · Sends ${campaignDate(campaign.opens_at, campaign.timezone, true)}`
                     : ""}

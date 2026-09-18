@@ -21,6 +21,8 @@ interface RespondFormProps {
   alreadySubmitted: boolean;
   orgName?: string | null;
   initialAnswers: Answer[];
+  anonymous?: boolean;
+  subjectName?: string;
 }
 
 export default function RespondForm({
@@ -31,6 +33,8 @@ export default function RespondForm({
   alreadySubmitted,
   orgName,
   initialAnswers,
+  anonymous = false,
+  subjectName,
 }: RespondFormProps) {
   const [answers, setAnswers] = useState<Record<string, Answer>>(() =>
     Object.fromEntries(
@@ -157,7 +161,11 @@ export default function RespondForm({
           </h1>
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
             Your responses have been submitted successfully.
-            {orgName ? ` ${orgName} can now include them in the review.` : ""}
+            {anonymous &&
+              " Anonymous results will be released only after closure and when five reviewers have responded."}
+            {!anonymous && orgName
+              ? ` ${orgName} can now include them in the review.`
+              : ""}
           </p>
         </div>
       </div>
@@ -204,16 +212,20 @@ export default function RespondForm({
       <div className="mx-auto max-w-2xl px-4 sm:px-6 py-8 sm:py-12 pb-28">
         <div className="mb-8">
           <p className="text-xs text-muted-foreground uppercase tracking-wider mb-2">
-            {relationship
-              ? (RELATIONSHIP_LABELS[relationship] ?? relationship)
-              : ""}{" "}
-            appraisal
+            {anonymous
+              ? "Anonymous 360 feedback"
+              : relationship
+                ? (RELATIONSHIP_LABELS[relationship] ?? relationship)
+                : ""}{" "}
+            {!anonymous && "appraisal"}
           </p>
           <h1 className="font-display text-2xl sm:text-[1.75rem] font-semibold tracking-tight text-foreground text-balance">
             {campaignName}
           </h1>
           <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-            Answer each question in your own words. Progress saves as you go.
+            {anonymous
+              ? `Feedback for ${subjectName || "your colleague"}. Your organisation receives combined feedback without reviewer names or response times. Results require five reviewers and campaign closure. Written comments may identify you; avoid personal references. Trusted platform operators can access operational records. Progress saves as you go; submission is final.`
+              : "Answer each question in your own words. Progress saves as you go."}
           </p>
           {(isSaving || saveHint) && (
             <p className="mt-2 text-xs text-primary" aria-live="polite">
@@ -250,7 +262,11 @@ export default function RespondForm({
                 disabled={isPending}
                 className="w-full sm:w-auto min-h-12 sm:min-h-10 text-base sm:text-sm"
               >
-                {isPending ? "Submitting…" : "Submit appraisal"}
+                {isPending
+                  ? "Submitting…"
+                  : anonymous
+                    ? "Submit feedback"
+                    : "Submit appraisal"}
               </Button>
               <p className="mt-2 text-xs text-muted-foreground sm:hidden">
                 You can&apos;t edit answers after submitting.

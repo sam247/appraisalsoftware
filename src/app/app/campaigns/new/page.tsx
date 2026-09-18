@@ -10,7 +10,7 @@ import type { Template } from "@/lib/types/database";
 export default async function NewCampaignPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; type?: string }>;
 }) {
   let orgAdmin;
   try {
@@ -30,16 +30,54 @@ export default async function NewCampaignPage({
     .order("name");
 
   if (templateError) throw new Error("Unable to load templates");
-  const templates = (rawTemplates ?? []) as Pick<
+  let templates = (rawTemplates ?? []) as Pick<
     Template,
     "id" | "name" | "campaign_type_default"
   >[];
 
+  const enabled = process.env.ENABLE_360_FEEDBACK === "true";
+  const is360 = enabled && params.type === "360";
+  const { data: people, error: peopleError } = is360
+    ? await supabase
+        .from("people")
+        .select("id,full_name,email")
+        .eq("organization_id", orgAdmin.org.id)
+        .is("archived_at", null)
+        .order("full_name")
+    : { data: [], error: null };
+  if (peopleError) throw new Error("Unable to load people");
+  if (is360) {
+    const { data: qs, error } = await supabase
+      .from("template_questions")
+      .select("template_id,type")
+      .eq("organization_id", orgAdmin.org.id);
+    if (error) throw new Error("Unable to load questionnaires");
+    templates = templates.filter(
+      (t) =>
+        qs?.some((q) => q.template_id === t.id) &&
+        !qs?.some(
+          (q) => q.template_id === t.id && !["rating", "text"].includes(q.type),
+        ),
+    );
+  }
   return (
     <div>
       <h1 className="font-display text-3xl font-semibold tracking-tight text-foreground">
-        Create an annual appraisal
+        {is360 ? "Create anonymous 360 feedback" : "Create an annual appraisal"}
       </h1>
+      {enabled && (
+        <nav aria-label="Campaign type" className="my-5 flex gap-5 text-sm">
+          <Link href="/app/campaigns/new" className="text-primary underline">
+            Annual appraisal
+          </Link>
+          <Link
+            href="/app/campaigns/new?type=360"
+            className="text-primary underline"
+          >
+            Anonymous 360
+          </Link>
+        </nav>
+      )}
       <p className="mt-1 text-sm text-muted-foreground">
         Start with a name and a question template. You’ll choose participants
         and review everything before sending.
@@ -60,14 +98,15 @@ export default async function NewCampaignPage({
         <li>3. Review &amp; send</li>
       </ol>
       <p className="mt-5 text-sm text-muted-foreground">
-        Annual appraisals collect separate self and manager responses. 360
-        feedback and anonymous feedback are planned.
+        {is360
+          ? "Reviewers are combined into one anonymous group. At least five distinct reviewers must respond; results are released only after closure. Each question also needs five answers. The subject cannot review themselves."
+          : "Annual appraisals collect identified self and manager responses."}
       </p>
 
       {/* Annual appraisal wizard form */}
       <div className="mt-10 rounded-xl border border-border bg-card p-6">
         <h2 className="font-display text-base font-semibold text-foreground mb-5">
-          Annual appraisal details
+          {is360 ? "360 campaign details" : "Annual appraisal details"}
         </h2>
         {!templates.length && (
           <p className="mb-5 text-sm">
@@ -78,6 +117,82 @@ export default async function NewCampaignPage({
           </p>
         )}
         <form action={createCampaign} className="space-y-4">
+          <input
+            type="hidden"
+            name="campaign_type"
+            value={is360 ? "feedback_360" : "annual_appraisal"}
+          />
+          {is360 && (
+            <>
+              <label className="block text-sm font-medium">
+                Person receiving feedback
+                <select
+                  name="subject_id"
+                  required
+                  className="mt-2 w-full rounded-lg border border-input bg-surface p-3"
+                >
+                  <option value="">Choose a person</option>
+                  {people?.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.full_name || p.email}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <fieldset>
+                <legend className="text-sm font-medium">
+                  Choose at least five reviewers
+                </legend>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Select colleagues other than the person receiving feedback.
+                  Relationship labels help organise invitations; results never
+                  separate these groups.
+                </p>
+                <div className="mt-4 space-y-3">
+                  {people?.map((p) => (
+                    <div
+                      key={p.id}
+                      className="flex flex-wrap items-center gap-3"
+                    >
+                      <label className="flex flex-1 items-center gap-3">
+                        <input
+                          type="checkbox"
+                          name="reviewer_id"
+                          value={p.id}
+                        />
+                        {p.full_name || p.email}
+                      </label>
+                      <select
+                        name={`relationship_${p.id}`}
+                        aria-label={`Relationship for ${p.full_name || p.email}`}
+                        className="rounded-lg border border-input bg-surface p-2 text-sm"
+                      >
+                        <option value="peer">Peer</option>
+                        <option value="manager">Manager</option>
+                        <option value="direct_report">Direct report</option>
+                        <option value="other">Other</option>
+                      </select>
+                    </div>
+                  ))}
+                </div>
+              </fieldset>
+              <section className="rounded-lg bg-surface p-4 text-sm leading-relaxed">
+                <h2 className="font-semibold">Anonymity policy</h2>
+                <p className="mt-2">
+                  Your organisation receives combined feedback without reviewer
+                  names or response times. Results require five reviewers and
+                  campaign closure. Written comments may identify their author.
+                  Trusted platform operators can access operational records.
+                </p>
+                <label className="mt-3 flex items-start gap-2">
+                  <input type="checkbox" required name="privacy_ack" />I
+                  understand the five-reviewer policy and written-comment
+                  limitations.
+                </label>
+              </section>
+            </>
+          )}
+
           <div>
             <label
               htmlFor="campaign-name"
@@ -143,7 +258,7 @@ export default async function NewCampaignPage({
           </p>
           <div className="flex gap-3 pt-2">
             <FormSubmit disabled={!templates.length}>
-              Create draft &amp; choose people
+              {is360 ? "Create draft & review" : "Create draft & choose people"}
             </FormSubmit>
             <Button asChild variant="outline">
               <Link href="/app/campaigns">Cancel</Link>

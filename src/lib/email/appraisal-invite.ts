@@ -2,6 +2,7 @@ import { respondentUrl } from "@/lib/app-origin";
 
 export type AppraisalEmailPayload = {
   campaign_name?: string;
+  campaign_type?: string;
   relationship?: string | null;
   raw_token?: string;
   org_name?: string | null;
@@ -26,7 +27,10 @@ function escapeHtml(s: string): string {
     .replace(/"/g, "&quot;");
 }
 
-function formatClosesAt(iso: string | null | undefined, timezone = "Europe/London"): string | null {
+function formatClosesAt(
+  iso: string | null | undefined,
+  timezone = "Europe/London",
+): string | null {
   if (!iso) return null;
   const d = new Date(iso);
   if (!Number.isFinite(d.getTime())) return null;
@@ -39,7 +43,10 @@ function formatClosesAt(iso: string | null | undefined, timezone = "Europe/Londo
   });
 }
 
-function relationshipCopy(relationship: string | null | undefined, subjectName: string | null | undefined): {
+function relationshipCopy(
+  relationship: string | null | undefined,
+  subjectName: string | null | undefined,
+): {
   title: string;
   body: string;
   cta: string;
@@ -66,11 +73,17 @@ function relationshipCopy(relationship: string | null | undefined, subjectName: 
   };
 }
 
-export function buildAppraisalInviteSubject(payload: AppraisalEmailPayload): string {
+export function buildAppraisalInviteSubject(
+  payload: AppraisalEmailPayload,
+): string {
+  if (payload.campaign_type === "feedback_360")
+    return `${payload.is_reminder ? "Reminder: " : ""}360 feedback for ${payload.subject_name?.trim() || "your colleague"}`;
   const org = payload.org_name?.trim();
   if (payload.is_reminder) {
     if (payload.relationship === "self") {
-      return org ? `Reminder: your self-appraisal for ${org}` : "Reminder: complete your self-appraisal";
+      return org
+        ? `Reminder: your self-appraisal for ${org}`
+        : "Reminder: complete your self-appraisal";
     }
     if (payload.relationship === "manager") {
       const subject = payload.subject_name?.trim() || "a team member";
@@ -105,13 +118,23 @@ export function buildAppraisalInviteHtml(payload: AppraisalEmailPayload): {
   const respondUrl = respondentUrl(token);
   const orgName = payload.org_name?.trim() || "Your organisation";
   const campaignName = payload.campaign_name?.trim() || "Annual appraisal";
-  const copy = relationshipCopy(payload.relationship, payload.subject_name);
+  const anonymous = payload.campaign_type === "feedback_360";
+  const privacyCopy = anonymous
+    ? "Your organisation receives combined feedback without reviewer names or response times. Results require five reviewers and campaign closure. Written comments may identify their author. Trusted platform operators can access operational records. Keep your personal link private."
+    : `Your responses are shared with authorised reviewers in ${orgName}. Only people with your personal link can open this form.`;
+  const copy = anonymous
+    ? {
+        title: `360 feedback for ${payload.subject_name?.trim() || "your colleague"}`,
+        body: "You’ve been invited to share feedback about this colleague. Answer based on your experience working together; avoid personal references that identify you.",
+        cta: "Give 360 feedback",
+      }
+    : relationshipCopy(payload.relationship, payload.subject_name);
   const closes = formatClosesAt(payload.closes_at, payload.timezone);
   const greeting = payload.respondent_name?.trim()
     ? `Hi ${escapeHtml(payload.respondent_name.trim())},`
     : "Hello,";
   const reminderNote = payload.is_reminder
-    ? `<p style="margin:0 0 16px;color:${MUTED};font-size:14px;line-height:1.5;">This is a friendly reminder — your appraisal is still waiting for your response.</p>`
+    ? `<p style="margin:0 0 16px;color:${MUTED};font-size:14px;line-height:1.5;">This is a friendly reminder — ${anonymous ? "your feedback" : "your appraisal"} is still waiting for your response.</p>`
     : "";
 
   const html = `<!DOCTYPE html>
@@ -153,7 +176,7 @@ export function buildAppraisalInviteHtml(payload: AppraisalEmailPayload): {
               </table>
               <p style="margin:0 0 8px;font-size:13px;line-height:1.5;color:${MUTED};">If the button doesn't work, copy and paste this link into your browser:</p>
               <p style="margin:0 0 20px;font-size:12px;line-height:1.5;word-break:break-all;color:${JADE};"><a href="${escapeHtml(respondUrl)}" style="color:${JADE};">${escapeHtml(respondUrl)}</a></p>
-              <p style="margin:0;font-size:13px;line-height:1.55;color:${MUTED};">Your responses are shared with authorised reviewers in ${escapeHtml(orgName)}. Only people with your personal link can open this form.</p>
+              <p style="margin:0;font-size:13px;line-height:1.55;color:${MUTED};">${escapeHtml(privacyCopy)}</p>
             </td>
           </tr>
           <tr>
@@ -178,7 +201,7 @@ export function buildAppraisalInviteHtml(payload: AppraisalEmailPayload): {
     "",
     `${copy.cta}: ${respondUrl}`,
     "",
-    `Your responses are shared with authorised reviewers in ${orgName}.`,
+    privacyCopy,
     "",
     "— Appraisal Software (appraisalsoftware.co.uk)",
   ]

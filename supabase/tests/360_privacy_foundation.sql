@@ -23,11 +23,13 @@ DO $$ DECLARE org uuid; person uuid; assignment uuid; response uuid; i integer; 
   IF i=1 THEN INSERT INTO private.feedback_360_answers(response_id,campaign_id,organization_id,question_id,text_value) VALUES (response,'70000000-0000-0000-0000-000000000001',org,'71000000-0000-0000-0000-000000000003','One-person optional comment'); END IF;
   IF i<5 THEN
    UPDATE private.feedback_360_responses SET submitted=true WHERE id=response;
-   UPDATE public.campaigns SET status='closed' WHERE id='70000000-0000-0000-0000-000000000001';
-   PERFORM set_config('request.jwt.claim.sub','10000000-0000-0000-0000-000000000001',true);
-   ASSERT public.feedback_360_report('70000000-0000-0000-0000-000000000001')->>'state'='insufficient_responses';
-   PERFORM set_config('request.jwt.claim.sub','',true);
-   UPDATE public.campaigns SET status='draft' WHERE id='70000000-0000-0000-0000-000000000001';
+   BEGIN
+    UPDATE public.campaigns SET status='closed' WHERE id='70000000-0000-0000-0000-000000000001';
+    PERFORM set_config('request.jwt.claim.sub','10000000-0000-0000-0000-000000000001',true);
+    ASSERT public.feedback_360_report('70000000-0000-0000-0000-000000000001')->>'state'='insufficient_responses';
+    RAISE EXCEPTION 'fixture snapshot rollback';
+   EXCEPTION WHEN raise_exception THEN IF SQLERRM<>'fixture snapshot rollback' THEN RAISE; END IF;
+   END;
   END IF;
  END LOOP;
  BEGIN
@@ -40,7 +42,7 @@ DO $$ DECLARE org uuid; person uuid; assignment uuid; response uuid; i integer; 
  END;
  BEGIN UPDATE private.feedback_360_contracts SET minimum_responses=1; RAISE EXCEPTION 'expected immutable privacy'; EXCEPTION WHEN raise_exception THEN IF SQLERRM<>'360 privacy contracts are immutable' THEN RAISE; END IF; END;
  BEGIN UPDATE private.feedback_360_answers SET numeric_value=1 WHERE response_id IN (SELECT id FROM private.feedback_360_responses WHERE submitted) AND question_id='71000000-0000-0000-0000-000000000001'; RAISE EXCEPTION 'expected immutable answer'; EXCEPTION WHEN raise_exception THEN IF SQLERRM<>'Submitted feedback cannot be changed' THEN RAISE; END IF; END;
- BEGIN INSERT INTO public.responses(assignment_id,campaign_id,organization_id) SELECT assignment_id,campaign_id,organization_id FROM private.feedback_360_identity LIMIT 1; RAISE EXCEPTION 'expected legacy response rejection'; EXCEPTION WHEN raise_exception THEN IF SQLERRM<>'360 and anonymous collection are not enabled' THEN RAISE; END IF; END;
+ BEGIN INSERT INTO public.responses(assignment_id,campaign_id,organization_id) SELECT assignment_id,campaign_id,organization_id FROM private.feedback_360_identity LIMIT 1; RAISE EXCEPTION 'expected legacy response rejection'; EXCEPTION WHEN raise_exception THEN IF SQLERRM<>'360 cannot use the identified response pipeline' THEN RAISE; END IF; END;
  ASSERT (SELECT count(*)=0 FROM public.responses WHERE campaign_id='70000000-0000-0000-0000-000000000001');
 END $$;
 UPDATE public.campaign_assignments SET status='pending' WHERE id=(SELECT assignment_id FROM private.feedback_360_identity LIMIT 1);
@@ -55,9 +57,9 @@ DO $$ DECLARE t text; report jsonb; BEGIN
   BEGIN EXECUTE 'SELECT * FROM private.'||t; RAISE EXCEPTION 'expected private access denial'; EXCEPTION WHEN insufficient_privilege THEN NULL; END;
  END LOOP;
  report := public.feedback_360_report('70000000-0000-0000-0000-000000000001'); ASSERT report='{"state":"not_closed"}'::jsonb;
- BEGIN INSERT INTO public.campaigns(organization_id,name,campaign_type) SELECT organization_id,'Bypass','feedback_360' FROM public.campaigns LIMIT 1; RAISE EXCEPTION 'expected creation denial'; EXCEPTION WHEN raise_exception THEN IF SQLERRM<>'360 and anonymous collection are not enabled' THEN RAISE; END IF; END;
- BEGIN UPDATE public.campaigns SET settings='{"anonymity":{"mode":"anonymous"}}' WHERE id='40000000-0000-0000-0000-000000000002'; RAISE EXCEPTION 'expected anonymous settings denial'; EXCEPTION WHEN raise_exception THEN IF SQLERRM<>'360 and anonymous collection are not enabled' THEN RAISE; END IF; END;
- BEGIN PERFORM public.activate_campaign('70000000-0000-0000-0000-000000000001'); RAISE EXCEPTION 'expected activation denial'; EXCEPTION WHEN raise_exception THEN IF SQLERRM<>'360 and anonymous collection are not enabled' THEN RAISE; END IF; END;
+ BEGIN INSERT INTO public.campaigns(organization_id,name,campaign_type) SELECT organization_id,'Bypass','feedback_360' FROM public.campaigns LIMIT 1; RAISE EXCEPTION 'expected creation denial'; EXCEPTION WHEN insufficient_privilege THEN NULL; END;
+ BEGIN UPDATE public.campaigns SET settings='{"anonymity":{"mode":"anonymous"}}' WHERE id='40000000-0000-0000-0000-000000000002'; RAISE EXCEPTION 'expected anonymous settings denial'; EXCEPTION WHEN raise_exception THEN IF SQLERRM<>'360 cannot use the identified response pipeline' THEN RAISE; END IF; END;
+ BEGIN PERFORM public.activate_campaign('70000000-0000-0000-0000-000000000001'); RAISE EXCEPTION 'expected activation denial'; EXCEPTION WHEN raise_exception THEN IF SQLERRM<>'360 feedback is not enabled' THEN RAISE; END IF; END;
  -- Anonymous plane does not hide identified annual results.
  ASSERT (SELECT count(*)=2 FROM public.responses WHERE campaign_id='40000000-0000-0000-0000-000000000001');
  ASSERT (SELECT count(*)=2 FROM public.response_answers a JOIN public.responses r ON r.id=a.response_id WHERE r.campaign_id='40000000-0000-0000-0000-000000000001');

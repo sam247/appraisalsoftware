@@ -585,6 +585,38 @@ export type Database = {
     };
     Views: Record<string, never>;
     Functions: {
+      create_feedback_360: {
+        Args: {
+          p_name: string;
+          p_subject: string;
+          p_reviewers: Record<string, unknown>[];
+          p_template: string;
+          p_close_date?: string | null;
+        };
+        Returns: string;
+      };
+      schedule_feedback_360: {
+        Args: { p_campaign_id: string; p_send_date: string };
+        Returns: undefined;
+      };
+      respond_campaign_kind: { Args: { p_raw_token: string }; Returns: string };
+      feedback_360_open: {
+        Args: { p_raw_token: string };
+        Returns: Record<string, unknown>;
+      };
+      feedback_360_write: {
+        Args: {
+          p_raw_token: string;
+          p_answers: Record<string, unknown>[];
+          p_submit: boolean;
+        };
+        Returns: undefined;
+      };
+      feedback_360_report: {
+        Args: { p_campaign_id: string };
+        Returns: Record<string, unknown>;
+      };
+
       bootstrap_organization: {
         Args: { p_name: string; p_slug?: string | null };
         Returns: Database["public"]["Tables"]["organizations"]["Row"];

@@ -75,6 +75,7 @@ try {
     "-f",
     join(root, "supabase/tests/360_privacy_foundation.sql"),
   ]);
+  run("psql", [...args, "-f", join(root, "supabase/tests/360_workflow.sql")]);
   // A held activation lock must serialize participant editing, not allow a late replacement.
   const lockFile = join(dir, "activation.sql");
   writeFileSync(
