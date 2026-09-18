@@ -16,7 +16,13 @@ function Submit({ later }: { later: boolean }) {
     </Button>
   );
 }
-export default function SendControls({ campaignId }: { campaignId: string }) {
+export default function SendControls({
+  campaignId,
+  timezone,
+}: {
+  campaignId: string;
+  timezone: string;
+}) {
   const [later, setLater] = useState(false);
   return (
     <form
@@ -62,8 +68,8 @@ export default function SendControls({ campaignId }: { campaignId: string }) {
             className="rounded-lg border border-input bg-surface p-3"
           />
           <p className="mt-2 text-sm text-muted-foreground">
-            Invitations are scheduled from 09:00 UTC (10:00 UK time during
-            British Summer Time).
+            Invitations are scheduled from 09:00 in {timezone}. Daylight-saving
+            changes are handled automatically.
           </p>
         </div>
       )}

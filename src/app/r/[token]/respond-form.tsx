@@ -6,7 +6,7 @@ import { useMemo, useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import type { CampaignQuestion } from "@/lib/types/database";
 
-interface Answer {
+export interface Answer {
   campaign_question_id: string;
   numeric_value?: number | null;
   text_value?: string | null;
@@ -20,6 +20,7 @@ interface RespondFormProps {
   relationship: string | null;
   alreadySubmitted: boolean;
   orgName?: string | null;
+  initialAnswers: Answer[];
 }
 
 export default function RespondForm({
@@ -29,12 +30,18 @@ export default function RespondForm({
   relationship,
   alreadySubmitted,
   orgName,
+  initialAnswers,
 }: RespondFormProps) {
-  const [answers, setAnswers] = useState<Record<string, Answer>>({});
+  const [answers, setAnswers] = useState<Record<string, Answer>>(() =>
+    Object.fromEntries(
+      initialAnswers.map((answer) => [answer.campaign_question_id, answer]),
+    ),
+  );
   const [submitted, setSubmitted] = useState(alreadySubmitted);
   const [error, setError] = useState<string | null>(null);
   const [saveHint, setSaveHint] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const [isSaving, startSaveTransition] = useTransition();
 
   const answeredCount = useMemo(() => {
     return questions.filter((q) => {
@@ -68,7 +75,7 @@ export default function RespondForm({
         const a = answers[q.id];
         const hasAnswer =
           a &&
-          (a.numeric_value !== undefined ||
+          ((a.numeric_value !== undefined && a.numeric_value !== null) ||
             (a.text_value && a.text_value.trim()) ||
             (a.choice_values && (a.choice_values as unknown[]).length > 0));
         if (!hasAnswer) {
@@ -79,41 +86,55 @@ export default function RespondForm({
     }
 
     startTransition(async () => {
-      const answersArr = Object.values(answers);
-      const res = await fetch("/api/respond", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "submit",
-          token,
-          answers: answersArr,
-        }),
-      });
+      try {
+        const answersArr = Object.values(answers);
+        const res = await fetch("/api/respond", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "submit",
+            token,
+            answers: answersArr,
+          }),
+        });
 
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          const body = await res.json().catch(() => ({}));
+          setError(
+            (body as { error?: string }).error ??
+              "Failed to submit. Please try again.",
+          );
+          return;
+        }
+
+        setSubmitted(true);
+      } catch {
         setError(
-          (body as { error?: string }).error ??
-            "Failed to submit. Please try again.",
+          "Your response could not be submitted. Please try again; your answers remain on this page.",
         );
-        return;
       }
-
-      setSubmitted(true);
     });
   };
 
   const handleSave = () => {
-    startTransition(async () => {
+    startSaveTransition(async () => {
       const answersArr = Object.values(answers);
-      const res = await fetch("/api/respond", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "save", token, answers: answersArr }),
-      });
-      if (res.ok) {
-        setSaveHint("Progress saved");
-        window.setTimeout(() => setSaveHint(null), 2000);
+      try {
+        const res = await fetch("/api/respond", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "save", token, answers: answersArr }),
+        });
+        if (res.ok) {
+          setSaveHint("Progress saved");
+        } else
+          setSaveHint(
+            "Progress could not be saved. Keep this page open and try again.",
+          );
+      } catch {
+        setSaveHint(
+          "Progress could not be saved. Keep this page open and try again.",
+        );
       }
     });
   };
@@ -128,7 +149,9 @@ export default function RespondForm({
           >
             ✓
           </div>
-          <div className="mb-6 flex justify-center"><Logo /></div>
+          <div className="mb-6 flex justify-center">
+            <Logo />
+          </div>
           <h1 className="font-display text-2xl font-semibold text-foreground">
             Thank you
           </h1>
@@ -152,8 +175,12 @@ export default function RespondForm({
         <div className="mx-auto max-w-2xl px-4 sm:px-6 py-3">
           <div className="flex items-center justify-between gap-3">
             {orgName?.trim() ? (
-              <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-primary truncate">{orgName}</p>
-            ) : <Logo />}
+              <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-primary truncate">
+                {orgName}
+              </p>
+            ) : (
+              <Logo />
+            )}
             <p className="text-xs text-muted-foreground shrink-0">
               {answeredCount}/{questions.length || "—"}
             </p>
@@ -178,7 +205,7 @@ export default function RespondForm({
         <div className="mb-8">
           <p className="text-xs text-muted-foreground uppercase tracking-wider mb-2">
             {relationship
-              ? RELATIONSHIP_LABELS[relationship] ?? relationship
+              ? (RELATIONSHIP_LABELS[relationship] ?? relationship)
               : ""}{" "}
             appraisal
           </p>
@@ -188,9 +215,9 @@ export default function RespondForm({
           <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
             Answer each question in your own words. Progress saves as you go.
           </p>
-          {saveHint && (
+          {(isSaving || saveHint) && (
             <p className="mt-2 text-xs text-primary" aria-live="polite">
-              {saveHint}
+              {isSaving ? "Saving progress…" : saveHint}
             </p>
           )}
         </div>

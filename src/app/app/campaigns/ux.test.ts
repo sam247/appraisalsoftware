@@ -105,95 +105,78 @@ describe("annual appraisal UX safeguards", () => {
       createCampaign(form({ name: "Annual", template_id: "template" })),
     ).rejects.toThrow("/app/campaigns/campaign");
   });
-  it("rejects duplicate or cross-workspace participants before deleting saved selections", async () => {
-    mocks.from.mockReturnValue(query({ data: { status: "draft" } }));
-    const row = {
-      personId: "employee",
-      selfPersonId: "employee",
-      managerPersonId: "manager",
-    };
-    expect(
-      await saveSubjectsAndAssignments("campaign", [row, row]),
-    ).toHaveProperty("error");
-    expect(mocks.from).toHaveBeenCalledTimes(1);
-    mocks.from
-      .mockReturnValueOnce(query({ data: { status: "draft" } }))
-      .mockReturnValueOnce(query({ data: [] }));
-    expect(await saveSubjectsAndAssignments("campaign", [row])).toHaveProperty(
-      "error",
+  it("delegates participant replacement once to the guarded database transaction", async () => {
+    const rows = [
+      {
+        personId: "employee",
+        selfPersonId: "employee",
+        managerPersonId: "manager",
+      },
+    ];
+    expect(await saveSubjectsAndAssignments("campaign", rows)).toEqual({});
+    expect(mocks.rpc).toHaveBeenCalledExactlyOnceWith(
+      "save_appraisal_participants",
+      {
+        p_campaign_id: "campaign",
+        p_participants: [
+          { person_id: "employee", manager_person_id: "manager" },
+        ],
+      },
     );
-    expect(mocks.from).toHaveBeenCalledTimes(3);
+    expect(mocks.from).not.toHaveBeenCalled();
   });
-  it("preserves employee self and manager assignment relationships", async () => {
-    const assignmentQuery = query({ error: null });
-    mocks.from
-      .mockReturnValueOnce(query({ data: { status: "draft" } }))
-      .mockReturnValueOnce(
-        query({ data: [{ id: "employee" }, { id: "manager" }] }),
-      )
-      .mockReturnValueOnce(query({ error: null }))
-      .mockReturnValueOnce(query({ error: null }))
-      .mockReturnValueOnce(query({ error: null }))
-      .mockReturnValueOnce(assignmentQuery);
+  it("rejects substituted self reviewers and reports transactional failures without a partial fallback", async () => {
+    expect(
+      await saveSubjectsAndAssignments("campaign", [
+        { personId: "employee", selfPersonId: "other", managerPersonId: null },
+      ]),
+    ).toHaveProperty("error");
+    expect(mocks.rpc).not.toHaveBeenCalled();
+    mocks.rpc.mockResolvedValueOnce({
+      error: { message: "Employee unavailable" },
+    });
     expect(
       await saveSubjectsAndAssignments("campaign", [
         {
           personId: "employee",
           selfPersonId: "employee",
-          managerPersonId: "manager",
+          managerPersonId: null,
         },
       ]),
-    ).toEqual({});
-    expect(assignmentQuery.insert).toHaveBeenCalledWith([
-      expect.objectContaining({
-        respondent_person_id: "employee",
-        subject_person_id: "employee",
-        relationship: "self",
-      }),
-      expect.objectContaining({
-        respondent_person_id: "manager",
-        subject_person_id: "employee",
-        relationship: "manager",
-      }),
-    ]);
+    ).toEqual({ error: "Employee unavailable" });
+    expect(mocks.from).not.toHaveBeenCalled();
   });
-  it("rejects malformed, past and after-close schedule dates before freezing", async () => {
-    await expect(
-      scheduleCampaign("campaign", form({ opens_at: "invalid" })),
-    ).rejects.toThrow("Invalid+send+date");
-    await expect(
-      scheduleCampaign("campaign", form({ opens_at: "2027-02-30" })),
-    ).rejects.toThrow("Invalid+send+date");
-    mocks.from.mockReturnValue(
-      query({ data: { status: "draft", closes_at: "2000-01-02" } }),
-    );
+  it("rejects malformed dates before the scheduling transaction and reports database boundaries", async () => {
+    for (const value of ["invalid", "2027-02-30"])
+      await expect(
+        scheduleCampaign("campaign", form({ opens_at: value })),
+      ).rejects.toThrow("Invalid+send+date");
+    expect(mocks.rpc).not.toHaveBeenCalled();
+    mocks.rpc.mockResolvedValueOnce({
+      error: { message: "Send time must be in the future" },
+    });
     await expect(
       scheduleCampaign("campaign", form({ opens_at: "2000-01-01" })),
     ).rejects.toThrow("future");
-    mocks.from.mockReturnValue(
-      query({ data: { status: "draft", closes_at: "2999-01-01" } }),
-    );
+    mocks.rpc.mockResolvedValueOnce({
+      error: { message: "Close time must be after the send time" },
+    });
     await expect(
       scheduleCampaign("campaign", form({ opens_at: "2999-01-02" })),
     ).rejects.toThrow("after");
-    expect(mocks.rpc).not.toHaveBeenCalled();
+    expect(mocks.from).not.toHaveBeenCalled();
   });
-  it("schedules using the existing freeze RPC, then sends through existing activation", async () => {
-    mocks.from
-      .mockReturnValueOnce(
-        query({ data: { status: "draft", closes_at: null } }),
-      )
-      .mockReturnValueOnce(query({ count: 2 }))
-      .mockReturnValueOnce(query({ error: null }));
+  it("schedules through one guarded RPC, retaining existing activation and closing", async () => {
     await expect(
       sendCampaign(
         "campaign",
         form({ delivery: "later", opens_at: "2999-01-01" }),
       ),
     ).rejects.toThrow("/app/campaigns/campaign");
-    expect(mocks.rpc).toHaveBeenCalledWith("freeze_campaign_questions", {
-      p_campaign_id: "campaign",
-    });
+    expect(mocks.rpc).toHaveBeenCalledExactlyOnceWith(
+      "schedule_appraisal_campaign",
+      { p_campaign_id: "campaign", p_send_date: "2999-01-01" },
+    );
     mocks.from.mockReturnValue(query({ data: { id: "campaign" } }));
     await expect(
       sendCampaign("campaign", form({ delivery: "now" })),
@@ -205,6 +188,41 @@ describe("annual appraisal UX safeguards", () => {
     expect(mocks.rpc).toHaveBeenCalledWith("close_campaign", {
       p_campaign_id: "campaign",
     });
+  });
+  it("creates close dates in the organisation timezone and snapshots it on the campaign", async () => {
+    const insert = query({ data: { id: "campaign" } });
+    mocks.from
+      .mockReturnValueOnce(query({ data: { id: "template" } }))
+      .mockReturnValueOnce(query({ count: 1 }))
+      .mockReturnValueOnce(insert);
+    mocks.rpc.mockResolvedValueOnce({
+      data: [
+        {
+          opens_at: "2999-07-01T08:00:00Z",
+          closes_at: "2999-07-01T22:59:59.999Z",
+        },
+      ],
+      error: null,
+    });
+    await expect(
+      createCampaign(
+        form({
+          name: "Annual",
+          template_id: "template",
+          closes_at: "2999-07-01",
+        }),
+      ),
+    ).rejects.toThrow("/app/campaigns/campaign");
+    expect(mocks.rpc).toHaveBeenCalledWith("campaign_date_instants", {
+      p_date: "2999-07-01",
+      p_timezone: "Europe/London",
+    });
+    expect(insert.insert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        timezone: "Europe/London",
+        closes_at: "2999-07-01T22:59:59.999Z",
+      }),
+    );
   });
   it("rejects unsupported template types rather than silently turning them into text", async () => {
     mocks.from.mockReturnValue(query({ data: { id: "template" } }));

@@ -5,19 +5,11 @@
 
 export type OrgRole = "owner" | "admin" | "member";
 export type QuestionType =
-  | "rating"
-  | "single_choice"
-  | "multi_choice"
-  | "text"
-  | "nps";
+  "rating" | "single_choice" | "multi_choice" | "text" | "nps";
 
 // Phase 2 enums
 export type CampaignStatus =
-  | "draft"
-  | "scheduled"
-  | "active"
-  | "closed"
-  | "archived";
+  "draft" | "scheduled" | "active" | "closed" | "archived";
 export type CampaignType =
   | "annual_appraisal"
   | "feedback_360"
@@ -35,11 +27,7 @@ export type AssignmentStatus =
   | "bounced"
   | "revoked";
 export type AssignmentRelationship =
-  | "self"
-  | "manager"
-  | "peer"
-  | "direct_report"
-  | "other";
+  "self" | "manager" | "peer" | "direct_report" | "other";
 export type ResponseStatus = "in_progress" | "submitted";
 export type OutboxStatus = "pending" | "sending" | "sent" | "failed";
 
@@ -613,6 +601,24 @@ export type Database = {
         Args: { p_organization_id: string };
         Returns: boolean;
       };
+      save_appraisal_participants: {
+        Args: {
+          p_campaign_id: string;
+          p_participants: Array<{
+            person_id: string;
+            manager_person_id: string | null;
+          }>;
+        };
+        Returns: void;
+      };
+      schedule_appraisal_campaign: {
+        Args: { p_campaign_id: string; p_send_date: string };
+        Returns: void;
+      };
+      campaign_date_instants: {
+        Args: { p_date: string; p_timezone: string };
+        Returns: Array<{ opens_at: string; closes_at: string }>;
+      };
       freeze_campaign_questions: {
         Args: { p_campaign_id: string };
         Returns: void;
@@ -637,6 +643,15 @@ export type Database = {
           response_id: string;
           response_status: string;
           org_name: string | null;
+        }>;
+      };
+      respond_get_saved_answers: {
+        Args: { p_raw_token: string };
+        Returns: Array<{
+          campaign_question_id: string;
+          numeric_value: number | null;
+          text_value: string | null;
+          choice_values: unknown[];
         }>;
       };
       respond_save: {

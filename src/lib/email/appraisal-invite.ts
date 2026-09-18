@@ -8,6 +8,7 @@ export type AppraisalEmailPayload = {
   respondent_name?: string | null;
   subject_name?: string | null;
   closes_at?: string | null;
+  timezone?: string;
   is_reminder?: boolean;
 };
 
@@ -25,7 +26,7 @@ function escapeHtml(s: string): string {
     .replace(/"/g, "&quot;");
 }
 
-function formatClosesAt(iso: string | null | undefined): string | null {
+function formatClosesAt(iso: string | null | undefined, timezone = "Europe/London"): string | null {
   if (!iso) return null;
   const d = new Date(iso);
   if (!Number.isFinite(d.getTime())) return null;
@@ -34,6 +35,7 @@ function formatClosesAt(iso: string | null | undefined): string | null {
     day: "numeric",
     month: "long",
     year: "numeric",
+    timeZone: timezone,
   });
 }
 
@@ -104,7 +106,7 @@ export function buildAppraisalInviteHtml(payload: AppraisalEmailPayload): {
   const orgName = payload.org_name?.trim() || "Your organisation";
   const campaignName = payload.campaign_name?.trim() || "Annual appraisal";
   const copy = relationshipCopy(payload.relationship, payload.subject_name);
-  const closes = formatClosesAt(payload.closes_at);
+  const closes = formatClosesAt(payload.closes_at, payload.timezone);
   const greeting = payload.respondent_name?.trim()
     ? `Hi ${escapeHtml(payload.respondent_name.trim())},`
     : "Hello,";

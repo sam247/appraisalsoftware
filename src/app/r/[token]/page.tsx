@@ -1,7 +1,7 @@
 import { Logo } from "@/components/home/Logo";
 import { createClient } from "@/lib/supabase/server";
 import type { CampaignQuestion } from "@/lib/types/database";
-import RespondForm from "./respond-form";
+import RespondForm, { type Answer } from "./respond-form";
 
 interface ResolveRow {
   assignment_id: string;
@@ -39,12 +39,17 @@ export default async function RespondPage({
 
   const ctx = data[0] as ResolveRow;
 
-  if (ctx.response_status === "submitted" || ctx.assignment_status === "submitted") {
+  if (
+    ctx.response_status === "submitted" ||
+    ctx.assignment_status === "submitted"
+  ) {
     return (
       <div className="min-h-screen bg-surface flex items-center justify-center px-4">
         <div className="max-w-md w-full text-center py-16">
           <div className="text-4xl mb-4">✓</div>
-          <div className="mb-6 flex justify-center"><Logo /></div>
+          <div className="mb-6 flex justify-center">
+            <Logo />
+          </div>
           <h1 className="font-display text-2xl font-semibold text-foreground">
             Already submitted
           </h1>
@@ -72,15 +77,24 @@ export default async function RespondPage({
     { p_raw_token: token } as never,
   );
 
-  // Fallback: if the helper RPC doesn't exist yet, just show the form without
-  // questions listed (the form still works for saves/submits). The migration
-  // adds this RPC in the next step.
-  const questions = qErr
-    ? []
-    : ((rawQuestions as CampaignQuestion[]) ?? []);
+  if (qErr || !rawQuestions?.length)
+    return (
+      <ErrorPage message="We couldn’t load the appraisal questions. Please try opening your personal link again." />
+    );
+  const questions = rawQuestions as CampaignQuestion[];
+
+  const { data: savedAnswers, error: savedError } = await supabase.rpc(
+    "respond_get_saved_answers",
+    { p_raw_token: token },
+  );
+  if (savedError)
+    return (
+      <ErrorPage message="We couldn’t load your saved progress. Please try opening your personal link again." />
+    );
 
   return (
     <RespondForm
+      initialAnswers={(savedAnswers ?? []) as Answer[]}
       token={token}
       campaignName={ctx.campaign_name}
       questions={questions}
@@ -95,7 +109,9 @@ function ErrorPage({ message }: { message: string }) {
   return (
     <div className="min-h-screen bg-surface flex items-center justify-center px-4">
       <div className="max-w-md w-full text-center py-16">
-        <div className="mb-6 flex justify-center"><Logo /></div>
+        <div className="mb-6 flex justify-center">
+          <Logo />
+        </div>
         <h1 className="font-display text-2xl font-semibold text-foreground mb-3">
           Link unavailable
         </h1>

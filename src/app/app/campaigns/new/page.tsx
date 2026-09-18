@@ -136,6 +136,11 @@ export default async function NewCampaignPage({
             />
           </div>
 
+          <p className="text-sm text-muted-foreground">
+            Dates use {orgAdmin.org.timezone || "Europe/London"}. The close date
+            includes the full local day; GMT/BST changes are handled
+            automatically.
+          </p>
           <div className="flex gap-3 pt-2">
             <FormSubmit disabled={!templates.length}>
               Create draft &amp; choose people

@@ -40,11 +40,18 @@ export function responseProgress(
   };
 }
 
-export function campaignDate(value: string) {
-  return new Date(value).toLocaleDateString("en-GB", {
+export function campaignDate(
+  value: string,
+  timezone = "Europe/London",
+  includeTime = false,
+) {
+  return new Date(value).toLocaleString("en-GB", {
     day: "numeric",
     month: "short",
     year: "numeric",
-    timeZone: "Europe/London",
+    timeZone: timezone,
+    ...(includeTime
+      ? { hour: "2-digit", minute: "2-digit", timeZoneName: "short" as const }
+      : {}),
   });
 }

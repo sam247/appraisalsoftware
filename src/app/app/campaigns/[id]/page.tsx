@@ -138,7 +138,7 @@ export default async function CampaignDetailPage({
           <p className="mt-4 text-muted-foreground">
             Annual appraisal · Self and manager feedback
             {campaign.closes_at
-              ? ` · Closes ${campaignDate(campaign.closes_at)}`
+              ? ` · Closes ${campaignDate(campaign.closes_at, campaign.timezone)}`
               : ""}
           </p>
         </div>
@@ -165,7 +165,8 @@ export default async function CampaignDetailPage({
       {campaign.status === "scheduled" && campaign.opens_at && (
         <section className="mt-8 rounded-xl bg-card p-6">
           <h2 className="font-display text-lg font-semibold">
-            Scheduled for {campaignDate(campaign.opens_at)}
+            Scheduled for{" "}
+            {campaignDate(campaign.opens_at, campaign.timezone, true)}
           </h2>
           <p className="mt-2 text-sm text-muted-foreground">
             Invitations will be queued automatically. The campaign questions are
@@ -304,7 +305,7 @@ export default async function CampaignDetailPage({
                 )}
               </details>
               {ready ? (
-                <SendControls campaignId={id} />
+                <SendControls campaignId={id} timezone={campaign.timezone} />
               ) : (
                 <p className="mt-6 text-sm text-muted-foreground">
                   Save at least one participant and choose a template with
