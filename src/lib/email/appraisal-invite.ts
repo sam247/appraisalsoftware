@@ -11,8 +11,8 @@ export type AppraisalEmailPayload = {
   is_reminder?: boolean;
 };
 
-const JADE = "#1a9b6c";
-const INK = "#1a1612";
+const JADE = "#29a46c";
+const INK = "#171714";
 const MUTED = "#6b635a";
 const SURFACE = "#f7f5f1";
 const BORDER = "#e8e4dc";
@@ -126,7 +126,7 @@ export function buildAppraisalInviteHtml(payload: AppraisalEmailPayload): {
         <table role="presentation" width="100%" style="max-width:560px;background:#ffffff;border:1px solid ${BORDER};border-radius:12px;overflow:hidden;">
           <tr>
             <td style="padding:28px 28px 8px;border-bottom:3px solid ${JADE};">
-              <p style="margin:0;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:${JADE};font-weight:600;">Appraisal Software</p>
+              <p style="margin:0;font-size:22px;letter-spacing:-0.8px;color:${INK};font-weight:700;">appraisal<span style="color:${JADE};">.</span>software</p>
               <p style="margin:8px 0 0;font-size:13px;color:${MUTED};">${escapeHtml(orgName)}</p>
             </td>
           </tr>

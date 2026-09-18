@@ -1,5 +1,7 @@
 "use client";
 
+import { Logo } from "@/components/home/Logo";
+
 import { useMemo, useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import type { CampaignQuestion } from "@/lib/types/database";
@@ -126,6 +128,7 @@ export default function RespondForm({
           >
             ✓
           </div>
+          <div className="mb-6 flex justify-center"><Logo /></div>
           <h1 className="font-display text-2xl font-semibold text-foreground">
             Thank you
           </h1>
@@ -148,9 +151,9 @@ export default function RespondForm({
       <div className="sticky top-0 z-10 border-b border-border/80 bg-surface/95 backdrop-blur-sm">
         <div className="mx-auto max-w-2xl px-4 sm:px-6 py-3">
           <div className="flex items-center justify-between gap-3">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-primary truncate">
-              {orgName?.trim() || "Appraisal Software"}
-            </p>
+            {orgName?.trim() ? (
+              <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-primary truncate">{orgName}</p>
+            ) : <Logo />}
             <p className="text-xs text-muted-foreground shrink-0">
               {answeredCount}/{questions.length || "—"}
             </p>

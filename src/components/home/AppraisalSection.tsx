@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Logo } from "@/components/home/Logo";
 
 import { Panel, SectionHeading } from "@/components/product/primitives";
 import { ROUTES } from "@/lib/routes";
@@ -14,16 +15,13 @@ export function CompleteAppraisalSection() {
         <div className="grid gap-12 lg:grid-cols-2 lg:items-center lg:gap-16">
           {/* Product demo */}
           <div className="order-2 lg:order-1">
-            <Panel title="Your appraisal" meta="Acme Ltd" className="mx-auto max-w-md lg:max-w-none">
+            <Panel title="Your appraisal" meta="Preview" className="mx-auto max-w-md lg:max-w-none">
               <div className="relative min-h-[22rem] p-5 sm:p-8">
                 {/* Organisation header */}
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-2.5">
-                    <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-[10px] font-bold text-primary-foreground">
-                      AL
-                    </span>
                     <div>
-                      <p className="text-xs font-semibold text-foreground">Acme Ltd</p>
+                      <Logo />
                       <p className="text-[10px] text-muted-foreground">Annual performance review</p>
                     </div>
                   </div>

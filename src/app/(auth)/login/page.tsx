@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { Logo, BrandMark } from "@/components/home/Logo";
 
 export default function LoginPage({
   searchParams,
@@ -53,6 +54,10 @@ function LoginForm({
     <div className="min-h-screen flex items-center justify-center bg-surface px-4">
       <div className="w-full max-w-sm">
         <div className="mb-8 text-center">
+          <Link href="/" className="mb-8 flex flex-col items-center gap-3" aria-label="appraisal.software home">
+            <BrandMark size={56} />
+            <Logo size="lg" />
+          </Link>
           <h1 className="font-display text-2xl font-semibold tracking-tight text-foreground">
             Sign in
           </h1>

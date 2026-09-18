@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { Logo, BrandMark } from "@/components/home/Logo";
 import type { OrganizationInvitation } from "@/lib/types/database";
 
 type InvitationWithOrg = OrganizationInvitation & {
@@ -36,6 +37,10 @@ export default async function InvitePage({
     return (
       <div className="min-h-screen flex items-center justify-center bg-surface px-4">
         <div className="text-center max-w-sm">
+          <Link href="/" className="mb-8 flex flex-col items-center gap-3" aria-label="appraisal.software home">
+            <BrandMark size={56} />
+            <Logo size="lg" />
+          </Link>
           <h1 className="font-display text-2xl font-semibold text-foreground">
             Invitation not found
           </h1>

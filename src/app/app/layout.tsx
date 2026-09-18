@@ -2,6 +2,7 @@ import { requireOrgAdmin } from "@/lib/auth/session";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import NavLink from "./nav-link";
+import { Logo } from "@/components/home/Logo";
 
 const NAV = [
   { href: "/app", label: "Overview", exact: true },
@@ -29,16 +30,16 @@ export default async function AppLayout({
     <div className="flex min-h-screen bg-surface">
       {/* Sidebar */}
       <aside className="hidden md:flex w-56 flex-col border-r border-border bg-card">
-        {/* Org name */}
+        {/* Product identity and organisation */}
         <div className="px-5 py-5 border-b border-border">
-          <Link href="/app" className="block">
+          <Link href="/app" className="mb-3 block" aria-label="appraisal.software overview">
+            <Logo />
+          </Link>
+          <div>
             <span className="font-display text-sm font-semibold text-foreground leading-tight line-clamp-2">
               {org.name}
             </span>
-            <span className="mt-0.5 block text-xs text-muted-foreground">
-              Appraisals
-            </span>
-          </Link>
+          </div>
         </div>
 
         {/* Nav */}
@@ -67,8 +68,9 @@ export default async function AppLayout({
           href="/app"
           className="font-display text-sm font-semibold text-foreground"
         >
-          {org.name}
+          <Logo />
         </Link>
+        <span className="ml-3 truncate text-xs text-muted-foreground">{org.name}</span>
         {/* ponytail: mobile nav drawer deferred to Phase 2 */}
       </div>
 

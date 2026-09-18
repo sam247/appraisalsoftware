@@ -34,6 +34,7 @@ export function websiteAndOrganizationGraph() {
       {
         "@type": "Organization",
         "@id": `${SITE_URL}#organization`,
+        logo: absoluteUrl("/brand/icon-512.png"),
         name: SITE_NAME,
         url: SITE_URL,
         description: SITE_DESCRIPTION,

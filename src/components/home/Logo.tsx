@@ -1,20 +1,23 @@
-/**
- * Typographic wordmark — appraisal.software
- * The coral period is the brand mark, recurring as a signature element.
- */
+import Image from "next/image";
+
+/** Outlined wordmark with the signature jade dot. */
 export function Logo({
   size = "md",
 }: {
   size?: "md" | "lg";
 }) {
-  const text =
-    size === "lg"
-      ? "font-display text-lg font-semibold tracking-[-0.045em] text-foreground sm:text-xl"
-      : "font-display text-[15px] font-semibold tracking-[-0.045em] text-foreground";
-
   return (
-    <span className={text}>
-      appraisal<span className="text-primary">.</span>software
-    </span>
+    <Image
+      src="/brand/wordmark.svg"
+      alt="appraisal.software"
+      width={857}
+      height={152}
+      className={size === "lg" ? "h-auto w-[210px]" : "h-auto w-[170px]"}
+      unoptimized
+    />
   );
+}
+
+export function BrandMark({ size = 40 }: { size?: number }) {
+  return <Image src="/brand/app-icon.svg" alt="appraisal.software" width={size} height={size} unoptimized />;
 }
