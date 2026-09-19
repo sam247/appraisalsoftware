@@ -386,9 +386,7 @@ export default function PeopleDirectory({
                     Manager
                   </th>
                   <th className="py-2 pr-3 font-medium">Status</th>
-                  <th className="w-10 py-2 font-medium">
-                    <span className="sr-only">Actions</span>
-                  </th>
+                  <th className="py-2 pl-2 text-right font-medium">Actions</th>
                 </tr>
               </thead>
               <tbody>
