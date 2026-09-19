@@ -22,11 +22,22 @@ describe("marketing routes and indexability", () => {
     }
     for (const path of ["/app", "/app/campaigns", "/app/people"]) {
       const response = await proxy(new NextRequest(`https://appraisalsoftware.co.uk${path}`));
-      expect(response.status).toBe(307);
+      expect(response.status).toBe(308);
       const destination = new URL(response.headers.get("location")!);
-      expect(destination.pathname).toBe("/login");
-      expect(destination.searchParams.get("next")).toBe(path);
+      expect(destination.host).toBe("app.appraisalsoftware.co.uk");
+      expect(destination.pathname).toBe(path);
     }
+  });
+
+  it("keeps product surfaces on the app host after the apex hop", async () => {
+    const response = await proxy(
+      new NextRequest("https://app.appraisalsoftware.co.uk/app"),
+    );
+    expect(response.status).toBe(307);
+    const destination = new URL(response.headers.get("location")!);
+    expect(destination.host).toBe("app.appraisalsoftware.co.uk");
+    expect(destination.pathname).toBe("/login");
+    expect(destination.searchParams.get("next")).toBe("/app");
   });
   it("keeps public routes, canonical metadata and sharing images aligned", () => {
     expect(new Set(INDEXABLE_PATHS).size).toBe(INDEXABLE_PATHS.length);

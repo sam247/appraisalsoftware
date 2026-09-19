@@ -11,10 +11,11 @@ export const PHASE_1_DECISIONS = {
   region: "eu-west — existing project accepted for Phase 1",
 
   /**
-   * Host: App lives at /app/* on the same Next.js origin.
-   * No subdomain, no separate deployment. Simplifies auth cookies.
+   * Host: Marketing on appraisalsoftware.co.uk; product on app.appraisalsoftware.co.uk.
+   * Auth, /app, invites and /r live on the app subdomain so cookies and invite
+   * emails share one origin. Apex /app|/login|/signup|/r|/invite redirect there.
    */
-  host: "/app on same origin — no subdomain for Phase 1",
+  host: "marketing apex + app.appraisalsoftware.co.uk product host",
 
   /**
    * Auth: Email + password (+ optional magic link on login page).

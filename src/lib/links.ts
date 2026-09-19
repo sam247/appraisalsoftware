@@ -5,9 +5,20 @@ export const DISCLOSURELY_URL = "https://disclosurely.com";
 export const PRODUCT_PAGE_URL = `${DISCLOSURELY_URL}/solutions/appraisals`;
 
 /**
- * Primary commercial CTA — standalone product.
+ * Canonical product origin (auth, workspace, respondent links).
+ * Prefer env; fall back to production app host so marketing CTAs never
+ * keep users on the apex domain.
  */
-export const PRIMARY_CTA_URL = "/signup";
+export const APP_ORIGIN = (
+  process.env.NEXT_PUBLIC_APP_ORIGIN?.trim() ||
+  process.env.APP_ORIGIN?.trim() ||
+  "https://app.appraisalsoftware.co.uk"
+).replace(/\/+$/, "");
+
+/**
+ * Primary commercial CTA — standalone product on the app host.
+ */
+export const PRIMARY_CTA_URL = `${APP_ORIGIN}/signup`;
 export const PRIMARY_CTA_LABEL = "Start free";
 
 /** Kept empty — no transition copy needed for a standalone product. */
@@ -25,7 +36,7 @@ export const TRY_APPRAISAL_URL = "";
 export const TRY_APPRAISAL_LABEL = "Try appraisal software";
 
 /** App login — existing customers. */
-export const SIGN_IN_URL = "/login";
+export const SIGN_IN_URL = `${APP_ORIGIN}/login`;
 
 export const PRIVACY_URL = `${DISCLOSURELY_URL}/privacy`;
 export const TERMS_URL = `${DISCLOSURELY_URL}/terms`;

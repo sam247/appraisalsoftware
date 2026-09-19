@@ -6,11 +6,31 @@
  * This file provides session refresh for all routes and protects /app/*.
  */
 import { updateSession } from "@/lib/supabase/middleware";
+import {
+  APP_HOST,
+  isAppProductPath,
+  isMarketingHostname,
+  hostnameOf,
+} from "@/lib/hosts";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function proxy(request: NextRequest) {
-  const { supabaseResponse, user } = await updateSession(request);
+  const hostname = hostnameOf(
+    request.headers.get("host") ?? request.nextUrl.host,
+  );
   const pathname = request.nextUrl.pathname;
+
+  // Apex marketing host → app subdomain for product surfaces (auth + workspace).
+  // Do this before session work so login never starts on the wrong cookie host.
+  // Skip localhost / preview hosts (they are not the marketing hostname).
+  if (isMarketingHostname(hostname) && isAppProductPath(pathname)) {
+    const target = request.nextUrl.clone();
+    target.protocol = "https:";
+    target.host = APP_HOST;
+    return NextResponse.redirect(target, 308);
+  }
+
+  const { supabaseResponse, user } = await updateSession(request);
 
   // Protect /app/* — redirect unauthenticated visitors to /login
   if (pathname === "/app" || pathname.startsWith("/app/")) {
