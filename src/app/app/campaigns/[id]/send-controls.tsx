@@ -4,24 +4,30 @@ import { useFormStatus } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { sendCampaign } from "../actions";
 
-function Submit({ later }: { later: boolean }) {
+function Submit({ later, feedback }: { later: boolean; feedback: boolean }) {
   const { pending } = useFormStatus();
   return (
     <Button type="submit" disabled={pending}>
       {pending
         ? "Preparing invitations…"
         : later
-          ? "Schedule appraisal"
-          : "Send appraisal"}
+          ? feedback
+            ? "Schedule feedback"
+            : "Schedule appraisal"
+          : feedback
+            ? "Send feedback"
+            : "Send appraisal"}
     </Button>
   );
 }
 export default function SendControls({
   campaignId,
   timezone,
+  feedback = false,
 }: {
   campaignId: string;
   timezone: string;
+  feedback?: boolean;
 }) {
   const [later, setLater] = useState(false);
   return (
@@ -77,7 +83,7 @@ export default function SendControls({
         Sending or scheduling locks this campaign’s questions. Each reviewer
         receives their own secure email link.
       </p>
-      <Submit later={later} />
+      <Submit later={later} feedback={feedback} />
     </form>
   );
 }

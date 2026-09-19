@@ -28,6 +28,35 @@ export default async function RespondPage({
 
   const supabase = await createClient();
 
+  const { data: kind, error: kindError } = await supabase.rpc(
+    "respond_campaign_kind",
+    { p_raw_token: token },
+  );
+  if (kindError)
+    return <ErrorPage message="Invalid or expired personal link." />;
+  if (kind === "feedback_360") {
+    const { data: feedback, error } = await supabase.rpc("feedback_360_open", {
+      p_raw_token: token,
+    });
+    if (error || !feedback)
+      return (
+        <ErrorPage message="This feedback request is unavailable, closed or expired." />
+      );
+    return (
+      <RespondForm
+        token={token}
+        anonymous
+        subjectName={String(feedback.subject_name || "your colleague")}
+        campaignName={String(feedback.campaign_name || "360 feedback")}
+        orgName={String(feedback.org_name || "")}
+        relationship={null}
+        alreadySubmitted={feedback.submitted === true}
+        questions={(feedback.questions || []) as CampaignQuestion[]}
+        initialAnswers={(feedback.answers || []) as Answer[]}
+      />
+    );
+  }
+
   // Resolve token via SECURITY DEFINER RPC (anon-accessible)
   const { data, error } = await supabase.rpc("respond_resolve", {
     p_raw_token: token,

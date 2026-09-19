@@ -39,6 +39,7 @@ export default async function OverviewPage() {
   const activeCampaign = active[0];
   const hasResults =
     activeCampaign &&
+    activeCampaign.campaign_type !== "feedback_360" &&
     assignments.some(
       (a) => a.campaign_id === activeCampaign.id && a.status === "submitted",
     );

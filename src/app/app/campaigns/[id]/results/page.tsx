@@ -1,3 +1,4 @@
+import FeedbackResults from "./feedback-results";
 import { requireOrgAdmin } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { redirect, notFound } from "next/navigation";
@@ -39,6 +40,8 @@ export default async function ResultsPage({
     throw new Error("Unable to load campaign results");
   if (!rawCampaign) notFound();
   const campaign = rawCampaign as Campaign;
+  if (campaign.campaign_type === "feedback_360")
+    return <FeedbackResults campaign={campaign} />;
 
   // Questions
   const { data: rawQuestions, error: questionsError } = await supabase
