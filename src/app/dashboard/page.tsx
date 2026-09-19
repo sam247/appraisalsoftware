@@ -1,11 +1,7 @@
 import { requireOrgAdmin } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
-import {
-  PageHeader,
-  AttentionRow,
-  NextAction,
-} from "./chrome";
+import { PageHeader, AttentionRow } from "./chrome";
 import {
   buildAttentionItems,
   campaignLabels,
@@ -17,6 +13,7 @@ import type {
   CampaignAssignment,
   CampaignSubject,
 } from "@/lib/types/database";
+import { cn } from "@/lib/utils";
 
 const KIND_BADGE: Record<AttentionKind, string> = {
   needs_setup: "Needs setup",
@@ -25,12 +22,13 @@ const KIND_BADGE: Record<AttentionKind, string> = {
   collecting: "Collecting",
   delivery_issue: "Delivery issue",
   ready_to_close: "Ready to close",
-  view_results: "Results ready",
+  view_results: "Complete",
 };
 
 export default async function OverviewPage() {
   const { org } = await requireOrgAdmin();
   const supabase = await createClient();
+  const enabled360 = process.env.ENABLE_360_FEEDBACK === "true";
   const [campaignResult, peopleResult, assignmentResult, subjectResult] =
     await Promise.all([
       supabase
@@ -81,198 +79,189 @@ export default async function OverviewPage() {
       i.kind,
     ),
   );
-  const activeItems = attention.filter((i) =>
-    ["scheduled", "collecting"].includes(i.kind),
+  const actionCampaignIds = new Set(actionItems.map((i) => i.campaign.id));
+  // A campaign that needs attention should not also appear under In progress.
+  const activeItems = attention.filter(
+    (i) =>
+      ["scheduled", "collecting"].includes(i.kind) &&
+      !actionCampaignIds.has(i.campaign.id),
   );
-  const recentItems = attention.filter((i) => i.kind === "view_results").slice(0, 3);
+  const recentItems = attention
+    .filter((i) => i.kind === "view_results")
+    .slice(0, 5);
 
-  const primary = actionItems[0] ?? activeItems[0] ?? null;
+  const hasWork =
+    actionItems.length > 0 || activeItems.length > 0 || recentItems.length > 0;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <PageHeader
         title="Home"
-        subtitle={
-          campaigns.length
-            ? "What needs your attention across appraisals and feedback."
-            : "Set up people, then create your first appraisal."
-        }
-        action={
-          campaigns.length ? (
-            <Link
-              href="/dashboard/campaigns/new"
-              className="inline-flex h-9 items-center rounded-lg bg-primary px-3.5 text-sm font-semibold text-primary-foreground hover:bg-primary-hover"
-            >
-              Create appraisal
-            </Link>
-          ) : undefined
-        }
+        subtitle="Appraisals and feedback across your team."
       />
 
-      {!campaigns.length ? (
-        <EmptyHome hasPeople={hasPeople} />
-      ) : (
-        <>
-          {primary && (
-            <NextAction
-              label={primary.actionLabel}
-              detail={`${primary.title} · ${primary.detail}`}
+      <StartSurface enabled360={enabled360} />
+
+      {!campaigns.length && !hasPeople && (
+        <p className="text-sm text-muted-foreground">
+          Add people first, then start an annual appraisal
+          {enabled360 ? " or 360 feedback" : ""}.
+        </p>
+      )}
+
+      {!campaigns.length && hasPeople && (
+        <p className="text-sm text-muted-foreground">
+          Your directory is ready. Start an appraisal when you are.
+        </p>
+      )}
+
+      {actionItems.length > 0 && (
+        <WorkSection title="Needs attention" count={actionItems.length}>
+          {actionItems.map((item) => (
+            <AttentionRow
+              key={`${item.kind}-${item.campaign.id}`}
               href={
-                primary.kind === "view_results"
-                  ? `/dashboard/campaigns/${primary.campaign.id}/results`
-                  : `/dashboard/campaigns/${primary.campaign.id}`
+                item.kind === "view_results"
+                  ? `/dashboard/campaigns/${item.campaign.id}/results`
+                  : `/dashboard/campaigns/${item.campaign.id}`
               }
+              badge={KIND_BADGE[item.kind]}
+              badgeTone={statusTone(item.kind)}
+              title={item.title}
+              detail={item.detail}
+              actionLabel={item.actionLabel}
             />
-          )}
+          ))}
+        </WorkSection>
+      )}
 
-          {actionItems.length > 0 && (
-            <AttentionSection title="Needs attention">
-              {actionItems.map((item) => (
-                <AttentionRow
-                  key={`${item.kind}-${item.campaign.id}`}
-                  href={
-                    item.kind === "view_results"
-                      ? `/dashboard/campaigns/${item.campaign.id}/results`
-                      : `/dashboard/campaigns/${item.campaign.id}`
-                  }
-                  badge={KIND_BADGE[item.kind]}
-                  badgeTone={statusTone(item.kind)}
-                  title={item.title}
-                  detail={item.detail}
-                  actionLabel={item.actionLabel}
-                />
-              ))}
-            </AttentionSection>
-          )}
+      {activeItems.length > 0 && (
+        <WorkSection title="In progress" count={activeItems.length}>
+          {activeItems.map((item) => (
+            <AttentionRow
+              key={`${item.kind}-${item.campaign.id}`}
+              href={`/dashboard/campaigns/${item.campaign.id}`}
+              badge={
+                item.kind === "scheduled"
+                  ? campaignLabels.scheduled
+                  : KIND_BADGE[item.kind]
+              }
+              badgeTone={statusTone(item.kind)}
+              title={item.title}
+              detail={item.detail}
+              actionLabel={item.actionLabel}
+            />
+          ))}
+        </WorkSection>
+      )}
 
-          {activeItems.length > 0 && (
-            <AttentionSection title="In progress">
-              {activeItems.map((item) => (
-                <AttentionRow
-                  key={`${item.kind}-${item.campaign.id}`}
-                  href={`/dashboard/campaigns/${item.campaign.id}`}
-                  badge={
-                    item.kind === "scheduled"
-                      ? campaignLabels.scheduled
-                      : KIND_BADGE[item.kind]
-                  }
-                  badgeTone={statusTone(item.kind)}
-                  title={item.title}
-                  detail={item.detail}
-                  actionLabel={item.actionLabel}
-                />
-              ))}
-            </AttentionSection>
-          )}
+      {recentItems.length > 0 && (
+        <WorkSection title="Recently closed" count={recentItems.length}>
+          {recentItems.map((item) => (
+            <AttentionRow
+              key={`${item.kind}-${item.campaign.id}`}
+              href={`/dashboard/campaigns/${item.campaign.id}/results`}
+              badge={KIND_BADGE[item.kind]}
+              badgeTone="muted"
+              title={item.title}
+              detail={item.detail}
+              actionLabel={item.actionLabel}
+            />
+          ))}
+        </WorkSection>
+      )}
 
-          {recentItems.length > 0 && (
-            <AttentionSection title="Recently closed">
-              {recentItems.map((item) => (
-                <AttentionRow
-                  key={`${item.kind}-${item.campaign.id}`}
-                  href={`/dashboard/campaigns/${item.campaign.id}/results`}
-                  badge={KIND_BADGE[item.kind]}
-                  badgeTone="muted"
-                  title={item.title}
-                  detail={item.detail}
-                  actionLabel={item.actionLabel}
-                />
-              ))}
-            </AttentionSection>
+      {campaigns.length > 0 && (
+        <p className="text-xs text-muted-foreground">
+          <Link href="/dashboard/campaigns" className="hover:text-foreground">
+            See all campaigns →
+          </Link>
+          {!hasWork && (
+            <span className="ml-2">Nothing needs attention right now.</span>
           )}
-
-          {!actionItems.length && !activeItems.length && !recentItems.length && (
-            <p className="text-sm text-muted-foreground">
-              Nothing needs attention right now.{" "}
-              <Link
-                href="/dashboard/campaigns/new"
-                className="font-medium text-primary hover:underline"
-              >
-                Create an appraisal
-              </Link>
-            </p>
-          )}
-
-          <p className="text-xs text-muted-foreground">
-            <Link href="/dashboard/campaigns" className="hover:text-foreground">
-              See all campaigns →
-            </Link>
-          </p>
-        </>
+        </p>
       )}
     </div>
   );
 }
 
-function AttentionSection({
-  title,
-  children,
-}: {
-  title: string;
-  children: React.ReactNode;
-}) {
+function StartSurface({ enabled360 }: { enabled360: boolean }) {
   return (
-    <section>
-      <h2 className="mb-1 text-sm font-semibold text-foreground">{title}</h2>
-      <div className="border-t border-border">{children}</div>
+    <section className="rounded-xl border border-border/80 bg-card/60 px-4 py-5 sm:px-5">
+      <h2 className="text-base font-medium tracking-tight text-foreground">
+        What would you like to do?
+      </h2>
+      <p className="mt-0.5 text-sm text-muted-foreground">
+        Start something new for your team.
+      </p>
+      <div
+        className={cn(
+          "mt-4 grid gap-2",
+          enabled360 ? "sm:grid-cols-3" : "sm:grid-cols-2",
+        )}
+      >
+        <StartAction
+          href="/dashboard/campaigns/new"
+          title="Annual appraisal"
+          description="Self and manager review"
+        />
+        {enabled360 && (
+          <StartAction
+            href="/dashboard/campaigns/new?type=360"
+            title="360 feedback"
+            description="Anonymous multi-reviewer feedback"
+          />
+        )}
+        <StartAction
+          href="/dashboard/people"
+          title="Add people"
+          description="Grow your employee directory"
+        />
+      </div>
     </section>
   );
 }
 
-function EmptyHome({ hasPeople }: { hasPeople: boolean }) {
+function StartAction({
+  href,
+  title,
+  description,
+}: {
+  href: string;
+  title: string;
+  description: string;
+}) {
   return (
-    <div className="space-y-5">
-      {!hasPeople ? (
-        <NextAction
-          label="Add people"
-          detail="Import a CSV or add employees before you create an appraisal."
-          href="/dashboard/people"
-        />
-      ) : (
-        <NextAction
-          label="Create appraisal"
-          detail="People are ready. Name the appraisal, choose questions, then invite respondents."
-          href="/dashboard/campaigns/new"
-        />
-      )}
+    <Link
+      href={href}
+      className="rounded-lg border border-border bg-background/80 px-3.5 py-3 transition-colors hover:border-foreground/15 hover:bg-card"
+    >
+      <p className="text-sm font-medium text-foreground">{title}</p>
+      <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
+        {description}
+      </p>
+    </Link>
+  );
+}
 
-      <section>
-        <h2 className="mb-1 text-sm font-semibold text-foreground">
-          Minimum setup
-        </h2>
-        <ol className="divide-y divide-border border-t border-border">
-          <li className="flex gap-3 py-2.5">
-            <span
-              className={`mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold ${
-                hasPeople
-                  ? "bg-primary text-primary-foreground"
-                  : "border border-border text-muted-foreground"
-              }`}
-            >
-              {hasPeople ? "✓" : "1"}
-            </span>
-            <div>
-              <p className="text-sm font-medium text-foreground">People</p>
-              <p className="text-sm text-muted-foreground">
-                {hasPeople
-                  ? "Directory ready."
-                  : "Add employees and managers once; reuse them every cycle."}
-              </p>
-            </div>
-          </li>
-          <li className="flex gap-3 py-2.5">
-            <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border border-border text-[11px] font-semibold text-muted-foreground">
-              2
-            </span>
-            <div>
-              <p className="text-sm font-medium text-foreground">Appraisal</p>
-              <p className="text-sm text-muted-foreground">
-                Create a campaign, assign people, then send or schedule invitations.
-              </p>
-            </div>
-          </li>
-        </ol>
-      </section>
-    </div>
+function WorkSection({
+  title,
+  count,
+  children,
+}: {
+  title: string;
+  count: number;
+  children: React.ReactNode;
+}) {
+  return (
+    <section>
+      <div className="mb-1 flex items-baseline justify-between gap-3">
+        <h2 className="text-sm font-semibold text-foreground">{title}</h2>
+        <span className="text-xs tabular-nums text-muted-foreground">
+          {count}
+        </span>
+      </div>
+      <div className="border-t border-border">{children}</div>
+    </section>
   );
 }

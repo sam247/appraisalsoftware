@@ -299,18 +299,16 @@ export function AttentionRow({
   return (
     <Link
       href={href}
-      className="group flex flex-col gap-1 border-b border-border px-0.5 py-2.5 last:border-b-0 sm:flex-row sm:items-center sm:justify-between sm:gap-4"
+      className="group grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1 border-b border-border py-2 last:border-b-0 sm:grid-cols-[minmax(0,1.4fr)_auto_minmax(0,1fr)_auto]"
     >
-      <div className="min-w-0">
-        <div className="flex flex-wrap items-center gap-2">
-          <StatusBadge tone={badgeTone}>{badge}</StatusBadge>
-          <p className="truncate text-sm font-semibold text-foreground group-hover:text-primary">
-            {title}
-          </p>
-        </div>
-        <p className="mt-0.5 text-sm text-muted-foreground">{detail}</p>
-      </div>
-      <span className="shrink-0 text-sm font-medium text-primary">
+      <p className="min-w-0 truncate text-sm font-medium text-foreground group-hover:text-primary">
+        {title}
+      </p>
+      <StatusBadge tone={badgeTone}>{badge}</StatusBadge>
+      <p className="col-span-2 min-w-0 truncate text-xs text-muted-foreground sm:col-span-1">
+        {detail}
+      </p>
+      <span className="col-start-2 row-start-1 shrink-0 text-sm font-medium text-primary sm:col-start-auto sm:row-start-auto">
         {actionLabel} →
       </span>
     </Link>

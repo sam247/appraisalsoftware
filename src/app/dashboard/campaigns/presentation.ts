@@ -190,9 +190,9 @@ export function buildAttentionItems(
           kind: "ready_to_send",
           title: campaign.name,
           detail: is360
-            ? `${campAssignments.length} reviewers · Ready to send`
-            : `${subjects} ${subjects === 1 ? "person" : "people"} · Ready to send`,
-          actionLabel: "Review and send",
+            ? `${campAssignments.length} reviewers`
+            : `${subjects} ${subjects === 1 ? "person" : "people"}`,
+          actionLabel: "Review",
           priority: 20,
         });
       } else {
@@ -201,7 +201,7 @@ export function buildAttentionItems(
           kind: "needs_setup",
           title: campaign.name,
           detail: `${setup.percent}% ready · ${setup.nextLabel}`,
-          actionLabel: setup.nextLabel,
+          actionLabel: setup.nextLabel === "Review and send" ? "Review" : setup.nextLabel,
           priority: 10,
         });
       }
@@ -216,7 +216,7 @@ export function buildAttentionItems(
         detail: campaign.opens_at
           ? `Sends ${campaignDate(campaign.opens_at, campaign.timezone, true)}`
           : "Scheduled to send",
-        actionLabel: "View schedule",
+        actionLabel: "Open",
         priority: 30,
       });
       continue;
@@ -228,8 +228,8 @@ export function buildAttentionItems(
           campaign,
           kind: "delivery_issue",
           title: campaign.name,
-          detail: `${progress.attention} invitation${progress.attention === 1 ? "" : "s"} could not be delivered`,
-          actionLabel: "Fix delivery",
+          detail: `${progress.attention} invitation${progress.attention === 1 ? "" : "s"} failed`,
+          actionLabel: "Fix",
           priority: 5,
         });
       }
@@ -239,11 +239,8 @@ export function buildAttentionItems(
           campaign,
           kind: "collecting",
           title: campaign.name,
-          detail:
-            progress.outstanding === 1
-              ? "Waiting for 1 response"
-              : `Waiting for ${progress.outstanding} responses`,
-          actionLabel: "Open appraisal",
+          detail: `${progress.complete}/${progress.total}`,
+          actionLabel: "Open",
           priority: 40,
         });
       } else if (progress.total > 0 && progress.complete === progress.total) {
@@ -251,8 +248,8 @@ export function buildAttentionItems(
           campaign,
           kind: "ready_to_close",
           title: campaign.name,
-          detail: "All responses received · Ready to close",
-          actionLabel: "Review and close",
+          detail: `${progress.complete}/${progress.total} · Ready to close`,
+          actionLabel: "Close",
           priority: 25,
         });
       } else {
@@ -260,8 +257,8 @@ export function buildAttentionItems(
           campaign,
           kind: "collecting",
           title: campaign.name,
-          detail: "Collecting responses",
-          actionLabel: "Open appraisal",
+          detail: progress.total > 0 ? `${progress.complete}/${progress.total}` : "Collecting",
+          actionLabel: "Open",
           priority: 45,
         });
       }
@@ -273,10 +270,8 @@ export function buildAttentionItems(
         campaign,
         kind: "view_results",
         title: campaign.name,
-        detail: is360
-          ? "Closed · View anonymous results"
-          : "Closed · View Self vs Manager results",
-        actionLabel: "View results",
+        detail: `${progress.complete}/${progress.total}`,
+        actionLabel: "Results",
         priority: 60,
       });
     }

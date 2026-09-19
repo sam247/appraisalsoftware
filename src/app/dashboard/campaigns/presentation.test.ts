@@ -101,6 +101,49 @@ describe("buildAttentionItems", () => {
     expect(items[0]?.kind).toBe("needs_setup");
     expect(items.some((i) => i.kind === "collecting")).toBe(true);
   });
+
+  it("flags delivery issues with denser response counts on collecting", () => {
+    const live = campaign({
+      id: "a1",
+      name: "Live A",
+      status: "active",
+    });
+    const assignments: CampaignAssignment[] = [
+      {
+        id: "b",
+        campaign_id: "a1",
+        organization_id: "org",
+        respondent_person_id: "p1",
+        subject_person_id: "s",
+        relationship: "self",
+        status: "bounced",
+        sent_at: null,
+        submitted_at: null,
+        last_reminded_at: null,
+        created_at: "",
+        updated_at: "",
+      },
+      {
+        id: "s",
+        campaign_id: "a1",
+        organization_id: "org",
+        respondent_person_id: "p2",
+        subject_person_id: "s",
+        relationship: "manager",
+        status: "sent",
+        sent_at: null,
+        submitted_at: null,
+        last_reminded_at: null,
+        created_at: "",
+        updated_at: "",
+      },
+    ];
+    const items = buildAttentionItems([live], assignments, { a1: 1 });
+    expect(items.find((i) => i.kind === "delivery_issue")?.actionLabel).toBe(
+      "Fix",
+    );
+    expect(items.find((i) => i.kind === "collecting")?.detail).toBe("0/2");
+  });
 });
 
 describe("responseProgress outstanding", () => {

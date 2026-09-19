@@ -2,14 +2,18 @@ import { requireOrgAdmin } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import CampaignList from "./campaign-list";
 import { PageHeader } from "../chrome";
-import type { Campaign, CampaignAssignment } from "@/lib/types/database";
+import CampaignsDirectory from "./campaigns-directory";
+import type {
+  Campaign,
+  CampaignAssignment,
+  CampaignSubject,
+} from "@/lib/types/database";
 
 export default async function CampaignsPage() {
   const { org } = await requireOrgAdmin();
   const supabase = await createClient();
-  const [campaignResult, assignmentResult] = await Promise.all([
+  const [campaignResult, assignmentResult, subjectResult] = await Promise.all([
     supabase
       .from("campaigns")
       .select("*")
@@ -20,39 +24,42 @@ export default async function CampaignsPage() {
       .from("campaign_assignments")
       .select("*")
       .eq("organization_id", org.id),
+    supabase
+      .from("campaign_subjects")
+      .select("campaign_id")
+      .eq("organization_id", org.id),
   ]);
-  if (campaignResult.error || assignmentResult.error)
+  if (campaignResult.error || assignmentResult.error || subjectResult.error)
     throw new Error("Unable to load your campaigns");
+
   const campaigns = (campaignResult.data ?? []) as Campaign[];
+  const subjects = (subjectResult.data ?? []) as Pick<
+    CampaignSubject,
+    "campaign_id"
+  >[];
+  const subjectCounts: Record<string, number> = {};
+  for (const s of subjects) {
+    subjectCounts[s.campaign_id] = (subjectCounts[s.campaign_id] ?? 0) + 1;
+  }
+
   return (
     <div>
       <PageHeader
         title="Campaigns"
-        subtitle="Appraisals and feedback cycles in this workspace."
+        subtitle="Appraisals and feedback cycles across your team."
         action={
           <Button asChild size="sm">
-            <Link href="/dashboard/campaigns/new">Create appraisal</Link>
+            <Link href="/dashboard/campaigns/new">+ Create campaign</Link>
           </Button>
         }
       />
-      <section className="mt-6">
-        {campaigns.length ? (
-          <CampaignList
-            campaigns={campaigns}
-            assignments={(assignmentResult.data ?? []) as CampaignAssignment[]}
-          />
-        ) : (
-          <div className="border-t border-border py-8">
-            <h2 className="text-sm font-semibold">No appraisals yet</h2>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Create an appraisal to invite people and collect responses.
-            </p>
-            <Button asChild size="sm" className="mt-4">
-              <Link href="/dashboard/campaigns/new">Create appraisal</Link>
-            </Button>
-          </div>
-        )}
-      </section>
+      <div className="mt-6">
+        <CampaignsDirectory
+          campaigns={campaigns}
+          assignments={(assignmentResult.data ?? []) as CampaignAssignment[]}
+          subjectCounts={subjectCounts}
+        />
+      </div>
     </div>
   );
 }

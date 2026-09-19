@@ -50,6 +50,7 @@ export default function CreateCampaignForm({
   error?: string;
 }) {
   const [templateId, setTemplateId] = useState("");
+  const [closesAt, setClosesAt] = useState("");
   const [chooserOpen, setChooserOpen] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
 
@@ -62,8 +63,16 @@ export default function CreateCampaignForm({
     ? "Anonymous feedback from multiple reviewers"
     : "Self + manager";
 
+  const closeSummary = closesAt
+    ? new Date(`${closesAt}T12:00:00`).toLocaleDateString("en-GB", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      })
+    : "Not set";
+
   return (
-    <div className="w-full max-w-3xl">
+    <div className="w-full max-w-5xl">
       <h1 className="text-xl font-medium tracking-tight text-foreground">
         {is360 ? "Create anonymous 360 feedback" : "Create an annual appraisal"}
       </h1>
@@ -72,7 +81,7 @@ export default function CreateCampaignForm({
         <div
           role="radiogroup"
           aria-label="Campaign type"
-          className="mt-5 grid gap-2 sm:grid-cols-2"
+          className="mt-4 grid gap-2 sm:grid-cols-2 lg:max-w-xl"
         >
           <TypeOption
             href="/dashboard/campaigns/new"
@@ -89,17 +98,18 @@ export default function CreateCampaignForm({
         </div>
       )}
 
-      <CreationProgress className="mt-6" />
+      <CreationProgress className="mt-4" />
 
-      <p className="mt-4 text-sm text-muted-foreground">
-        {is360
-          ? "Reviewers are combined into one anonymous group. Results need five reviewers and campaign closure."
-          : "Annual appraisals collect identified self and manager responses."}
-      </p>
+      {is360 && (
+        <p className="mt-3 text-sm text-muted-foreground">
+          Reviewers are combined into one anonymous group. Results need five
+          reviewers and campaign closure.
+        </p>
+      )}
 
       {error && (
         <div
-          className="mt-4 rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive"
+          className="mt-3 rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive"
           role="alert"
         >
           {error}
@@ -107,7 +117,7 @@ export default function CreateCampaignForm({
       )}
 
       {!templates.length && (
-        <p className="mt-6 text-sm">
+        <p className="mt-4 text-sm">
           <Link href="/dashboard/templates" className="text-primary underline">
             Create a question template
           </Link>{" "}
@@ -115,7 +125,7 @@ export default function CreateCampaignForm({
         </p>
       )}
 
-      <form action={createCampaign} className="mt-6 space-y-7">
+      <form action={createCampaign} className="mt-5">
         <input
           type="hidden"
           name="campaign_type"
@@ -124,7 +134,7 @@ export default function CreateCampaignForm({
         <input type="hidden" name="template_id" value={templateId} required />
 
         {is360 && (
-          <div className="space-y-6 border-b border-border/70 pb-7">
+          <div className="mb-6 space-y-5 border-b border-border/70 pb-6">
             <label className="block text-sm">
               <span className="font-medium text-foreground">
                 Person receiving feedback
@@ -132,7 +142,7 @@ export default function CreateCampaignForm({
               <select
                 name="subject_id"
                 required
-                className="mt-2 w-full rounded-lg border border-input bg-card px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                className="mt-1.5 w-full max-w-md rounded-lg border border-input bg-card px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
               >
                 <option value="">Choose a person</option>
                 {people.map((p) => (
@@ -147,12 +157,12 @@ export default function CreateCampaignForm({
               <legend className="text-sm font-medium text-foreground">
                 Choose at least five reviewers
               </legend>
-              <p className="mt-1.5 text-sm text-muted-foreground">
+              <p className="mt-1 text-sm text-muted-foreground">
                 Select colleagues other than the person receiving feedback.
                 Relationship labels help organise invitations; results never
                 separate these groups.
               </p>
-              <div className="mt-3 space-y-2">
+              <div className="mt-2.5 space-y-2">
                 {people.map((p) => (
                   <div
                     key={p.id}
@@ -206,100 +216,138 @@ export default function CreateCampaignForm({
           </div>
         )}
 
-        <div>
-          <label
-            htmlFor="campaign-name"
-            className="block text-sm font-medium text-foreground"
-          >
-            Campaign name
-          </label>
-          <input
-            id="campaign-name"
-            name="name"
-            type="text"
-            required
-            placeholder="e.g. 2026 Annual Appraisals"
-            className="mt-2 w-full rounded-lg border border-input bg-card px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-          />
-        </div>
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1.7fr)_minmax(16rem,1fr)] lg:gap-8 xl:gap-10">
+          {/* Primary */}
+          <div className="min-w-0 space-y-4">
+            <div>
+              <label
+                htmlFor="campaign-name"
+                className="block text-sm font-medium text-foreground"
+              >
+                Campaign name
+              </label>
+              <input
+                id="campaign-name"
+                name="name"
+                type="text"
+                required
+                placeholder="e.g. 2026 Annual Appraisals"
+                className="mt-1.5 w-full rounded-lg border border-input bg-card px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              />
+            </div>
 
-        <div>
-          <p className="text-sm font-medium text-foreground">Questions</p>
-          {selected ? (
-            <div className="mt-2 rounded-xl border border-border/80 bg-card/50 px-4 py-3.5">
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="font-medium text-foreground">{selected.name}</p>
-                  <p className="mt-0.5 text-sm text-muted-foreground">
-                    {selected.questionCount} question
-                    {selected.questionCount === 1 ? "" : "s"} · {applicableHint}
-                  </p>
+            <div>
+              <p className="text-sm font-medium text-foreground">Questions</p>
+              {selected ? (
+                <div className="mt-1.5 rounded-xl border border-border/80 bg-card/50 px-3.5 py-3">
+                  <div className="flex flex-wrap items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className="font-medium text-foreground">
+                        {selected.name}
+                      </p>
+                      <p className="mt-0.5 text-sm text-muted-foreground">
+                        {selected.questionCount} question
+                        {selected.questionCount === 1 ? "" : "s"} ·{" "}
+                        {applicableHint}
+                      </p>
+                    </div>
+                    <div className="flex flex-wrap gap-x-3 gap-y-1 text-sm">
+                      {selected.questions.length > 0 && (
+                        <button
+                          type="button"
+                          className="font-medium text-primary hover:underline"
+                          onClick={() => setPreviewOpen(true)}
+                        >
+                          Preview
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        className="font-medium text-muted-foreground hover:text-foreground"
+                        onClick={() => setChooserOpen(true)}
+                      >
+                        Change
+                      </button>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
-                  {selected.questions.length > 0 && (
-                    <button
-                      type="button"
-                      className="font-medium text-primary hover:underline"
-                      onClick={() => setPreviewOpen(true)}
-                    >
-                      Preview questions
-                    </button>
-                  )}
-                  <button
+              ) : (
+                <div className="mt-1.5 rounded-xl border border-dashed border-border px-3.5 py-3">
+                  <p className="text-sm font-medium text-foreground">
+                    Choose a question template
+                  </p>
+                  <Button
                     type="button"
-                    className="font-medium text-muted-foreground hover:text-foreground"
+                    variant="outline"
+                    size="sm"
+                    className="mt-2"
+                    disabled={!templates.length}
                     onClick={() => setChooserOpen(true)}
                   >
-                    Change template
-                  </button>
+                    Choose template
+                  </Button>
                 </div>
-              </div>
+              )}
             </div>
-          ) : (
-            <div className="mt-2 rounded-xl border border-dashed border-border px-4 py-5">
-              <p className="font-medium text-foreground">
-                Choose a question template
+          </div>
+
+          {/* Secondary */}
+          <aside className="min-w-0 space-y-5 lg:border-l lg:border-border/70 lg:pl-8">
+            <div>
+              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                Schedule
               </p>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Start with one of your templates
-                {is360 ? " suitable for 360 feedback" : ""}.
-              </p>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="mt-3"
-                disabled={!templates.length}
-                onClick={() => setChooserOpen(true)}
+              <label
+                htmlFor="close-date"
+                className="mt-2 block text-sm font-medium text-foreground"
               >
-                Choose template
-              </Button>
+                Close date
+                <span className="ml-1.5 font-normal text-muted-foreground">
+                  Optional
+                </span>
+              </label>
+              <input
+                id="close-date"
+                name="closes_at"
+                type="date"
+                value={closesAt}
+                onChange={(e) => setClosesAt(e.target.value)}
+                className="mt-1.5 w-full rounded-lg border border-input bg-card px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              />
+              <p className="mt-1.5 text-xs text-muted-foreground">
+                End of selected day ({timezone}).
+              </p>
             </div>
-          )}
+
+            <div>
+              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                Setup
+              </p>
+              <dl className="mt-2 space-y-2.5 text-sm">
+                <div>
+                  <dt className="text-muted-foreground">Type</dt>
+                  <dd className="font-medium text-foreground">
+                    {is360 ? "Anonymous 360" : "Annual appraisal"}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-muted-foreground">Questions</dt>
+                  <dd className="font-medium text-foreground">
+                    {selected
+                      ? `${selected.name} · ${selected.questionCount}`
+                      : "Not selected"}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-muted-foreground">Close date</dt>
+                  <dd className="font-medium text-foreground">{closeSummary}</dd>
+                </div>
+              </dl>
+            </div>
+          </aside>
         </div>
 
-        <div className="border-t border-border/60 pt-5">
-          <label
-            htmlFor="close-date"
-            className="block text-sm font-medium text-foreground"
-          >
-            Close date
-            <span className="ml-1.5 font-normal text-muted-foreground">
-              Optional
-            </span>
-          </label>
-          <input
-            id="close-date"
-            name="closes_at"
-            type="date"
-            className="mt-2 rounded-lg border border-input bg-card px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-          />
-          <p className="mt-1.5 text-xs text-muted-foreground">
-            Closes at the end of the selected day ({timezone}).
-          </p>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-3 pt-1">
+        <div className="mt-6 flex flex-wrap items-center gap-3 border-t border-border/60 pt-4">
           <FormSubmit
             disabled={!templates.length || !templateId}
             pendingLabel="Continuing…"
@@ -372,7 +420,10 @@ export default function CreateCampaignForm({
           </SheetHeader>
           <ol className="mt-6 space-y-4">
             {(selected?.questions ?? []).map((q, i) => (
-              <li key={q.id} className="border-b border-border/60 pb-3 last:border-0">
+              <li
+                key={q.id}
+                className="border-b border-border/60 pb-3 last:border-0"
+              >
                 <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                   Question {i + 1}
                   {q.type ? ` · ${q.type.replace("_", " ")}` : ""}
@@ -412,14 +463,7 @@ function TypeOption({
           : "border-border bg-card/40 hover:border-foreground/15",
       )}
     >
-      <p
-        className={cn(
-          "text-sm font-medium",
-          selected ? "text-foreground" : "text-foreground",
-        )}
-      >
-        {title}
-      </p>
+      <p className="text-sm font-medium text-foreground">{title}</p>
       <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
         {description}
       </p>
@@ -431,7 +475,10 @@ function CreationProgress({ className }: { className?: string }) {
   const currentKey = "details";
   return (
     <div className={className}>
-      <div className="flex flex-wrap gap-1.5 sm:hidden" aria-label="Creation progress">
+      <div
+        className="flex flex-wrap gap-1.5 sm:hidden"
+        aria-label="Creation progress"
+      >
         {CREATION_STEPS.map((step) => {
           const current = step.key === currentKey;
           return (

@@ -1,8 +1,8 @@
 import FeedbackResults from "./feedback-results";
+import AnnualResults from "./annual-results";
 import { requireOrgAdmin } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { redirect, notFound } from "next/navigation";
-import Link from "next/link";
 import type {
   Campaign,
   CampaignQuestion,
@@ -43,7 +43,6 @@ export default async function ResultsPage({
   if (campaign.campaign_type === "feedback_360")
     return <FeedbackResults campaign={campaign} />;
 
-  // Questions
   const { data: rawQuestions, error: questionsError } = await supabase
     .from("campaign_questions")
     .select("*")
@@ -51,7 +50,6 @@ export default async function ResultsPage({
     .order("sort_order");
   const questions = (rawQuestions ?? []) as CampaignQuestion[];
 
-  // Subjects
   const { data: rawSubjects, error: subjectsError } = await supabase
     .from("campaign_subjects")
     .select("*")
@@ -59,7 +57,6 @@ export default async function ResultsPage({
     .eq("organization_id", orgAdmin.org.id);
   const subjects = (rawSubjects ?? []) as CampaignSubject[];
 
-  // Submitted assignments
   const { data: rawAssignments, error: assignmentsError } = await supabase
     .from("campaign_assignments")
     .select("*")
@@ -68,7 +65,6 @@ export default async function ResultsPage({
     .eq("status", "submitted");
   const assignments = (rawAssignments ?? []) as CampaignAssignment[];
 
-  // Responses
   const assignmentIds = assignments.map((a) => a.id);
   const { data: rawResponses, error: responsesError } =
     assignmentIds.length > 0
@@ -79,11 +75,7 @@ export default async function ResultsPage({
           .eq("status", "submitted")
       : { data: [], error: null };
   const responses = (rawResponses ?? []) as Response[];
-  const responseByAssignmentId = Object.fromEntries(
-    responses.map((r) => [r.assignment_id, r]),
-  );
 
-  // Answers
   const responseIds = responses.map((r) => r.id);
   const { data: rawAnswers, error: answersError } =
     responseIds.length > 0
@@ -94,7 +86,6 @@ export default async function ResultsPage({
       : { data: [], error: null };
   const answers = (rawAnswers ?? []) as ResponseAnswer[];
 
-  // People
   const { data: rawPeople, error: peopleError } = await supabase
     .from("people")
     .select("id, full_name, email")
@@ -117,188 +108,15 @@ export default async function ResultsPage({
   )
     throw new Error("Unable to load campaign responses");
 
-  // Build lookup: responseId → answers
-  const answersByResponseId: Record<string, ResponseAnswer[]> = {};
-  for (const a of answers) {
-    if (!answersByResponseId[a.response_id])
-      answersByResponseId[a.response_id] = [];
-    answersByResponseId[a.response_id].push(a);
-  }
-
-  if (questions.length === 0) {
-    return (
-      <div className="text-center py-16">
-        <p className="text-sm text-muted-foreground">
-          Questions and results will appear once this appraisal has been sent or
-          scheduled.
-        </p>
-        <Link
-          href={`/dashboard/campaigns/${id}`}
-          className="mt-4 inline-block text-sm text-foreground underline underline-offset-2"
-        >
-          ← Back to campaign
-        </Link>
-      </div>
-    );
-  }
-
   return (
-    <div>
-      <div className="mb-1">
-        <Link
-          href={`/dashboard/campaigns/${id}`}
-          className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-        >
-          ← {campaign.name}
-        </Link>
-      </div>
-      <h1 className="text-xl font-medium tracking-tight text-foreground">
-        Results
-      </h1>
-      <p className="mt-0.5 text-xs text-muted-foreground">
-        Employee reflection and manager feedback, side by side. Use the
-        responses to guide your review conversation.
-      </p>
-
-      {subjects.length === 0 ? (
-        <p className="mt-8 text-sm text-muted-foreground">
-          No participants in this campaign.
-        </p>
-      ) : (
-        <div className="mt-8 space-y-10">
-          {subjects.map((subject) => {
-            const person = peopleById[subject.person_id];
-            const subjectAssignments = assignments.filter(
-              (a) => a.subject_person_id === subject.person_id,
-            );
-
-            const selfAssignment = subjectAssignments.find(
-              (a) => a.relationship === "self",
-            );
-            const managerAssignment = subjectAssignments.find(
-              (a) => a.relationship === "manager",
-            );
-
-            const selfResponse = selfAssignment
-              ? responseByAssignmentId[selfAssignment.id]
-              : undefined;
-            const managerResponse = managerAssignment
-              ? responseByAssignmentId[managerAssignment.id]
-              : undefined;
-
-            const selfAnswers = selfResponse
-              ? (answersByResponseId[selfResponse.id] ?? [])
-              : [];
-            const managerAnswers = managerResponse
-              ? (answersByResponseId[managerResponse.id] ?? [])
-              : [];
-
-            const selfAnswerByQId = Object.fromEntries(
-              selfAnswers.map((a) => [a.campaign_question_id, a]),
-            );
-            const managerAnswerByQId = Object.fromEntries(
-              managerAnswers.map((a) => [a.campaign_question_id, a]),
-            );
-
-            const managerPerson = managerAssignment?.respondent_person_id
-              ? peopleById[managerAssignment.respondent_person_id]
-              : undefined;
-
-            return (
-              <div
-                key={subject.id}
-                className="rounded-xl border border-border bg-card overflow-hidden"
-              >
-                <div className="px-5 py-4 border-b border-border">
-                  <h2 className="font-display text-xl font-semibold text-foreground">
-                    {person?.full_name ?? person?.email ?? subject.person_id}
-                  </h2>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    Manager:{" "}
-                    {managerPerson
-                      ? (managerPerson.full_name ?? managerPerson.email)
-                      : "—"}
-                  </p>
-                </div>
-
-                {/* Questions grid */}
-                <div className="divide-y divide-border">
-                  {questions.map((q) => {
-                    const selfAns = selfAnswerByQId[q.id];
-                    const mgrAns = managerAnswerByQId[q.id];
-                    return (
-                      <div key={q.id} className="px-5 py-4">
-                        <p className="text-sm font-medium text-foreground mb-3">
-                          {q.prompt}
-                        </p>
-                        <div className="grid sm:grid-cols-2 gap-5">
-                          <ResponseCell
-                            label="Self"
-                            maximum={Number(q.scale.max ?? 5)}
-                            answer={selfAns}
-                            submitted={!!selfResponse}
-                          />
-                          <ResponseCell
-                            label="Manager"
-                            maximum={Number(q.scale.max ?? 5)}
-                            answer={mgrAns}
-                            submitted={!!managerResponse}
-                          />
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
-    </div>
-  );
-}
-
-function ResponseCell({
-  label,
-  answer,
-  submitted,
-  maximum,
-}: {
-  label: string;
-  answer: ResponseAnswer | undefined;
-  submitted: boolean;
-  maximum: number;
-}) {
-  return (
-    <div className="rounded-lg bg-surface px-5 py-4">
-      <p className="text-xs font-medium text-muted-foreground mb-1.5">
-        {label}
-      </p>
-      {!submitted ? (
-        <p className="text-xs text-muted-foreground italic">Not submitted</p>
-      ) : !answer ? (
-        <p className="text-xs text-muted-foreground italic">Skipped</p>
-      ) : answer.numeric_value !== null &&
-        answer.numeric_value !== undefined ? (
-        <p className="text-xl font-display font-semibold text-foreground">
-          {answer.numeric_value}
-          <span className="text-xs font-normal text-muted-foreground ml-1">
-            / {maximum}
-          </span>
-        </p>
-      ) : answer.text_value ? (
-        <p className="text-sm leading-relaxed whitespace-pre-wrap break-words text-foreground">
-          {answer.text_value}
-        </p>
-      ) : answer.choice_values.length > 0 ? (
-        <p className="text-sm leading-relaxed text-foreground">
-          {answer.choice_values.every((value) => typeof value === "string")
-            ? answer.choice_values.join(", ")
-            : "Unsupported choice format"}
-        </p>
-      ) : (
-        <p className="text-xs text-muted-foreground italic">No answer</p>
-      )}
-    </div>
+    <AnnualResults
+      campaign={campaign}
+      questions={questions}
+      subjects={subjects}
+      assignments={assignments}
+      responses={responses}
+      answers={answers}
+      peopleById={peopleById}
+    />
   );
 }
