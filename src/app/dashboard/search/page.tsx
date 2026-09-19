@@ -66,10 +66,10 @@ export default async function SearchPage({
 
   return (
     <div>
-      <h1 className="font-display text-2xl font-semibold tracking-tight">
+      <h1 className="text-xl font-medium tracking-tight">
         Search
       </h1>
-      <p className="mt-0.5 text-sm text-muted-foreground">
+      <p className="mt-0.5 text-xs text-muted-foreground">
         Results for &ldquo;{q}&rdquo;
         {total === 0 ? " — nothing matched." : ` · ${total} found`}
       </p>

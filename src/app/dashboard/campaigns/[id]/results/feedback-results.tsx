@@ -33,10 +33,10 @@ export default async function FeedbackResults({
       >
         ← {campaign.name}
       </Link>
-      <h1 className="mt-5 font-display text-3xl font-semibold">
+      <h1 className="mt-3 text-xl font-medium tracking-tight">
         Anonymous 360 results
       </h1>
-      <p className="mt-3 max-w-2xl text-muted-foreground">
+      <p className="mt-1 max-w-2xl text-xs text-muted-foreground">
         All reviewers form one combined group. Results contain no reviewer names
         or response times. Written comments may still identify their author.
       </p>

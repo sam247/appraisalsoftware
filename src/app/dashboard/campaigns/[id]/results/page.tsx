@@ -152,10 +152,10 @@ export default async function ResultsPage({
           ← {campaign.name}
         </Link>
       </div>
-      <h1 className="font-display text-3xl font-semibold tracking-tight text-foreground">
+      <h1 className="text-xl font-medium tracking-tight text-foreground">
         Results
       </h1>
-      <p className="mt-1 text-sm text-muted-foreground">
+      <p className="mt-0.5 text-xs text-muted-foreground">
         Employee reflection and manager feedback, side by side. Use the
         responses to guide your review conversation.
       </p>

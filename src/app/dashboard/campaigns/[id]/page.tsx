@@ -185,12 +185,12 @@ export default async function CampaignDetailPage({
               <StatusBadge tone={statusTone(campaign.status)}>
                 {campaignLabels[campaign.status]}
               </StatusBadge>
-              <h1 className="font-display text-2xl font-semibold tracking-tight text-foreground sm:text-[1.75rem]">
+              <h1 className="text-xl font-medium tracking-tight text-foreground">
                 {campaign.name}
               </h1>
             </div>
             {meta && (
-              <p className="mt-1 text-sm text-muted-foreground">{meta}</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">{meta}</p>
             )}
           </div>
           {showResults && (

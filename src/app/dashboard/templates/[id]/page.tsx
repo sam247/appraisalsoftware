@@ -61,11 +61,11 @@ export default async function TemplateDetailPage({
 
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <h1 className="font-display text-2xl font-semibold tracking-tight text-foreground">
+          <h1 className="text-xl font-medium tracking-tight text-foreground">
             {template.name}
           </h1>
           {template.description && (
-            <p className="mt-0.5 text-sm text-muted-foreground">
+            <p className="mt-0.5 text-xs text-muted-foreground">
               {template.description}
             </p>
           )}

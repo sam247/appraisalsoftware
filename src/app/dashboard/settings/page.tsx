@@ -39,10 +39,10 @@ export default async function SettingsPage({
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-display text-2xl font-semibold tracking-tight text-foreground">
+        <h1 className="text-xl font-medium tracking-tight text-foreground">
           Settings
         </h1>
-        <p className="mt-0.5 text-sm text-muted-foreground">
+        <p className="mt-0.5 text-xs text-muted-foreground">
           Organisation and team.
         </p>
       </div>

@@ -19,10 +19,10 @@ export default async function UpgradePage() {
 
   return (
     <div className="max-w-xl">
-      <h1 className="font-display text-3xl font-semibold tracking-tight">
+      <h1 className="text-xl font-medium tracking-tight">
         Upgrade
       </h1>
-      <p className="mt-2 text-sm text-muted-foreground">
+      <p className="mt-1 text-xs text-muted-foreground">
         You&apos;re on the free plan. Upgrade when you need more capacity for
         people, campaigns and team admins.
       </p>

@@ -62,11 +62,11 @@ export default async function NewCampaignPage({
   }
   return (
     <div>
-      <h1 className="font-display text-3xl font-semibold tracking-tight text-foreground">
+      <h1 className="text-xl font-medium tracking-tight text-foreground">
         {is360 ? "Create anonymous 360 feedback" : "Create an annual appraisal"}
       </h1>
       {enabled && (
-        <nav aria-label="Campaign type" className="my-5 flex gap-5 text-sm">
+        <nav aria-label="Campaign type" className="my-4 flex gap-5 text-sm">
           <Link href="/dashboard/campaigns/new" className="text-primary underline">
             Annual appraisal
           </Link>
@@ -78,7 +78,7 @@ export default async function NewCampaignPage({
           </Link>
         </nav>
       )}
-      <p className="mt-1 text-sm text-muted-foreground">
+      <p className="mt-1 text-xs text-muted-foreground">
         Start with a name and a question template. You’ll choose participants
         and review everything before sending.
       </p>
