@@ -2,7 +2,17 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Menu } from "lucide-react";
+import {
+  Menu,
+  Plus,
+  LayoutDashboard,
+  Megaphone,
+  Users,
+  FileText,
+  Settings,
+  LogOut,
+  ChevronDown,
+} from "lucide-react";
 import { BrandMark } from "@/components/home/Logo";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,17 +25,109 @@ import {
 import NavLink from "./nav-link";
 
 const NAV = [
-  { href: "/dashboard", label: "Overview", exact: true },
-  { href: "/dashboard/campaigns", label: "Campaigns" },
-  { href: "/dashboard/people", label: "People" },
-  { href: "/dashboard/templates", label: "Templates" },
-  { href: "/dashboard/settings", label: "Settings" },
+  { href: "/dashboard", label: "Home", exact: true, icon: LayoutDashboard },
+  { href: "/dashboard/campaigns", label: "Campaigns", icon: Megaphone },
+  { href: "/dashboard/people", label: "People", icon: Users },
+  { href: "/dashboard/templates", label: "Templates", icon: FileText },
+  { href: "/dashboard/settings", label: "Settings", icon: Settings },
 ];
+
+function CreateButton({ onNavigate }: { onNavigate?: () => void }) {
+  return (
+    <Link
+      href="/dashboard/campaigns/new"
+      onClick={onNavigate}
+      className="flex items-center justify-center gap-1.5 rounded-full border border-primary/35 bg-card px-3 py-2 text-[13px] font-semibold text-foreground transition-colors hover:bg-accent hover:border-primary/55"
+    >
+      <Plus className="size-3.5" aria-hidden />
+      Create
+    </Link>
+  );
+}
+
+function AccountMenu({
+  organization,
+  email,
+  role,
+}: {
+  organization: string;
+  email: string;
+  role: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const initial = (email[0] ?? organization[0] ?? "A").toUpperCase();
+
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        aria-expanded={open}
+        aria-haspopup="menu"
+        onClick={() => setOpen((v) => !v)}
+        className="flex items-center gap-1.5 rounded-full border border-border bg-card py-0.5 pl-0.5 pr-2 text-sm hover:bg-surface"
+      >
+        <span className="flex size-7 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">
+          {initial}
+        </span>
+        <ChevronDown className="size-3.5 text-muted-foreground" aria-hidden />
+      </button>
+      {open && (
+        <>
+          <button
+            type="button"
+            aria-label="Close account menu"
+            className="fixed inset-0 z-40 cursor-default"
+            onClick={() => setOpen(false)}
+          />
+          <div
+            role="menu"
+            className="absolute right-0 z-50 mt-2 w-64 rounded-xl border border-border bg-card p-2 shadow-lg"
+          >
+            <div className="border-b border-border px-2.5 pb-2.5 pt-1.5">
+              <p className="truncate text-sm font-semibold text-foreground">
+                {organization}
+              </p>
+              <p className="truncate text-xs text-muted-foreground">{email}</p>
+              <p className="mt-1 text-[11px] capitalize text-muted-foreground">
+                {role}
+              </p>
+            </div>
+            <Link
+              href="/dashboard/settings"
+              role="menuitem"
+              onClick={() => setOpen(false)}
+              className="mt-1 flex items-center gap-2 rounded-lg px-2.5 py-2 text-sm text-foreground hover:bg-surface"
+            >
+              <Settings className="size-3.5 text-muted-foreground" aria-hidden />
+              Account &amp; settings
+            </Link>
+            <form action="/logout" method="POST">
+              <button
+                type="submit"
+                role="menuitem"
+                className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-sm text-foreground hover:bg-surface"
+              >
+                <LogOut className="size-3.5 text-muted-foreground" aria-hidden />
+                Log out
+              </button>
+            </form>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
 
 export default function AppNavigation({
   organization,
+  email,
+  role,
+  children,
 }: {
   organization: string;
+  email: string;
+  role: string;
+  children: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
   const links = (mobile = false) => (
@@ -42,61 +144,70 @@ export default function AppNavigation({
       ))}
     </nav>
   );
-  const signOut = (
-    <form action="/logout" method="POST">
-      <Button
-        type="submit"
-        variant="ghost"
-        size="sm"
-        className="w-full justify-start text-muted-foreground"
-      >
-        Sign out
-      </Button>
-    </form>
-  );
+
   return (
-    <>
-      <aside className="hidden md:flex sticky top-0 h-screen w-52 shrink-0 flex-col border-r border-border bg-card px-3 py-5">
-        <Link href="/dashboard" aria-label="Appraisal Software overview" className="px-2">
-          <BrandMark size={32} />
+    <div className="min-h-screen bg-background md:flex">
+      <aside className="hidden md:flex sticky top-0 h-screen w-[13.5rem] shrink-0 flex-col border-r border-border bg-card px-3 py-4">
+        <Link
+          href="/dashboard"
+          aria-label="Appraisal Software home"
+          className="mb-4 px-1"
+        >
+          <BrandMark size={30} />
         </Link>
-        <p className="mt-4 mb-3 px-2 text-xs font-medium text-muted-foreground break-words">
-          {organization}
-        </p>
-        {links()}
-        <div className="mt-auto pt-4">
-          {signOut}
-        </div>
+        <CreateButton />
+        <div className="mt-4 flex-1 overflow-y-auto">{links()}</div>
       </aside>
-      <header className="md:hidden sticky top-0 z-30 flex h-12 items-center justify-between bg-card border-b border-border px-3">
-        <Link href="/dashboard" aria-label="Appraisal Software overview">
-          <BrandMark size={28} />
-        </Link>
-        <Sheet open={open} onOpenChange={setOpen}>
-          <SheetTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              aria-label="Open application navigation"
-            >
-              <Menu />
-            </Button>
-          </SheetTrigger>
-          <SheetContent
-            side="left"
-            className="bg-card flex flex-col w-[min(90vw,320px)]"
-          >
-            <SheetTitle className="font-display mt-5">
-              Your workspace
-            </SheetTitle>
-            <SheetDescription className="break-words mb-6">
-              {organization}
-            </SheetDescription>
-            {links(true)}
-            <div className="mt-auto">{signOut}</div>
-          </SheetContent>
-        </Sheet>
-      </header>
-    </>
+
+      <div className="flex min-w-0 flex-1 flex-col">
+        <header className="sticky top-0 z-30 flex h-12 items-center justify-between gap-3 border-b border-border bg-card/95 px-3 backdrop-blur md:px-5">
+          <div className="flex min-w-0 items-center gap-1 md:hidden">
+            <Link href="/dashboard" aria-label="Appraisal Software home">
+              <BrandMark size={26} />
+            </Link>
+            <Sheet open={open} onOpenChange={setOpen}>
+              <SheetTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  aria-label="Open application navigation"
+                >
+                  <Menu />
+                </Button>
+              </SheetTrigger>
+              <SheetContent
+                side="left"
+                className="bg-card flex w-[min(90vw,300px)] flex-col"
+              >
+                <SheetTitle className="mt-4 text-base font-semibold">
+                  {organization}
+                </SheetTitle>
+                <SheetDescription className="sr-only">
+                  Application navigation
+                </SheetDescription>
+                <div className="mt-3 mb-4">
+                  <CreateButton onNavigate={() => setOpen(false)} />
+                </div>
+                {links(true)}
+              </SheetContent>
+            </Sheet>
+          </div>
+          <p className="hidden min-w-0 truncate text-sm font-medium text-foreground md:block">
+            {organization}
+          </p>
+          <div className="ml-auto">
+            <AccountMenu
+              organization={organization}
+              email={email}
+              role={role}
+            />
+          </div>
+        </header>
+
+        <main id="main-content" className="min-w-0 flex-1">
+          {children}
+        </main>
+      </div>
+    </div>
   );
 }

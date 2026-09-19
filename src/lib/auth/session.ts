@@ -3,6 +3,7 @@ import type { Organization, OrganizationMember } from "@/lib/types/database";
 
 export interface OrgAdmin {
   userId: string;
+  email: string;
   org: Organization;
   membership: OrganizationMember;
 }
@@ -52,6 +53,7 @@ export async function requireOrgAdmin(): Promise<OrgAdmin> {
 
   return {
     userId: user.id,
+    email: user.email ?? "",
     org: row.organizations,
     membership: row,
   };
