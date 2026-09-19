@@ -41,6 +41,7 @@ function query(result: object) {
   ])
     chain[method] = vi.fn(() => chain);
   chain.single = vi.fn(async () => result);
+  chain.maybeSingle = vi.fn(async () => result);
   chain.then = (resolve: (value: object) => unknown) =>
     Promise.resolve(result).then(resolve);
   return chain;
@@ -247,13 +248,16 @@ describe("annual appraisal UX safeguards", () => {
     mocks.from
       .mockReturnValueOnce(query({ data: { id: "person" } }))
       .mockReturnValueOnce(edit);
-    await updatePerson(
-      "person",
-      form({ full_name: "Alex", job_title: "Designer" }),
-    );
+    await expect(
+      updatePerson(
+        "person",
+        form({ full_name: "Alex", job_title: "Designer" }),
+      ),
+    ).rejects.toThrow("/dashboard/people");
     expect(edit.update).toHaveBeenCalledWith({
       full_name: "Alex",
       job_title: "Designer",
+      manager_person_id: null,
     });
     const archive = query({ error: null });
     mocks.from.mockReturnValue(archive);
@@ -262,5 +266,29 @@ describe("annual appraisal UX safeguards", () => {
       archived_at: expect.any(String),
     });
     expect(archive.delete).not.toHaveBeenCalled();
+  });
+
+  it("stores a default manager on the person without rewriting campaign assignments", async () => {
+    const insert = query({ error: null });
+    mocks.from
+      .mockReturnValueOnce(query({ data: { id: "manager" } }))
+      .mockReturnValueOnce(insert);
+    await expect(
+      createPerson(
+        form({
+          email: "sam@example.test",
+          full_name: "Sam",
+          manager_person_id: "manager",
+        }),
+      ),
+    ).rejects.toThrow("/dashboard/people");
+    expect(insert.insert).toHaveBeenCalledWith({
+      organization_id: "org",
+      email: "sam@example.test",
+      full_name: "Sam",
+      job_title: null,
+      manager_person_id: "manager",
+      created_by: "owner",
+    });
   });
 });

@@ -1,6 +1,7 @@
 /**
  * Minimal people CSV parser: email (required), full_name, job_title.
  * Header names are matched case-insensitively; synonyms accepted.
+ * Manager is set in the People UI (default manager), not via CSV in this phase.
  */
 
 export type PeopleCsvRow = {
