@@ -24,7 +24,7 @@ export default function NavLink({
       onClick={onNavigate}
       aria-current={isActive ? "page" : undefined}
       className={cn(
-        "flex items-center rounded-lg px-4 py-3 text-sm transition-colors",
+        "flex items-center rounded-md px-2.5 py-1.5 text-[13px] transition-colors",
         isActive
           ? "bg-accent text-accent-foreground font-medium"
           : "text-muted-foreground hover:bg-surface hover:text-foreground",

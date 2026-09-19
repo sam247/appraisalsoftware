@@ -25,41 +25,34 @@ export default async function CampaignsPage() {
   const campaigns = (campaignResult.data ?? []) as Campaign[];
   return (
     <div>
-      <div className="flex flex-wrap items-start justify-between gap-5">
+      <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="font-display text-3xl sm:text-4xl font-semibold tracking-tight">
+          <h1 className="font-display text-2xl font-semibold tracking-tight">
             Campaigns
           </h1>
-          <p className="mt-4 text-muted-foreground">
-            Create, send and follow your annual appraisal cycles.
+          <p className="mt-0.5 text-sm text-muted-foreground">
+            Create, send and follow appraisal cycles.
           </p>
         </div>
-        <Button asChild>
+        <Button asChild size="sm">
           <Link href="/dashboard/campaigns/new">Create appraisal</Link>
         </Button>
       </div>
-      <section className="mt-8">
+      <section className="mt-5">
         {campaigns.length ? (
           <CampaignList
             campaigns={campaigns}
             assignments={(assignmentResult.data ?? []) as CampaignAssignment[]}
           />
         ) : (
-          <div className="bg-card rounded-2xl px-6 py-12">
-            <h2 className="font-display text-xl font-semibold">
-              Make room for a better review conversation.
-            </h2>
-            <p className="mt-4 max-w-lg text-muted-foreground leading-relaxed">
-              Your first campaign brings employee reflection and manager
-              feedback together. Start with a draft; nothing is sent until you
-              review it.
+          <div className="rounded-lg border border-border bg-card px-4 py-8">
+            <h2 className="text-sm font-semibold">No campaigns yet</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Create an appraisal to invite people and collect responses.
             </p>
-            <Link
-              href="/dashboard/people"
-              className="mt-5 inline-block text-sm text-primary underline underline-offset-4"
-            >
-              Manage your people first →
-            </Link>
+            <Button asChild size="sm" className="mt-4">
+              <Link href="/dashboard/campaigns/new">Create appraisal</Link>
+            </Button>
           </div>
         )}
       </section>

@@ -59,65 +59,59 @@ export default async function OverviewPage() {
           : { href: "/dashboard/campaigns/new", label: "Create appraisal" };
   return (
     <div>
-      <p className="text-sm text-muted-foreground mb-3">{org.name}</p>
-      <div className="flex flex-wrap items-start justify-between gap-5">
+      <p className="text-xs text-muted-foreground mb-2">{org.name}</p>
+      <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="font-display text-3xl sm:text-4xl font-semibold tracking-tight">
+          <h1 className="font-display text-2xl font-semibold tracking-tight">
             {campaigns.length
-              ? "Your appraisals, at a glance."
-              : "Your first appraisal starts here."}
+              ? "Appraisals at a glance"
+              : "Start your first appraisal"}
           </h1>
-          <p className="mt-4 max-w-xl text-muted-foreground leading-relaxed">
+          <p className="mt-1 max-w-xl text-sm text-muted-foreground">
             {campaigns.length
-              ? "Keep your review cycles moving, from the first invitation to the final conversation."
-              : "Bring people, reflection and manager feedback together in one annual appraisal campaign."}
+              ? "Track review cycles from invitation through conversation."
+              : "Add people, pick a template, and send an annual appraisal."}
           </p>
         </div>
-        <Button asChild>
+        <Button asChild size="sm">
           <Link href={nextAction.href}>{nextAction.label}</Link>
         </Button>
       </div>
       {!campaigns.length ? (
-        <section className="mt-10 bg-card rounded-2xl p-6 sm:p-9">
-          <h2 className="font-display text-xl font-semibold">
-            A clear path to your first review
-          </h2>
-          <ol className="mt-6 divide-y divide-border">
+        <section className="mt-6 rounded-lg border border-border bg-card p-4">
+          <h2 className="text-sm font-semibold">First review checklist</h2>
+          <ol className="mt-3 divide-y divide-border">
             {[
               [
                 "Add your people",
-                "Start with employees and their managers. No HR database to configure.",
+                "Start with employees and their managers.",
                 "/dashboard/people",
                 hasPeople ? "People added" : "Add people",
               ],
               [
                 "Create an annual appraisal",
-                "Name your campaign and choose a reusable question template.",
+                "Name your campaign and choose a template.",
                 "/dashboard/campaigns/new",
                 "Create appraisal",
               ],
               [
                 "Review, then send",
-                "Choose participants, check questions and send now or schedule for later.",
+                "Choose participants and send now or schedule.",
                 "/dashboard/campaigns/new",
                 "Start with a draft",
               ],
             ].map(([title, text, href, label], i) => (
-              <li key={title} className="flex gap-5 py-6">
-                <span className="text-primary font-display text-2xl">
+              <li key={title} className="flex gap-3 py-3">
+                <span className="text-primary font-display text-lg font-semibold w-5">
                   {i + 1}
                 </span>
                 <div>
-                  <h3 className="font-display text-lg font-semibold">
-                    {title}
-                  </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                    {text}
-                  </p>
+                  <h3 className="text-sm font-semibold">{title}</h3>
+                  <p className="mt-0.5 text-xs text-muted-foreground">{text}</p>
                   {i < 2 && (
                     <Link
                       href={href}
-                      className="mt-3 inline-block text-sm text-primary underline underline-offset-4"
+                      className="mt-1.5 inline-block text-xs text-primary underline underline-offset-2"
                     >
                       {label} →
                     </Link>
@@ -126,33 +120,29 @@ export default async function OverviewPage() {
               </li>
             ))}
           </ol>
-          <p className="mt-5 text-sm text-muted-foreground">
-            Annual appraisals are available today. 360 feedback and anonymous
-            feedback are planned.
-          </p>
         </section>
       ) : (
         <>
           <section
             aria-label="Active campaign summary"
-            className="mt-10 flex flex-wrap gap-x-12 gap-y-6 py-6 border-y border-border"
+            className="mt-5 flex flex-wrap gap-x-8 gap-y-3 py-3 border-y border-border"
           >
             {[
-              [active.length, "Collecting responses"],
-              [progress.complete, "Active responses complete"],
-              [progress.inProgress, "Active responses in progress"],
-              [progress.attention, "Delivery issues"],
+              [active.length, "Collecting"],
+              [progress.complete, "Complete"],
+              [progress.inProgress, "In progress"],
+              [progress.attention, "Issues"],
             ].map(([value, label]) => (
               <div key={label}>
-                <p className="font-display text-3xl font-semibold">{value}</p>
-                <p className="mt-2 text-sm text-muted-foreground">{label}</p>
+                <p className="font-display text-2xl font-semibold">{value}</p>
+                <p className="text-xs text-muted-foreground">{label}</p>
               </div>
             ))}
           </section>
-          <section className="mt-10">
-            <div className="flex justify-between items-center gap-3">
-              <h2 className="font-display text-xl font-semibold">Campaigns</h2>
-              <Link href="/dashboard/campaigns" className="text-sm text-primary">
+          <section className="mt-5">
+            <div className="flex justify-between items-center gap-3 mb-2">
+              <h2 className="text-sm font-semibold">Campaigns</h2>
+              <Link href="/dashboard/campaigns" className="text-xs text-primary">
                 View all →
               </Link>
             </div>

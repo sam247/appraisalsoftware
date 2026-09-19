@@ -73,3 +73,62 @@ export async function archivePerson(personId: string): Promise<void> {
   revalidatePath("/dashboard/people");
   revalidatePath("/dashboard");
 }
+
+export async function importPeopleCsv(formData: FormData): Promise<void> {
+  const { userId, org } = await requireOrgAdmin();
+  const file = formData.get("file");
+  if (!(file instanceof File) || file.size === 0) {
+    redirect("/dashboard/people?error=Choose+a+CSV+file+to+upload");
+  }
+  if (file.size > 1_000_000) {
+    redirect("/dashboard/people?error=CSV+must+be+under+1MB");
+  }
+
+  const { parsePeopleCsv } = await import("@/lib/people/csv");
+  const text = await file.text();
+  const { rows, errors } = parsePeopleCsv(text);
+  if (!rows.length) {
+    const msg = errors[0] ?? "No valid rows found";
+    redirect(`/dashboard/people?error=${encodeURIComponent(msg)}`);
+  }
+
+  const supabase = await createClient();
+  const { data: existing } = await supabase
+    .from("people")
+    .select("email")
+    .eq("organization_id", org.id)
+    .is("archived_at", null);
+  const existingEmails = new Set(
+    (existing ?? []).map((p) => p.email.trim().toLowerCase()),
+  );
+
+  const toInsert = rows.filter((r) => !existingEmails.has(r.email));
+  const skipped = rows.length - toInsert.length;
+
+  if (toInsert.length) {
+    const { error } = await supabase.from("people").insert(
+      toInsert.map((r) => ({
+        organization_id: org.id,
+        email: r.email,
+        full_name: r.full_name,
+        job_title: r.job_title,
+        created_by: userId,
+      })),
+    );
+    if (error) {
+      redirect(`/dashboard/people?error=${encodeURIComponent(error.message)}`);
+    }
+  }
+
+  revalidatePath("/dashboard/people");
+  revalidatePath("/dashboard");
+
+  const summary = [
+    `Imported ${toInsert.length}`,
+    skipped ? `skipped ${skipped} existing` : null,
+    errors.length ? `${errors.length} row warnings` : null,
+  ]
+    .filter(Boolean)
+    .join(", ");
+  redirect(`/dashboard/people?ok=${encodeURIComponent(summary)}`);
+}

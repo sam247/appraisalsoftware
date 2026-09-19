@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { Logo } from "@/components/home/Logo";
+import { BrandMark } from "@/components/home/Logo";
 import {
   CONTACT_URL,
   DISCLOSURELY_URL,
@@ -42,8 +42,8 @@ export function Footer() {
       <div className="mx-auto max-w-6xl px-5 py-14 lg:px-8">
         <div className="grid gap-10 md:grid-cols-[1.2fr_2fr]">
           <div>
-            <Link href={ROUTES.home}>
-              <Logo size="lg" />
+            <Link href={ROUTES.home} aria-label="appraisal.software home">
+              <BrandMark size={40} />
             </Link>
             <p className="mt-4 max-w-xs text-xs leading-relaxed text-muted-foreground">
               Appraisal software for UK teams, with free review templates and practical

@@ -1,4 +1,4 @@
-import { Logo } from "@/components/home/Logo";
+import { BrandMark } from "@/components/home/Logo";
 import { createClient } from "@/lib/supabase/server";
 import type { CampaignQuestion } from "@/lib/types/database";
 import RespondForm, { type Answer } from "./respond-form";
@@ -77,7 +77,7 @@ export default async function RespondPage({
         <div className="max-w-md w-full text-center py-16">
           <div className="text-4xl mb-4">✓</div>
           <div className="mb-6 flex justify-center">
-            <Logo />
+            <BrandMark size={40} />
           </div>
           <h1 className="font-display text-2xl font-semibold text-foreground">
             Already submitted
@@ -139,7 +139,7 @@ function ErrorPage({ message }: { message: string }) {
     <div className="min-h-screen bg-surface flex items-center justify-center px-4">
       <div className="max-w-md w-full text-center py-16">
         <div className="mb-6 flex justify-center">
-          <Logo />
+          <BrandMark size={40} />
         </div>
         <h1 className="font-display text-2xl font-semibold text-foreground mb-3">
           Link unavailable

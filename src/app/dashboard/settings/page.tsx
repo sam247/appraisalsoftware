@@ -37,13 +37,13 @@ export default async function SettingsPage({
   const members = (rawMembers ?? []) as unknown as MemberWithProfile[];
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-6">
       <div>
         <h1 className="font-display text-2xl font-semibold tracking-tight text-foreground">
           Settings
         </h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Manage your organisation and team.
+        <p className="mt-0.5 text-sm text-muted-foreground">
+          Organisation and team.
         </p>
       </div>
 

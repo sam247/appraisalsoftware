@@ -1,6 +1,6 @@
 "use client";
 
-import { Logo } from "@/components/home/Logo";
+import { BrandMark } from "@/components/home/Logo";
 
 import { useMemo, useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
@@ -154,7 +154,7 @@ export default function RespondForm({
             ✓
           </div>
           <div className="mb-6 flex justify-center">
-            <Logo />
+            <BrandMark size={40} />
           </div>
           <h1 className="font-display text-2xl font-semibold text-foreground">
             Thank you
@@ -187,7 +187,7 @@ export default function RespondForm({
                 {orgName}
               </p>
             ) : (
-              <Logo />
+              <BrandMark size={28} />
             )}
             <p className="text-xs text-muted-foreground shrink-0">
               {answeredCount}/{questions.length || "—"}

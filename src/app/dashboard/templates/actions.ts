@@ -31,6 +31,46 @@ export async function createTemplate(formData: FormData): Promise<void> {
   revalidatePath("/dashboard/templates");
 }
 
+export async function updateTemplate(
+  templateId: string,
+  formData: FormData,
+): Promise<void> {
+  const { org } = await requireOrgAdmin();
+  const supabase = await createClient();
+
+  const name = (formData.get("name") as string | null)?.trim();
+  const description =
+    (formData.get("description") as string | null)?.trim() || null;
+
+  if (!name) {
+    redirect(`/dashboard/templates/${templateId}?error=Name+is+required`);
+  }
+
+  const { data: existing } = await supabase
+    .from("templates")
+    .select("id")
+    .eq("id", templateId)
+    .eq("organization_id", org.id)
+    .single();
+
+  if (!existing) redirect("/dashboard/templates?error=Template+not+found");
+
+  const { error } = await supabase
+    .from("templates")
+    .update({ name, description })
+    .eq("id", templateId)
+    .eq("organization_id", org.id);
+
+  if (error) {
+    redirect(
+      `/dashboard/templates/${templateId}?error=${encodeURIComponent(error.message)}`,
+    );
+  }
+
+  revalidatePath("/dashboard/templates");
+  revalidatePath(`/dashboard/templates/${templateId}`);
+}
+
 export async function archiveTemplate(templateId: string): Promise<void> {
   const { org } = await requireOrgAdmin();
   const supabase = await createClient();

@@ -19,19 +19,19 @@ export default function CampaignList({
           <Link
             key={campaign.id}
             href={`/dashboard/campaigns/${campaign.id}`}
-            className="group block py-6 focus-visible:outline-primary"
+            className="group block py-3 focus-visible:outline-primary"
           >
-            <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="flex flex-wrap items-start justify-between gap-2">
               <div className="min-w-0">
                 <span
-                  className={`text-sm font-medium ${campaign.status === "active" ? "text-primary" : "text-muted-foreground"}`}
+                  className={`text-xs font-medium ${campaign.status === "active" ? "text-primary" : "text-muted-foreground"}`}
                 >
                   {campaignLabels[campaign.status]}
                 </span>
-                <h3 className="font-display mt-2 text-xl font-semibold group-hover:text-primary break-words">
+                <h3 className="mt-0.5 text-sm font-semibold group-hover:text-primary break-words">
                   {campaign.name}
                 </h3>
-                <p className="mt-2 text-sm text-muted-foreground">
+                <p className="mt-0.5 text-xs text-muted-foreground">
                   {campaign.campaign_type === "feedback_360"
                     ? "Anonymous 360"
                     : "Annual appraisal"}
@@ -43,18 +43,18 @@ export default function CampaignList({
                     : ""}
                 </p>
               </div>
-              <span className="text-sm text-primary">
+              <span className="text-xs text-primary">
                 {campaign.status === "draft"
                   ? "Continue setup"
-                  : "Open campaign"}{" "}
+                  : "Open"}{" "}
                 →
               </span>
             </div>
             {progress.total > 0 && (
-              <div className="mt-4 max-w-md">
-                <div className="flex justify-between gap-3 text-sm text-muted-foreground">
+              <div className="mt-2 max-w-md">
+                <div className="flex justify-between gap-3 text-xs text-muted-foreground">
                   <span>
-                    {progress.complete} of {progress.total} responses complete
+                    {progress.complete} of {progress.total} complete
                   </span>
                   <span>{progress.percent}%</span>
                 </div>
@@ -62,10 +62,10 @@ export default function CampaignList({
                   aria-label={`${campaign.name} response completion`}
                   max={progress.total}
                   value={progress.complete}
-                  className="mt-2 h-2 w-full accent-primary"
+                  className="mt-1 h-1.5 w-full accent-primary"
                 />
                 {progress.attention > 0 && (
-                  <p className="mt-2 text-sm text-destructive">
+                  <p className="mt-1 text-xs text-destructive">
                     {progress.attention} invitation
                     {progress.attention === 1 ? "" : "s"} could not be delivered
                   </p>

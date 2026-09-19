@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Logo } from "@/components/home/Logo";
+import { BrandMark } from "@/components/home/Logo";
 
 import { Panel, SectionHeading } from "@/components/product/primitives";
 import { ROUTES } from "@/lib/routes";
@@ -20,8 +20,9 @@ export function CompleteAppraisalSection() {
                 {/* Organisation header */}
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-2.5">
+                    <BrandMark size={28} />
                     <div>
-                      <Logo />
+                      <p className="text-[10px] font-medium text-foreground">appraisal.software</p>
                       <p className="text-[10px] text-muted-foreground">Annual performance review</p>
                     </div>
                   </div>

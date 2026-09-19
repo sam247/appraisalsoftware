@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Menu } from "lucide-react";
-import { Logo } from "@/components/home/Logo";
+import { BrandMark } from "@/components/home/Logo";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -31,7 +31,7 @@ export default function AppNavigation({
   const links = (mobile = false) => (
     <nav
       aria-label={mobile ? "Mobile application" : "Application"}
-      className="space-y-1"
+      className="space-y-0.5"
     >
       {NAV.map((item) => (
         <NavLink
@@ -47,6 +47,7 @@ export default function AppNavigation({
       <Button
         type="submit"
         variant="ghost"
+        size="sm"
         className="w-full justify-start text-muted-foreground"
       >
         Sign out
@@ -55,24 +56,21 @@ export default function AppNavigation({
   );
   return (
     <>
-      <aside className="hidden md:flex sticky top-0 h-screen w-64 shrink-0 flex-col bg-card px-5 py-8">
-        <Link href="/dashboard" aria-label="Appraisal Software overview">
-          <Logo />
+      <aside className="hidden md:flex sticky top-0 h-screen w-52 shrink-0 flex-col border-r border-border bg-card px-3 py-5">
+        <Link href="/dashboard" aria-label="Appraisal Software overview" className="px-2">
+          <BrandMark size={32} />
         </Link>
-        <p className="mt-8 mb-6 px-4 text-sm font-medium break-words">
+        <p className="mt-4 mb-3 px-2 text-xs font-medium text-muted-foreground break-words">
           {organization}
         </p>
         {links()}
-        <div className="mt-auto pt-8">
+        <div className="mt-auto pt-4">
           {signOut}
-          <p className="mt-4 px-4 text-xs text-muted-foreground">
-            Annual appraisals, made clear.
-          </p>
         </div>
       </aside>
-      <header className="md:hidden sticky top-0 z-30 flex h-16 items-center justify-between bg-card border-b border-border px-4">
+      <header className="md:hidden sticky top-0 z-30 flex h-12 items-center justify-between bg-card border-b border-border px-3">
         <Link href="/dashboard" aria-label="Appraisal Software overview">
-          <Logo />
+          <BrandMark size={28} />
         </Link>
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>

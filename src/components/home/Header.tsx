@@ -6,7 +6,7 @@ import { Menu } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from "@/components/ui/sheet";
-import { Logo } from "@/components/home/Logo";
+import { BrandMark } from "@/components/home/Logo";
 import { PRIMARY_CTA_LABEL, PRIMARY_CTA_URL, SIGN_IN_URL } from "@/lib/links";
 import { ROUTES } from "@/lib/routes";
 
@@ -38,8 +38,8 @@ export function Header() {
       }
     >
       <div className="mx-auto flex max-w-6xl items-center gap-6 px-5 py-3.5 lg:px-8">
-        <Link href={ROUTES.home} className="shrink-0">
-          <Logo />
+        <Link href={ROUTES.home} className="shrink-0" aria-label="appraisal.software home">
+          <BrandMark size={36} />
         </Link>
         <nav aria-label="Main navigation" className="hidden flex-1 items-center justify-center gap-8 lg:flex">
           {nav.map((item) => (
