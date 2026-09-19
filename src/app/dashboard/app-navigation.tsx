@@ -150,15 +150,48 @@ function AccountMenu({
   );
 }
 
+function SidebarFooter({
+  showUpgrade,
+  onNavigate,
+}: {
+  showUpgrade: boolean;
+  onNavigate?: () => void;
+}) {
+  return (
+    <div className="mt-auto space-y-2 border-t border-border pt-3">
+      {showUpgrade && (
+        <Link
+          href="/dashboard/upgrade"
+          onClick={onNavigate}
+          className="flex items-center justify-center rounded-full bg-primary px-3 py-2 text-[13px] font-semibold text-primary-foreground transition-colors hover:bg-primary-hover"
+        >
+          Upgrade
+        </Link>
+      )}
+      <form action="/logout" method="POST">
+        <button
+          type="submit"
+          className="flex w-full items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-[13px] font-medium text-muted-foreground transition-colors hover:bg-surface hover:text-foreground"
+        >
+          <LogOut className="size-3.5" aria-hidden />
+          Log out
+        </button>
+      </form>
+    </div>
+  );
+}
+
 export default function AppNavigation({
   organization,
   email,
   role,
+  showUpgrade,
   children,
 }: {
   organization: string;
   email: string;
   role: string;
+  showUpgrade: boolean;
   children: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
@@ -206,7 +239,11 @@ export default function AppNavigation({
               <div className="mt-3 mb-4">
                 <CreateButton onNavigate={() => setOpen(false)} />
               </div>
-              {links(true)}
+              <div className="flex-1 overflow-y-auto">{links(true)}</div>
+              <SidebarFooter
+                showUpgrade={showUpgrade}
+                onNavigate={() => setOpen(false)}
+              />
             </SheetContent>
           </Sheet>
           <Link
@@ -239,6 +276,7 @@ export default function AppNavigation({
         <aside className="hidden md:flex sticky top-14 h-[calc(100vh-3.5rem)] w-[13.5rem] shrink-0 flex-col border-r border-border bg-card px-3 py-4">
           <CreateButton />
           <div className="mt-4 flex-1 overflow-y-auto">{links()}</div>
+          <SidebarFooter showUpgrade={showUpgrade} />
         </aside>
 
         <main id="main-content" className="min-w-0 flex-1">

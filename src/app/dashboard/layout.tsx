@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { requireOrgAdmin } from "@/lib/auth/session";
+import { isFreePlan } from "@/lib/billing/plan";
 import { redirect } from "next/navigation";
 import AppNavigation from "./app-navigation";
 
@@ -30,6 +31,7 @@ export default async function DashboardLayout({
       organization={org.name}
       email={email}
       role={membership.role}
+      showUpgrade={isFreePlan(org)}
     >
       <div className="w-full px-4 py-5 sm:px-6 md:px-8 md:py-6">
         {children}
