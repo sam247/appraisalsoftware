@@ -133,7 +133,7 @@ export default async function ResultsPage({
           scheduled.
         </p>
         <Link
-          href={`/app/campaigns/${id}`}
+          href={`/dashboard/campaigns/${id}`}
           className="mt-4 inline-block text-sm text-foreground underline underline-offset-2"
         >
           ← Back to campaign
@@ -146,7 +146,7 @@ export default async function ResultsPage({
     <div>
       <div className="mb-1">
         <Link
-          href={`/app/campaigns/${id}`}
+          href={`/dashboard/campaigns/${id}`}
           className="text-xs text-muted-foreground hover:text-foreground transition-colors"
         >
           ← {campaign.name}

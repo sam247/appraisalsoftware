@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { campaignDate } from "@/app/app/campaigns/presentation";
+import { campaignDate } from "@/app/dashboard/campaigns/presentation";
 import { buildAppraisalInviteHtml } from "@/lib/email/appraisal-invite";
 
 describe("timezone presentation", () => {

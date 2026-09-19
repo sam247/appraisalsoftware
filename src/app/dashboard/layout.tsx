@@ -5,7 +5,7 @@ import AppNavigation from "./app-navigation";
 
 export const metadata: Metadata = { robots: { index: false, follow: false } };
 
-export default async function AppLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -13,7 +13,13 @@ export default async function AppLayout({
   let orgAdmin;
   try {
     orgAdmin = await requireOrgAdmin();
-  } catch {
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : "";
+    // Signed in but no workspace → finish setup (never bounce to /login:
+    // that loops with the signed-in proxy redirect and whitescreens).
+    if (reason === "not_org_admin") {
+      redirect("/onboarding");
+    }
     redirect("/login");
   }
 

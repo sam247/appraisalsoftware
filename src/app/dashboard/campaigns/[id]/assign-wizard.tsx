@@ -105,7 +105,7 @@ export default function AssignWizard({
 
       {people.filter((p) => !p.archived_at).length === 0 && (
         <p className="mb-4 text-sm">
-          <Link href="/app/people" className="text-primary underline">
+          <Link href="/dashboard/people" className="text-primary underline">
             Add people to your workspace
           </Link>{" "}
           before choosing participants.

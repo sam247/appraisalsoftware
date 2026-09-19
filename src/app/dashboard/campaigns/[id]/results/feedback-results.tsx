@@ -28,7 +28,7 @@ export default async function FeedbackResults({
   return (
     <div>
       <Link
-        href={`/app/campaigns/${campaign.id}`}
+        href={`/dashboard/campaigns/${campaign.id}`}
         className="text-sm text-muted-foreground"
       >
         ← {campaign.name}

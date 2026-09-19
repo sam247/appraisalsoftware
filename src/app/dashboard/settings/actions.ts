@@ -11,7 +11,7 @@ export async function updateOrgName(formData: FormData): Promise<void> {
   const supabase = await createClient();
 
   const name = (formData.get("name") as string | null)?.trim();
-  if (!name) redirect("/app/settings?error=" + encodeURIComponent("Name is required"));
+  if (!name) redirect("/dashboard/settings?error=" + encodeURIComponent("Name is required"));
 
   const { error } = await supabase
     .from("organizations")
@@ -19,11 +19,11 @@ export async function updateOrgName(formData: FormData): Promise<void> {
     .eq("id", org.id);
 
   if (error) {
-    redirect(`/app/settings?error=${encodeURIComponent(error.message)}`);
+    redirect(`/dashboard/settings?error=${encodeURIComponent(error.message)}`);
   }
 
-  revalidatePath("/app/settings");
-  revalidatePath("/app");
+  revalidatePath("/dashboard/settings");
+  revalidatePath("/dashboard");
 }
 
 export async function inviteAdmin(formData: FormData): Promise<void> {
@@ -31,7 +31,7 @@ export async function inviteAdmin(formData: FormData): Promise<void> {
   const supabase = await createClient();
 
   const email = (formData.get("email") as string | null)?.trim();
-  if (!email) redirect("/app/settings?error=" + encodeURIComponent("Email is required"));
+  if (!email) redirect("/dashboard/settings?error=" + encodeURIComponent("Email is required"));
 
   const { data, error } = await supabase.rpc("create_organization_invitation", {
     p_organization_id: org.id,
@@ -40,16 +40,16 @@ export async function inviteAdmin(formData: FormData): Promise<void> {
   });
 
   if (error) {
-    redirect(`/app/settings?error=${encodeURIComponent(error.message)}`);
+    redirect(`/dashboard/settings?error=${encodeURIComponent(error.message)}`);
   }
 
   const row = Array.isArray(data) ? data[0] : data;
   const rawToken = row?.raw_token as string | undefined;
   if (!rawToken) {
-    redirect("/app/settings?error=" + encodeURIComponent("Invite failed"));
+    redirect("/dashboard/settings?error=" + encodeURIComponent("Invite failed"));
   }
 
   const inviteUrl = `${getAppOrigin()}/invite/${rawToken}`;
-  revalidatePath("/app/settings");
-  redirect(`/app/settings?inviteUrl=${encodeURIComponent(inviteUrl)}`);
+  revalidatePath("/dashboard/settings");
+  redirect(`/dashboard/settings?inviteUrl=${encodeURIComponent(inviteUrl)}`);
 }

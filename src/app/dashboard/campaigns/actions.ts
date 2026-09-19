@@ -27,17 +27,17 @@ export async function createCampaign(formData: FormData): Promise<void> {
       String(formData.get("campaign_type")),
     )
   )
-    redirect("/app/campaigns/new?error=Unsupported+campaign+type");
+    redirect("/dashboard/campaigns/new?error=Unsupported+campaign+type");
   if (formData.get("campaign_type") === "feedback_360") {
     if (formData.get("privacy_ack") !== "on")
       redirect(
-        "/app/campaigns/new?type=360&error=Read+and+accept+the+anonymity+policy",
+        "/dashboard/campaigns/new?type=360&error=Read+and+accept+the+anonymity+policy",
       );
     if (process.env.ENABLE_360_FEEDBACK !== "true")
-      redirect("/app/campaigns/new?error=360+feedback+is+not+enabled");
+      redirect("/dashboard/campaigns/new?error=360+feedback+is+not+enabled");
     if (!name || !templateId || (closesAt && !validDate(closesAt)))
       redirect(
-        "/app/campaigns/new?type=360&error=Check+the+name,+template+and+date",
+        "/dashboard/campaigns/new?type=360&error=Check+the+name,+template+and+date",
       );
     const { data, error } = await supabase.rpc("create_feedback_360", {
       p_name: name,
@@ -51,20 +51,20 @@ export async function createCampaign(formData: FormData): Promise<void> {
     });
     if (error)
       redirect(
-        `/app/campaigns/new?type=360&error=${encodeURIComponent(error.message)}`,
+        `/dashboard/campaigns/new?type=360&error=${encodeURIComponent(error.message)}`,
       );
-    redirect(`/app/campaigns/${data}`);
+    redirect(`/dashboard/campaigns/${data}`);
   }
 
-  if (!name) redirect("/app/campaigns/new?error=Name+is+required");
+  if (!name) redirect("/dashboard/campaigns/new?error=Name+is+required");
 
   if (!templateId)
-    redirect("/app/campaigns/new?error=Choose+a+question+template");
+    redirect("/dashboard/campaigns/new?error=Choose+a+question+template");
   const templateError = await validateTemplate(supabase, org.id, templateId);
   if (templateError)
-    redirect(`/app/campaigns/new?error=${encodeURIComponent(templateError)}`);
+    redirect(`/dashboard/campaigns/new?error=${encodeURIComponent(templateError)}`);
   if ((closesAt && !validDate(closesAt)) || (opensAt && !validDate(opensAt)))
-    redirect("/app/campaigns/new?error=Choose+a+valid+date");
+    redirect("/dashboard/campaigns/new?error=Choose+a+valid+date");
   const timezone = org.timezone || "Europe/London";
   const closeInstant = closesAt ? await resolveDate(closesAt) : null;
   const openInstant = opensAt ? await resolveDate(opensAt) : null;
@@ -75,12 +75,12 @@ export async function createCampaign(formData: FormData): Promise<void> {
     });
     if (error || !data?.[0])
       redirect(
-        `/app/campaigns/new?error=${encodeURIComponent(error?.message ?? "Unable to resolve campaign date")}`,
+        `/dashboard/campaigns/new?error=${encodeURIComponent(error?.message ?? "Unable to resolve campaign date")}`,
       );
     return data[0] as { opens_at: string; closes_at: string };
   }
   if (closeInstant && new Date(closeInstant.closes_at).getTime() <= Date.now())
-    redirect("/app/campaigns/new?error=Close+date+must+be+in+the+future");
+    redirect("/dashboard/campaigns/new?error=Close+date+must+be+in+the+future");
 
   const { data: campaign, error } = await supabase
     .from("campaigns")
@@ -103,10 +103,10 @@ export async function createCampaign(formData: FormData): Promise<void> {
 
   if (error || !campaign)
     redirect(
-      `/app/campaigns/new?error=${encodeURIComponent(error?.message ?? "Failed to create")}`,
+      `/dashboard/campaigns/new?error=${encodeURIComponent(error?.message ?? "Failed to create")}`,
     );
 
-  redirect(`/app/campaigns/${campaign.id}`);
+  redirect(`/dashboard/campaigns/${campaign.id}`);
 }
 
 // ---------------------------------------------------------------------------
@@ -138,7 +138,7 @@ export async function saveSubjectsAndAssignments(
   });
   if (error) return { error: error.message };
 
-  revalidatePath(`/app/campaigns/${campaignId}`);
+  revalidatePath(`/dashboard/campaigns/${campaignId}`);
   return {};
 }
 
@@ -170,7 +170,7 @@ export async function activateCampaign(
   // Best-effort outbox nudge — never block or fail activation on Resend.
   void nudgeOutboxDrain();
 
-  revalidatePath(`/app/campaigns/${campaignId}`);
+  revalidatePath(`/dashboard/campaigns/${campaignId}`);
   return {};
 }
 
@@ -211,11 +211,11 @@ export async function closeCampaign(campaignId: string): Promise<void> {
   });
   if (error) {
     redirect(
-      `/app/campaigns/${campaignId}?error=${encodeURIComponent(error.message)}`,
+      `/dashboard/campaigns/${campaignId}?error=${encodeURIComponent(error.message)}`,
     );
   }
 
-  revalidatePath(`/app/campaigns/${campaignId}`);
+  revalidatePath(`/dashboard/campaigns/${campaignId}`);
 }
 
 // ---------------------------------------------------------------------------
@@ -231,23 +231,23 @@ export async function scheduleCampaign(
   const opensAt = (formData.get("opens_at") as string | null)?.trim();
   if (!opensAt) {
     redirect(
-      `/app/campaigns/${campaignId}?error=${encodeURIComponent("Open date is required to schedule")}`,
+      `/dashboard/campaigns/${campaignId}?error=${encodeURIComponent("Open date is required to schedule")}`,
     );
   }
 
   if (!validDate(opensAt))
-    redirect(`/app/campaigns/${campaignId}?error=Invalid+send+date`);
+    redirect(`/dashboard/campaigns/${campaignId}?error=Invalid+send+date`);
   const { error } = await supabase.rpc("schedule_appraisal_campaign", {
     p_campaign_id: campaignId,
     p_send_date: opensAt,
   });
   if (error)
     redirect(
-      `/app/campaigns/${campaignId}?error=${encodeURIComponent(error.message)}`,
+      `/dashboard/campaigns/${campaignId}?error=${encodeURIComponent(error.message)}`,
     );
 
-  revalidatePath(`/app/campaigns/${campaignId}`);
-  redirect(`/app/campaigns/${campaignId}`);
+  revalidatePath(`/dashboard/campaigns/${campaignId}`);
+  redirect(`/dashboard/campaigns/${campaignId}`);
 }
 
 function validDate(value: string): boolean {
@@ -291,7 +291,7 @@ export async function setCampaignTemplate(
   const templateId = String(formData.get("template_id") ?? "");
   const error = await validateTemplate(supabase, org.id, templateId);
   if (error)
-    redirect(`/app/campaigns/${campaignId}?error=${encodeURIComponent(error)}`);
+    redirect(`/dashboard/campaigns/${campaignId}?error=${encodeURIComponent(error)}`);
   const { data, error: updateError } = await supabase
     .from("campaigns")
     .update({ template_id: templateId })
@@ -303,10 +303,10 @@ export async function setCampaignTemplate(
     .single();
   if (updateError || !data)
     redirect(
-      `/app/campaigns/${campaignId}?error=This+campaign+can+no+longer+be+edited`,
+      `/dashboard/campaigns/${campaignId}?error=This+campaign+can+no+longer+be+edited`,
     );
-  revalidatePath(`/app/campaigns/${campaignId}`);
-  redirect(`/app/campaigns/${campaignId}`);
+  revalidatePath(`/dashboard/campaigns/${campaignId}`);
+  redirect(`/dashboard/campaigns/${campaignId}`);
 }
 
 export async function sendCampaign(
@@ -316,11 +316,11 @@ export async function sendCampaign(
   if (formData.get("delivery") === "later")
     return scheduleCampaign(campaignId, formData);
   if (formData.get("delivery") !== "now")
-    redirect(`/app/campaigns/${campaignId}?error=Choose+when+to+send`);
+    redirect(`/dashboard/campaigns/${campaignId}?error=Choose+when+to+send`);
   const result = await activateCampaign(campaignId);
   if (result.error)
     redirect(
-      `/app/campaigns/${campaignId}?error=${encodeURIComponent(result.error)}`,
+      `/dashboard/campaigns/${campaignId}?error=${encodeURIComponent(result.error)}`,
     );
-  redirect(`/app/campaigns/${campaignId}`);
+  redirect(`/dashboard/campaigns/${campaignId}`);
 }

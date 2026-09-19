@@ -10,9 +10,9 @@ The complete path passes disposable PostgreSQL integration tests. Customer-facin
 
 ## B. Screens/routes
 
-- `/app/campaigns/new?type=360`: subject, reviewers/relationship labels, compatible template, deadline and fixed anonymity acknowledgement. Server action and database validate the setup.
-- `/app/campaigns/[id]`: 360 draft review, saved reviewer/question preview, scheduling/sending, completion, automatic reminder explanation and closing. Setup is locked after creating the draft; create a fresh draft to change subject/reviewers/questions.
-- `/app/campaigns/[id]/results`: dedicated anonymous aggregate results, open-campaign and insufficient-response states. No identified result queries run for 360.
+- `/dashboard/campaigns/new?type=360`: subject, reviewers/relationship labels, compatible template, deadline and fixed anonymity acknowledgement. Server action and database validate the setup.
+- `/dashboard/campaigns/[id]`: 360 draft review, saved reviewer/question preview, scheduling/sending, completion, automatic reminder explanation and closing. Setup is locked after creating the draft; create a fresh draft to change subject/reviewers/questions.
+- `/dashboard/campaigns/[id]/results`: dedicated anonymous aggregate results, open-campaign and insufficient-response states. No identified result queries run for 360.
 - `/r/[token]`: dedicated private-plane anonymous context, saved answers, explicit privacy/free-text warning and final-submission acknowledgement.
 - `/api/respond`: token-derived campaign dispatch; no client-supplied campaign type is trusted. Database errors on the anonymous path are presented without internal linkage details.
 - Campaign lists distinguish anonymous 360. Overview does not offer live anonymous responses.

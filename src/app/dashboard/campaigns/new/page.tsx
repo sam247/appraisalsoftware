@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { createCampaign } from "../actions";
 import { Button } from "@/components/ui/button";
-import FormSubmit from "@/app/app/form-submit";
+import FormSubmit from "@/app/dashboard/form-submit";
 import Link from "next/link";
 import type { Template } from "@/lib/types/database";
 
@@ -67,11 +67,11 @@ export default async function NewCampaignPage({
       </h1>
       {enabled && (
         <nav aria-label="Campaign type" className="my-5 flex gap-5 text-sm">
-          <Link href="/app/campaigns/new" className="text-primary underline">
+          <Link href="/dashboard/campaigns/new" className="text-primary underline">
             Annual appraisal
           </Link>
           <Link
-            href="/app/campaigns/new?type=360"
+            href="/dashboard/campaigns/new?type=360"
             className="text-primary underline"
           >
             Anonymous 360
@@ -110,7 +110,7 @@ export default async function NewCampaignPage({
         </h2>
         {!templates.length && (
           <p className="mb-5 text-sm">
-            <Link href="/app/templates" className="text-primary underline">
+            <Link href="/dashboard/templates" className="text-primary underline">
               Create a question template
             </Link>{" "}
             to start your appraisal.
@@ -261,7 +261,7 @@ export default async function NewCampaignPage({
               {is360 ? "Create draft & review" : "Create draft & choose people"}
             </FormSubmit>
             <Button asChild variant="outline">
-              <Link href="/app/campaigns">Cancel</Link>
+              <Link href="/dashboard/campaigns">Cancel</Link>
             </Button>
           </div>
         </form>

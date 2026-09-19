@@ -45,7 +45,7 @@ function LoginForm({
 
     // Read next param synchronously from URL
     const params = new URLSearchParams(window.location.search);
-    const next = params.get("next") ?? "/app";
+    const next = params.get("next") ?? "/dashboard";
     router.push(next);
     router.refresh();
   }

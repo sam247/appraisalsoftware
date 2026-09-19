@@ -12,10 +12,10 @@ export const PHASE_1_DECISIONS = {
 
   /**
    * Host: Marketing on appraisalsoftware.co.uk; product on app.appraisalsoftware.co.uk.
-   * Auth, /app, invites and /r live on the app subdomain so cookies and invite
-   * emails share one origin. Apex /app|/login|/signup|/r|/invite redirect there.
+   * Auth, /dashboard, invites and /r live on the app subdomain so cookies and
+   * invite emails share one origin. Apex product paths redirect there; /app is legacy.
    */
-  host: "marketing apex + app.appraisalsoftware.co.uk product host",
+  host: "marketing apex + app.appraisalsoftware.co.uk product host (/dashboard)",
 
   /**
    * Auth: Email + password (+ optional magic link on login page).

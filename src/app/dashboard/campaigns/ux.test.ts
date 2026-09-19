@@ -103,7 +103,7 @@ describe("annual appraisal UX safeguards", () => {
       .mockReturnValueOnce(query({ data: { id: "campaign" } }));
     await expect(
       createCampaign(form({ name: "Annual", template_id: "template" })),
-    ).rejects.toThrow("/app/campaigns/campaign");
+    ).rejects.toThrow("/dashboard/campaigns/campaign");
   });
   it("delegates participant replacement once to the guarded database transaction", async () => {
     const rows = [
@@ -172,7 +172,7 @@ describe("annual appraisal UX safeguards", () => {
         "campaign",
         form({ delivery: "later", opens_at: "2999-01-01" }),
       ),
-    ).rejects.toThrow("/app/campaigns/campaign");
+    ).rejects.toThrow("/dashboard/campaigns/campaign");
     expect(mocks.rpc).toHaveBeenCalledExactlyOnceWith(
       "schedule_appraisal_campaign",
       { p_campaign_id: "campaign", p_send_date: "2999-01-01" },
@@ -180,7 +180,7 @@ describe("annual appraisal UX safeguards", () => {
     mocks.from.mockReturnValue(query({ data: { id: "campaign" } }));
     await expect(
       sendCampaign("campaign", form({ delivery: "now" })),
-    ).rejects.toThrow("/app/campaigns/campaign");
+    ).rejects.toThrow("/dashboard/campaigns/campaign");
     expect(mocks.rpc).toHaveBeenCalledWith("activate_campaign", {
       p_campaign_id: "campaign",
     });
@@ -212,7 +212,7 @@ describe("annual appraisal UX safeguards", () => {
           closes_at: "2999-07-01",
         }),
       ),
-    ).rejects.toThrow("/app/campaigns/campaign");
+    ).rejects.toThrow("/dashboard/campaigns/campaign");
     expect(mocks.rpc).toHaveBeenCalledWith("campaign_date_instants", {
       p_date: "2999-07-01",
       p_timezone: "Europe/London",

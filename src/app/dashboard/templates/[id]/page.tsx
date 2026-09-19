@@ -2,7 +2,7 @@ import { requireOrgAdmin } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { redirect, notFound } from "next/navigation";
 import { upsertQuestion, archiveTemplate } from "../actions";
-import FormSubmit from "@/app/app/form-submit";
+import FormSubmit from "@/app/dashboard/form-submit";
 import type { Template, TemplateQuestion } from "@/lib/types/database";
 
 export default async function TemplateDetailPage({

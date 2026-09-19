@@ -1,9 +1,8 @@
 /**
  * proxy.ts — Next.js 16 Proxy (formerly middleware.ts).
  *
- * NOTE: In Next.js 16, the file convention was renamed from `middleware.ts`
- * to `proxy.ts` and the export from `middleware()` to `proxy()`.
- * This file provides session refresh for all routes and protects /app/*.
+ * Session refresh for all routes; product surfaces live on
+ * app.appraisalsoftware.co.uk under /dashboard (legacy /app redirects).
  */
 import { updateSession } from "@/lib/supabase/middleware";
 import {
@@ -20,9 +19,7 @@ export async function proxy(request: NextRequest) {
   );
   const pathname = request.nextUrl.pathname;
 
-  // Apex marketing host → app subdomain for product surfaces (auth + workspace).
-  // Do this before session work so login never starts on the wrong cookie host.
-  // Skip localhost / preview hosts (they are not the marketing hostname).
+  // Apex marketing host → app subdomain for product surfaces.
   if (isMarketingHostname(hostname) && isAppProductPath(pathname)) {
     const target = request.nextUrl.clone();
     target.protocol = "https:";
@@ -32,8 +29,19 @@ export async function proxy(request: NextRequest) {
 
   const { supabaseResponse, user } = await updateSession(request);
 
-  // Protect /app/* — redirect unauthenticated visitors to /login
+  // Legacy /app → /dashboard (preserve deep links)
   if (pathname === "/app" || pathname.startsWith("/app/")) {
+    const target = request.nextUrl.clone();
+    target.pathname = pathname.replace(/^\/app/, "/dashboard") || "/dashboard";
+    return NextResponse.redirect(target, 308);
+  }
+
+  // Protect workspace + onboarding
+  if (
+    pathname === "/dashboard" ||
+    pathname.startsWith("/dashboard/") ||
+    pathname === "/onboarding"
+  ) {
     if (!user) {
       const loginUrl = new URL("/login", request.url);
       loginUrl.searchParams.set("next", pathname);
@@ -41,9 +49,9 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  // If already signed in, skip auth pages
+  // Signed-in users skip auth pages
   if (user && (pathname === "/login" || pathname === "/signup")) {
-    return NextResponse.redirect(new URL("/app", request.url));
+    return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
   return supabaseResponse;
@@ -51,10 +59,6 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    /*
-     * Run on all paths except static files, images, and metadata.
-     * Proxy still runs for /_next/data/* despite the exclusion — intentional.
-     */
     "/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };

@@ -126,7 +126,7 @@ export default async function CampaignDetailPage({
   return (
     <div>
       <Link
-        href="/app/campaigns"
+        href="/dashboard/campaigns"
         className="text-sm text-muted-foreground hover:text-primary"
       >
         ← Campaigns
@@ -152,7 +152,7 @@ export default async function CampaignDetailPage({
           progress.complete > 0 &&
           (!is360 || campaign.status === "closed") && (
             <Button asChild>
-              <Link href={`/app/campaigns/${id}/results`}>View results</Link>
+              <Link href={`/dashboard/campaigns/${id}/results`}>View results</Link>
             </Button>
           )}
       </div>
@@ -197,7 +197,7 @@ export default async function CampaignDetailPage({
           Overview
         </a>
         <a href="#participants">Participants</a>
-        <Link href={`/app/campaigns/${id}/results`}>Results</Link>
+        <Link href={`/dashboard/campaigns/${id}/results`}>Results</Link>
       </nav>
       <section id="overview" className="scroll-mt-20 mt-8">
         <h2 className="sr-only">Campaign overview</h2>
@@ -354,7 +354,7 @@ export default async function CampaignDetailPage({
                   </ol>
                   {campaign.template_id && !campaign.questions_frozen_at && (
                     <Link
-                      href={`/app/templates/${campaign.template_id}`}
+                      href={`/dashboard/templates/${campaign.template_id}`}
                       className="mt-4 inline-block text-sm text-primary underline"
                     >
                       Edit this reusable template

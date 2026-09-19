@@ -35,7 +35,7 @@ export default async function CampaignsPage() {
           </p>
         </div>
         <Button asChild>
-          <Link href="/app/campaigns/new">Create appraisal</Link>
+          <Link href="/dashboard/campaigns/new">Create appraisal</Link>
         </Button>
       </div>
       <section className="mt-8">
@@ -55,7 +55,7 @@ export default async function CampaignsPage() {
               review it.
             </p>
             <Link
-              href="/app/people"
+              href="/dashboard/people"
               className="mt-5 inline-block text-sm text-primary underline underline-offset-4"
             >
               Manage your people first →

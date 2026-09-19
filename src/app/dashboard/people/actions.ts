@@ -14,7 +14,7 @@ export async function createPerson(formData: FormData): Promise<void> {
   const jobTitle = (formData.get("job_title") as string | null)?.trim() || null;
 
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
-    redirect("/app/people?error=Enter+a+valid+email+address");
+    redirect("/dashboard/people?error=Enter+a+valid+email+address");
 
   const { error } = await supabase.from("people").insert({
     organization_id: org.id,
@@ -24,9 +24,9 @@ export async function createPerson(formData: FormData): Promise<void> {
     created_by: userId,
   });
 
-  if (error) redirect(`/app/people?error=${encodeURIComponent(error.message)}`);
-  revalidatePath("/app/people");
-  revalidatePath("/app");
+  if (error) redirect(`/dashboard/people?error=${encodeURIComponent(error.message)}`);
+  revalidatePath("/dashboard/people");
+  revalidatePath("/dashboard");
 }
 
 export async function updatePerson(
@@ -43,7 +43,7 @@ export async function updatePerson(
     .eq("organization_id", org.id)
     .single();
 
-  if (!existing) redirect("/app/people?error=Person+not+found");
+  if (!existing) redirect("/dashboard/people?error=Person+not+found");
 
   const { error } = await supabase
     .from("people")
@@ -54,9 +54,9 @@ export async function updatePerson(
     .eq("id", personId)
     .eq("organization_id", org.id);
 
-  if (error) redirect(`/app/people?error=${encodeURIComponent(error.message)}`);
-  revalidatePath("/app/people");
-  revalidatePath("/app");
+  if (error) redirect(`/dashboard/people?error=${encodeURIComponent(error.message)}`);
+  revalidatePath("/dashboard/people");
+  revalidatePath("/dashboard");
 }
 
 export async function archivePerson(personId: string): Promise<void> {
@@ -69,7 +69,7 @@ export async function archivePerson(personId: string): Promise<void> {
     .eq("id", personId)
     .eq("organization_id", org.id);
 
-  if (error) redirect(`/app/people?error=${encodeURIComponent(error.message)}`);
-  revalidatePath("/app/people");
-  revalidatePath("/app");
+  if (error) redirect(`/dashboard/people?error=${encodeURIComponent(error.message)}`);
+  revalidatePath("/dashboard/people");
+  revalidatePath("/dashboard");
 }

@@ -2,7 +2,7 @@ import { requireOrgAdmin } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { createPerson, updatePerson, archivePerson } from "./actions";
-import FormSubmit from "@/app/app/form-submit";
+import FormSubmit from "@/app/dashboard/form-submit";
 import type { Person } from "@/lib/types/database";
 
 export default async function PeoplePage({

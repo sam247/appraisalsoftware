@@ -1,7 +1,7 @@
 /**
  * Production host split:
  * - Marketing: appraisalsoftware.co.uk
- * - Product (auth, /app, invites, respondents): app.appraisalsoftware.co.uk
+ * - Product (auth, dashboard, invites, respondents): app.appraisalsoftware.co.uk
  *
  * Email/respondent URLs already use getAppOrigin() → app subdomain.
  * Keep auth cookies on one host by never completing login on the apex.
@@ -12,7 +12,7 @@ export const APP_HOST = "app.appraisalsoftware.co.uk";
 
 /** Paths that belong on the app host in production. */
 const APP_PATH_PREFIX =
-  /^\/(app|login|signup|logout|invite|r)(\/|$)/;
+  /^\/(dashboard|app|onboarding|login|signup|logout|invite|r)(\/|$)/;
 
 export function isAppProductPath(pathname: string): boolean {
   return APP_PATH_PREFIX.test(pathname);

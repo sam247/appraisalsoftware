@@ -18,7 +18,7 @@ export default function CampaignList({
         return (
           <Link
             key={campaign.id}
-            href={`/app/campaigns/${campaign.id}`}
+            href={`/dashboard/campaigns/${campaign.id}`}
             className="group block py-6 focus-visible:outline-primary"
           >
             <div className="flex flex-wrap items-start justify-between gap-4">

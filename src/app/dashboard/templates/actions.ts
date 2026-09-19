@@ -14,7 +14,7 @@ export async function createTemplate(formData: FormData): Promise<void> {
   const description =
     (formData.get("description") as string | null)?.trim() || null;
 
-  if (!name) redirect("/app/templates?error=Name+is+required");
+  if (!name) redirect("/dashboard/templates?error=Name+is+required");
 
   const { error } = await supabase.from("templates").insert({
     organization_id: org.id,
@@ -26,9 +26,9 @@ export async function createTemplate(formData: FormData): Promise<void> {
   });
 
   if (error)
-    redirect(`/app/templates?error=${encodeURIComponent(error.message)}`);
+    redirect(`/dashboard/templates?error=${encodeURIComponent(error.message)}`);
 
-  revalidatePath("/app/templates");
+  revalidatePath("/dashboard/templates");
 }
 
 export async function archiveTemplate(templateId: string): Promise<void> {
@@ -42,7 +42,7 @@ export async function archiveTemplate(templateId: string): Promise<void> {
     .eq("organization_id", org.id)
     .single();
 
-  if (!existing) redirect("/app/templates?error=Template+not+found");
+  if (!existing) redirect("/dashboard/templates?error=Template+not+found");
 
   const { error } = await supabase
     .from("templates")
@@ -50,10 +50,10 @@ export async function archiveTemplate(templateId: string): Promise<void> {
     .eq("id", templateId);
 
   if (error)
-    redirect(`/app/templates?error=${encodeURIComponent(error.message)}`);
+    redirect(`/dashboard/templates?error=${encodeURIComponent(error.message)}`);
 
-  revalidatePath("/app/templates");
-  redirect("/app/templates");
+  revalidatePath("/dashboard/templates");
+  redirect("/dashboard/templates");
 }
 
 export async function upsertQuestion(
@@ -71,7 +71,7 @@ export async function upsertQuestion(
     .eq("organization_id", org.id)
     .single();
 
-  if (!template) redirect("/app/templates?error=Template+not+found");
+  if (!template) redirect("/dashboard/templates?error=Template+not+found");
 
   const prompt = (formData.get("prompt") as string | null)?.trim();
   const rawType = (formData.get("type") as string | null) ?? "text";
@@ -84,12 +84,12 @@ export async function upsertQuestion(
   ];
   if (!(VALID_TYPES as string[]).includes(rawType))
     redirect(
-      `/app/templates/${templateId}?error=Choose+a+supported+question+type`,
+      `/dashboard/templates/${templateId}?error=Choose+a+supported+question+type`,
     );
   const type = rawType as QuestionType;
   if (!questionId && !["text", "rating"].includes(type))
     redirect(
-      `/app/templates/${templateId}?error=New+questions+support+text+or+rating`,
+      `/dashboard/templates/${templateId}?error=New+questions+support+text+or+rating`,
     );
   const helpText = (formData.get("help_text") as string | null)?.trim() || null;
   const required = formData.get("required") === "on";
@@ -99,9 +99,9 @@ export async function upsertQuestion(
   );
 
   if (!Number.isInteger(sortOrder) || sortOrder < 0)
-    redirect(`/app/templates/${templateId}?error=Invalid+question+order`);
+    redirect(`/dashboard/templates/${templateId}?error=Invalid+question+order`);
   if (!prompt)
-    redirect(`/app/templates/${templateId}?error=Prompt+is+required`);
+    redirect(`/dashboard/templates/${templateId}?error=Prompt+is+required`);
 
   if (questionId) {
     const { error } = await supabase
@@ -118,7 +118,7 @@ export async function upsertQuestion(
 
     if (error)
       redirect(
-        `/app/templates/${templateId}?error=${encodeURIComponent(error.message)}`,
+        `/dashboard/templates/${templateId}?error=${encodeURIComponent(error.message)}`,
       );
   } else {
     const { error } = await supabase.from("template_questions").insert({
@@ -135,11 +135,11 @@ export async function upsertQuestion(
 
     if (error)
       redirect(
-        `/app/templates/${templateId}?error=${encodeURIComponent(error.message)}`,
+        `/dashboard/templates/${templateId}?error=${encodeURIComponent(error.message)}`,
       );
   }
 
-  revalidatePath(`/app/templates/${templateId}`);
+  revalidatePath(`/dashboard/templates/${templateId}`);
 }
 
 export async function deleteQuestion(
@@ -156,7 +156,7 @@ export async function deleteQuestion(
     .eq("organization_id", org.id)
     .single();
 
-  if (!template) redirect("/app/templates?error=Template+not+found");
+  if (!template) redirect("/dashboard/templates?error=Template+not+found");
 
   const { error } = await supabase
     .from("template_questions")
@@ -166,8 +166,8 @@ export async function deleteQuestion(
 
   if (error)
     redirect(
-      `/app/templates/${templateId}?error=${encodeURIComponent(error.message)}`,
+      `/dashboard/templates/${templateId}?error=${encodeURIComponent(error.message)}`,
     );
 
-  revalidatePath(`/app/templates/${templateId}`);
+  revalidatePath(`/dashboard/templates/${templateId}`);
 }

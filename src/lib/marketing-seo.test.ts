@@ -20,7 +20,7 @@ describe("marketing routes and indexability", () => {
       expect(response.status).toBe(200);
       expect(response.headers.get("location")).toBeNull();
     }
-    for (const path of ["/app", "/app/campaigns", "/app/people"]) {
+    for (const path of ["/dashboard", "/dashboard/campaigns", "/dashboard/people"]) {
       const response = await proxy(new NextRequest(`https://appraisalsoftware.co.uk${path}`));
       expect(response.status).toBe(308);
       const destination = new URL(response.headers.get("location")!);
@@ -31,13 +31,22 @@ describe("marketing routes and indexability", () => {
 
   it("keeps product surfaces on the app host after the apex hop", async () => {
     const response = await proxy(
-      new NextRequest("https://app.appraisalsoftware.co.uk/app"),
+      new NextRequest("https://app.appraisalsoftware.co.uk/dashboard"),
     );
     expect(response.status).toBe(307);
     const destination = new URL(response.headers.get("location")!);
     expect(destination.host).toBe("app.appraisalsoftware.co.uk");
     expect(destination.pathname).toBe("/login");
-    expect(destination.searchParams.get("next")).toBe("/app");
+    expect(destination.searchParams.get("next")).toBe("/dashboard");
+  });
+
+  it("redirects legacy /app paths to /dashboard", async () => {
+    const response = await proxy(
+      new NextRequest("https://app.appraisalsoftware.co.uk/app/campaigns"),
+    );
+    expect(response.status).toBe(308);
+    const destination = new URL(response.headers.get("location")!);
+    expect(destination.pathname).toBe("/dashboard/campaigns");
   });
   it("keeps public routes, canonical metadata and sharing images aligned", () => {
     expect(new Set(INDEXABLE_PATHS).size).toBe(INDEXABLE_PATHS.length);
@@ -61,7 +70,7 @@ describe("marketing routes and indexability", () => {
     expect(isIndexableDeployment("production", "production")).toBe(true);
     expect(isIndexableDeployment(undefined, "production")).toBe(true);
     expect(isIndexableDeployment(undefined, "development")).toBe(false);
-    for (const folder of ["(auth)", "app", "r", "invite"]) {
+    for (const folder of ["(auth)", "dashboard", "onboarding", "r", "invite"]) {
       expect(readFileSync(`src/app/${folder}/layout.tsx`, "utf8")).toContain("index: false");
       expect(INDEXABLE_PATHS.some((path) => path === `/${folder}` || path.startsWith(`/${folder}/`))).toBe(false);
     }

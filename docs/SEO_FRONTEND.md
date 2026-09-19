@@ -71,7 +71,7 @@ At publication +2 weeks, review discovery and Google-selected canonicals using S
 
 ## Public route guard correction
 
-The final HTTP audit discovered that the existing proxy used `pathname.startsWith("/app")` to identify private app URLs. That also redirected public `/appraisal-*` pages to login. The boundary now matches only `/app` and `/app/*`; authentication and session handling for actual app routes are unchanged. The marketing regression check verifies all public paths pass through and unauthenticated app paths still redirect with their `next` destination.
+The final HTTP audit discovered that the existing proxy used `pathname.startsWith("/dashboard")` to identify private app URLs. That also redirected public `/appraisal-*` pages to login. The boundary now matches only `/dashboard` and `/dashboard/*`; authentication and session handling for actual app routes are unchanged. The marketing regression check verifies all public paths pass through and unauthenticated app paths still redirect with their `next` destination.
 
 ## Local verification
 

@@ -77,5 +77,5 @@ export default async function InvitePage({
     });
   }
 
-  redirect("/app");
+  redirect("/dashboard");
 }

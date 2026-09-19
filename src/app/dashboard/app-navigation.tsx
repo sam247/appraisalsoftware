@@ -15,11 +15,11 @@ import {
 import NavLink from "./nav-link";
 
 const NAV = [
-  { href: "/app", label: "Overview", exact: true },
-  { href: "/app/campaigns", label: "Campaigns" },
-  { href: "/app/people", label: "People" },
-  { href: "/app/templates", label: "Templates" },
-  { href: "/app/settings", label: "Settings" },
+  { href: "/dashboard", label: "Overview", exact: true },
+  { href: "/dashboard/campaigns", label: "Campaigns" },
+  { href: "/dashboard/people", label: "People" },
+  { href: "/dashboard/templates", label: "Templates" },
+  { href: "/dashboard/settings", label: "Settings" },
 ];
 
 export default function AppNavigation({
@@ -56,7 +56,7 @@ export default function AppNavigation({
   return (
     <>
       <aside className="hidden md:flex sticky top-0 h-screen w-64 shrink-0 flex-col bg-card px-5 py-8">
-        <Link href="/app" aria-label="Appraisal Software overview">
+        <Link href="/dashboard" aria-label="Appraisal Software overview">
           <Logo />
         </Link>
         <p className="mt-8 mb-6 px-4 text-sm font-medium break-words">
@@ -71,7 +71,7 @@ export default function AppNavigation({
         </div>
       </aside>
       <header className="md:hidden sticky top-0 z-30 flex h-16 items-center justify-between bg-card border-b border-border px-4">
-        <Link href="/app" aria-label="Appraisal Software overview">
+        <Link href="/dashboard" aria-label="Appraisal Software overview">
           <Logo />
         </Link>
         <Sheet open={open} onOpenChange={setOpen}>

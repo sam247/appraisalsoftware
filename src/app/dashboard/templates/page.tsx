@@ -2,7 +2,7 @@ import { requireOrgAdmin } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { createTemplate } from "./actions";
-import FormSubmit from "@/app/app/form-submit";
+import FormSubmit from "@/app/dashboard/form-submit";
 import Link from "next/link";
 import type { Template } from "@/lib/types/database";
 
@@ -82,7 +82,7 @@ export default async function TemplatesPage({
             {templates.map((t: Template) => (
               <Link
                 key={t.id}
-                href={`/app/templates/${t.id}`}
+                href={`/dashboard/templates/${t.id}`}
                 className="flex items-center justify-between px-5 py-3.5 hover:bg-surface transition-colors"
               >
                 <div>

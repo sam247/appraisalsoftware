@@ -13,7 +13,7 @@ Implemented 18 September 2026 against the supplied Product UX Audit. The auditâ€
 
 ## B. Screens/routes changed
 
-`/app`, application navigation/layout, `/app/campaigns`, `/app/campaigns/new`, `/app/campaigns/[id]`, `/app/campaigns/[id]/results`, `/app/people`, `/app/templates`, `/app/templates/[id]`, and administrator invitation presentation in `/app/settings`.
+`/dashboard`, application navigation/layout, `/dashboard/campaigns`, `/dashboard/campaigns/new`, `/dashboard/campaigns/[id]`, `/dashboard/campaigns/[id]/results`, `/dashboard/people`, `/dashboard/templates`, `/dashboard/templates/[id]`, and administrator invitation presentation in `/dashboard/settings`.
 
 Marketing, signup/login, respondent UI, APIs, database migrations, authentication, cron jobs and email infrastructure are unchanged.
 
