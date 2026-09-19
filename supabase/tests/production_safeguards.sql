@@ -62,8 +62,18 @@ END $$;
 SELECT public.activate_campaign('40000000-0000-0000-0000-000000000001');
 RESET ROLE;
 -- Tokens cannot attach answers to a different campaign or bypass required fields.
-DO $$ DECLARE token text; foreign_question uuid; choice_question uuid; BEGIN
+DO $$ DECLARE token text; foreign_question uuid; choice_question uuid; q_count integer; BEGIN
   SELECT payload->>'raw_token' INTO token FROM public.email_outbox WHERE payload->>'campaign_id'='40000000-0000-0000-0000-000000000001' LIMIT 1;
+  -- Annual golden path: outbox raw_token must load frozen questions (self + manager share the same freeze).
+  SELECT count(*) INTO q_count FROM public.respond_get_questions(token);
+  ASSERT q_count = (SELECT count(*) FROM public.campaign_questions WHERE campaign_id='40000000-0000-0000-0000-000000000001'),
+    'respond_get_questions did not return frozen campaign questions';
+  ASSERT (SELECT count(*)=2 FROM public.email_outbox WHERE payload->>'campaign_id'='40000000-0000-0000-0000-000000000001');
+  ASSERT (
+    SELECT bool_and((SELECT count(*) FROM public.respond_get_questions(payload->>'raw_token')) = q_count)
+    FROM public.email_outbox WHERE payload->>'campaign_id'='40000000-0000-0000-0000-000000000001'
+  ), 'self/manager invite tokens must both load questions';
+  BEGIN PERFORM public.respond_get_questions('unknown-token'); RAISE EXCEPTION 'expected invalid-token rejection'; EXCEPTION WHEN no_data_found THEN NULL; END;
   INSERT INTO public.campaign_questions(campaign_id,organization_id,type,prompt) SELECT '40000000-0000-0000-0000-000000000002',organization_id,'text','Other campaign question' FROM public.campaigns WHERE id='40000000-0000-0000-0000-000000000002' RETURNING id INTO foreign_question;
   BEGIN PERFORM public.respond_save(token,jsonb_build_array(jsonb_build_object('campaign_question_id',foreign_question,'text_value','Wrong campaign'))); RAISE EXCEPTION 'expected question rejection'; EXCEPTION WHEN raise_exception THEN IF SQLERRM <> 'Question unavailable in this appraisal' THEN RAISE; END IF; END;
   BEGIN PERFORM public.respond_submit(token,'[]'); RAISE EXCEPTION 'expected required-field rejection'; EXCEPTION WHEN raise_exception THEN IF SQLERRM <> 'Please answer every required question' THEN RAISE; END IF; END;
@@ -79,12 +89,18 @@ DO $$ DECLARE token text; foreign_question uuid; choice_question uuid; BEGIN
   DELETE FROM public.campaign_questions WHERE id=choice_question;
 END $$;
 -- No external email is delivered. Test the existing real token and RPC engine.
-DO $$ DECLARE entry record; token text; BEGIN
+DO $$ DECLARE entry record; token text; qid uuid; BEGIN
+  SELECT id INTO qid FROM public.campaign_questions WHERE campaign_id='40000000-0000-0000-0000-000000000001' LIMIT 1;
   FOR entry IN SELECT payload FROM public.email_outbox WHERE payload->>'campaign_id'='40000000-0000-0000-0000-000000000001' LOOP
     ASSERT entry.payload->>'timezone'='Europe/London';
     token := entry.payload->>'raw_token';
+    ASSERT length(token)=64, 'invite raw_token must be 32-byte hex';
+    ASSERT (SELECT count(*) FROM public.respond_get_questions(token)) >= 1;
     PERFORM public.respond_resolve(token);
-    PERFORM public.respond_submit(token, ('[{"campaign_question_id":"' || (SELECT id::text FROM public.campaign_questions WHERE campaign_id='40000000-0000-0000-0000-000000000001') || '","text_value":"Useful reflection"}]')::jsonb);
+    -- save/resume then submit — proves annual self and manager paths
+    PERFORM public.respond_save(token, jsonb_build_array(jsonb_build_object('campaign_question_id', qid, 'text_value', 'Draft reflection')));
+    ASSERT (SELECT count(*)=1 FROM public.respond_get_saved_answers(token));
+    PERFORM public.respond_submit(token, jsonb_build_array(jsonb_build_object('campaign_question_id', qid, 'text_value', 'Useful reflection')));
   END LOOP;
   ASSERT (SELECT count(*)=2 FROM public.responses WHERE campaign_id='40000000-0000-0000-0000-000000000001' AND status='submitted');
   ASSERT (SELECT count(*)=2 FROM public.response_answers);
@@ -92,8 +108,10 @@ END $$;
 SET ROLE authenticated;
 SELECT public.close_campaign('40000000-0000-0000-0000-000000000001');
 RESET ROLE;
-DO $$ BEGIN
+DO $$ DECLARE closed_token text; BEGIN
   ASSERT (SELECT count(*)=0 FROM public.access_tokens WHERE revoked_at IS NULL AND assignment_id IN (SELECT id FROM public.campaign_assignments WHERE campaign_id='40000000-0000-0000-0000-000000000001'));
+  SELECT payload->>'raw_token' INTO closed_token FROM public.email_outbox WHERE payload->>'campaign_id'='40000000-0000-0000-0000-000000000001' LIMIT 1;
+  BEGIN PERFORM public.respond_get_questions(closed_token); RAISE EXCEPTION 'expected closed-token rejection'; EXCEPTION WHEN no_data_found THEN NULL; END;
 END $$;
 
 -- Service cron uses absolute instants; no browser/server timezone is involved.

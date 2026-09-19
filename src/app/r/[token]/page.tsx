@@ -90,26 +90,21 @@ export default async function RespondPage({
     );
   }
 
-  // Load frozen questions — use service-level select (RLS allows admin select,
-  // but since anon calls this RPC we need to select as admin via the existing
-  // response context. For the respond path we use anon key + RPC for mutations;
-  // for question loading we can use a public RPC or fetch via the campaign_id
-  // the resolve RPC returned. Since campaign_questions has no anon policy, we
-  // add a lightweight helper: fetch as anon via a SECURITY DEFINER RPC that
-  // returns questions for a valid token holder.
-  //
-  // ponytail: for Phase 2, we fetch questions via a second anon-accessible RPC
-  // rather than exposing service key to the client. The questions themselves
-  // are non-sensitive (they're the form prompts).
+  // Frozen questions via token-gated SECURITY DEFINER RPC (no anon table access).
   const { data: rawQuestions, error: qErr } = await supabase.rpc(
     "respond_get_questions" as never,
     { p_raw_token: token } as never,
   );
 
-  if (qErr || !rawQuestions?.length)
+  if (qErr || !rawQuestions?.length) {
+    console.error("[respond] respond_get_questions failed", {
+      message: qErr?.message ?? "empty questions",
+      code: qErr?.code,
+    });
     return (
       <ErrorPage message="We couldn’t load the appraisal questions. Please try opening your personal link again." />
     );
+  }
   const questions = rawQuestions as CampaignQuestion[];
 
   const { data: savedAnswers, error: savedError } = await supabase.rpc(

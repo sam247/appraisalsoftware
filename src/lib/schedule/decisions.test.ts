@@ -212,6 +212,36 @@ describe("appraisal invite email", () => {
       }),
     ).toContain("Sam Pettiford");
   });
+
+  it("puts the exact outbox raw_token into /r/[token] for the respondent loader", () => {
+    process.env.NEXT_PUBLIC_APP_ORIGIN = "https://app.appraisalsoftware.co.uk";
+    // Same shape activate_campaign mints: encode(gen_random_bytes(32), 'hex')
+    const rawToken =
+      "4e7559064e0848add8924508be20f8906d387b0883c1fc47932f467a6531cfa5";
+    expect(rawToken).toHaveLength(64);
+    expect(rawToken).toMatch(/^[0-9a-f]+$/);
+
+    const { respondUrl, html, text } = buildAppraisalInviteHtml({
+      campaign_name: "test",
+      campaign_type: "annual_appraisal",
+      relationship: "self",
+      raw_token: rawToken,
+      org_name: "Sam Pettiford",
+      respondent_name: "sam",
+      subject_name: "Sam Pettiford",
+      closes_at: "2026-11-21T23:59:59.999Z",
+      timezone: "Europe/London",
+    });
+
+    expect(respondUrl).toBe(
+      `https://app.appraisalsoftware.co.uk/r/${rawToken}`,
+    );
+    expect(html).toContain(`href="${respondUrl}"`);
+    expect(text).toContain(respondUrl);
+
+    const pathToken = new URL(respondUrl).pathname.replace(/^\/r\//, "");
+    expect(pathToken).toBe(rawToken);
+  });
 });
 
 describe("outbox log safety", () => {
