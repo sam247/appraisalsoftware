@@ -258,6 +258,7 @@ describe("annual appraisal UX safeguards", () => {
       full_name: "Alex",
       job_title: "Designer",
       manager_person_id: null,
+      department_id: null,
     });
     const archive = query({ error: null });
     mocks.from.mockReturnValue(archive);
@@ -288,6 +289,7 @@ describe("annual appraisal UX safeguards", () => {
       full_name: "Sam",
       job_title: null,
       manager_person_id: "manager",
+      department_id: null,
       created_by: "owner",
     });
   });

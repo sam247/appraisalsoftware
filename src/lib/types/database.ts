@@ -83,12 +83,20 @@ export interface Person {
   full_name: string | null;
   job_title: string | null;
   manager_person_id: string | null;
+  department_id: string | null;
   external_id: string | null;
   user_id: string | null;
   archived_at: string | null;
   created_by: string | null;
   created_at: string;
   updated_at: string;
+}
+
+export interface Department {
+  id: string;
+  organization_id: string;
+  name: string;
+  created_at: string;
 }
 
 export interface Template {
@@ -337,6 +345,7 @@ export type Database = {
           full_name?: string | null;
           job_title?: string | null;
           manager_person_id?: string | null;
+          department_id?: string | null;
           external_id?: string | null;
           user_id?: string | null;
           archived_at?: string | null;
@@ -349,10 +358,24 @@ export type Database = {
           full_name?: string | null;
           job_title?: string | null;
           manager_person_id?: string | null;
+          department_id?: string | null;
           external_id?: string | null;
           user_id?: string | null;
           archived_at?: string | null;
           updated_at?: string;
+        };
+        Relationships: [];
+      };
+      departments: {
+        Row: Department;
+        Insert: {
+          id?: string;
+          organization_id: string;
+          name: string;
+          created_at?: string;
+        };
+        Update: {
+          name?: string;
         };
         Relationships: [];
       };

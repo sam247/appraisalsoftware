@@ -1,5 +1,5 @@
 /**
- * Minimal people CSV parser: email (required), full_name, job_title.
+ * Minimal people CSV parser: email (required), full_name, job_title, department.
  * Header names are matched case-insensitively; synonyms accepted.
  * Manager is set in the People UI (default manager), not via CSV in this phase.
  */
@@ -8,6 +8,7 @@ export type PeopleCsvRow = {
   email: string;
   full_name: string | null;
   job_title: string | null;
+  department: string | null;
   line: number;
 };
 
@@ -30,6 +31,12 @@ const TITLE_HEADERS = new Set([
   "job title",
   "role",
   "position",
+]);
+const DEPARTMENT_HEADERS = new Set([
+  "department",
+  "dept",
+  "team",
+  "business unit",
 ]);
 
 const MAX_ROWS = 500;
@@ -87,6 +94,7 @@ export function parsePeopleCsv(text: string): PeopleCsvResult {
   }
   const nameIdx = colIndex(headers, NAME_HEADERS);
   const titleIdx = colIndex(headers, TITLE_HEADERS);
+  const deptIdx = colIndex(headers, DEPARTMENT_HEADERS);
 
   const rows: PeopleCsvRow[] = [];
   const seen = new Set<string>();
@@ -115,13 +123,11 @@ export function parsePeopleCsv(text: string): PeopleCsvResult {
     rows.push({
       email,
       full_name:
-        nameIdx >= 0
-          ? (cells[nameIdx] ?? "").trim() || null
-          : null,
+        nameIdx >= 0 ? (cells[nameIdx] ?? "").trim() || null : null,
       job_title:
-        titleIdx >= 0
-          ? (cells[titleIdx] ?? "").trim() || null
-          : null,
+        titleIdx >= 0 ? (cells[titleIdx] ?? "").trim() || null : null,
+      department:
+        deptIdx >= 0 ? (cells[deptIdx] ?? "").trim() || null : null,
       line,
     });
   }

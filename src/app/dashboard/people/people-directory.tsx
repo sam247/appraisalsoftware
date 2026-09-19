@@ -11,12 +11,22 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { parsePeopleCsv, type PeopleCsvRow } from "@/lib/people/csv";
-import type { Person } from "@/lib/types/database";
+import type { Department, Person } from "@/lib/types/database";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { useMemo, useState, useTransition } from "react";
+import {
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+  useTransition,
+  type ReactNode,
+} from "react";
+import { createPortal } from "react-dom";
 import {
   archivePerson,
+  createDepartment,
   createPerson,
   importPeopleCsv,
   unarchivePerson,
@@ -30,8 +40,11 @@ export type PeopleDirectoryPerson = Pick<
   | "full_name"
   | "job_title"
   | "manager_person_id"
+  | "department_id"
   | "archived_at"
 >;
+
+export type PeopleDirectoryDepartment = Pick<Department, "id" | "name">;
 
 type StatusFilter = "active" | "archived" | "all";
 
@@ -60,14 +73,20 @@ function fieldClassName() {
 
 export default function PeopleDirectory({
   people,
+  departments: initialDepartments,
   flash,
 }: {
   people: PeopleDirectoryPerson[];
+  departments: PeopleDirectoryDepartment[];
   flash?: { error?: string; ok?: string };
 }) {
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<StatusFilter>("active");
+  const [departmentFilter, setDepartmentFilter] = useState("all");
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [extraDepartments, setExtraDepartments] = useState<
+    PeopleDirectoryDepartment[]
+  >([]);
   const [addOpen, setAddOpen] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
   const [editing, setEditing] = useState<PeopleDirectoryPerson | null>(null);
@@ -79,9 +98,29 @@ export default function PeopleDirectory({
   const [pendingFile, setPendingFile] = useState<File | null>(null);
   const [isImporting, startImport] = useTransition();
 
+  const departments = useMemo(() => {
+    const map = new Map(
+      initialDepartments.map((d) => [d.id, d] as const),
+    );
+    for (const d of extraDepartments) map.set(d.id, d);
+    return [...map.values()].sort((a, b) =>
+      a.name.localeCompare(b.name, undefined, { sensitivity: "base" }),
+    );
+  }, [initialDepartments, extraDepartments]);
+
+  const rememberDepartment = (dept: PeopleDirectoryDepartment) => {
+    setExtraDepartments((prev) =>
+      prev.some((d) => d.id === dept.id) ? prev : [...prev, dept],
+    );
+  };
+
   const byId = useMemo(
     () => Object.fromEntries(people.map((p) => [p.id, p])),
     [people],
+  );
+  const deptById = useMemo(
+    () => Object.fromEntries(departments.map((d) => [d.id, d])),
+    [departments],
   );
 
   const activePeople = useMemo(
@@ -95,12 +134,23 @@ export default function PeopleDirectory({
       .filter((p) => {
         if (status === "active" && p.archived_at) return false;
         if (status === "archived" && !p.archived_at) return false;
+        if (departmentFilter === "none" && p.department_id) return false;
+        if (
+          departmentFilter !== "all" &&
+          departmentFilter !== "none" &&
+          p.department_id !== departmentFilter
+        )
+          return false;
         if (!q) return true;
-          const hay = [
+        const deptName = p.department_id
+          ? (deptById[p.department_id]?.name ?? "")
+          : "";
+        const hay = [
           p.full_name ?? "",
           p.email,
           p.job_title ?? "",
           managerLabel(p.manager_person_id, byId),
+          deptName,
         ]
           .join(" ")
           .toLowerCase();
@@ -111,11 +161,12 @@ export default function PeopleDirectory({
           sensitivity: "base",
         }),
       );
-  }, [people, status, query, byId]);
+  }, [people, status, query, byId, departmentFilter, deptById]);
 
   const visibleIds = filtered.map((p) => p.id);
   const allVisibleSelected =
     visibleIds.length > 0 && visibleIds.every((id) => selected.has(id));
+  const hasSelection = selected.size > 0;
 
   const toggleAll = () => {
     setSelected((prev) => {
@@ -158,11 +209,7 @@ export default function PeopleDirectory({
     );
     const ready = rows.filter((r) => !existingEmails.has(r.email));
     const existing = rows.length - ready.length;
-    setImportPreview({
-      ready,
-      existing,
-      attention: errors,
-    });
+    setImportPreview({ ready, existing, attention: errors });
   };
 
   const confirmImport = () => {
@@ -240,63 +287,83 @@ export default function PeopleDirectory({
         </div>
       ) : (
         <>
-          <div className="mt-5 flex flex-wrap items-center gap-2">
-            <label className="sr-only" htmlFor="people-search">
-              Search people
-            </label>
-            <input
-              id="people-search"
-              type="search"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search people…"
-              className="min-w-[14rem] flex-1 rounded-lg border border-input bg-card px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-            />
-            <label className="sr-only" htmlFor="people-status">
-              Status filter
-            </label>
-            <select
-              id="people-status"
-              value={status}
-              onChange={(e) => setStatus(e.target.value as StatusFilter)}
-              className="rounded-lg border border-input bg-card px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-            >
-              <option value="active">Active</option>
-              <option value="archived">Archived</option>
-              <option value="all">All people</option>
-            </select>
-            <p className="text-xs text-muted-foreground tabular-nums">
-              {filtered.length}{" "}
-              {filtered.length === 1 ? "person" : "people"}
-            </p>
+          {/* Stable-height control strip — selection reuses this row */}
+          <div className="mt-5 flex min-h-10 flex-wrap items-center gap-2">
+            {hasSelection ? (
+              <>
+                <p className="text-sm font-medium text-foreground tabular-nums">
+                  {selected.size} selected
+                </p>
+                <Link
+                  href="/dashboard/campaigns/new"
+                  className="text-sm font-medium text-primary hover:underline"
+                >
+                  Create appraisal
+                </Link>
+                <button
+                  type="button"
+                  className="text-sm text-muted-foreground hover:text-foreground"
+                  onClick={() => setSelected(new Set())}
+                >
+                  Clear
+                </button>
+              </>
+            ) : (
+              <>
+                <label className="sr-only" htmlFor="people-search">
+                  Search people
+                </label>
+                <input
+                  id="people-search"
+                  type="search"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Search people…"
+                  className="min-w-[12rem] flex-1 rounded-lg border border-input bg-card px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                />
+                <label className="sr-only" htmlFor="people-department">
+                  Department filter
+                </label>
+                <select
+                  id="people-department"
+                  value={departmentFilter}
+                  onChange={(e) => setDepartmentFilter(e.target.value)}
+                  className="rounded-lg border border-input bg-card px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                >
+                  <option value="all">All departments</option>
+                  <option value="none">No department</option>
+                  {departments.map((d) => (
+                    <option key={d.id} value={d.id}>
+                      {d.name}
+                    </option>
+                  ))}
+                </select>
+                <label className="sr-only" htmlFor="people-status">
+                  Status filter
+                </label>
+                <select
+                  id="people-status"
+                  value={status}
+                  onChange={(e) => setStatus(e.target.value as StatusFilter)}
+                  className="rounded-lg border border-input bg-card px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                >
+                  <option value="active">Active</option>
+                  <option value="archived">Archived</option>
+                  <option value="all">All people</option>
+                </select>
+                <p className="text-xs text-muted-foreground tabular-nums">
+                  {filtered.length}{" "}
+                  {filtered.length === 1 ? "person" : "people"}
+                </p>
+              </>
+            )}
           </div>
 
-          {selected.size > 0 && (
-            <div className="mt-3 flex flex-wrap items-center gap-3 rounded-lg border border-border/80 bg-card/60 px-3 py-2 text-sm">
-              <span className="text-muted-foreground">
-                {selected.size} selected
-              </span>
-              <Link
-                href="/dashboard/campaigns/new"
-                className="font-medium text-primary hover:underline"
-              >
-                Create appraisal
-              </Link>
-              <button
-                type="button"
-                className="text-xs text-muted-foreground hover:text-foreground"
-                onClick={() => setSelected(new Set())}
-              >
-                Clear
-              </button>
-            </div>
-          )}
-
-          <div className="mt-3 overflow-x-auto">
-            <table className="w-full min-w-[40rem] border-collapse text-left text-sm">
+          <div className="mt-2">
+            <table className="w-full min-w-[36rem] border-collapse text-left text-sm">
               <thead>
                 <tr className="border-b border-border text-xs text-muted-foreground">
-                  <th className="w-10 py-2.5 pr-2 font-medium">
+                  <th className="w-10 py-2 pr-2 font-medium">
                     <input
                       type="checkbox"
                       aria-label="Select all visible people"
@@ -305,18 +372,21 @@ export default function PeopleDirectory({
                       className="h-4 w-4 rounded border-input"
                     />
                   </th>
-                  <th className="py-2.5 pr-3 font-medium">Name</th>
-                  <th className="hidden py-2.5 pr-3 font-medium sm:table-cell">
+                  <th className="py-2 pr-3 font-medium">Name</th>
+                  <th className="hidden py-2 pr-3 font-medium sm:table-cell">
                     Email
                   </th>
-                  <th className="hidden py-2.5 pr-3 font-medium md:table-cell">
+                  <th className="hidden py-2 pr-3 font-medium xl:table-cell">
                     Job title
                   </th>
-                  <th className="hidden py-2.5 pr-3 font-medium lg:table-cell">
+                  <th className="hidden py-2 pr-3 font-medium md:table-cell">
+                    Department
+                  </th>
+                  <th className="hidden py-2 pr-3 font-medium lg:table-cell">
                     Manager
                   </th>
-                  <th className="py-2.5 pr-3 font-medium">Status</th>
-                  <th className="w-10 py-2.5 font-medium">
+                  <th className="py-2 pr-3 font-medium">Status</th>
+                  <th className="w-10 py-2 font-medium">
                     <span className="sr-only">Actions</span>
                   </th>
                 </tr>
@@ -325,8 +395,8 @@ export default function PeopleDirectory({
                 {filtered.length === 0 ? (
                   <tr>
                     <td
-                      colSpan={7}
-                      className="py-10 text-center text-sm text-muted-foreground"
+                      colSpan={8}
+                      className="py-8 text-center text-sm text-muted-foreground"
                     >
                       No people match this search.
                     </td>
@@ -336,13 +406,16 @@ export default function PeopleDirectory({
                     const manager = person.manager_person_id
                       ? byId[person.manager_person_id]
                       : null;
+                    const department = person.department_id
+                      ? deptById[person.department_id]
+                      : null;
                     const archived = Boolean(person.archived_at);
                     return (
                       <tr
                         key={person.id}
                         className="group border-b border-border/70 last:border-b-0 hover:bg-card/70"
                       >
-                        <td className="py-3 pr-2 align-middle">
+                        <td className="py-2 pr-2 align-middle">
                           <input
                             type="checkbox"
                             aria-label={`Select ${displayName(person)}`}
@@ -351,7 +424,7 @@ export default function PeopleDirectory({
                             className="h-4 w-4 rounded border-input"
                           />
                         </td>
-                        <td className="py-3 pr-3 align-middle">
+                        <td className="py-2 pr-3 align-middle">
                           <button
                             type="button"
                             className="text-left font-medium text-foreground hover:underline"
@@ -363,16 +436,19 @@ export default function PeopleDirectory({
                             {person.email}
                           </p>
                         </td>
-                        <td className="hidden py-3 pr-3 align-middle text-muted-foreground sm:table-cell">
+                        <td className="hidden py-2 pr-3 align-middle text-muted-foreground sm:table-cell">
                           {person.email}
                         </td>
-                        <td className="hidden py-3 pr-3 align-middle text-muted-foreground md:table-cell">
+                        <td className="hidden py-2 pr-3 align-middle text-muted-foreground xl:table-cell">
                           {person.job_title?.trim() || "—"}
                         </td>
-                        <td className="hidden py-3 pr-3 align-middle text-muted-foreground lg:table-cell">
+                        <td className="hidden py-2 pr-3 align-middle text-muted-foreground md:table-cell">
+                          {department?.name ?? "—"}
+                        </td>
+                        <td className="hidden py-2 pr-3 align-middle text-muted-foreground lg:table-cell">
                           {manager ? displayName(manager) : "—"}
                         </td>
-                        <td className="py-3 pr-3 align-middle">
+                        <td className="py-2 pr-3 align-middle">
                           <span
                             className={cn(
                               "text-xs",
@@ -384,57 +460,48 @@ export default function PeopleDirectory({
                             {archived ? "Archived" : "Active"}
                           </span>
                         </td>
-                        <td className="relative py-3 align-middle text-right">
-                          <button
-                            type="button"
-                            aria-label={`Actions for ${displayName(person)}`}
-                            aria-expanded={menuFor === person.id}
-                            className="rounded-md px-2 py-1 text-muted-foreground hover:bg-surface hover:text-foreground"
-                            onClick={() =>
-                              setMenuFor((id) =>
-                                id === person.id ? null : person.id,
-                              )
+                        <td className="py-2 align-middle text-right">
+                          <RowActionsMenu
+                            open={menuFor === person.id}
+                            onOpenChange={(open) =>
+                              setMenuFor(open ? person.id : null)
                             }
+                            label={displayName(person)}
                           >
-                            ···
-                          </button>
-                          {menuFor === person.id && (
-                            <div className="absolute right-0 z-20 mt-1 w-40 rounded-lg border border-border bg-card py-1 shadow-md">
-                              <button
-                                type="button"
-                                className="block w-full px-3 py-2 text-left text-sm hover:bg-surface"
-                                onClick={() => {
-                                  setEditing(person);
-                                  setMenuFor(null);
-                                }}
+                            <button
+                              type="button"
+                              className="block w-full px-3 py-1.5 text-left text-sm hover:bg-surface"
+                              onClick={() => {
+                                setEditing(person);
+                                setMenuFor(null);
+                              }}
+                            >
+                              Edit
+                            </button>
+                            {archived ? (
+                              <form
+                                action={unarchivePerson.bind(null, person.id)}
                               >
-                                Edit
-                              </button>
-                              {archived ? (
-                                <form
-                                  action={unarchivePerson.bind(null, person.id)}
+                                <button
+                                  type="submit"
+                                  className="block w-full px-3 py-1.5 text-left text-sm hover:bg-surface"
                                 >
-                                  <button
-                                    type="submit"
-                                    className="block w-full px-3 py-2 text-left text-sm hover:bg-surface"
-                                  >
-                                    Restore
-                                  </button>
-                                </form>
-                              ) : (
-                                <form
-                                  action={archivePerson.bind(null, person.id)}
+                                  Restore
+                                </button>
+                              </form>
+                            ) : (
+                              <form
+                                action={archivePerson.bind(null, person.id)}
+                              >
+                                <button
+                                  type="submit"
+                                  className="block w-full px-3 py-1.5 text-left text-sm text-destructive hover:bg-surface"
                                 >
-                                  <button
-                                    type="submit"
-                                    className="block w-full px-3 py-2 text-left text-sm text-destructive hover:bg-surface"
-                                  >
-                                    Archive
-                                  </button>
-                                </form>
-                              )}
-                            </div>
-                          )}
+                                  Archive
+                                </button>
+                              </form>
+                            )}
+                          </RowActionsMenu>
                         </td>
                       </tr>
                     );
@@ -450,11 +517,15 @@ export default function PeopleDirectory({
         open={addOpen}
         onOpenChange={setAddOpen}
         managers={activePeople}
+        departments={departments}
+        onDepartmentCreated={rememberDepartment}
       />
 
       <EditPersonSheet
         person={editing}
         managers={activePeople}
+        departments={departments}
+        onDepartmentCreated={rememberDepartment}
         onOpenChange={(open) => {
           if (!open) setEditing(null);
         }}
@@ -468,8 +539,10 @@ export default function PeopleDirectory({
           <SheetHeader className="text-left">
             <SheetTitle>Import people</SheetTitle>
             <SheetDescription>
-              Columns: <span className="font-medium text-foreground">email</span>{" "}
-              (required), full_name, job_title. Existing emails are skipped.
+              Columns:{" "}
+              <span className="font-medium text-foreground">email</span>{" "}
+              (required), full_name, job_title, department. Existing emails are
+              skipped. New department names are created automatically.
             </SheetDescription>
           </SheetHeader>
 
@@ -514,7 +587,9 @@ export default function PeopleDirectory({
             <Button
               type="button"
               disabled={
-                isImporting || !importPreview || importPreview.ready.length === 0
+                isImporting ||
+                !importPreview ||
+                importPreview.ready.length === 0
               }
               onClick={confirmImport}
             >
@@ -538,14 +613,111 @@ export default function PeopleDirectory({
   );
 }
 
+/** Portal menu — avoids clipping by overflow/table boundaries. */
+function RowActionsMenu({
+  open,
+  onOpenChange,
+  label,
+  children,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  label: string;
+  children: ReactNode;
+}) {
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const [coords, setCoords] = useState<{
+    top: number;
+    right: number;
+    openUp: boolean;
+  } | null>(null);
+
+  useLayoutEffect(() => {
+    if (!open || !triggerRef.current) {
+      setCoords(null);
+      return;
+    }
+    const rect = triggerRef.current.getBoundingClientRect();
+    const openUp = window.innerHeight - rect.bottom < 120;
+    setCoords({
+      top: openUp ? rect.top - 4 : rect.bottom + 4,
+      right: window.innerWidth - rect.right,
+      openUp,
+    });
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    const onPointer = (e: MouseEvent) => {
+      const t = e.target as Node;
+      if (triggerRef.current?.contains(t) || menuRef.current?.contains(t))
+        return;
+      onOpenChange(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onOpenChange(false);
+    };
+    const onScroll = () => onOpenChange(false);
+    document.addEventListener("mousedown", onPointer);
+    document.addEventListener("keydown", onKey);
+    window.addEventListener("scroll", onScroll, true);
+    window.addEventListener("resize", onScroll);
+    return () => {
+      document.removeEventListener("mousedown", onPointer);
+      document.removeEventListener("keydown", onKey);
+      window.removeEventListener("scroll", onScroll, true);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, [open, onOpenChange]);
+
+  return (
+    <>
+      <button
+        ref={triggerRef}
+        type="button"
+        aria-label={`Actions for ${label}`}
+        aria-expanded={open}
+        className="rounded-md px-2 py-0.5 text-muted-foreground hover:bg-surface hover:text-foreground"
+        onClick={() => onOpenChange(!open)}
+      >
+        ···
+      </button>
+      {open &&
+        coords &&
+        createPortal(
+          <div
+            ref={menuRef}
+            role="menu"
+            className="fixed z-50 w-40 rounded-lg border border-border bg-card py-1 shadow-md"
+            style={{
+              top: coords.openUp ? undefined : coords.top,
+              bottom: coords.openUp
+                ? window.innerHeight - coords.top
+                : undefined,
+              right: coords.right,
+            }}
+          >
+            {children}
+          </div>,
+          document.body,
+        )}
+    </>
+  );
+}
+
 function AddPersonSheet({
   open,
   onOpenChange,
   managers,
+  departments,
+  onDepartmentCreated,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   managers: PeopleDirectoryPerson[];
+  departments: PeopleDirectoryDepartment[];
+  onDepartmentCreated: (dept: PeopleDirectoryDepartment) => void;
 }) {
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -560,7 +732,12 @@ function AddPersonSheet({
           </SheetDescription>
         </SheetHeader>
         <form action={createPerson} className="mt-6 flex flex-1 flex-col gap-4">
-          <PersonFields managers={managers} />
+          <PersonFields
+            key={open ? "add-open" : "add-closed"}
+            managers={managers}
+            departments={departments}
+            onDepartmentCreated={onDepartmentCreated}
+          />
           <SheetFooter className="mt-auto gap-2 pt-4 sm:justify-start">
             <FormSubmit>Add person</FormSubmit>
             <Button
@@ -580,10 +757,14 @@ function AddPersonSheet({
 function EditPersonSheet({
   person,
   managers,
+  departments,
+  onDepartmentCreated,
   onOpenChange,
 }: {
   person: PeopleDirectoryPerson | null;
   managers: PeopleDirectoryPerson[];
+  departments: PeopleDirectoryDepartment[];
+  onDepartmentCreated: (dept: PeopleDirectoryDepartment) => void;
   onOpenChange: (open: boolean) => void;
 }) {
   if (!person) return null;
@@ -605,11 +786,15 @@ function EditPersonSheet({
           className="mt-6 flex flex-1 flex-col gap-4"
         >
           <PersonFields
+            key={person.id}
             managers={managers.filter((m) => m.id !== person.id)}
+            departments={departments}
+            onDepartmentCreated={onDepartmentCreated}
             defaults={{
               full_name: person.full_name ?? "",
               job_title: person.job_title ?? "",
               manager_person_id: person.manager_person_id ?? "",
+              department_id: person.department_id ?? "",
             }}
             hideEmail
           />
@@ -645,17 +830,45 @@ function EditPersonSheet({
 
 function PersonFields({
   managers,
+  departments,
+  onDepartmentCreated,
   defaults,
   hideEmail = false,
 }: {
   managers: PeopleDirectoryPerson[];
+  departments: PeopleDirectoryDepartment[];
+  onDepartmentCreated: (dept: PeopleDirectoryDepartment) => void;
   defaults?: {
     full_name?: string;
     job_title?: string;
     manager_person_id?: string;
+    department_id?: string;
   };
   hideEmail?: boolean;
 }) {
+  const [departmentId, setDepartmentId] = useState(
+    defaults?.department_id ?? "",
+  );
+  const [creatingDept, setCreatingDept] = useState(false);
+  const [newDeptName, setNewDeptName] = useState("");
+  const [deptError, setDeptError] = useState<string | null>(null);
+  const [creating, startCreate] = useTransition();
+
+  const addDepartment = () => {
+    setDeptError(null);
+    startCreate(async () => {
+      const result = await createDepartment(newDeptName);
+      if ("error" in result) {
+        setDeptError(result.error);
+        return;
+      }
+      onDepartmentCreated(result);
+      setDepartmentId(result.id);
+      setNewDeptName("");
+      setCreatingDept(false);
+    });
+  };
+
   return (
     <>
       <label className="block text-sm">
@@ -689,6 +902,72 @@ function PersonFields({
           className={fieldClassName()}
         />
       </label>
+      <div className="block text-sm">
+        <span className="font-medium text-foreground">Department</span>
+        <input type="hidden" name="department_id" value={departmentId} />
+        <select
+          value={departmentId}
+          onChange={(e) => setDepartmentId(e.target.value)}
+          className={fieldClassName()}
+          aria-label="Department"
+        >
+          <option value="">No department</option>
+          {departments.map((d) => (
+            <option key={d.id} value={d.id}>
+              {d.name}
+            </option>
+          ))}
+        </select>
+        {!creatingDept ? (
+          <button
+            type="button"
+            className="mt-2 text-xs font-medium text-primary hover:underline"
+            onClick={() => setCreatingDept(true)}
+          >
+            + Create department
+          </button>
+        ) : (
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            <input
+              type="text"
+              value={newDeptName}
+              onChange={(e) => setNewDeptName(e.target.value)}
+              placeholder="e.g. Procurement"
+              className="min-w-0 flex-1 rounded-lg border border-input bg-surface px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  addDepartment();
+                }
+              }}
+            />
+            <Button
+              type="button"
+              size="sm"
+              disabled={creating || !newDeptName.trim()}
+              onClick={addDepartment}
+            >
+              {creating ? "Adding…" : "Add"}
+            </Button>
+            <button
+              type="button"
+              className="text-xs text-muted-foreground hover:text-foreground"
+              onClick={() => {
+                setCreatingDept(false);
+                setNewDeptName("");
+                setDeptError(null);
+              }}
+            >
+              Cancel
+            </button>
+          </div>
+        )}
+        {deptError && (
+          <p className="mt-1.5 text-xs text-destructive" role="alert">
+            {deptError}
+          </p>
+        )}
+      </div>
       <label className="block text-sm">
         <span className="font-medium text-foreground">Manager</span>
         <select

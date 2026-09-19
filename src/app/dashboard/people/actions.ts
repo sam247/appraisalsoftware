@@ -5,8 +5,8 @@ import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-function readManagerId(formData: FormData): string | null {
-  const raw = (formData.get("manager_person_id") as string | null)?.trim();
+function readOptionalId(formData: FormData, key: string): string | null {
+  const raw = (formData.get(key) as string | null)?.trim();
   return raw || null;
 }
 
@@ -31,6 +31,52 @@ async function assertManagerAllowed(
   return null;
 }
 
+async function assertDepartmentAllowed(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  orgId: string,
+  departmentId: string | null,
+): Promise<string | null> {
+  if (!departmentId) return null;
+  const { data } = await supabase
+    .from("departments")
+    .select("id")
+    .eq("id", departmentId)
+    .eq("organization_id", orgId)
+    .maybeSingle();
+  if (!data) return "Choose an available department";
+  return null;
+}
+
+export async function createDepartment(
+  rawName: string,
+): Promise<{ id: string; name: string } | { error: string }> {
+  const { org } = await requireOrgAdmin();
+  const name = rawName.trim().replace(/\s+/g, " ");
+  if (!name) return { error: "Enter a department name" };
+  if (name.length > 80) return { error: "Department name is too long" };
+
+  const supabase = await createClient();
+  const { data: existing } = await supabase
+    .from("departments")
+    .select("id, name")
+    .eq("organization_id", org.id);
+
+  const match = (existing ?? []).find(
+    (d) => d.name.trim().toLowerCase() === name.toLowerCase(),
+  );
+  if (match) return { id: match.id, name: match.name };
+
+  const { data, error } = await supabase
+    .from("departments")
+    .insert({ organization_id: org.id, name })
+    .select("id, name")
+    .single();
+
+  if (error) return { error: error.message };
+  revalidatePath("/dashboard/people");
+  return { id: data.id, name: data.name };
+}
+
 export async function createPerson(formData: FormData): Promise<void> {
   const { userId, org } = await requireOrgAdmin();
   const supabase = await createClient();
@@ -38,7 +84,8 @@ export async function createPerson(formData: FormData): Promise<void> {
   const email = (formData.get("email") as string | null)?.trim();
   const fullName = (formData.get("full_name") as string | null)?.trim() || null;
   const jobTitle = (formData.get("job_title") as string | null)?.trim() || null;
-  const managerId = readManagerId(formData);
+  const managerId = readOptionalId(formData, "manager_person_id");
+  const departmentId = readOptionalId(formData, "department_id");
 
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
     redirect("/dashboard/people?error=Enter+a+valid+email+address");
@@ -52,12 +99,21 @@ export async function createPerson(formData: FormData): Promise<void> {
   if (managerError)
     redirect(`/dashboard/people?error=${encodeURIComponent(managerError)}`);
 
+  const departmentError = await assertDepartmentAllowed(
+    supabase,
+    org.id,
+    departmentId,
+  );
+  if (departmentError)
+    redirect(`/dashboard/people?error=${encodeURIComponent(departmentError)}`);
+
   const { error } = await supabase.from("people").insert({
     organization_id: org.id,
     email,
     full_name: fullName,
     job_title: jobTitle,
     manager_person_id: managerId,
+    department_id: departmentId,
     created_by: userId,
   });
 
@@ -85,7 +141,8 @@ export async function updatePerson(
 
   if (!existing) redirect("/dashboard/people?error=Person+not+found");
 
-  const managerId = readManagerId(formData);
+  const managerId = readOptionalId(formData, "manager_person_id");
+  const departmentId = readOptionalId(formData, "department_id");
   const managerError = await assertManagerAllowed(
     supabase,
     org.id,
@@ -95,12 +152,21 @@ export async function updatePerson(
   if (managerError)
     redirect(`/dashboard/people?error=${encodeURIComponent(managerError)}`);
 
+  const departmentError = await assertDepartmentAllowed(
+    supabase,
+    org.id,
+    departmentId,
+  );
+  if (departmentError)
+    redirect(`/dashboard/people?error=${encodeURIComponent(departmentError)}`);
+
   const { error } = await supabase
     .from("people")
     .update({
       full_name: (formData.get("full_name") as string | null)?.trim() || null,
       job_title: (formData.get("job_title") as string | null)?.trim() || null,
       manager_person_id: managerId,
+      department_id: departmentId,
     })
     .eq("id", personId)
     .eq("organization_id", org.id);
@@ -145,6 +211,57 @@ export async function unarchivePerson(personId: string): Promise<void> {
   revalidatePath("/dashboard");
 }
 
+/** Ensure org departments exist for the given names (case-insensitive). */
+async function resolveDepartmentIds(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  orgId: string,
+  names: string[],
+): Promise<Map<string, string>> {
+  const unique = [
+    ...new Set(
+      names
+        .map((n) => n.trim().replace(/\s+/g, " "))
+        .filter(Boolean)
+        .map((n) => n),
+    ),
+  ];
+  const byLower = new Map<string, string>();
+
+  const { data: existing } = await supabase
+    .from("departments")
+    .select("id, name")
+    .eq("organization_id", orgId);
+
+  for (const d of existing ?? []) {
+    byLower.set(d.name.trim().toLowerCase(), d.id);
+  }
+
+  for (const name of unique) {
+    const key = name.toLowerCase();
+    if (byLower.has(key)) continue;
+    const { data, error } = await supabase
+      .from("departments")
+      .insert({ organization_id: orgId, name })
+      .select("id, name")
+      .single();
+    if (error) {
+      // Race: another insert may have won — re-read
+      const { data: again } = await supabase
+        .from("departments")
+        .select("id, name")
+        .eq("organization_id", orgId);
+      for (const d of again ?? []) {
+        byLower.set(d.name.trim().toLowerCase(), d.id);
+      }
+      if (!byLower.has(key)) throw new Error(error.message);
+      continue;
+    }
+    byLower.set(data.name.trim().toLowerCase(), data.id);
+  }
+
+  return byLower;
+}
+
 export async function importPeopleCsv(formData: FormData): Promise<void> {
   const { userId, org } = await requireOrgAdmin();
   const file = formData.get("file");
@@ -176,6 +293,20 @@ export async function importPeopleCsv(formData: FormData): Promise<void> {
   const toInsert = rows.filter((r) => !existingEmails.has(r.email));
   const skipped = rows.length - toInsert.length;
 
+  let deptByLower = new Map<string, string>();
+  try {
+    deptByLower = await resolveDepartmentIds(
+      supabase,
+      org.id,
+      toInsert
+        .map((r) => r.department)
+        .filter((d): d is string => Boolean(d)),
+    );
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : "Could not create departments";
+    redirect(`/dashboard/people?error=${encodeURIComponent(msg)}`);
+  }
+
   if (toInsert.length) {
     const { error } = await supabase.from("people").insert(
       toInsert.map((r) => ({
@@ -183,6 +314,9 @@ export async function importPeopleCsv(formData: FormData): Promise<void> {
         email: r.email,
         full_name: r.full_name,
         job_title: r.job_title,
+        department_id: r.department
+          ? (deptByLower.get(r.department.trim().toLowerCase()) ?? null)
+          : null,
         created_by: userId,
       })),
     );
