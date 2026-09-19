@@ -80,6 +80,7 @@ describe("annual appraisal UX safeguards", () => {
       notStarted: 3,
       attention: 1,
       revoked: 1,
+      outstanding: 4,
       percent: 14,
     });
   });

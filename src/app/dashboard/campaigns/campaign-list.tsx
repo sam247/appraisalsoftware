@@ -1,6 +1,13 @@
 import Link from "next/link";
 import type { Campaign, CampaignAssignment } from "@/lib/types/database";
-import { campaignLabels, campaignDate, responseProgress } from "./presentation";
+import {
+  campaignLabels,
+  campaignDate,
+  responseProgress,
+  campaignTypeLabel,
+  statusTone,
+} from "./presentation";
+import { StatusBadge } from "../chrome";
 
 export default function CampaignList({
   campaigns,
@@ -10,7 +17,7 @@ export default function CampaignList({
   assignments: CampaignAssignment[];
 }) {
   return (
-    <div className="divide-y divide-border">
+    <div className="divide-y divide-border border-t border-border">
       {campaigns.map((campaign) => {
         const progress = responseProgress(
           assignments.filter((a) => a.campaign_id === campaign.id),
@@ -19,22 +26,20 @@ export default function CampaignList({
           <Link
             key={campaign.id}
             href={`/dashboard/campaigns/${campaign.id}`}
-            className="group block py-3 focus-visible:outline-primary"
+            className="group block py-3.5 focus-visible:outline-primary"
           >
             <div className="flex flex-wrap items-start justify-between gap-2">
               <div className="min-w-0">
-                <span
-                  className={`text-xs font-medium ${campaign.status === "active" ? "text-primary" : "text-muted-foreground"}`}
-                >
-                  {campaignLabels[campaign.status]}
-                </span>
-                <h3 className="mt-0.5 text-sm font-semibold group-hover:text-primary break-words">
+                <div className="flex flex-wrap items-center gap-2">
+                  <StatusBadge tone={statusTone(campaign.status)}>
+                    {campaignLabels[campaign.status]}
+                  </StatusBadge>
+                </div>
+                <h3 className="mt-1.5 text-sm font-semibold text-foreground group-hover:text-primary break-words">
                   {campaign.name}
                 </h3>
                 <p className="mt-0.5 text-xs text-muted-foreground">
-                  {campaign.campaign_type === "feedback_360"
-                    ? "Anonymous 360"
-                    : "Annual appraisal"}
+                  {campaignTypeLabel(campaign.campaign_type)}
                   {campaign.status === "scheduled" && campaign.opens_at
                     ? ` · Sends ${campaignDate(campaign.opens_at, campaign.timezone, true)}`
                     : ""}
@@ -43,18 +48,23 @@ export default function CampaignList({
                     : ""}
                 </p>
               </div>
-              <span className="text-xs text-primary">
+              <span className="text-sm font-medium text-primary">
                 {campaign.status === "draft"
                   ? "Continue setup"
-                  : "Open"}{" "}
+                  : campaign.status === "closed"
+                    ? "Open"
+                    : "Open"}{" "}
                 →
               </span>
             </div>
-            {progress.total > 0 && (
+            {campaign.status !== "draft" && progress.total > 0 && (
               <div className="mt-2 max-w-md">
                 <div className="flex justify-between gap-3 text-xs text-muted-foreground">
                   <span>
                     {progress.complete} of {progress.total} complete
+                    {progress.outstanding > 0
+                      ? ` · ${progress.outstanding} outstanding`
+                      : ""}
                   </span>
                   <span>{progress.percent}%</span>
                 </div>

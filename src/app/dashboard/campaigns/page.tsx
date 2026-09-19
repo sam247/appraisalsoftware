@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import CampaignList from "./campaign-list";
+import { PageHeader } from "../chrome";
 import type { Campaign, CampaignAssignment } from "@/lib/types/database";
 
 export default async function CampaignsPage() {
@@ -25,28 +26,24 @@ export default async function CampaignsPage() {
   const campaigns = (campaignResult.data ?? []) as Campaign[];
   return (
     <div>
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h1 className="font-display text-2xl font-semibold tracking-tight">
-            Campaigns
-          </h1>
-          <p className="mt-0.5 text-sm text-muted-foreground">
-            Create, send and follow appraisal cycles.
-          </p>
-        </div>
-        <Button asChild size="sm">
-          <Link href="/dashboard/campaigns/new">Create appraisal</Link>
-        </Button>
-      </div>
-      <section className="mt-5">
+      <PageHeader
+        title="Campaigns"
+        subtitle="Appraisals and feedback cycles in this workspace."
+        action={
+          <Button asChild size="sm">
+            <Link href="/dashboard/campaigns/new">Create appraisal</Link>
+          </Button>
+        }
+      />
+      <section className="mt-6">
         {campaigns.length ? (
           <CampaignList
             campaigns={campaigns}
             assignments={(assignmentResult.data ?? []) as CampaignAssignment[]}
           />
         ) : (
-          <div className="rounded-lg border border-border bg-card px-4 py-8">
-            <h2 className="text-sm font-semibold">No campaigns yet</h2>
+          <div className="border-t border-border py-8">
+            <h2 className="text-sm font-semibold">No appraisals yet</h2>
             <p className="mt-1 text-sm text-muted-foreground">
               Create an appraisal to invite people and collect responses.
             </p>
