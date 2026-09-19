@@ -16,7 +16,12 @@ import {
   campaignTypeLabel,
   statusTone,
 } from "../presentation";
-import { StatusBadge, SetupSteps, PageHeader } from "../../chrome";
+import {
+  StatusBadge,
+  SetupSteps,
+  ResponseStrip,
+  NextAction,
+} from "../../chrome";
 import type {
   Campaign,
   CampaignAssignment,
@@ -130,53 +135,136 @@ export default async function CampaignDetailPage({
       )?.respondent_person_id ?? null,
   }));
 
-  const subtitleParts = [
+  const meta = [
     campaignTypeLabel(campaign.campaign_type),
     campaign.closes_at
       ? `Closes ${campaignDate(campaign.closes_at, campaign.timezone)}`
       : null,
-  ].filter(Boolean);
+    campaign.status === "draft"
+      ? is360
+        ? `${assignments.length} reviewers · ${questions.length} questions`
+        : `${subjects.length} ${subjects.length === 1 ? "person" : "people"} · ${questions.length} questions`
+      : null,
+  ]
+    .filter(Boolean)
+    .join(" · ");
 
   const showResults =
     ["active", "closed"].includes(campaign.status) &&
     progress.complete > 0 &&
     (!is360 || campaign.status === "closed");
 
+  const responseMeta = [
+    progress.outstanding > 0
+      ? `${progress.outstanding} outstanding`
+      : progress.total > 0
+        ? "All responses in"
+        : null,
+    progress.inProgress > 0 ? `${progress.inProgress} in progress` : null,
+    campaign.closes_at
+      ? `Closes ${campaignDate(campaign.closes_at, campaign.timezone)}`
+      : null,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+
   return (
-    <div className="space-y-8">
-      <div>
+    <div className="space-y-5">
+      {/* Product header — identity + lifecycle in one composition */}
+      <header>
         <Link
           href="/dashboard/campaigns"
-          className="text-sm text-muted-foreground hover:text-foreground"
+          className="text-xs text-muted-foreground hover:text-foreground"
         >
           ← Campaigns
         </Link>
-        <div className="mt-3 flex flex-wrap items-start justify-between gap-4">
+
+        <div className="mt-2 flex flex-wrap items-start justify-between gap-3">
           <div className="min-w-0">
-            <div className="mb-2">
+            <div className="flex flex-wrap items-center gap-2">
               <StatusBadge tone={statusTone(campaign.status)}>
                 {campaignLabels[campaign.status]}
               </StatusBadge>
+              <h1 className="font-display text-2xl font-semibold tracking-tight text-foreground sm:text-[1.75rem]">
+                {campaign.name}
+              </h1>
             </div>
-            <PageHeader
-              title={campaign.name}
-              subtitle={subtitleParts.join(" · ")}
-            />
+            {meta && (
+              <p className="mt-1 text-sm text-muted-foreground">{meta}</p>
+            )}
           </div>
           {showResults && (
-            <Button asChild>
+            <Button asChild size="sm">
               <Link href={`/dashboard/campaigns/${id}/results`}>
                 View results
               </Link>
             </Button>
           )}
         </div>
-      </div>
+
+        {/* Lifecycle territory — setup OR response, never both */}
+        <div className="mt-4 border-t border-border pt-3">
+          {campaign.status === "draft" && (
+            <SetupSteps steps={setup.steps} percent={setup.percent} />
+          )}
+          {campaign.status === "scheduled" && (
+            <ResponseStrip
+              label={
+                campaign.opens_at
+                  ? `Scheduled · Sends ${campaignDate(campaign.opens_at, campaign.timezone, true)}`
+                  : "Scheduled to send"
+              }
+              complete={progress.complete}
+              total={progress.total}
+              percent={progress.percent}
+              meta="Invitations go out automatically. Questions are locked."
+            />
+          )}
+          {campaign.status === "active" && (
+            <ResponseStrip
+              label="Collecting responses"
+              complete={progress.complete}
+              total={progress.total}
+              percent={progress.percent}
+              meta={responseMeta}
+              attention={
+                progress.attention > 0
+                  ? `${progress.attention} invitation${progress.attention === 1 ? "" : "s"} could not be delivered`
+                  : undefined
+              }
+            />
+          )}
+          {campaign.status === "closed" && (
+            <ResponseStrip
+              label="Closed"
+              complete={progress.complete}
+              total={progress.total}
+              percent={progress.percent}
+              meta={
+                showResults
+                  ? "Results are ready for the review conversation."
+                  : "No submitted responses to show."
+              }
+            />
+          )}
+        </div>
+
+        <div className="mt-3">
+          <CockpitNext
+            campaign={campaign}
+            setup={setup}
+            progress={progress}
+            is360={is360}
+            id={id}
+            showResults={showResults}
+          />
+        </div>
+      </header>
 
       {error && (
         <p
           role="alert"
-          className="rounded-lg border border-destructive/20 bg-destructive/5 px-4 py-3 text-sm text-destructive"
+          className="rounded-md border border-destructive/20 bg-destructive/5 px-3 py-2 text-sm text-destructive"
         >
           {error}
         </p>
@@ -184,113 +272,30 @@ export default async function CampaignDetailPage({
       {campaign.schedule_error && (
         <p
           role="alert"
-          className="rounded-lg border border-destructive/20 bg-destructive/5 px-4 py-3 text-sm text-destructive"
+          className="rounded-md border border-destructive/20 bg-destructive/5 px-3 py-2 text-sm text-destructive"
         >
           Invitations could not be sent on schedule: {campaign.schedule_error}
         </p>
       )}
 
-      {/* Next action — always first operational signal */}
-      <CockpitNext
-        campaign={campaign}
-        setup={setup}
-        progress={progress}
-        is360={is360}
-        id={id}
-        showResults={showResults}
-      />
-
-      {campaign.status === "draft" && (
-        <section className="grid gap-8 lg:grid-cols-[minmax(0,16rem)_minmax(0,1fr)]">
-          <SetupSteps steps={setup.steps} percent={setup.percent} />
-          <div className="min-w-0 space-y-2 text-sm text-muted-foreground">
-            <p>
-              {is360
-                ? `${subjects.length ? peopleById[subjects[0]?.person_id]?.full_name || peopleById[subjects[0]?.person_id]?.email || "Subject" : "No subject"} · ${assignments.length} reviewers · ${questions.length} questions`
-                : `${subjects.length} ${subjects.length === 1 ? "person" : "people"} being reviewed · ${assignments.length} invitations · ${questions.length} questions`}
-            </p>
-            {!setup.ready && (
-              <p>
-                Finish the open steps, then you can send or schedule invitations.
-              </p>
-            )}
+      {campaign.status === "scheduled" && (
+        <details className="text-sm">
+          <summary className="cursor-pointer font-medium text-primary">
+            Need to send earlier?
+          </summary>
+          <div className="mt-2">
+            <ActivateButton campaignId={id} label="Send now instead" />
           </div>
-        </section>
+        </details>
       )}
 
-      {campaign.status === "scheduled" && campaign.opens_at && (
-        <section className="rounded-xl border border-border bg-card px-4 py-4 sm:px-5">
-          <h2 className="text-sm font-semibold text-foreground">
-            Scheduled for{" "}
-            {campaignDate(campaign.opens_at, campaign.timezone, true)}
-          </h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Invitations will go out automatically. Questions are locked.
-          </p>
-          <details className="mt-3">
-            <summary className="cursor-pointer text-sm font-medium text-primary">
-              Need to send earlier?
-            </summary>
-            <div className="mt-3">
-              <ActivateButton campaignId={id} label="Send now instead" />
-            </div>
-          </details>
-        </section>
-      )}
-
-      {["active", "closed", "scheduled"].includes(campaign.status) && (
-        <section>
-          <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
-            <h2 className="text-sm font-semibold text-foreground">
-              Responses
-            </h2>
-            {progress.total > 0 && (
-              <p className="text-xs tabular-nums text-muted-foreground">
-                {progress.complete} of {progress.total} complete ·{" "}
-                {progress.percent}%
-              </p>
-            )}
-          </div>
-          {progress.total > 0 ? (
-            <>
-              <progress
-                aria-label="Response completion"
-                max={progress.total}
-                value={progress.complete}
-                className="h-1.5 w-full accent-primary"
-              />
-              <div className="mt-3 flex flex-wrap gap-x-6 gap-y-1 text-sm text-muted-foreground">
-                <span>{progress.outstanding} outstanding</span>
-                {progress.inProgress > 0 && (
-                  <span>{progress.inProgress} in progress</span>
-                )}
-                {progress.revoked > 0 && (
-                  <span>{progress.revoked} closed without submission</span>
-                )}
-              </div>
-            </>
-          ) : (
-            <p className="text-sm text-muted-foreground">
-              No invitations yet.
-            </p>
-          )}
-          {progress.attention > 0 && (
-            <p className="mt-3 text-sm text-destructive">
-              {progress.attention} invitation
-              {progress.attention === 1 ? "" : "s"} could not be delivered.
-              Check the reviewer&apos;s email in People.
-            </p>
-          )}
-          {is360 && campaign.status !== "draft" && (
-            <p className="mt-3 text-sm text-muted-foreground">
-              {progress.complete >= 5
-                ? "Five-reviewer minimum met. "
-                : "At least five reviewers must complete feedback. "}
-              Results unlock after closure. Reminders go to outstanding
-              reviewers every three days.
-            </p>
-          )}
-        </section>
+      {is360 && campaign.status === "active" && (
+        <p className="text-xs text-muted-foreground">
+          {progress.complete >= 5
+            ? "Five-reviewer minimum met. "
+            : "At least five reviewers must complete feedback. "}
+          Results unlock after closure.
+        </p>
       )}
 
       <section>
@@ -300,21 +305,21 @@ export default async function CampaignDetailPage({
 
         {campaign.status === "draft" ? (
           is360 ? (
-            <section className="mt-4 rounded-xl border border-border bg-card px-4 py-5 sm:px-5">
+            <div className="mt-3 border-t border-border pt-4">
               <h3 className="text-sm font-semibold text-foreground">
                 Review before sending
               </h3>
-              <p className="mt-2 text-sm text-muted-foreground">
+              <p className="mt-1 text-sm text-muted-foreground">
                 Feedback for{" "}
                 {peopleById[subjects[0]?.person_id]?.full_name ||
                   peopleById[subjects[0]?.person_id]?.email}{" "}
                 · {assignments.length} reviewers · {questions.length} questions
               </p>
-              <p className="mt-2 text-sm text-muted-foreground">
+              <p className="mt-1 text-sm text-muted-foreground">
                 Reviewers stay anonymous. Results need five responses and
                 closure. Setup is locked — create a new draft to change it.
               </p>
-              <ul className="mt-4 space-y-1.5 text-sm">
+              <ul className="mt-3 space-y-1 text-sm">
                 {assignments.map((a) => (
                   <li key={a.id}>
                     {peopleById[a.respondent_person_id]?.full_name ||
@@ -325,11 +330,11 @@ export default async function CampaignDetailPage({
                   </li>
                 ))}
               </ul>
-              <details className="mt-4">
+              <details className="mt-3">
                 <summary className="cursor-pointer text-sm font-medium text-primary">
                   Review questions
                 </summary>
-                <ol className="mt-2 list-decimal space-y-1.5 pl-5 text-sm">
+                <ol className="mt-2 list-decimal space-y-1 pl-5 text-sm">
                   {questions.map((q) => (
                     <li key={q.id}>{q.prompt}</li>
                   ))}
@@ -342,27 +347,27 @@ export default async function CampaignDetailPage({
                   timezone={campaign.timezone}
                 />
               )}
-            </section>
+            </div>
           ) : (
-            <div className="mt-4">
+            <div className="mt-3">
               <DraftSetup
                 key={JSON.stringify(initialSubjects)}
                 campaignId={id}
                 people={people}
                 initialSubjects={initialSubjects}
               >
-                <section className="mt-6 rounded-xl border border-border bg-card px-4 py-5 sm:px-5">
+                <div className="mt-4 border-t border-border pt-4">
                   <h3 className="text-sm font-semibold text-foreground">
                     Review before sending
                   </h3>
-                  <p className="mt-2 text-sm text-muted-foreground">
+                  <p className="mt-1 text-sm text-muted-foreground">
                     {subjects.length} saved participants · {progress.total}{" "}
                     invitations · {questions.length} questions
                   </p>
                   {(!campaign.template_id || !questions.length) && (
                     <form
                       action={setCampaignTemplate.bind(null, id)}
-                      className="mt-4 space-y-3"
+                      className="mt-3 space-y-2"
                     >
                       <label
                         htmlFor="repair-template"
@@ -388,11 +393,11 @@ export default async function CampaignDetailPage({
                       </Button>
                     </form>
                   )}
-                  <details className="mt-4">
+                  <details className="mt-3">
                     <summary className="cursor-pointer text-sm font-medium text-primary">
                       Review questions
                     </summary>
-                    <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm">
+                    <ol className="mt-2 list-decimal space-y-1.5 pl-5 text-sm">
                       {questions.map((q) => (
                         <li key={q.id}>
                           {q.prompt}
@@ -408,7 +413,7 @@ export default async function CampaignDetailPage({
                     {campaign.template_id && !campaign.questions_frozen_at && (
                       <Link
                         href={`/dashboard/templates/${campaign.template_id}`}
-                        className="mt-3 inline-block text-sm text-primary hover:underline"
+                        className="mt-2 inline-block text-sm text-primary hover:underline"
                       >
                         Edit this template
                       </Link>
@@ -420,21 +425,21 @@ export default async function CampaignDetailPage({
                       timezone={campaign.timezone}
                     />
                   ) : (
-                    <p className="mt-4 text-sm text-muted-foreground">
+                    <p className="mt-3 text-sm text-muted-foreground">
                       Save at least one participant and choose a template with
                       questions before sending.
                     </p>
                   )}
-                </section>
+                </div>
               </DraftSetup>
             </div>
           )
         ) : (
-          <div className="mt-3 divide-y divide-border border-t border-border">
+          <div className="mt-2 divide-y divide-border border-t border-border">
             {assignments.map((a) => (
               <div
                 key={a.id}
-                className="flex flex-wrap items-center justify-between gap-2 py-3"
+                className="flex flex-wrap items-center justify-between gap-2 py-2.5"
               >
                 <div className="min-w-0">
                   <p className="text-sm font-medium break-words">
@@ -470,7 +475,7 @@ export default async function CampaignDetailPage({
               </div>
             ))}
             {!assignments.length && (
-              <p className="py-4 text-sm text-muted-foreground">
+              <p className="py-3 text-sm text-muted-foreground">
                 No participants in this appraisal.
               </p>
             )}
@@ -479,33 +484,20 @@ export default async function CampaignDetailPage({
       </section>
 
       {campaign.status === "active" && (
-        <details className="border-t border-border pt-4">
+        <details className="border-t border-border pt-3">
           <summary className="cursor-pointer text-sm text-muted-foreground">
             Close this appraisal
           </summary>
-          <p className="mt-3 text-sm text-muted-foreground">
+          <p className="mt-2 text-sm text-muted-foreground">
             Closing stops further submissions. Submitted responses stay
             available.
           </p>
-          <form action={closeCampaign.bind(null, id)} className="mt-3">
+          <form action={closeCampaign.bind(null, id)} className="mt-2">
             <Button variant="outline" type="submit" size="sm">
               Close appraisal
             </Button>
           </form>
         </details>
-      )}
-
-      {campaign.status === "closed" && showResults && (
-        <div className="rounded-xl border border-border bg-card px-4 py-4 sm:px-5">
-          <p className="text-sm font-semibold text-foreground">Results</p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            This appraisal is closed. Open the results view for the review
-            conversation.
-          </p>
-          <Button asChild className="mt-3" size="sm">
-            <Link href={`/dashboard/campaigns/${id}/results`}>View results</Link>
-          </Button>
-        </div>
       )}
     </div>
   );
@@ -528,133 +520,91 @@ function CockpitNext({
 }) {
   if (campaign.status === "draft") {
     return (
-      <div className="rounded-xl border border-border bg-card px-4 py-4 sm:px-5">
-        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-          Next
-        </p>
-        <p className="mt-1 text-base font-semibold text-foreground">
-          {setup.nextLabel}
-        </p>
-        <p className="mt-1 text-sm text-muted-foreground">
-          {setup.ready
-            ? "Everything needed is in place. Review, then send or schedule."
-            : `${setup.percent}% ready · Complete the open setup steps below.`}
-        </p>
-        {setup.ready && (
-          <p className="mt-3 text-sm text-muted-foreground">
-            Scroll to <span className="font-medium text-foreground">People &amp; send</span>{" "}
-            when you&apos;re ready.
-          </p>
-        )}
-      </div>
+      <NextAction
+        compact
+        label={setup.nextLabel}
+        detail={
+          setup.ready
+            ? "Review below, then send or schedule."
+            : "Complete the open setup steps, then send."
+        }
+      />
     );
   }
 
   if (campaign.status === "scheduled") {
     return (
-      <div className="rounded-xl border border-border bg-card px-4 py-4 sm:px-5">
-        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-          Next
-        </p>
-        <p className="mt-1 text-base font-semibold text-foreground">
-          Waiting to send
-        </p>
-        <p className="mt-1 text-sm text-muted-foreground">
-          {campaign.opens_at
+      <NextAction
+        compact
+        label="Waiting to send"
+        detail={
+          campaign.opens_at
             ? `Invitations go out ${campaignDate(campaign.opens_at, campaign.timezone, true)}.`
-            : "This appraisal is scheduled."}
-        </p>
-      </div>
+            : "This appraisal is scheduled."
+        }
+      />
     );
   }
 
   if (campaign.status === "active") {
     if (progress.attention > 0) {
       return (
-        <div className="rounded-xl border border-destructive/20 bg-destructive/5 px-4 py-4 sm:px-5">
-          <p className="text-xs font-medium uppercase tracking-wide text-destructive">
-            Needs attention
-          </p>
-          <p className="mt-1 text-base font-semibold text-foreground">
-            Fix delivery
-          </p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {progress.attention} invitation
-            {progress.attention === 1 ? "" : "s"} bounced. Update email
-            addresses in People, then resend if needed.
-          </p>
-        </div>
+        <NextAction
+          compact
+          tone="warn"
+          label="Fix delivery"
+          detail={`${progress.attention} invitation${progress.attention === 1 ? "" : "s"} bounced. Update emails in People.`}
+        />
       );
     }
     if (progress.outstanding === 0 && progress.total > 0) {
       return (
-        <div className="rounded-xl border border-border bg-card px-4 py-4 sm:px-5">
-          <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            Next
-          </p>
-          <p className="mt-1 text-base font-semibold text-foreground">
-            {is360 ? "Close to unlock results" : "Review and close"}
-          </p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            All expected responses are in.
-            {showResults && !is360
-              ? " You can view results now, then close when finished."
-              : is360
-                ? " Close the campaign to release anonymous results."
-                : ""}
-          </p>
-          <div className="mt-3 flex flex-wrap gap-2">
-            {showResults && (
-              <Button asChild size="sm">
-                <Link href={`/dashboard/campaigns/${id}/results`}>
-                  View results
-                </Link>
-              </Button>
-            )}
-          </div>
-        </div>
+        <NextAction
+          compact
+          label={is360 ? "Close to unlock results" : "Review and close"}
+          detail={
+            is360
+              ? "All responses are in. Close to release anonymous results."
+              : "All responses are in."
+          }
+        >
+          {showResults ? (
+            <Button asChild size="sm">
+              <Link href={`/dashboard/campaigns/${id}/results`}>
+                View results
+              </Link>
+            </Button>
+          ) : null}
+        </NextAction>
       );
     }
     return (
-      <div className="rounded-xl border border-border bg-card px-4 py-4 sm:px-5">
-        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-          Next
-        </p>
-        <p className="mt-1 text-base font-semibold text-foreground">
-          {progress.outstanding === 1
+      <NextAction
+        compact
+        label={
+          progress.outstanding === 1
             ? "Waiting for 1 response"
-            : `Waiting for ${progress.outstanding} responses`}
-        </p>
-        <p className="mt-1 text-sm text-muted-foreground">
-          {progress.complete} of {progress.total} complete
-          {campaign.closes_at
-            ? ` · Closes ${campaignDate(campaign.closes_at, campaign.timezone)}`
-            : ""}
-        </p>
-      </div>
+            : `Waiting for ${progress.outstanding} responses`
+        }
+        detail={`${progress.complete} of ${progress.total} complete`}
+      />
     );
   }
 
   if (campaign.status === "closed") {
     return (
-      <div className="rounded-xl border border-border bg-card px-4 py-4 sm:px-5">
-        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-          Next
-        </p>
-        <p className="mt-1 text-base font-semibold text-foreground">
-          {showResults ? "View results" : "Appraisal closed"}
-        </p>
-        <p className="mt-1 text-sm text-muted-foreground">
-          {showResults
-            ? "Results are ready for the review conversation."
-            : "No submitted responses to show."}
-        </p>
-        {showResults && (
-          <Button asChild className="mt-3" size="sm">
-            <Link href={`/dashboard/campaigns/${id}/results`}>View results</Link>
-          </Button>
-        )}
-      </div>
+      <NextAction
+        compact
+        label={showResults ? "View results" : "Appraisal closed"}
+        detail={
+          showResults
+            ? "Open results for the review conversation."
+            : "No submitted responses to show."
+        }
+        href={
+          showResults ? `/dashboard/campaigns/${id}/results` : undefined
+        }
+      />
     );
   }
 

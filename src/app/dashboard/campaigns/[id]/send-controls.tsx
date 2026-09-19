@@ -33,13 +33,13 @@ export default function SendControls({
   return (
     <form
       action={sendCampaign.bind(null, campaignId)}
-      className="mt-6 space-y-5"
+      className="mt-4 space-y-3"
     >
       <fieldset>
-        <legend className="text-sm font-medium mb-3">
+        <legend className="mb-2 text-sm font-medium">
           When should invitations go out?
         </legend>
-        <div className="flex flex-wrap gap-6">
+        <div className="flex flex-wrap gap-5">
           <label className="flex items-center gap-2 text-sm">
             <input
               type="radio"
@@ -63,7 +63,7 @@ export default function SendControls({
       </fieldset>
       {later && (
         <div>
-          <label htmlFor="send-date" className="block text-sm font-medium mb-2">
+          <label htmlFor="send-date" className="mb-1.5 block text-sm font-medium">
             Send date
           </label>
           <input
@@ -71,15 +71,14 @@ export default function SendControls({
             name="opens_at"
             type="date"
             required
-            className="rounded-lg border border-input bg-surface p-3"
+            className="rounded-lg border border-input bg-surface px-3 py-2 text-sm"
           />
-          <p className="mt-2 text-sm text-muted-foreground">
-            Invitations are scheduled from 09:00 in {timezone}. Daylight-saving
-            changes are handled automatically.
+          <p className="mt-1.5 text-xs text-muted-foreground">
+            Invitations are scheduled from 09:00 in {timezone}.
           </p>
         </div>
       )}
-      <p className="text-sm text-muted-foreground">
+      <p className="text-xs text-muted-foreground">
         Sending or scheduling locks this campaign’s questions. Each reviewer
         receives their own secure email link.
       </p>

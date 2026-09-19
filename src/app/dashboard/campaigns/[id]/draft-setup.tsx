@@ -23,7 +23,7 @@ export default function DraftSetup({
         onDirtyChange={setDirty}
       />
       {dirty ? (
-        <p role="status" className="mt-6 text-sm text-muted-foreground">
+        <p role="status" className="mt-3 text-sm text-muted-foreground">
           You have unsaved participant changes. Save them before reviewing or
           sending this appraisal.
         </p>

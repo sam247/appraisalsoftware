@@ -91,11 +91,11 @@ export default function AssignWizard({
   );
 
   return (
-    <div className="mt-6 rounded-xl border border-border bg-card p-5">
-      <h2 className="font-display text-sm font-semibold text-foreground mb-4">
+    <div className="mt-3 border-t border-border pt-4">
+      <h2 className="text-sm font-semibold text-foreground">
         Choose your participants
       </h2>
-      <p className="text-sm text-muted-foreground mb-4">
+      <p className="mt-1 text-sm text-muted-foreground">
         Each employee receives a{" "}
         <span className="font-medium text-foreground">self appraisal</span> to
         complete, and a{" "}
@@ -104,21 +104,20 @@ export default function AssignWizard({
       </p>
 
       {people.filter((p) => !p.archived_at).length === 0 && (
-        <p className="mb-4 text-sm">
+        <p className="mt-3 text-sm">
           <Link href="/dashboard/people" className="text-primary underline">
             Add people to your workspace
           </Link>{" "}
           before choosing participants.
         </p>
       )}
-      {/* Add subject */}
-      <div className="flex gap-2 mb-5">
+      <div className="mt-3 flex gap-2">
         <select
           aria-label="Employee to add"
           disabled={isPending}
           value={selectedId}
           onChange={(e) => setSelectedId(e.target.value)}
-          className="flex-1 rounded-lg border border-input bg-surface px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+          className="flex-1 rounded-lg border border-input bg-surface px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
         >
           <option value="">Select an employee</option>
           {availableToAdd.map((p) => (
@@ -138,13 +137,12 @@ export default function AssignWizard({
         </Button>
       </div>
 
-      {/* Subject rows */}
       {subjects.length === 0 ? (
-        <p className="text-xs text-muted-foreground text-center py-4">
+        <p className="mt-3 text-xs text-muted-foreground">
           No participants yet. Add an employee to begin.
         </p>
       ) : (
-        <div className="space-y-3 mb-5">
+        <div className="mt-3 divide-y divide-border border-y border-border">
           {subjects.map((s) => {
             const person = people.find((p) => p.id === s.personId);
             const managerCandidates = people.filter(
@@ -155,9 +153,9 @@ export default function AssignWizard({
             return (
               <div
                 key={s.personId}
-                className="rounded-lg border border-border bg-surface px-4 py-3 flex flex-wrap items-center gap-3"
+                className="flex flex-wrap items-center gap-3 py-2.5"
               >
-                <div className="flex-1 min-w-40">
+                <div className="min-w-40 flex-1">
                   <p className="text-sm font-medium text-foreground">
                     {person?.full_name ?? person?.email ?? "Archived employee"}
                   </p>
@@ -168,9 +166,7 @@ export default function AssignWizard({
                   )}
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs text-muted-foreground">
-                    Manager:
-                  </span>
+                  <span className="text-xs text-muted-foreground">Manager</span>
                   <select
                     aria-label={`Manager for ${person?.full_name ?? person?.email ?? "employee"}`}
                     disabled={isPending}
@@ -178,7 +174,7 @@ export default function AssignWizard({
                     onChange={(e) =>
                       setManager(s.personId, e.target.value || null)
                     }
-                    className="rounded-md border border-input bg-card px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-ring"
+                    className="rounded-md border border-input bg-card px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-ring"
                   >
                     <option value="">— None —</option>
                     {managerCandidates.map((m) => (
@@ -204,19 +200,20 @@ export default function AssignWizard({
       )}
 
       {error && (
-        <p role="alert" className="text-sm text-destructive mb-3">
+        <p role="alert" className="mt-2 text-sm text-destructive">
           {error}
         </p>
       )}
 
       {saved && (
-        <p role="status" className="mb-3 text-sm text-primary">
-          Participants saved. Review the campaign below before sending.
+        <p role="status" className="mt-2 text-sm text-primary">
+          Participants saved. Review below before sending.
         </p>
       )}
       <Button
         type="button"
         size="sm"
+        className="mt-3"
         onClick={handleSave}
         disabled={
           isPending || (subjects.length === 0 && initialSubjects.length === 0)

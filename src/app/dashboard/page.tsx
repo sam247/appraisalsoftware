@@ -89,7 +89,7 @@ export default async function OverviewPage() {
   const primary = actionItems[0] ?? activeItems[0] ?? null;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <PageHeader
         title="Home"
         subtitle={
@@ -98,12 +98,14 @@ export default async function OverviewPage() {
             : "Set up people, then create your first appraisal."
         }
         action={
-          <Link
-            href="/dashboard/campaigns/new"
-            className="inline-flex h-9 items-center rounded-lg bg-primary px-3.5 text-sm font-semibold text-primary-foreground hover:bg-primary-hover"
-          >
-            Create appraisal
-          </Link>
+          campaigns.length ? (
+            <Link
+              href="/dashboard/campaigns/new"
+              className="inline-flex h-9 items-center rounded-lg bg-primary px-3.5 text-sm font-semibold text-primary-foreground hover:bg-primary-hover"
+            >
+              Create appraisal
+            </Link>
+          ) : undefined
         }
       />
 
@@ -219,7 +221,7 @@ function AttentionSection({
 
 function EmptyHome({ hasPeople }: { hasPeople: boolean }) {
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {!hasPeople ? (
         <NextAction
           label="Add people"
@@ -239,7 +241,7 @@ function EmptyHome({ hasPeople }: { hasPeople: boolean }) {
           Minimum setup
         </h2>
         <ol className="divide-y divide-border border-t border-border">
-          <li className="flex gap-3 py-3">
+          <li className="flex gap-3 py-2.5">
             <span
               className={`mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold ${
                 hasPeople
@@ -256,17 +258,9 @@ function EmptyHome({ hasPeople }: { hasPeople: boolean }) {
                   ? "Directory ready."
                   : "Add employees and managers once; reuse them every cycle."}
               </p>
-              {!hasPeople && (
-                <Link
-                  href="/dashboard/people"
-                  className="mt-1 inline-block text-sm font-medium text-primary hover:underline"
-                >
-                  Add or import people →
-                </Link>
-              )}
             </div>
           </li>
-          <li className="flex gap-3 py-3">
+          <li className="flex gap-3 py-2.5">
             <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border border-border text-[11px] font-semibold text-muted-foreground">
               2
             </span>
@@ -275,14 +269,6 @@ function EmptyHome({ hasPeople }: { hasPeople: boolean }) {
               <p className="text-sm text-muted-foreground">
                 Create a campaign, assign people, then send or schedule invitations.
               </p>
-              {hasPeople && (
-                <Link
-                  href="/dashboard/campaigns/new"
-                  className="mt-1 inline-block text-sm font-medium text-primary hover:underline"
-                >
-                  Create appraisal →
-                </Link>
-              )}
             </div>
           </li>
         </ol>
