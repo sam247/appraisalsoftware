@@ -31,7 +31,7 @@ export default async function DashboardLayout({
       email={email}
       role={membership.role}
     >
-      <div className="mx-auto max-w-5xl px-4 py-5 sm:px-6 md:px-8 md:py-6">
+      <div className="w-full px-4 py-5 sm:px-6 md:px-8 md:py-6">
         {children}
       </div>
     </AppNavigation>

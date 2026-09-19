@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Menu,
   Plus,
@@ -11,7 +12,7 @@ import {
   FileText,
   Settings,
   LogOut,
-  ChevronDown,
+  Search,
 } from "lucide-react";
 import { BrandMark } from "@/components/home/Logo";
 import { Button } from "@/components/ui/button";
@@ -22,6 +23,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { CONTACT_URL } from "@/lib/links";
 import NavLink from "./nav-link";
 
 const NAV = [
@@ -45,6 +47,38 @@ function CreateButton({ onNavigate }: { onNavigate?: () => void }) {
   );
 }
 
+function SearchField() {
+  const router = useRouter();
+  const [q, setQ] = useState("");
+
+  return (
+    <form
+      role="search"
+      className="relative w-full max-w-xl"
+      onSubmit={(e) => {
+        e.preventDefault();
+        const query = q.trim();
+        if (!query) return;
+        router.push(`/dashboard/search?q=${encodeURIComponent(query)}`);
+      }}
+    >
+      <Search
+        className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+        aria-hidden
+      />
+      <input
+        type="search"
+        name="q"
+        value={q}
+        onChange={(e) => setQ(e.target.value)}
+        placeholder="Search people, campaigns, templates…"
+        aria-label="Search workspace"
+        className="h-9 w-full rounded-full border border-border bg-surface pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+      />
+    </form>
+  );
+}
+
 function AccountMenu({
   organization,
   email,
@@ -64,12 +98,10 @@ function AccountMenu({
         aria-expanded={open}
         aria-haspopup="menu"
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-1.5 rounded-full border border-border bg-card py-0.5 pl-0.5 pr-2 text-sm hover:bg-surface"
+        className="flex size-8 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground hover:opacity-90"
       >
-        <span className="flex size-7 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">
-          {initial}
-        </span>
-        <ChevronDown className="size-3.5 text-muted-foreground" aria-hidden />
+        <span className="sr-only">Account menu</span>
+        {initial}
       </button>
       {open && (
         <>
@@ -146,63 +178,68 @@ export default function AppNavigation({
   );
 
   return (
-    <div className="min-h-screen bg-background md:flex">
-      <aside className="hidden md:flex sticky top-0 h-screen w-[13.5rem] shrink-0 flex-col border-r border-border bg-card px-3 py-4">
-        <Link
-          href="/dashboard"
-          aria-label="Appraisal Software home"
-          className="mb-4 px-1"
-        >
-          <BrandMark size={30} />
-        </Link>
-        <CreateButton />
-        <div className="mt-4 flex-1 overflow-y-auto">{links()}</div>
-      </aside>
-
-      <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-30 flex h-12 items-center justify-between gap-3 border-b border-border bg-card/95 px-3 backdrop-blur md:px-5">
-          <div className="flex min-w-0 items-center gap-1 md:hidden">
-            <Link href="/dashboard" aria-label="Appraisal Software home">
-              <BrandMark size={26} />
-            </Link>
-            <Sheet open={open} onOpenChange={setOpen}>
-              <SheetTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  aria-label="Open application navigation"
-                >
-                  <Menu />
-                </Button>
-              </SheetTrigger>
-              <SheetContent
-                side="left"
-                className="bg-card flex w-[min(90vw,300px)] flex-col"
+    <div className="min-h-screen bg-background">
+      {/* Full-width top bar — logo, search, help, profile */}
+      <header className="sticky top-0 z-40 flex h-14 items-center gap-3 border-b border-border bg-card px-3 sm:px-4 md:px-5">
+        <div className="flex shrink-0 items-center gap-1">
+          <Sheet open={open} onOpenChange={setOpen}>
+            <SheetTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="md:hidden"
+                aria-label="Open application navigation"
               >
-                <SheetTitle className="mt-4 text-base font-semibold">
-                  {organization}
-                </SheetTitle>
-                <SheetDescription className="sr-only">
-                  Application navigation
-                </SheetDescription>
-                <div className="mt-3 mb-4">
-                  <CreateButton onNavigate={() => setOpen(false)} />
-                </div>
-                {links(true)}
-              </SheetContent>
-            </Sheet>
-          </div>
-          <p className="hidden min-w-0 truncate text-sm font-medium text-foreground md:block">
-            {organization}
-          </p>
-          <div className="ml-auto">
-            <AccountMenu
-              organization={organization}
-              email={email}
-              role={role}
-            />
-          </div>
-        </header>
+                <Menu />
+              </Button>
+            </SheetTrigger>
+            <SheetContent
+              side="left"
+              className="bg-card flex w-[min(90vw,300px)] flex-col"
+            >
+              <SheetTitle className="mt-4 text-base font-semibold">
+                {organization}
+              </SheetTitle>
+              <SheetDescription className="sr-only">
+                Application navigation
+              </SheetDescription>
+              <div className="mt-3 mb-4">
+                <CreateButton onNavigate={() => setOpen(false)} />
+              </div>
+              {links(true)}
+            </SheetContent>
+          </Sheet>
+          <Link
+            href="/dashboard"
+            aria-label="Appraisal Software home"
+            className="shrink-0"
+          >
+            <BrandMark size={28} />
+          </Link>
+        </div>
+
+        <div className="mx-auto flex min-w-0 flex-1 justify-center px-1 sm:px-4">
+          <SearchField />
+        </div>
+
+        <div className="flex shrink-0 items-center gap-3">
+          <a
+            href={CONTACT_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden text-sm font-medium text-muted-foreground transition-colors hover:text-foreground sm:inline"
+          >
+            Help
+          </a>
+          <AccountMenu organization={organization} email={email} role={role} />
+        </div>
+      </header>
+
+      <div className="md:flex">
+        <aside className="hidden md:flex sticky top-14 h-[calc(100vh-3.5rem)] w-[13.5rem] shrink-0 flex-col border-r border-border bg-card px-3 py-4">
+          <CreateButton />
+          <div className="mt-4 flex-1 overflow-y-auto">{links()}</div>
+        </aside>
 
         <main id="main-content" className="min-w-0 flex-1">
           {children}
