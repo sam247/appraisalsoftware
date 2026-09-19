@@ -23,29 +23,41 @@ export default function SignupPage() {
 
     const supabase = createClient();
 
-    // 1. Sign up — the on_auth_user_created trigger creates the profile row
-    const { error: signUpError } = await supabase.auth.signUp({
+    // 1. Sign up — profile row comes from on_auth_user_created.
+    // Hosted Confirm Email may omit a session; continue via password sign-in.
+    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
       email,
       password,
       options: { data: { full_name: fullName } },
     });
 
-    if (signUpError) {
+    const alreadyRegistered =
+      !!signUpError &&
+      /already\s+(been\s+)?registered|already exists|user already/i.test(
+        signUpError.message,
+      );
+
+    if (signUpError && !alreadyRegistered) {
       setError(signUpError.message);
       setLoading(false);
       return;
     }
 
-    // 2. Sign in immediately so we have a valid JWT for the RPC
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (signInError) {
-      setError(signInError.message);
-      setLoading(false);
-      return;
+    // 2. Ensure a JWT for bootstrap (reuse signup session when present).
+    if (!signUpData?.session) {
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (signInError) {
+        setError(
+          /email not confirmed/i.test(signInError.message)
+            ? "Your email still needs confirming. Refresh and try again, or contact support."
+            : signInError.message,
+        );
+        setLoading(false);
+        return;
+      }
     }
 
     // 3. Bootstrap org (creates org + owner membership + copies builtin templates)
@@ -54,10 +66,11 @@ export default function SignupPage() {
     });
 
     if (rpcError) {
-      const msg =
-        rpcError.message.includes("already_has_org")
-          ? "You already belong to an organisation. Sign in instead."
-          : rpcError.message;
+      const msg = /already belongs to an organisation|already_has_org/i.test(
+        rpcError.message,
+      )
+        ? "You already belong to an organisation. Sign in instead."
+        : rpcError.message;
       setError(msg);
       setLoading(false);
       return;

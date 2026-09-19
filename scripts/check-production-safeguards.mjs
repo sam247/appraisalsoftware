@@ -56,7 +56,13 @@ try {
   started = true;
   sql(`CREATE ROLE anon; CREATE ROLE authenticated; CREATE ROLE service_role BYPASSRLS;
     CREATE SCHEMA auth; CREATE SCHEMA extensions;
-    CREATE TABLE auth.users (id uuid PRIMARY KEY, email text, raw_user_meta_data jsonb DEFAULT '{}');
+    CREATE TABLE auth.users (
+      id uuid PRIMARY KEY,
+      email text,
+      email_confirmed_at timestamptz,
+      updated_at timestamptz,
+      raw_user_meta_data jsonb DEFAULT '{}'
+    );
     CREATE FUNCTION auth.uid() RETURNS uuid LANGUAGE sql STABLE AS $$ SELECT nullif(current_setting('request.jwt.claim.sub', true), '')::uuid $$;
     CREATE FUNCTION auth.jwt() RETURNS jsonb LANGUAGE sql STABLE AS $$ SELECT coalesce(nullif(current_setting('request.jwt.claims', true), ''), '{}')::jsonb $$;
     GRANT USAGE ON SCHEMA public, auth, extensions TO anon, authenticated, service_role;
