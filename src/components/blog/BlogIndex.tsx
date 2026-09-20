@@ -6,29 +6,18 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import {
   blogPath,
   formatBlogDate,
-  getFeaturedPost,
   getPublishedPosts,
 } from "@/lib/blog/posts";
 import type { BlogPost } from "@/lib/blog/types";
 import { breadcrumbSchema } from "@/lib/schema";
 import { ROUTES } from "@/lib/routes";
-import { cn } from "@/lib/utils";
 
-function PostCard({
-  post,
-  featured = false,
-}: {
-  post: BlogPost;
-  featured?: boolean;
-}) {
+function PostCard({ post }: { post: BlogPost }) {
   return (
-    <li>
+    <li className="h-full">
       <Link
         href={blogPath(post.slug)}
-        className={cn(
-          "block rounded-xl border border-border bg-card transition-all hover:border-primary/30 hover:shadow-sm",
-          featured ? "p-6 sm:p-8" : "p-5",
-        )}
+        className="flex h-full flex-col rounded-xl border border-border bg-card p-5 transition-all hover:border-primary/30 hover:shadow-sm"
       >
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
           <span className="font-medium text-primary">{post.category}</span>
@@ -37,22 +26,10 @@ function PostCard({
           </time>
           <span>{post.readingMinutes} min read</span>
         </div>
-        <h2
-          className={cn(
-            "mt-3 font-display font-semibold tracking-tight text-foreground",
-            featured
-              ? "text-[1.5rem] leading-[1.2] sm:text-[1.75rem]"
-              : "text-lg leading-snug",
-          )}
-        >
+        <h2 className="mt-3 font-display text-lg font-semibold leading-snug tracking-tight text-foreground">
           {post.title}
         </h2>
-        <p
-          className={cn(
-            "mt-2 leading-relaxed text-muted-foreground",
-            featured ? "max-w-2xl text-[0.975rem]" : "text-sm",
-          )}
-        >
+        <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
           {post.excerpt}
         </p>
       </Link>
@@ -62,10 +39,6 @@ function PostCard({
 
 export function BlogIndex() {
   const posts = getPublishedPosts();
-  const featured = getFeaturedPost();
-  const rest = featured
-    ? posts.filter((post) => post.slug !== featured.slug)
-    : posts;
 
   return (
     <SiteChrome>
@@ -89,9 +62,8 @@ export function BlogIndex() {
               New articles will appear here soon.
             </p>
           ) : (
-            <ul className="space-y-4">
-              {featured ? <PostCard post={featured} featured /> : null}
-              {rest.map((post) => (
+            <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5">
+              {posts.map((post) => (
                 <PostCard key={post.slug} post={post} />
               ))}
             </ul>
