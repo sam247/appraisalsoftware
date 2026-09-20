@@ -41,6 +41,7 @@ export default function CreateCampaignForm({
   people,
   timezone,
   error,
+  initialTemplateId = "",
 }: {
   is360: boolean;
   enabled360: boolean;
@@ -48,8 +49,9 @@ export default function CreateCampaignForm({
   people: CreatePersonOption[];
   timezone: string;
   error?: string;
+  initialTemplateId?: string;
 }) {
-  const [templateId, setTemplateId] = useState("");
+  const [templateId, setTemplateId] = useState(initialTemplateId);
   const [closesAt, setClosesAt] = useState("");
   const [chooserOpen, setChooserOpen] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);

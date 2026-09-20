@@ -154,3 +154,38 @@ describe("responseProgress outstanding", () => {
     ).toBe(2);
   });
 });
+
+describe("dedupeAttentionByCampaign", () => {
+  it("keeps the higher-priority signal per campaign", async () => {
+    const { dedupeAttentionByCampaign } = await import("./presentation");
+    const live = campaign({ id: "a1", name: "Live", status: "active" });
+    const assignments = [
+      {
+        id: "1",
+        campaign_id: "a1",
+        organization_id: "org",
+        respondent_person_id: "p1",
+        subject_person_id: "p1",
+        relationship: "self",
+        status: "bounced",
+        created_at: "2026-01-01",
+        updated_at: "2026-01-01",
+      },
+      {
+        id: "2",
+        campaign_id: "a1",
+        organization_id: "org",
+        respondent_person_id: "p2",
+        subject_person_id: "p1",
+        relationship: "manager",
+        status: "sent",
+        created_at: "2026-01-01",
+        updated_at: "2026-01-01",
+      },
+    ] as CampaignAssignment[];
+    const items = buildAttentionItems([live], assignments, { a1: 1 });
+    const deduped = dedupeAttentionByCampaign(items);
+    expect(deduped).toHaveLength(1);
+    expect(deduped[0]?.kind).toBe("delivery_issue");
+  });
+});

@@ -9,7 +9,7 @@ import CreateCampaignForm, {
 export default async function NewCampaignPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; type?: string }>;
+  searchParams: Promise<{ error?: string; type?: string; template?: string }>;
 }) {
   let orgAdmin;
   try {
@@ -22,6 +22,7 @@ export default async function NewCampaignPage({
   const supabase = await createClient();
   const enabled = process.env.ENABLE_360_FEEDBACK === "true";
   const is360 = enabled && params.type === "360";
+  const initialTemplateId = params.template?.trim() || "";
 
   const { data: rawTemplates, error: templateError } = await supabase
     .from("templates")
@@ -89,6 +90,11 @@ export default async function NewCampaignPage({
       people={people}
       timezone={orgAdmin.org.timezone || "Europe/London"}
       error={params.error}
+      initialTemplateId={
+        templates.some((t) => t.id === initialTemplateId)
+          ? initialTemplateId
+          : ""
+      }
     />
   );
 }

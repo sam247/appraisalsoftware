@@ -280,6 +280,71 @@ export function buildAttentionItems(
   return items.sort((a, b) => a.priority - b.priority);
 }
 
+/** One row per campaign for Home — keep the highest-priority attention signal. */
+export function dedupeAttentionByCampaign(
+  items: AttentionItem[],
+): AttentionItem[] {
+  const best = new Map<string, AttentionItem>();
+  for (const item of items) {
+    const prev = best.get(item.campaign.id);
+    if (!prev || item.priority < prev.priority) {
+      best.set(item.campaign.id, item);
+    }
+  }
+  return [...best.values()].sort((a, b) => {
+    if (a.priority !== b.priority) return a.priority - b.priority;
+    return (
+      new Date(b.campaign.updated_at ?? b.campaign.created_at).getTime() -
+      new Date(a.campaign.updated_at ?? a.campaign.created_at).getTime()
+    );
+  });
+}
+
+export const HOME_WORK_LIMIT = 8;
+
+export function homeWorkBadge(kind: AttentionKind): string {
+  switch (kind) {
+    case "needs_setup":
+      return "Draft";
+    case "ready_to_send":
+      return "Ready to send";
+    case "scheduled":
+      return "Scheduled";
+    case "collecting":
+      return "Collecting";
+    case "delivery_issue":
+      return "Delivery issue";
+    case "ready_to_close":
+      return "Ready to close";
+    case "view_results":
+      return "Complete";
+  }
+}
+
+export function homeWorkAction(kind: AttentionKind): string {
+  switch (kind) {
+    case "needs_setup":
+      return "Continue";
+    case "ready_to_send":
+      return "Review";
+    case "delivery_issue":
+      return "Fix";
+    case "ready_to_close":
+      return "Close";
+    case "view_results":
+      return "Results";
+    default:
+      return "Open";
+  }
+}
+
+export function homeWorkHref(item: AttentionItem): string {
+  if (item.kind === "view_results") {
+    return `/dashboard/campaigns/${item.campaign.id}/results`;
+  }
+  return `/dashboard/campaigns/${item.campaign.id}`;
+}
+
 export function statusTone(
   status: CampaignStatus | AttentionKind,
 ): "neutral" | "accent" | "warn" | "muted" {

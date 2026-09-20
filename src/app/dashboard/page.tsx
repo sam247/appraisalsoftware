@@ -1,13 +1,19 @@
+import CreationLauncher, {
+  type LauncherAction,
+} from "@/app/dashboard/home/creation-launcher";
 import { requireOrgAdmin } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
-import { PageHeader, AttentionRow } from "./chrome";
+import { StatusBadge } from "./chrome";
 import {
   buildAttentionItems,
-  campaignLabels,
   campaignTypeLabel,
+  dedupeAttentionByCampaign,
+  HOME_WORK_LIMIT,
+  homeWorkAction,
+  homeWorkBadge,
+  homeWorkHref,
   statusTone,
-  type AttentionKind,
 } from "./campaigns/presentation";
 import type {
   Campaign,
@@ -15,20 +21,12 @@ import type {
   CampaignSubject,
 } from "@/lib/types/database";
 
-const KIND_BADGE: Record<AttentionKind, string> = {
-  needs_setup: "Needs setup",
-  ready_to_send: "Ready to send",
-  scheduled: "Scheduled",
-  collecting: "Collecting",
-  delivery_issue: "Delivery issue",
-  ready_to_close: "Ready to close",
-  view_results: "Complete",
-};
-
 export default async function OverviewPage() {
   const { org, userId } = await requireOrgAdmin();
   const supabase = await createClient();
-  const [campaignResult, assignmentResult, subjectResult, profileResult] =
+  const enabled360 = process.env.ENABLE_360_FEEDBACK === "true";
+
+  const [campaignResult, assignmentResult, subjectResult, profileResult, templateResult] =
     await Promise.all([
       supabase
         .from("campaigns")
@@ -49,7 +47,16 @@ export default async function OverviewPage() {
         .select("full_name")
         .eq("id", userId)
         .maybeSingle(),
+      supabase
+        .from("templates")
+        .select("id")
+        .eq("organization_id", org.id)
+        .eq("campaign_type_default", "probation_review")
+        .is("archived_at", null)
+        .limit(1)
+        .maybeSingle(),
     ]);
+
   if (campaignResult.error || assignmentResult.error || subjectResult.error)
     throw new Error("Unable to load your workspace");
 
@@ -65,112 +72,103 @@ export default async function OverviewPage() {
     subjectCounts[s.campaign_id] = (subjectCounts[s.campaign_id] ?? 0) + 1;
   }
 
-  const attention = buildAttentionItems(campaigns, assignments, subjectCounts);
-  const actionItems = attention.filter((i) =>
-    ["needs_setup", "ready_to_send", "delivery_issue", "ready_to_close"].includes(
-      i.kind,
-    ),
-  );
-  const actionCampaignIds = new Set(actionItems.map((i) => i.campaign.id));
-  const activeItems = attention.filter(
-    (i) =>
-      ["scheduled", "collecting"].includes(i.kind) &&
-      !actionCampaignIds.has(i.campaign.id),
-  );
-  const recentItems = attention
-    .filter((i) => i.kind === "view_results")
-    .slice(0, 5);
+  const workItems = dedupeAttentionByCampaign(
+    buildAttentionItems(campaigns, assignments, subjectCounts),
+  ).slice(0, HOME_WORK_LIMIT);
 
-  const firstName = firstNameFrom(
-    profileResult.data?.full_name ?? null,
-  );
-  const title = firstName
+  const firstName = firstNameFrom(profileResult.data?.full_name ?? null);
+  const greeting = firstName
     ? `${dayGreeting(org.timezone || "Europe/London")}, ${firstName}`
-    : "Home";
+    : dayGreeting(org.timezone || "Europe/London");
+
+  const probationTemplateId = templateResult.data?.id ?? null;
+  const probationHref = probationTemplateId
+    ? `/dashboard/campaigns/new?template=${probationTemplateId}`
+    : "/dashboard/templates";
+
+  const launcherActions: LauncherAction[] = [
+    {
+      href: "/dashboard/campaigns/new",
+      title: "Annual appraisal",
+      description: "Self and manager review",
+      icon: "annual",
+    },
+    {
+      href: enabled360
+        ? "/dashboard/campaigns/new?type=360"
+        : "/dashboard/campaigns/new",
+      title: "360 feedback",
+      description: "Anonymous multi-reviewer feedback",
+      icon: "feedback",
+    },
+    {
+      href: probationHref,
+      title: "Probation review",
+      description: "Review a new team member",
+      icon: "probation",
+    },
+    {
+      href: "/dashboard/templates",
+      title: "Start from a template",
+      description: "Use one of your question templates",
+      icon: "template",
+    },
+  ];
 
   return (
-    <div className="w-full max-w-4xl space-y-8">
-      <PageHeader
-        title={title}
-        subtitle="Here's what's happening with your appraisals."
-      />
+    <div className="mx-auto w-full max-w-5xl space-y-10 pb-4">
+      <header className="space-y-2">
+        <p className="text-sm text-muted-foreground">{greeting}</p>
+        <h1 className="font-display text-2xl font-semibold tracking-tight text-foreground sm:text-[1.75rem]">
+          What would you like to do?
+        </h1>
+      </header>
 
-      {actionItems.length > 0 ? (
-        <WorkSection title="Needs your attention" count={actionItems.length}>
-          {actionItems.map((item) => (
-            <AttentionRow
-              key={`${item.kind}-${item.campaign.id}`}
-              href={`/dashboard/campaigns/${item.campaign.id}`}
-              badge={KIND_BADGE[item.kind]}
-              badgeTone={statusTone(item.kind)}
-              title={item.title}
-              detail={homeDetail(item.campaign, item.detail)}
-              actionLabel={
-                item.kind === "ready_to_send"
-                  ? "Review and send"
-                  : item.actionLabel
-              }
-            />
-          ))}
-        </WorkSection>
-      ) : (
-        <section className="border-t border-border pt-4">
-          <h2 className="text-sm font-semibold text-foreground">
-            You&apos;re all caught up
-          </h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            No appraisals need your attention.
-          </p>
+      <CreationLauncher actions={launcherActions} />
+
+      <section className="space-y-3">
+        <div className="flex items-baseline justify-between gap-3">
+          <h2 className="text-sm font-semibold text-foreground">Your work</h2>
           <Link
-            href="/dashboard/campaigns/new"
-            className="mt-3 inline-flex text-sm font-medium text-primary hover:underline"
+            href="/dashboard/campaigns"
+            className="text-xs font-medium text-primary transition-colors hover:text-primary-hover"
           >
-            + Create appraisal
+            View all →
           </Link>
-        </section>
-      )}
+        </div>
 
-      {activeItems.length > 0 && (
-        <WorkSection title="In progress" count={activeItems.length}>
-          {activeItems.map((item) => (
-            <AttentionRow
-              key={`${item.kind}-${item.campaign.id}`}
-              href={`/dashboard/campaigns/${item.campaign.id}`}
-              badge={
-                item.kind === "scheduled"
-                  ? campaignLabels.scheduled
-                  : KIND_BADGE[item.kind]
-              }
-              badgeTone={statusTone(item.kind)}
-              title={item.title}
-              detail={homeDetail(item.campaign, item.detail)}
-              actionLabel={item.actionLabel}
-            />
-          ))}
-        </WorkSection>
-      )}
-
-      {recentItems.length > 0 && (
-        <WorkSection title="Recently completed" count={recentItems.length}>
-          {recentItems.map((item) => (
-            <AttentionRow
-              key={`${item.kind}-${item.campaign.id}`}
-              href={`/dashboard/campaigns/${item.campaign.id}/results`}
-              badge={KIND_BADGE[item.kind]}
-              badgeTone="muted"
-              title={item.title}
-              detail={homeDetail(item.campaign, item.detail)}
-              actionLabel={item.actionLabel}
-            />
-          ))}
-        </WorkSection>
-      )}
-
-      <p className="text-xs text-muted-foreground">
-        <Link href="/dashboard/campaigns" className="hover:text-foreground">
-          See all campaigns →
-        </Link>
-      </p>
+        {workItems.length === 0 ? (
+          <div className="border-t border-border py-6">
+            <p className="text-sm text-foreground">No campaigns yet.</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Start an appraisal or feedback cycle above.
+            </p>
+          </div>
+        ) : (
+          <div className="border-t border-border">
+            {workItems.map((item) => (
+              <Link
+                key={item.campaign.id}
+                href={homeWorkHref(item)}
+                className="group grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1 border-b border-border py-2.5 last:border-b-0 sm:grid-cols-[minmax(0,1.5fr)_auto_minmax(0,1.2fr)_auto] sm:gap-x-4"
+              >
+                <p className="min-w-0 truncate text-sm font-medium text-foreground transition-colors group-hover:text-primary">
+                  {item.title}
+                </p>
+                <StatusBadge tone={statusTone(item.kind)}>
+                  {homeWorkBadge(item.kind)}
+                </StatusBadge>
+                <p className="col-span-2 min-w-0 truncate text-xs text-muted-foreground sm:col-span-1">
+                  {homeDetail(item.campaign, item.detail)}
+                </p>
+                <span className="col-start-2 row-start-1 shrink-0 text-sm font-medium text-primary transition-transform duration-200 group-hover:translate-x-0.5 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0 sm:col-start-auto sm:row-start-auto">
+                  {homeWorkAction(item.kind)} →
+                </span>
+              </Link>
+            ))}
+          </div>
+        )}
+      </section>
     </div>
   );
 }
@@ -178,6 +176,7 @@ export default async function OverviewPage() {
 function homeDetail(campaign: Campaign, detail: string): string {
   const type = campaignTypeLabel(campaign.campaign_type);
   if (!detail || detail === "—") return type;
+  if (detail.startsWith(type)) return detail;
   return `${type} · ${detail}`;
 }
 
@@ -197,26 +196,4 @@ function dayGreeting(timezone: string): string {
   if (hour < 12) return "Good morning";
   if (hour < 17) return "Good afternoon";
   return "Good evening";
-}
-
-function WorkSection({
-  title,
-  count,
-  children,
-}: {
-  title: string;
-  count: number;
-  children: React.ReactNode;
-}) {
-  return (
-    <section>
-      <div className="mb-1 flex items-baseline justify-between gap-3">
-        <h2 className="text-sm font-semibold text-foreground">{title}</h2>
-        <span className="text-xs tabular-nums text-muted-foreground">
-          {count}
-        </span>
-      </div>
-      <div className="border-t border-border">{children}</div>
-    </section>
-  );
 }
