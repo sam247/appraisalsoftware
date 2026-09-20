@@ -41,7 +41,7 @@ export function ResourcePage({ resource }: { resource: ResourceContent }) {
         </div>
       </section> : null}
       <div className="no-print mx-auto max-w-6xl px-5 py-8 lg:px-8">
-        <p className="text-xs text-muted-foreground">Written and reviewed by the Appraisal Software team · <time dateTime={RESOURCE_REVIEW_DATE}>18 September 2026</time></p>
+        <p className="text-xs text-muted-foreground">Written and reviewed by the Appraisal Software team · <time dateTime={RESOURCE_REVIEW_DATE}>{new Date(RESOURCE_REVIEW_DATE + "T12:00:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}</time></p>
         <nav aria-label="On this page" className="mt-5 max-w-3xl rounded-xl border border-border p-5">
           <p className="text-sm font-semibold">On this page</p>
           <ul className="mt-3 flex flex-wrap gap-x-6 gap-y-2 text-sm">{resource.sections.map((section, index) => <li key={section.title}><a className="underline underline-offset-4 hover:text-primary" href={`#section-${index + 1}`}>{section.title}</a></li>)}</ul>

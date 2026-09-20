@@ -7,13 +7,13 @@ export type ResourceContent = {
   sources?: { label: string; href: string }[];
 };
 
-export const RESOURCE_REVIEW_DATE = "2026-09-18";
+export const RESOURCE_REVIEW_DATE = "2026-09-20";
 export const resources: ResourceContent[] = [
   {
     "slug": "annual-appraisal-template",
     "title": "Annual Appraisal Template",
-    "description": "A free appraisal form for UK managers and employees. Copy it, print it or save it as a PDF.",
-    "audience": "Managers and employees preparing an annual review",
+    "description": "A free annual appraisal template for UK managers and employees, with objectives, self-reflection, manager comments and next steps. Copy it, print it or save it as a PDF.",
+    "audience": "Managers and employees preparing an annual review in a UK SME",
     "intent": "A usable annual review form, rather than software selection",
     "kind": "template",
     "sections": [
@@ -22,6 +22,13 @@ export const resources: ResourceContent[] = [
         "paragraphs": [
           "Give the employee time to complete their reflection before the meeting. The manager prepares their observations separately, using the same review period and agreed objectives. Discuss differences rather than treating one version as the correct answer.",
           "Use evidence from across the year. The form is a starting structure: remove questions that do not fit the role and add only those that affect the discussion. If you use ratings, explain the scale before anyone answers."
+        ]
+      },
+      {
+        "title": "Keep the form proportionate for a small team",
+        "paragraphs": [
+          "A useful annual appraisal does not need a long corporate form. For many UK SMEs, four or five focused sections are enough: objectives, employee reflection, manager observations, development actions and a clear sign-off.",
+          "If you are the owner or sole HR person running reviews for twenty to fifty people, prefer a form managers can finish without rewriting last year’s answers. Short prompts that ask for evidence beat long competency grids that nobody completes carefully."
         ]
       },
       {
@@ -34,16 +41,27 @@ export const resources: ResourceContent[] = [
         ]
       },
       {
+        "title": "Completed example: an operations coordinator in a growing firm",
+        "paragraphs": [
+          "Fictional employee: Jordan, Operations Coordinator in a 35-person professional services firm. Review period: January to December 2025. Objective: keep client onboarding packs complete within five working days of signed engagement.",
+          "Employee reflection: “Eleven of twelve months met the five-day target. In August, three packs slipped when two starters joined the same week. I built a shared checklist so any coordinator can finish a pack, and the average delay fell the following month.”",
+          "Manager observation: “Jordan’s packs are clear and clients ask fewer follow-up questions. The August delay was real. Next period we will keep a simple capacity note when more than one starter joins in the same fortnight, and Jordan will own updating that note.”",
+          "Agreed next step: Jordan will add the capacity note to the onboarding checklist by 28 February. The manager will review onboarding delays with Jordan each month for the first quarter."
+        ]
+      },
+      {
         "title": "Before you finish",
         "paragraphs": [
           "Record what both people agreed, what remains unresolved and who owns each next step. Keep the finished review in your organisation’s agreed location and share it only with people who need it.",
-          "Arrange a shorter progress check before the next annual review. A useful appraisal creates a working plan, rather than a document that is reopened a year later."
+          "Arrange a shorter progress check before the next annual review. A useful appraisal creates a working plan, rather than a document that is reopened a year later.",
+          "If you are running many reviews at once, a blank form alone will not show who has finished. Use the annual appraisal guide to plan the cycle, or run the same structure as a campaign in annual appraisal software so employee and manager answers stay on one record."
         ]
       }
     ],
     "related": [
       "appraisal-questions",
       "annual-appraisal-guide",
+      "self-appraisal-template",
       "annual-appraisal-software"
     ],
     "template": [
@@ -99,8 +117,8 @@ export const resources: ResourceContent[] = [
       }
     ],
     "bridge": {
-      "title": "Want to run this as a structured appraisal instead?",
-      "copy": "Set up the appraisal in Appraisal Software. Use reusable questions, employee and manager responses, and a clear view of completion."
+      "title": "Want to run this as a structured annual cycle instead?",
+      "copy": "Use the same questions in annual appraisal software: create a campaign, collect employee and manager responses on one record, and see who is still outstanding without chasing by spreadsheet."
     }
   },
   {
