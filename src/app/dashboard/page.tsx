@@ -116,7 +116,7 @@ export default async function OverviewPage() {
   ];
 
   return (
-    <div className="mx-auto w-full max-w-5xl space-y-10 pb-4">
+    <div className="mx-auto w-full max-w-7xl space-y-10 pb-4">
       <header className="space-y-2">
         <p className="text-sm text-muted-foreground">{greeting}</p>
         <h1 className="font-display text-2xl font-semibold tracking-tight text-foreground sm:text-[1.75rem]">
