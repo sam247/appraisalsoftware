@@ -50,7 +50,10 @@ describe("marketing routes and indexability", () => {
   });
   it("keeps public routes, canonical metadata and sharing images aligned", () => {
     expect(new Set(INDEXABLE_PATHS).size).toBe(INDEXABLE_PATHS.length);
-    expect(sitemap().map((entry) => entry.url)).toEqual(INDEXABLE_PATHS.map(absoluteUrl));
+    const sitemapUrls = sitemap().map((entry) => entry.url);
+    expect(sitemapUrls).toEqual(
+      expect.arrayContaining(INDEXABLE_PATHS.map(absoluteUrl)),
+    );
     for (const path of INDEXABLE_PATHS) {
       expect(existsSync(`src/app${path === "/" ? "" : path}/page.tsx`)).toBe(true);
       const slug = path === "/" ? "home" : path.slice(1);

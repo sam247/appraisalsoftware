@@ -15,6 +15,7 @@ const nav = [
   { label: "360 Feedback", href: ROUTES.feedback360Software },
   { label: "Templates", href: ROUTES.templates },
   { label: "Resources", href: ROUTES.resources },
+  { label: "Blog", href: ROUTES.blog },
 ];
 
 export function Header() {

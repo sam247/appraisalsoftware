@@ -15,14 +15,31 @@ const SOFTWARE_FEATURES = [
   "Self vs Manager results",
 ];
 
-export function articleSchema({ title, description, path, dateModified }: { title: string; description: string; path: string; dateModified: string }) {
+export function articleSchema({
+  title,
+  description,
+  path,
+  datePublished,
+  dateModified,
+}: {
+  title: string;
+  description: string;
+  path: string;
+  datePublished?: string;
+  dateModified: string;
+}) {
   return {
     "@context": "https://schema.org",
     "@type": "Article",
     headline: title,
     description,
     mainEntityOfPage: absoluteUrl(path),
-    image: absoluteUrl(`/social/${path.replace(/^\//, "")}.png`),
+    image: absoluteUrl(
+      path.startsWith("/blog/")
+        ? "/social/blog.png"
+        : `/social/${path.replace(/^\//, "")}.png`,
+    ),
+    ...(datePublished ? { datePublished } : {}),
     dateModified,
     inLanguage: "en-GB",
     author: { "@type": "Organization", name: "Appraisal Software team", url: SITE_URL },

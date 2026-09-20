@@ -6,13 +6,21 @@ export function pageMetadata({
   title,
   description,
   path,
+  ogType = "website",
+  imagePath,
 }: {
   title: string;
   description: string;
   path: string;
+  ogType?: "website" | "article";
+  /** Override default /social/{slug}.png mapping when a dedicated image is unavailable. */
+  imagePath?: string;
 }): Metadata {
   const url = absoluteUrl(path);
-  const image = absoluteUrl(`/social/${path === "/" ? "home" : path.replace(/^\//, "")}.png`);
+  const image = absoluteUrl(
+    imagePath ??
+      `/social/${path === "/" ? "home" : path.replace(/^\//, "").replace(/\//g, "-")}.png`,
+  );
 
   return {
     title,
@@ -26,7 +34,7 @@ export function pageMetadata({
       url,
       siteName: SITE_NAME,
       locale: "en_GB",
-      type: "website",
+      type: ogType,
       images: [{ url: image, width: 1200, height: 630, alt: title }],
     },
     twitter: {

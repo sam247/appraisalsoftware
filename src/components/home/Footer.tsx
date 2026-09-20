@@ -19,6 +19,7 @@ const footerLinks = {
   resources: [
     { label: "All templates", href: ROUTES.templates },
     { label: "Resource library", href: ROUTES.resources },
+    { label: "Blog", href: ROUTES.blog },
     { label: "Annual appraisal template", href: ROUTES.annualAppraisalTemplate },
     { label: "Appraisal questions", href: ROUTES.appraisalQuestions },
     { label: "360 feedback template", href: ROUTES.feedback360Template },
