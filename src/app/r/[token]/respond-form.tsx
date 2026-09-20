@@ -1,7 +1,11 @@
 "use client";
 
-import { BrandMark, Logo } from "@/components/home/Logo";
+import {
+  OrgIdentityHeader,
+  PlatformFooter,
+} from "@/components/branding/org-identity";
 import { Button } from "@/components/ui/button";
+import { accentForWhiteText } from "@/lib/branding";
 import type { CampaignQuestion } from "@/lib/types/database";
 import {
   useEffect,
@@ -10,6 +14,7 @@ import {
   useRef,
   useState,
   useTransition,
+  type CSSProperties,
   type ReactNode,
 } from "react";
 
@@ -27,6 +32,8 @@ interface RespondFormProps {
   relationship: string | null;
   alreadySubmitted: boolean;
   orgName?: string | null;
+  orgLogoUrl?: string | null;
+  orgBrandColor?: string | null;
   initialAnswers: Answer[];
   anonymous?: boolean;
   subjectName?: string;
@@ -118,10 +125,16 @@ export default function RespondForm({
   relationship,
   alreadySubmitted,
   orgName,
+  orgLogoUrl,
+  orgBrandColor,
   initialAnswers,
   anonymous = false,
   subjectName,
 }: RespondFormProps) {
+  const accent = accentForWhiteText(orgBrandColor);
+  const brandStyle = {
+    ["--org-accent" as string]: accent,
+  } as CSSProperties;
   const [answers, setAnswers] = useState<Record<string, Answer>>(() =>
     Object.fromEntries(
       initialAnswers.map((answer) => [answer.campaign_question_id, answer]),
@@ -276,15 +289,21 @@ export default function RespondForm({
 
   if (submitted || phase === "complete") {
     return (
-      <Shell>
+      <Shell style={brandStyle}>
         <div className="flex flex-1 flex-col items-center justify-center text-center py-10">
           <div
-            className="mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-primary/15 text-2xl text-primary"
+            className="mb-5 flex h-14 w-14 items-center justify-center rounded-full text-2xl text-white"
+            style={{ backgroundColor: accent }}
             aria-hidden
           >
             ✓
           </div>
-          <BrandMark size={40} />
+          <OrgIdentityHeader
+            orgName={orgName}
+            logoUrl={orgLogoUrl}
+            brandColor={orgBrandColor}
+            size={40}
+          />
           <h1 className="mt-6 font-display text-2xl font-semibold text-foreground">
             Thank you
           </h1>
@@ -313,18 +332,14 @@ export default function RespondForm({
     const minutes = estimateMinutes(questions.length);
 
     return (
-      <Shell>
+      <Shell style={brandStyle}>
         <div className="flex flex-1 flex-col justify-center gap-8 py-6">
-          <div className="space-y-4">
-            <BrandMark size={48} />
-            {orgName?.trim() ? (
-              <p className="text-sm font-medium tracking-wide text-muted-foreground">
-                {orgName}
-              </p>
-            ) : (
-              <Logo size="md" />
-            )}
-          </div>
+          <OrgIdentityHeader
+            orgName={orgName}
+            logoUrl={orgLogoUrl}
+            brandColor={orgBrandColor}
+            size={48}
+          />
 
           <div className="space-y-3">
             <h1 className="font-display text-3xl font-semibold tracking-tight text-foreground sm:text-[2rem] text-balance">
@@ -372,14 +387,14 @@ export default function RespondForm({
   const current = questions[questionIndex];
   if (!current) {
     return (
-      <Shell>
+      <Shell style={brandStyle}>
         <p className="text-sm text-muted-foreground">No questions available.</p>
       </Shell>
     );
   }
 
   return (
-    <Shell>
+    <Shell style={brandStyle}>
       <div className="flex flex-1 flex-col">
         <div className="space-y-3 pb-6">
           <div
@@ -391,8 +406,8 @@ export default function RespondForm({
             aria-label="Form progress"
           >
             <div
-              className="h-full rounded-full bg-primary transition-[width] duration-200 ease-out motion-reduce:transition-none"
-              style={{ width: `${progressPct}%` }}
+              className="h-full rounded-full transition-[width] duration-200 ease-out motion-reduce:transition-none"
+              style={{ width: `${progressPct}%`, backgroundColor: accent }}
             />
           </div>
           <div className="flex items-center justify-between gap-3 text-xs text-muted-foreground">
@@ -472,9 +487,15 @@ export default function RespondForm({
   );
 }
 
-function Shell({ children }: { children: ReactNode }) {
+function Shell({
+  children,
+  style,
+}: {
+  children: ReactNode;
+  style?: CSSProperties;
+}) {
   return (
-    <div className="min-h-dvh bg-surface text-foreground">
+    <div className="min-h-dvh bg-surface text-foreground" style={style}>
       <div className="mx-auto flex min-h-dvh w-full max-w-xl flex-col px-5 py-8 sm:px-8 sm:py-12">
         {children}
       </div>
@@ -484,9 +505,9 @@ function Shell({ children }: { children: ReactNode }) {
 
 function TrustFooter() {
   return (
-    <p className="text-center text-xs text-muted-foreground/80">
-      Sent securely with Appraisal Software
-    </p>
+    <div className="mt-auto pt-8 text-center">
+      <PlatformFooter quiet />
+    </div>
   );
 }
 

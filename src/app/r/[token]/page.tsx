@@ -17,6 +17,8 @@ interface ResolveRow {
   response_id: string;
   response_status: string;
   org_name?: string | null;
+  org_logo_url?: string | null;
+  org_brand_color?: string | null;
 }
 
 export default async function RespondPage({
@@ -49,6 +51,16 @@ export default async function RespondPage({
         subjectName={String(feedback.subject_name || "your colleague")}
         campaignName={String(feedback.campaign_name || "360 feedback")}
         orgName={String(feedback.org_name || "")}
+        orgLogoUrl={
+          typeof feedback.org_logo_url === "string"
+            ? feedback.org_logo_url
+            : null
+        }
+        orgBrandColor={
+          typeof feedback.org_brand_color === "string"
+            ? feedback.org_brand_color
+            : null
+        }
         relationship={null}
         alreadySubmitted={feedback.submitted === true}
         questions={(feedback.questions || []) as CampaignQuestion[]}
@@ -125,6 +137,8 @@ export default async function RespondPage({
       relationship={ctx.relationship}
       alreadySubmitted={false}
       orgName={ctx.org_name}
+      orgLogoUrl={ctx.org_logo_url}
+      orgBrandColor={ctx.org_brand_color}
     />
   );
 }

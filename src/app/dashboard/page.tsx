@@ -5,6 +5,7 @@ import { PageHeader, AttentionRow } from "./chrome";
 import {
   buildAttentionItems,
   campaignLabels,
+  campaignTypeLabel,
   statusTone,
   type AttentionKind,
 } from "./campaigns/presentation";
@@ -13,7 +14,6 @@ import type {
   CampaignAssignment,
   CampaignSubject,
 } from "@/lib/types/database";
-import { cn } from "@/lib/utils";
 
 const KIND_BADGE: Record<AttentionKind, string> = {
   needs_setup: "Needs setup",
@@ -26,10 +26,9 @@ const KIND_BADGE: Record<AttentionKind, string> = {
 };
 
 export default async function OverviewPage() {
-  const { org } = await requireOrgAdmin();
+  const { org, userId } = await requireOrgAdmin();
   const supabase = await createClient();
-  const enabled360 = process.env.ENABLE_360_FEEDBACK === "true";
-  const [campaignResult, peopleResult, assignmentResult, subjectResult] =
+  const [campaignResult, assignmentResult, subjectResult, profileResult] =
     await Promise.all([
       supabase
         .from("campaigns")
@@ -38,11 +37,6 @@ export default async function OverviewPage() {
         .neq("status", "archived")
         .order("created_at", { ascending: false }),
       supabase
-        .from("people")
-        .select("id", { count: "exact", head: true })
-        .eq("organization_id", org.id)
-        .is("archived_at", null),
-      supabase
         .from("campaign_assignments")
         .select("*")
         .eq("organization_id", org.id),
@@ -50,13 +44,13 @@ export default async function OverviewPage() {
         .from("campaign_subjects")
         .select("campaign_id")
         .eq("organization_id", org.id),
+      supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("id", userId)
+        .maybeSingle(),
     ]);
-  if (
-    campaignResult.error ||
-    peopleResult.error ||
-    assignmentResult.error ||
-    subjectResult.error
-  )
+  if (campaignResult.error || assignmentResult.error || subjectResult.error)
     throw new Error("Unable to load your workspace");
 
   const campaigns = (campaignResult.data ?? []) as Campaign[];
@@ -65,8 +59,6 @@ export default async function OverviewPage() {
     CampaignSubject,
     "campaign_id"
   >[];
-  const peopleCount = peopleResult.count ?? 0;
-  const hasPeople = peopleCount > 0;
 
   const subjectCounts: Record<string, number> = {};
   for (const s of subjects) {
@@ -80,7 +72,6 @@ export default async function OverviewPage() {
     ),
   );
   const actionCampaignIds = new Set(actionItems.map((i) => i.campaign.id));
-  // A campaign that needs attention should not also appear under In progress.
   const activeItems = attention.filter(
     (i) =>
       ["scheduled", "collecting"].includes(i.kind) &&
@@ -90,49 +81,53 @@ export default async function OverviewPage() {
     .filter((i) => i.kind === "view_results")
     .slice(0, 5);
 
-  const hasWork =
-    actionItems.length > 0 || activeItems.length > 0 || recentItems.length > 0;
+  const firstName = firstNameFrom(
+    profileResult.data?.full_name ?? null,
+  );
+  const title = firstName
+    ? `${dayGreeting(org.timezone || "Europe/London")}, ${firstName}`
+    : "Home";
 
   return (
-    <div className="space-y-8">
+    <div className="w-full max-w-4xl space-y-8">
       <PageHeader
-        title="Home"
-        subtitle="Appraisals and feedback across your team."
+        title={title}
+        subtitle="Here's what's happening with your appraisals."
       />
 
-      <StartSurface enabled360={enabled360} />
-
-      {!campaigns.length && !hasPeople && (
-        <p className="text-sm text-muted-foreground">
-          Add people first, then start an annual appraisal
-          {enabled360 ? " or 360 feedback" : ""}.
-        </p>
-      )}
-
-      {!campaigns.length && hasPeople && (
-        <p className="text-sm text-muted-foreground">
-          Your directory is ready. Start an appraisal when you are.
-        </p>
-      )}
-
-      {actionItems.length > 0 && (
-        <WorkSection title="Needs attention" count={actionItems.length}>
+      {actionItems.length > 0 ? (
+        <WorkSection title="Needs your attention" count={actionItems.length}>
           {actionItems.map((item) => (
             <AttentionRow
               key={`${item.kind}-${item.campaign.id}`}
-              href={
-                item.kind === "view_results"
-                  ? `/dashboard/campaigns/${item.campaign.id}/results`
-                  : `/dashboard/campaigns/${item.campaign.id}`
-              }
+              href={`/dashboard/campaigns/${item.campaign.id}`}
               badge={KIND_BADGE[item.kind]}
               badgeTone={statusTone(item.kind)}
               title={item.title}
-              detail={item.detail}
-              actionLabel={item.actionLabel}
+              detail={homeDetail(item.campaign, item.detail)}
+              actionLabel={
+                item.kind === "ready_to_send"
+                  ? "Review and send"
+                  : item.actionLabel
+              }
             />
           ))}
         </WorkSection>
+      ) : (
+        <section className="border-t border-border pt-4">
+          <h2 className="text-sm font-semibold text-foreground">
+            You&apos;re all caught up
+          </h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            No appraisals need your attention.
+          </p>
+          <Link
+            href="/dashboard/campaigns/new"
+            className="mt-3 inline-flex text-sm font-medium text-primary hover:underline"
+          >
+            + Create appraisal
+          </Link>
+        </section>
       )}
 
       {activeItems.length > 0 && (
@@ -148,7 +143,7 @@ export default async function OverviewPage() {
               }
               badgeTone={statusTone(item.kind)}
               title={item.title}
-              detail={item.detail}
+              detail={homeDetail(item.campaign, item.detail)}
               actionLabel={item.actionLabel}
             />
           ))}
@@ -156,7 +151,7 @@ export default async function OverviewPage() {
       )}
 
       {recentItems.length > 0 && (
-        <WorkSection title="Recently closed" count={recentItems.length}>
+        <WorkSection title="Recently completed" count={recentItems.length}>
           {recentItems.map((item) => (
             <AttentionRow
               key={`${item.kind}-${item.campaign.id}`}
@@ -164,84 +159,44 @@ export default async function OverviewPage() {
               badge={KIND_BADGE[item.kind]}
               badgeTone="muted"
               title={item.title}
-              detail={item.detail}
+              detail={homeDetail(item.campaign, item.detail)}
               actionLabel={item.actionLabel}
             />
           ))}
         </WorkSection>
       )}
 
-      {campaigns.length > 0 && (
-        <p className="text-xs text-muted-foreground">
-          <Link href="/dashboard/campaigns" className="hover:text-foreground">
-            See all campaigns →
-          </Link>
-          {!hasWork && (
-            <span className="ml-2">Nothing needs attention right now.</span>
-          )}
-        </p>
-      )}
+      <p className="text-xs text-muted-foreground">
+        <Link href="/dashboard/campaigns" className="hover:text-foreground">
+          See all campaigns →
+        </Link>
+      </p>
     </div>
   );
 }
 
-function StartSurface({ enabled360 }: { enabled360: boolean }) {
-  return (
-    <section className="rounded-xl border border-border/80 bg-card/60 px-4 py-5 sm:px-5">
-      <h2 className="text-base font-medium tracking-tight text-foreground">
-        What would you like to do?
-      </h2>
-      <p className="mt-0.5 text-sm text-muted-foreground">
-        Start something new for your team.
-      </p>
-      <div
-        className={cn(
-          "mt-4 grid gap-2",
-          enabled360 ? "sm:grid-cols-3" : "sm:grid-cols-2",
-        )}
-      >
-        <StartAction
-          href="/dashboard/campaigns/new"
-          title="Annual appraisal"
-          description="Self and manager review"
-        />
-        {enabled360 && (
-          <StartAction
-            href="/dashboard/campaigns/new?type=360"
-            title="360 feedback"
-            description="Anonymous multi-reviewer feedback"
-          />
-        )}
-        <StartAction
-          href="/dashboard/people"
-          title="Add people"
-          description="Grow your employee directory"
-        />
-      </div>
-    </section>
-  );
+function homeDetail(campaign: Campaign, detail: string): string {
+  const type = campaignTypeLabel(campaign.campaign_type);
+  if (!detail || detail === "—") return type;
+  return `${type} · ${detail}`;
 }
 
-function StartAction({
-  href,
-  title,
-  description,
-}: {
-  href: string;
-  title: string;
-  description: string;
-}) {
-  return (
-    <Link
-      href={href}
-      className="rounded-lg border border-border bg-background/80 px-3.5 py-3 transition-colors hover:border-foreground/15 hover:bg-card"
-    >
-      <p className="text-sm font-medium text-foreground">{title}</p>
-      <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
-        {description}
-      </p>
-    </Link>
+function firstNameFrom(fullName: string | null): string | null {
+  const first = fullName?.trim().split(/\s+/)[0];
+  return first || null;
+}
+
+function dayGreeting(timezone: string): string {
+  const hour = Number(
+    new Date().toLocaleString("en-GB", {
+      hour: "numeric",
+      hour12: false,
+      timeZone: timezone,
+    }),
   );
+  if (hour < 12) return "Good morning";
+  if (hour < 17) return "Good afternoon";
+  return "Good evening";
 }
 
 function WorkSection({

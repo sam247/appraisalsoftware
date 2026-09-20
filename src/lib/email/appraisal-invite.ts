@@ -1,4 +1,5 @@
 import { respondentUrl } from "@/lib/app-origin";
+import { accentForWhiteText } from "@/lib/branding";
 
 export type AppraisalEmailPayload = {
   campaign_name?: string;
@@ -6,6 +7,8 @@ export type AppraisalEmailPayload = {
   relationship?: string | null;
   raw_token?: string;
   org_name?: string | null;
+  org_logo_url?: string | null;
+  org_brand_color?: string | null;
   respondent_name?: string | null;
   subject_name?: string | null;
   closes_at?: string | null;
@@ -118,6 +121,8 @@ export function buildAppraisalInviteHtml(payload: AppraisalEmailPayload): {
   const respondUrl = respondentUrl(token);
   const orgName = payload.org_name?.trim() || "Your organisation";
   const campaignName = payload.campaign_name?.trim() || "Annual appraisal";
+  const logoUrl = payload.org_logo_url?.trim() || null;
+  const accent = accentForWhiteText(payload.org_brand_color);
   const anonymous = payload.campaign_type === "feedback_360";
   const privacyCopy = anonymous
     ? "Your organisation receives combined feedback without reviewer names or response times. Results require five reviewers and campaign closure. Written comments may identify their author. Trusted platform operators can access operational records. Keep your personal link private."
@@ -137,6 +142,13 @@ export function buildAppraisalInviteHtml(payload: AppraisalEmailPayload): {
     ? `<p style="margin:0 0 16px;color:${MUTED};font-size:14px;line-height:1.5;">This is a friendly reminder — ${anonymous ? "your feedback" : "your appraisal"} is still waiting for your response.</p>`
     : "";
 
+  const headerBrand = logoUrl
+    ? `<img src="${escapeHtml(logoUrl)}" alt="${escapeHtml(orgName)}" width="140" style="display:block;max-width:140px;max-height:48px;height:auto;border:0;margin:0 0 10px;" />
+              <p style="margin:0;font-size:15px;font-weight:600;color:${INK};">${escapeHtml(orgName)}</p>
+              <p style="margin:6px 0 0;font-size:12px;color:${MUTED};">Powered by Appraisal Software</p>`
+    : `<p style="margin:0;font-size:22px;letter-spacing:-0.8px;color:${INK};font-weight:700;">appraisal<span style="color:${JADE};">.</span>software</p>
+              <p style="margin:8px 0 0;font-size:13px;color:${MUTED};">${escapeHtml(orgName)}</p>`;
+
   const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -150,9 +162,8 @@ export function buildAppraisalInviteHtml(payload: AppraisalEmailPayload): {
       <td align="center">
         <table role="presentation" width="100%" style="max-width:560px;background:#ffffff;border:1px solid ${BORDER};border-radius:12px;overflow:hidden;">
           <tr>
-            <td style="padding:28px 28px 8px;border-bottom:3px solid ${JADE};">
-              <p style="margin:0;font-size:22px;letter-spacing:-0.8px;color:${INK};font-weight:700;">appraisal<span style="color:${JADE};">.</span>software</p>
-              <p style="margin:8px 0 0;font-size:13px;color:${MUTED};">${escapeHtml(orgName)}</p>
+            <td style="padding:28px 28px 12px;border-bottom:3px solid ${accent};">
+              ${headerBrand}
             </td>
           </tr>
           <tr>
@@ -169,13 +180,13 @@ export function buildAppraisalInviteHtml(payload: AppraisalEmailPayload): {
               }
               <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 24px;">
                 <tr>
-                  <td style="border-radius:8px;background:${JADE};">
+                  <td style="border-radius:8px;background:${accent};">
                     <a href="${escapeHtml(respondUrl)}" style="display:inline-block;padding:14px 22px;font-size:15px;font-weight:600;color:#ffffff;text-decoration:none;">${escapeHtml(copy.cta)}</a>
                   </td>
                 </tr>
               </table>
               <p style="margin:0 0 8px;font-size:13px;line-height:1.5;color:${MUTED};">If the button doesn't work, copy and paste this link into your browser:</p>
-              <p style="margin:0 0 20px;font-size:12px;line-height:1.5;word-break:break-all;color:${JADE};"><a href="${escapeHtml(respondUrl)}" style="color:${JADE};">${escapeHtml(respondUrl)}</a></p>
+              <p style="margin:0 0 20px;font-size:12px;line-height:1.5;word-break:break-all;color:${accent};"><a href="${escapeHtml(respondUrl)}" style="color:${accent};">${escapeHtml(respondUrl)}</a></p>
               <p style="margin:0;font-size:13px;line-height:1.55;color:${MUTED};">${escapeHtml(privacyCopy)}</p>
             </td>
           </tr>

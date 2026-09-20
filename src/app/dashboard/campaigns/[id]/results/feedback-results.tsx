@@ -20,8 +20,12 @@ interface Report {
 
 export default async function FeedbackResults({
   campaign,
+  orgName,
+  orgLogoUrl,
 }: {
   campaign: Campaign;
+  orgName: string;
+  orgLogoUrl?: string | null;
 }) {
   const supabase = await createClient();
   const { data, error } = await supabase.rpc("feedback_360_report", {
@@ -37,7 +41,12 @@ export default async function FeedbackResults({
   ]);
 
   return (
-    <ResultsShell campaign={campaign} meta={meta}>
+    <ResultsShell
+      campaign={campaign}
+      meta={meta}
+      orgName={orgName}
+      orgLogoUrl={orgLogoUrl}
+    >
       <p className="max-w-2xl text-sm text-muted-foreground">
         Reviewers form one combined group. Results contain no reviewer names or
         response times. Written comments may still identify their author.

@@ -10,8 +10,13 @@ import type {
   CampaignSubject,
 } from "@/lib/types/database";
 
-export default async function CampaignsPage() {
+export default async function CampaignsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string; ok?: string }>;
+}) {
   const { org } = await requireOrgAdmin();
+  const params = await searchParams;
   const supabase = await createClient();
   const [campaignResult, assignmentResult, subjectResult] = await Promise.all([
     supabase
@@ -53,6 +58,19 @@ export default async function CampaignsPage() {
           </Button>
         }
       />
+      {params.error && (
+        <div
+          className="mt-4 rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive"
+          role="alert"
+        >
+          {params.error}
+        </div>
+      )}
+      {params.ok && (
+        <div className="mt-4 rounded-lg border border-border bg-card px-4 py-3 text-sm text-foreground">
+          {params.ok}
+        </div>
+      )}
       <div className="mt-6">
         <CampaignsDirectory
           campaigns={campaigns}

@@ -4,6 +4,7 @@ import {
   campaignTypeLabel,
   statusTone,
 } from "@/app/dashboard/campaigns/presentation";
+import { ResultsBrandMasthead } from "@/components/branding/org-identity";
 import type { Campaign } from "@/lib/types/database";
 import Link from "next/link";
 import type { ReactNode } from "react";
@@ -11,10 +12,14 @@ import type { ReactNode } from "react";
 export function ResultsShell({
   campaign,
   meta,
+  orgName,
+  orgLogoUrl,
   children,
 }: {
   campaign: Campaign;
   meta: string;
+  orgName?: string;
+  orgLogoUrl?: string | null;
   children: ReactNode;
 }) {
   return (
@@ -25,6 +30,12 @@ export function ResultsShell({
       >
         ← Campaign
       </Link>
+
+      {orgName ? (
+        <div className="mt-3">
+          <ResultsBrandMasthead orgName={orgName} logoUrl={orgLogoUrl} />
+        </div>
+      ) : null}
 
       <header className="mt-2 flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">

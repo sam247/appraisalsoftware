@@ -1,6 +1,16 @@
 "use client";
 
+import FormSubmit from "@/app/dashboard/form-submit";
 import { StatusBadge } from "@/app/dashboard/chrome";
+import { Button } from "@/components/ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import type { Campaign, CampaignAssignment } from "@/lib/types/database";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
@@ -13,6 +23,12 @@ import {
   type ReactNode,
 } from "react";
 import { createPortal } from "react-dom";
+import {
+  archiveCampaign,
+  deleteCampaign,
+  renameCampaign,
+  sendCampaignReminders,
+} from "./actions";
 import {
   campaignDate,
   campaignTypeLabel,
@@ -36,7 +52,13 @@ type RowModel = {
   href: string;
   menuLabel: string;
   menuHref: string;
+  canRemind: boolean;
+  outstanding: number;
 };
+
+const TABLE_COLS =
+  "grid-cols-[minmax(0,1.5fr)_minmax(0,0.95fr)_minmax(0,0.7fr)_minmax(0,0.85fr)_minmax(0,0.75fr)_minmax(0,0.85fr)_minmax(4.5rem,auto)]";
+
 
 function buildRow(
   campaign: Campaign,
@@ -73,6 +95,7 @@ function buildRow(
   let progressPair: RowModel["progress"] = null;
   let menuLabel = "Open";
   let menuHref = `/dashboard/campaigns/${campaign.id}`;
+  let canRemind = false;
 
   if (campaign.status === "draft") {
     if (setup.ready) {
@@ -117,6 +140,7 @@ function buildRow(
         ? { complete: progress.complete, total: progress.total }
         : null;
     menuLabel = "Open";
+    canRemind = progress.outstanding > 0;
   } else if (campaign.status === "closed") {
     statusLabel = "Closed";
     statusKind = "closed";
@@ -146,6 +170,8 @@ function buildRow(
     href: `/dashboard/campaigns/${campaign.id}`,
     menuLabel,
     menuHref,
+    canRemind,
+    outstanding: progress.outstanding,
   };
 }
 
@@ -162,6 +188,7 @@ export default function CampaignsDirectory({
   const [status, setStatus] = useState<StatusFilter>("all");
   const [type, setType] = useState<TypeFilter>("all");
   const [menuFor, setMenuFor] = useState<string | null>(null);
+  const [renaming, setRenaming] = useState<Campaign | null>(null);
 
   const rows = useMemo(
     () =>
@@ -293,68 +320,64 @@ export default function CampaignsDirectory({
               <>
                 {/* Desktop table */}
                 <div className="mt-4 hidden md:block">
-                  <div className="grid grid-cols-[minmax(0,1.6fr)_minmax(0,0.9fr)_minmax(0,0.7fr)_minmax(0,0.9fr)_minmax(0,0.8fr)_auto_auto] gap-x-3 border-b border-border pb-2 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                  <div
+                    className={cn(
+                      "grid justify-items-start gap-x-3 border-b border-border pb-2 text-[11px] font-medium uppercase tracking-wide text-muted-foreground",
+                      TABLE_COLS,
+                    )}
+                  >
                     <span>Campaign</span>
                     <span>Type</span>
                     <span>People</span>
                     <span>Progress</span>
                     <span>Closes</span>
                     <span>Status</span>
-                    <span className="w-8 text-right">
-                      <span className="sr-only">Actions</span>
-                    </span>
+                    <span>Actions</span>
                   </div>
                   <ul className="divide-y divide-border">
                     {filtered.map((row) => (
                       <li key={row.campaign.id}>
-                        <div className="grid grid-cols-[minmax(0,1.6fr)_minmax(0,0.9fr)_minmax(0,0.7fr)_minmax(0,0.9fr)_minmax(0,0.8fr)_auto_auto] items-center gap-x-3 py-2.5">
+                        <div
+                          className={cn(
+                            "grid items-center justify-items-start gap-x-3 py-2.5",
+                            TABLE_COLS,
+                          )}
+                        >
                           <Link
                             href={row.href}
-                            className="min-w-0 truncate text-sm font-medium text-foreground hover:text-primary"
+                            className="min-w-0 max-w-full truncate text-sm font-medium text-foreground hover:text-primary"
                           >
                             {row.campaign.name}
                           </Link>
-                          <span className="truncate text-xs text-muted-foreground">
+                          <span className="min-w-0 max-w-full truncate text-xs text-muted-foreground">
                             {campaignTypeLabel(row.campaign.campaign_type)}
                           </span>
-                          <span className="truncate text-xs text-muted-foreground">
+                          <span className="min-w-0 max-w-full truncate text-xs text-muted-foreground">
                             {row.peopleLabel}
                           </span>
                           <ProgressCell row={row} />
-                          <span className="truncate text-xs text-muted-foreground">
+                          <span className="min-w-0 max-w-full truncate text-xs text-muted-foreground">
                             {row.closesLabel}
                           </span>
                           <StatusBadge tone={statusTone(row.statusKind)}>
                             {row.statusLabel}
                           </StatusBadge>
-                          <div className="flex justify-end">
-                            <QuietMenu
-                              open={menuFor === row.campaign.id}
-                              onOpenChange={(open) =>
-                                setMenuFor(open ? row.campaign.id : null)
-                              }
-                              label={`Actions for ${row.campaign.name}`}
-                            >
-                              <Link
-                                role="menuitem"
-                                href={row.menuHref}
-                                className="block px-3 py-1.5 text-sm text-foreground hover:bg-surface"
-                                onClick={() => setMenuFor(null)}
-                              >
-                                {row.menuLabel}
-                              </Link>
-                              {row.menuHref !== row.href && (
-                                <Link
-                                  role="menuitem"
-                                  href={row.href}
-                                  className="block px-3 py-1.5 text-sm text-muted-foreground hover:bg-surface hover:text-foreground"
-                                  onClick={() => setMenuFor(null)}
-                                >
-                                  Open campaign
-                                </Link>
-                              )}
-                            </QuietMenu>
-                          </div>
+                          <QuietMenu
+                            open={menuFor === row.campaign.id}
+                            onOpenChange={(open) =>
+                              setMenuFor(open ? row.campaign.id : null)
+                            }
+                            label={`Actions for ${row.campaign.name}`}
+                          >
+                            <RowMenuItems
+                              row={row}
+                              onClose={() => setMenuFor(null)}
+                              onRename={() => {
+                                setMenuFor(null);
+                                setRenaming(row.campaign);
+                              }}
+                            />
+                          </QuietMenu>
                         </div>
                       </li>
                     ))}
@@ -393,14 +416,14 @@ export default function CampaignsDirectory({
                           }
                           label={`Actions for ${row.campaign.name}`}
                         >
-                          <Link
-                            role="menuitem"
-                            href={row.menuHref}
-                            className="block px-3 py-1.5 text-sm text-foreground hover:bg-surface"
-                            onClick={() => setMenuFor(null)}
-                          >
-                            {row.menuLabel}
-                          </Link>
+                          <RowMenuItems
+                            row={row}
+                            onClose={() => setMenuFor(null)}
+                            onRename={() => {
+                              setMenuFor(null);
+                              setRenaming(row.campaign);
+                            }}
+                          />
                         </QuietMenu>
                       </div>
                     </li>
@@ -411,7 +434,137 @@ export default function CampaignsDirectory({
           </>
         )}
       </section>
+
+      <Sheet
+        open={!!renaming}
+        onOpenChange={(open) => {
+          if (!open) setRenaming(null);
+        }}
+      >
+        <SheetContent
+          side="right"
+          className="flex w-full flex-col bg-card sm:max-w-md"
+        >
+          <SheetHeader className="text-left">
+            <SheetTitle>Rename campaign</SheetTitle>
+            <SheetDescription>
+              Updates the campaign name across the workspace.
+            </SheetDescription>
+          </SheetHeader>
+          {renaming && (
+            <form
+              action={renameCampaign.bind(null, renaming.id)}
+              className="mt-6 flex flex-1 flex-col gap-4"
+            >
+              <label className="block text-sm">
+                <span className="font-medium text-foreground">Name</span>
+                <input
+                  name="name"
+                  type="text"
+                  required
+                  defaultValue={renaming.name}
+                  autoFocus
+                  className="mt-1.5 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                />
+              </label>
+              <SheetFooter className="mt-auto gap-2 sm:justify-start">
+                <FormSubmit>Save name</FormSubmit>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => setRenaming(null)}
+                >
+                  Cancel
+                </Button>
+              </SheetFooter>
+            </form>
+          )}
+        </SheetContent>
+      </Sheet>
     </div>
+  );
+}
+
+function RowMenuItems({
+  row,
+  onClose,
+  onRename,
+}: {
+  row: RowModel;
+  onClose: () => void;
+  onRename: () => void;
+}) {
+  const itemClass =
+    "block w-full px-3 py-1.5 text-left text-sm text-foreground hover:bg-surface";
+  const mutedClass =
+    "block w-full px-3 py-1.5 text-left text-sm text-muted-foreground hover:bg-surface hover:text-foreground";
+  const dangerClass =
+    "block w-full px-3 py-1.5 text-left text-sm text-muted-foreground hover:bg-surface hover:text-destructive";
+
+  return (
+    <>
+      <Link
+        role="menuitem"
+        href={row.menuHref}
+        className={itemClass}
+        onClick={onClose}
+      >
+        {row.menuLabel}
+      </Link>
+      {row.menuHref !== row.href && (
+        <Link
+          role="menuitem"
+          href={row.href}
+          className={mutedClass}
+          onClick={onClose}
+        >
+          Open campaign
+        </Link>
+      )}
+      <button
+        type="button"
+        role="menuitem"
+        className={itemClass}
+        onClick={onRename}
+      >
+        Rename
+      </button>
+      {row.canRemind && (
+        <form action={sendCampaignReminders.bind(null, row.campaign.id)}>
+          <button
+            type="submit"
+            role="menuitem"
+            className={itemClass}
+            onClick={onClose}
+          >
+            Send reminder
+            {row.outstanding > 0 ? ` (${row.outstanding})` : ""}
+          </button>
+        </form>
+      )}
+      <form action={archiveCampaign.bind(null, row.campaign.id)}>
+        <button
+          type="submit"
+          role="menuitem"
+          className={mutedClass}
+          onClick={onClose}
+        >
+          Archive
+        </button>
+      </form>
+      {row.campaign.status === "draft" && (
+        <form action={deleteCampaign.bind(null, row.campaign.id)}>
+          <button
+            type="submit"
+            role="menuitem"
+            className={dangerClass}
+            onClick={onClose}
+          >
+            Delete
+          </button>
+        </form>
+      )}
+    </>
   );
 }
 
@@ -539,7 +692,7 @@ function QuietMenu({
           <div
             ref={menuRef}
             role="menu"
-            className="fixed z-50 w-44 rounded-lg border border-border bg-card py-1 shadow-md"
+            className="fixed z-50 w-52 rounded-lg border border-border bg-card py-1 shadow-md"
             style={{
               top: coords.openUp ? undefined : coords.top,
               bottom: coords.openUp

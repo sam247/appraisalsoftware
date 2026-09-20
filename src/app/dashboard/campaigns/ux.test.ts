@@ -23,6 +23,10 @@ import {
   scheduleCampaign,
   sendCampaign,
   closeCampaign,
+  renameCampaign,
+  archiveCampaign,
+  deleteCampaign,
+  sendCampaignReminders,
 } from "./actions";
 import { upsertQuestion } from "../templates/actions";
 import { createPerson, updatePerson, archivePerson } from "../people/actions";
@@ -34,6 +38,7 @@ function query(result: object) {
     "eq",
     "is",
     "in",
+    "neq",
     "insert",
     "update",
     "delete",
@@ -188,6 +193,36 @@ describe("annual appraisal UX safeguards", () => {
     });
     await closeCampaign("campaign");
     expect(mocks.rpc).toHaveBeenCalledWith("close_campaign", {
+      p_campaign_id: "campaign",
+    });
+  });
+  it("renames, archives, deletes drafts, and queues manual reminders", async () => {
+    const rename = query({ data: { id: "campaign" } });
+    mocks.from.mockReturnValue(rename);
+    await expect(
+      renameCampaign("campaign", form({ name: "Q4 Reviews" })),
+    ).rejects.toThrow("/dashboard/campaigns");
+    expect(rename.update).toHaveBeenCalledWith({ name: "Q4 Reviews" });
+
+    await expect(archiveCampaign("campaign")).rejects.toThrow(
+      "/dashboard/campaigns",
+    );
+    expect(mocks.rpc).toHaveBeenCalledWith("archive_campaign", {
+      p_campaign_id: "campaign",
+    });
+
+    const del = query({ data: { id: "campaign" } });
+    mocks.from.mockReturnValue(del);
+    await expect(deleteCampaign("campaign")).rejects.toThrow(
+      "/dashboard/campaigns",
+    );
+    expect(del.delete).toHaveBeenCalled();
+
+    mocks.rpc.mockResolvedValueOnce({ data: 2, error: null });
+    await expect(sendCampaignReminders("campaign")).rejects.toThrow(
+      "Queued%202%20reminders",
+    );
+    expect(mocks.rpc).toHaveBeenCalledWith("send_campaign_reminders", {
       p_campaign_id: "campaign",
     });
   });

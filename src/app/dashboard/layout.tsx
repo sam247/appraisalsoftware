@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { requireOrgAdmin } from "@/lib/auth/session";
 import { isFreePlan } from "@/lib/billing/plan";
+import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import AppNavigation from "./app-navigation";
 
@@ -24,11 +25,21 @@ export default async function DashboardLayout({
     redirect("/login");
   }
 
-  const { org, email, membership } = orgAdmin;
+  const { org, email, membership, userId } = orgAdmin;
+  const supabase = await createClient();
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("full_name")
+    .eq("id", userId)
+    .maybeSingle();
+
+  const displayName =
+    profile?.full_name?.trim() || email.split("@")[0] || "Account";
 
   return (
     <AppNavigation
       organization={org.name}
+      displayName={displayName}
       email={email}
       role={membership.role}
       showUpgrade={isFreePlan(org)}

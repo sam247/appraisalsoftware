@@ -69,20 +69,55 @@ export async function drainEmailOutbox(limit = 50): Promise<DrainSummary> {
   return summary;
 }
 
+/** Prefer live organisation branding so pending emails pick up logo/accent updates. */
+async function enrichPayloadBranding(
+  supabase: ReturnType<typeof createServiceClient>,
+  payload: AppraisalEmailPayload,
+): Promise<AppraisalEmailPayload> {
+  const campaignId = (payload as { campaign_id?: string }).campaign_id;
+  if (!campaignId) return payload;
+
+  const { data } = await supabase
+    .from("campaigns")
+    .select("organizations(name, logo_url, brand_color)")
+    .eq("id", campaignId)
+    .maybeSingle();
+
+  const org = (
+    data as {
+      organizations?: {
+        name?: string | null;
+        logo_url?: string | null;
+        brand_color?: string | null;
+      } | null;
+    } | null
+  )?.organizations;
+
+  if (!org) return payload;
+
+  return {
+    ...payload,
+    org_name: org.name ?? payload.org_name,
+    org_logo_url: org.logo_url ?? payload.org_logo_url,
+    org_brand_color: org.brand_color ?? payload.org_brand_color,
+  };
+}
+
 async function deliverAppraisalEmail(
   supabase: ReturnType<typeof createServiceClient>,
   row: EmailOutbox,
   summary: DrainSummary,
 ) {
   const payload = (row.payload ?? {}) as AppraisalEmailPayload;
+  const enriched = await enrichPayloadBranding(supabase, payload);
 
   // Never log payload (contains raw_token)
   let html: string;
   let text: string;
   try {
     ({ html, text } = buildAppraisalInviteHtml({
-      ...payload,
-      is_reminder: row.kind === "appraisal_reminder" || Boolean(payload.is_reminder),
+      ...enriched,
+      is_reminder: row.kind === "appraisal_reminder" || Boolean(enriched.is_reminder),
     }));
   } catch (err) {
     const message = err instanceof Error ? err.message : "Template build failed";
@@ -94,7 +129,7 @@ async function deliverAppraisalEmail(
   const subject =
     row.subject?.trim() ||
     buildAppraisalInviteSubject({
-      ...payload,
+      ...enriched,
       is_reminder: row.kind === "appraisal_reminder",
     });
 

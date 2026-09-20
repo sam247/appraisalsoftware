@@ -324,3 +324,99 @@ export async function sendCampaign(
     );
   redirect(`/dashboard/campaigns/${campaignId}`);
 }
+
+export async function renameCampaign(
+  campaignId: string,
+  formData: FormData,
+): Promise<void> {
+  const { org } = await requireOrgAdmin();
+  const supabase = await createClient();
+  const name = (formData.get("name") as string | null)?.trim();
+  if (!name)
+    redirect(`/dashboard/campaigns?error=${encodeURIComponent("Name is required")}`);
+
+  const { data, error } = await supabase
+    .from("campaigns")
+    .update({ name })
+    .eq("id", campaignId)
+    .eq("organization_id", org.id)
+    .neq("status", "archived")
+    .select("id")
+    .single();
+
+  if (error || !data)
+    redirect(
+      `/dashboard/campaigns?error=${encodeURIComponent(error?.message ?? "Unable to rename campaign")}`,
+    );
+
+  revalidatePath("/dashboard/campaigns");
+  revalidatePath(`/dashboard/campaigns/${campaignId}`);
+  redirect("/dashboard/campaigns");
+}
+
+export async function archiveCampaign(campaignId: string): Promise<void> {
+  await requireOrgAdmin();
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("archive_campaign", {
+    p_campaign_id: campaignId,
+  });
+  if (error)
+    redirect(
+      `/dashboard/campaigns?error=${encodeURIComponent(error.message)}`,
+    );
+  revalidatePath("/dashboard/campaigns");
+  redirect("/dashboard/campaigns");
+}
+
+/** Permanent delete — drafts only. Live/closed campaigns should be archived. */
+export async function deleteCampaign(campaignId: string): Promise<void> {
+  const { org } = await requireOrgAdmin();
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("campaigns")
+    .delete()
+    .eq("id", campaignId)
+    .eq("organization_id", org.id)
+    .eq("status", "draft")
+    .select("id")
+    .single();
+
+  if (error || !data)
+    redirect(
+      `/dashboard/campaigns?error=${encodeURIComponent(
+        error?.message ??
+          "Only draft campaigns can be deleted. Archive collecting or closed campaigns instead.",
+      )}`,
+    );
+
+  revalidatePath("/dashboard/campaigns");
+  redirect("/dashboard/campaigns");
+}
+
+/** Manual reminders to respondents who have not submitted yet. */
+export async function sendCampaignReminders(
+  campaignId: string,
+): Promise<void> {
+  await requireOrgAdmin();
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("send_campaign_reminders", {
+    p_campaign_id: campaignId,
+  });
+  if (error)
+    redirect(
+      `/dashboard/campaigns?error=${encodeURIComponent(error.message)}`,
+    );
+
+  void nudgeOutboxDrain();
+
+  const count = typeof data === "number" ? data : 0;
+  revalidatePath("/dashboard/campaigns");
+  revalidatePath(`/dashboard/campaigns/${campaignId}`);
+  redirect(
+    `/dashboard/campaigns?ok=${encodeURIComponent(
+      count === 0
+        ? "No outstanding recipients to remind right now."
+        : `Queued ${count} reminder${count === 1 ? "" : "s"} for people who have not responded.`,
+    )}`,
+  );
+}

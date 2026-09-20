@@ -698,7 +698,17 @@ export type Database = {
           response_id: string;
           response_status: string;
           org_name: string | null;
+          org_logo_url: string | null;
+          org_brand_color: string | null;
         }>;
+      };
+      revoke_organization_invitation: {
+        Args: { p_invitation_id: string };
+        Returns: undefined;
+      };
+      remove_organization_member: {
+        Args: { p_member_id: string };
+        Returns: undefined;
       };
       respond_get_saved_answers: {
         Args: { p_raw_token: string };
@@ -746,6 +756,14 @@ export type Database = {
       close_campaign: {
         Args: { p_campaign_id: string };
         Returns: undefined;
+      };
+      archive_campaign: {
+        Args: { p_campaign_id: string };
+        Returns: undefined;
+      };
+      send_campaign_reminders: {
+        Args: { p_campaign_id: string };
+        Returns: number;
       };
       enqueue_appraisal_reminders: {
         Args: { p_limit: number };

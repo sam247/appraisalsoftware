@@ -80,16 +80,17 @@ function SearchField() {
 }
 
 function AccountMenu({
-  organization,
+  displayName,
   email,
   role,
 }: {
-  organization: string;
+  displayName: string;
   email: string;
   role: string;
 }) {
   const [open, setOpen] = useState(false);
-  const initial = (email[0] ?? organization[0] ?? "A").toUpperCase();
+  const initial = (displayName[0] ?? email[0] ?? "A").toUpperCase();
+  const roleLabel = role === "owner" ? "Owner" : role === "admin" ? "Admin" : role;
 
   return (
     <div className="relative">
@@ -117,21 +118,19 @@ function AccountMenu({
           >
             <div className="border-b border-border px-2.5 pb-2.5 pt-1.5">
               <p className="truncate text-sm font-semibold text-foreground">
-                {organization}
+                {displayName}
               </p>
               <p className="truncate text-xs text-muted-foreground">{email}</p>
-              <p className="mt-1 text-[11px] capitalize text-muted-foreground">
-                {role}
-              </p>
+              <p className="mt-1 text-[11px] text-muted-foreground">{roleLabel}</p>
             </div>
             <Link
-              href="/dashboard/settings"
+              href="/dashboard/account"
               role="menuitem"
               onClick={() => setOpen(false)}
               className="mt-1 flex items-center gap-2 rounded-lg px-2.5 py-2 text-sm text-foreground hover:bg-surface"
             >
               <Settings className="size-3.5 text-muted-foreground" aria-hidden />
-              Account &amp; settings
+              My account
             </Link>
             <form action="/logout" method="POST">
               <button
@@ -183,12 +182,14 @@ function SidebarFooter({
 
 export default function AppNavigation({
   organization,
+  displayName,
   email,
   role,
   showUpgrade,
   children,
 }: {
   organization: string;
+  displayName: string;
   email: string;
   role: string;
   showUpgrade: boolean;
@@ -268,7 +269,7 @@ export default function AppNavigation({
           >
             Help
           </a>
-          <AccountMenu organization={organization} email={email} role={role} />
+          <AccountMenu displayName={displayName} email={email} role={role} />
         </div>
       </header>
 

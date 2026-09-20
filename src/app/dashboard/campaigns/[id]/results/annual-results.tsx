@@ -25,6 +25,8 @@ export default function AnnualResults({
   responses,
   answers,
   peopleById,
+  orgName,
+  orgLogoUrl,
 }: {
   campaign: Campaign;
   questions: CampaignQuestion[];
@@ -33,6 +35,8 @@ export default function AnnualResults({
   responses: Response[];
   answers: ResponseAnswer[];
   peopleById: Record<string, Pick<Person, "id" | "full_name" | "email">>;
+  orgName: string;
+  orgLogoUrl?: string | null;
 }) {
   const responseByAssignmentId = Object.fromEntries(
     responses.map((r) => [r.assignment_id, r]),
@@ -50,7 +54,12 @@ export default function AnnualResults({
 
   if (!subjects.length) {
     return (
-      <ResultsShell campaign={campaign} meta={meta}>
+      <ResultsShell
+        campaign={campaign}
+        meta={meta}
+        orgName={orgName}
+        orgLogoUrl={orgLogoUrl}
+      >
         <p className="text-sm text-muted-foreground">
           No participants in this campaign.
         </p>
@@ -60,7 +69,12 @@ export default function AnnualResults({
 
   if (!questions.length) {
     return (
-      <ResultsShell campaign={campaign} meta={meta}>
+      <ResultsShell
+        campaign={campaign}
+        meta={meta}
+        orgName={orgName}
+        orgLogoUrl={orgLogoUrl}
+      >
         <p className="text-sm text-muted-foreground">
           Questions and results appear once this appraisal has been sent or
           scheduled.
@@ -70,7 +84,12 @@ export default function AnnualResults({
   }
 
   return (
-    <ResultsShell campaign={campaign} meta={meta}>
+    <ResultsShell
+        campaign={campaign}
+        meta={meta}
+        orgName={orgName}
+        orgLogoUrl={orgLogoUrl}
+      >
       <div className="space-y-12">
         {subjects.map((subject) => {
           const person = peopleById[subject.person_id];

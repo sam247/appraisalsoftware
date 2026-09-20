@@ -41,7 +41,13 @@ export default async function ResultsPage({
   if (!rawCampaign) notFound();
   const campaign = rawCampaign as Campaign;
   if (campaign.campaign_type === "feedback_360")
-    return <FeedbackResults campaign={campaign} />;
+    return (
+      <FeedbackResults
+        campaign={campaign}
+        orgName={orgAdmin.org.name}
+        orgLogoUrl={orgAdmin.org.logo_url}
+      />
+    );
 
   const { data: rawQuestions, error: questionsError } = await supabase
     .from("campaign_questions")
@@ -117,6 +123,8 @@ export default async function ResultsPage({
       responses={responses}
       answers={answers}
       peopleById={peopleById}
+      orgName={orgAdmin.org.name}
+      orgLogoUrl={orgAdmin.org.logo_url}
     />
   );
 }
