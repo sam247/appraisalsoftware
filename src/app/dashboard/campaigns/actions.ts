@@ -106,7 +106,7 @@ export async function createCampaign(formData: FormData): Promise<void> {
       `/dashboard/campaigns/new?error=${encodeURIComponent(error?.message ?? "Failed to create")}`,
     );
 
-  redirect(`/dashboard/campaigns/${campaign.id}`);
+  redirect(`/dashboard/campaigns/${campaign.id}?step=people`);
 }
 
 // ---------------------------------------------------------------------------

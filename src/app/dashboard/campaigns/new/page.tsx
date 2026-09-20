@@ -5,6 +5,7 @@ import CreateCampaignForm, {
   type CreatePersonOption,
   type CreateTemplateOption,
 } from "./create-campaign-form";
+import type { PickerDepartment } from "../people-picker";
 
 export default async function NewCampaignPage({
   searchParams,
@@ -71,15 +72,27 @@ export default async function NewCampaignPage({
   }
 
   let people: CreatePersonOption[] = [];
+  let departments: PickerDepartment[] = [];
   if (is360) {
-    const { data, error: peopleError } = await supabase
-      .from("people")
-      .select("id, full_name, email")
-      .eq("organization_id", orgAdmin.org.id)
-      .is("archived_at", null)
-      .order("full_name");
-    if (peopleError) throw new Error("Unable to load people");
-    people = (data ?? []) as CreatePersonOption[];
+    const [peopleResult, deptResult] = await Promise.all([
+      supabase
+        .from("people")
+        .select(
+          "id, full_name, email, department_id, manager_person_id",
+        )
+        .eq("organization_id", orgAdmin.org.id)
+        .is("archived_at", null)
+        .order("full_name"),
+      supabase
+        .from("departments")
+        .select("id, name")
+        .eq("organization_id", orgAdmin.org.id)
+        .order("name"),
+    ]);
+    if (peopleResult.error) throw new Error("Unable to load people");
+    if (deptResult.error) throw new Error("Unable to load departments");
+    people = (peopleResult.data ?? []) as CreatePersonOption[];
+    departments = (deptResult.data ?? []) as PickerDepartment[];
   }
 
   return (
@@ -88,6 +101,7 @@ export default async function NewCampaignPage({
       enabled360={enabled}
       templates={templates}
       people={people}
+      departments={departments}
       timezone={orgAdmin.org.timezone || "Europe/London"}
       error={params.error}
       initialTemplateId={

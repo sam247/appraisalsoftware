@@ -110,7 +110,7 @@ describe("annual appraisal UX safeguards", () => {
       .mockReturnValueOnce(query({ data: { id: "campaign" } }));
     await expect(
       createCampaign(form({ name: "Annual", template_id: "template" })),
-    ).rejects.toThrow("/dashboard/campaigns/campaign");
+    ).rejects.toThrow("/dashboard/campaigns/campaign?step=people");
   });
   it("delegates participant replacement once to the guarded database transaction", async () => {
     const rows = [

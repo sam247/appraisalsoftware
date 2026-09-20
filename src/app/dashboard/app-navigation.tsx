@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -24,14 +24,13 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { CONTACT_URL } from "@/lib/links";
-import NavLink from "./nav-link";
+import NavLink, { SettingsNavGroup } from "./nav-link";
 
 const NAV = [
   { href: "/dashboard", label: "Home", exact: true, icon: LayoutDashboard },
   { href: "/dashboard/campaigns", label: "Campaigns", icon: Megaphone },
   { href: "/dashboard/people", label: "People", icon: Users },
   { href: "/dashboard/templates", label: "Templates", icon: FileText },
-  { href: "/dashboard/settings", label: "Settings", icon: Settings },
 ];
 
 function CreateButton({ onNavigate }: { onNavigate?: () => void }) {
@@ -83,10 +82,12 @@ function AccountMenu({
   displayName,
   email,
   role,
+  avatarUrl,
 }: {
   displayName: string;
   email: string;
   role: string;
+  avatarUrl?: string | null;
 }) {
   const [open, setOpen] = useState(false);
   const initial = (displayName[0] ?? email[0] ?? "A").toUpperCase();
@@ -99,10 +100,15 @@ function AccountMenu({
         aria-expanded={open}
         aria-haspopup="menu"
         onClick={() => setOpen((v) => !v)}
-        className="flex size-8 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground hover:opacity-90"
+        className="flex size-8 items-center justify-center overflow-hidden rounded-full bg-primary text-xs font-semibold text-primary-foreground hover:opacity-90"
       >
         <span className="sr-only">Account menu</span>
-        {initial}
+        {avatarUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={avatarUrl} alt="" className="size-full object-cover" />
+        ) : (
+          initial
+        )}
       </button>
       {open && (
         <>
@@ -117,11 +123,29 @@ function AccountMenu({
             className="absolute right-0 z-50 mt-2 w-64 rounded-xl border border-border bg-card p-2 shadow-lg"
           >
             <div className="border-b border-border px-2.5 pb-2.5 pt-1.5">
-              <p className="truncate text-sm font-semibold text-foreground">
-                {displayName}
-              </p>
-              <p className="truncate text-xs text-muted-foreground">{email}</p>
-              <p className="mt-1 text-[11px] text-muted-foreground">{roleLabel}</p>
+              <div className="flex items-center gap-2.5">
+                {avatarUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={avatarUrl}
+                    alt=""
+                    className="size-8 shrink-0 rounded-full object-cover"
+                  />
+                ) : (
+                  <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">
+                    {initial}
+                  </span>
+                )}
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-semibold text-foreground">
+                    {displayName}
+                  </p>
+                  <p className="truncate text-xs text-muted-foreground">{email}</p>
+                  <p className="mt-0.5 text-[11px] text-muted-foreground">
+                    {roleLabel}
+                  </p>
+                </div>
+              </div>
             </div>
             <Link
               href="/dashboard/account"
@@ -180,11 +204,43 @@ function SidebarFooter({
   );
 }
 
+function AppLinks({
+  mobile,
+  onNavigate,
+}: {
+  mobile?: boolean;
+  onNavigate?: () => void;
+}) {
+  return (
+    <nav
+      aria-label={mobile ? "Mobile application" : "Application"}
+      className="space-y-0.5"
+    >
+      {NAV.map((item) => (
+        <NavLink key={item.href} {...item} onNavigate={onNavigate} />
+      ))}
+      <Suspense
+        fallback={
+          <NavLink
+            href="/dashboard/settings"
+            label="Settings"
+            icon={Settings}
+            onNavigate={onNavigate}
+          />
+        }
+      >
+        <SettingsNavGroup onNavigate={onNavigate} />
+      </Suspense>
+    </nav>
+  );
+}
+
 export default function AppNavigation({
   organization,
   displayName,
   email,
   role,
+  avatarUrl,
   showUpgrade,
   children,
 }: {
@@ -192,28 +248,14 @@ export default function AppNavigation({
   displayName: string;
   email: string;
   role: string;
+  avatarUrl?: string | null;
   showUpgrade: boolean;
   children: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
-  const links = (mobile = false) => (
-    <nav
-      aria-label={mobile ? "Mobile application" : "Application"}
-      className="space-y-0.5"
-    >
-      {NAV.map((item) => (
-        <NavLink
-          key={item.href}
-          {...item}
-          onNavigate={mobile ? () => setOpen(false) : undefined}
-        />
-      ))}
-    </nav>
-  );
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Full-width top bar — logo, search, help, profile */}
       <header className="sticky top-0 z-40 flex h-14 items-center gap-3 border-b border-border bg-card px-3 sm:px-4 md:px-5">
         <div className="flex shrink-0 items-center gap-1">
           <Sheet open={open} onOpenChange={setOpen}>
@@ -240,7 +282,9 @@ export default function AppNavigation({
               <div className="mt-3 mb-4">
                 <CreateButton onNavigate={() => setOpen(false)} />
               </div>
-              <div className="flex-1 overflow-y-auto">{links(true)}</div>
+              <div className="flex-1 overflow-y-auto">
+                <AppLinks mobile onNavigate={() => setOpen(false)} />
+              </div>
               <SidebarFooter
                 showUpgrade={showUpgrade}
                 onNavigate={() => setOpen(false)}
@@ -269,14 +313,21 @@ export default function AppNavigation({
           >
             Help
           </a>
-          <AccountMenu displayName={displayName} email={email} role={role} />
+          <AccountMenu
+            displayName={displayName}
+            email={email}
+            role={role}
+            avatarUrl={avatarUrl}
+          />
         </div>
       </header>
 
       <div className="md:flex">
         <aside className="hidden md:flex sticky top-14 h-[calc(100vh-3.5rem)] w-[13.5rem] shrink-0 flex-col border-r border-border bg-card px-3 py-4">
           <CreateButton />
-          <div className="mt-4 flex-1 overflow-y-auto">{links()}</div>
+          <div className="mt-4 flex-1 overflow-y-auto">
+            <AppLinks />
+          </div>
           <SidebarFooter showUpgrade={showUpgrade} />
         </aside>
 

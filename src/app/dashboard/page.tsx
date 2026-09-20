@@ -7,12 +7,12 @@ import Link from "next/link";
 import { StatusBadge } from "./chrome";
 import {
   buildAttentionItems,
-  campaignTypeLabel,
   dedupeAttentionByCampaign,
   HOME_WORK_LIMIT,
   homeWorkAction,
   homeWorkBadge,
   homeWorkHref,
+  homeWorkMeta,
   statusTone,
 } from "./campaigns/presentation";
 import type {
@@ -150,20 +150,36 @@ export default async function OverviewPage() {
               <Link
                 key={item.campaign.id}
                 href={homeWorkHref(item)}
-                className="group grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1 border-b border-border py-2.5 last:border-b-0 sm:grid-cols-[minmax(0,1.5fr)_auto_minmax(0,1.2fr)_auto] sm:gap-x-4"
+                className="group flex flex-col gap-1.5 border-b border-border py-3 last:border-b-0 sm:flex-row sm:items-center sm:gap-4 sm:py-3.5"
               >
-                <p className="min-w-0 truncate text-sm font-medium text-foreground transition-colors group-hover:text-primary">
-                  {item.title}
-                </p>
-                <StatusBadge tone={statusTone(item.kind)}>
-                  {homeWorkBadge(item.kind)}
-                </StatusBadge>
-                <p className="col-span-2 min-w-0 truncate text-xs text-muted-foreground sm:col-span-1">
-                  {homeDetail(item.campaign, item.detail)}
-                </p>
-                <span className="col-start-2 row-start-1 shrink-0 text-sm font-medium text-primary transition-transform duration-200 group-hover:translate-x-0.5 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0 sm:col-start-auto sm:row-start-auto">
-                  {homeWorkAction(item.kind)} →
-                </span>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-start justify-between gap-3 sm:block">
+                    <p className="min-w-0 truncate text-sm font-medium text-foreground transition-colors group-hover:text-primary">
+                      {item.title}
+                    </p>
+                    <StatusBadge
+                      tone={statusTone(item.kind)}
+                      className="shrink-0 sm:hidden"
+                    >
+                      {homeWorkBadge(item.kind)}
+                    </StatusBadge>
+                  </div>
+                  <p className="mt-0.5 truncate text-xs text-muted-foreground">
+                    {homeWorkMeta(item)}
+                  </p>
+                </div>
+
+                <div className="flex items-center justify-between gap-4 sm:justify-end sm:gap-5">
+                  <StatusBadge
+                    tone={statusTone(item.kind)}
+                    className="hidden shrink-0 sm:inline-flex"
+                  >
+                    {homeWorkBadge(item.kind)}
+                  </StatusBadge>
+                  <span className="shrink-0 text-sm font-medium text-primary transition-transform duration-200 group-hover:translate-x-0.5 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0">
+                    {homeWorkAction(item.kind)} →
+                  </span>
+                </div>
               </Link>
             ))}
           </div>
@@ -171,13 +187,6 @@ export default async function OverviewPage() {
       </section>
     </div>
   );
-}
-
-function homeDetail(campaign: Campaign, detail: string): string {
-  const type = campaignTypeLabel(campaign.campaign_type);
-  if (!detail || detail === "—") return type;
-  if (detail.startsWith(type)) return detail;
-  return `${type} · ${detail}`;
 }
 
 function firstNameFrom(fullName: string | null): string | null {

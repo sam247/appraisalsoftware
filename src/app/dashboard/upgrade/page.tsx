@@ -18,7 +18,8 @@ export default async function UpgradePage() {
   }
 
   return (
-    <div className="max-w-xl">
+    <div className="mx-auto w-full max-w-7xl">
+      <div className="max-w-xl">
       <h1 className="text-xl font-medium tracking-tight">
         Upgrade
       </h1>
@@ -50,6 +51,7 @@ export default async function UpgradePage() {
           </Button>
         </div>
       </section>
+      </div>
     </div>
   );
 }

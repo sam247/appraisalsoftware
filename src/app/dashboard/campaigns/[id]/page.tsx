@@ -3,10 +3,10 @@ import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { closeCampaign, setCampaignTemplate } from "../actions";
+import { closeCampaign } from "../actions";
+import AnnualDraftBuilder from "./annual-draft-builder";
+import Feedback360DraftReview from "./feedback-360-draft-review";
 import ActivateButton from "./activate-button";
-import DraftSetup from "./draft-setup";
-import SendControls from "./send-controls";
 import {
   campaignLabels,
   responseLabels,
@@ -18,7 +18,6 @@ import {
 } from "../presentation";
 import {
   StatusBadge,
-  SetupSteps,
   ResponseStrip,
   NextAction,
 } from "../../chrome";
@@ -26,6 +25,7 @@ import type {
   Campaign,
   CampaignAssignment,
   CampaignSubject,
+  Department,
   Person,
   TemplateQuestion,
   Template,
@@ -36,10 +36,10 @@ export default async function CampaignDetailPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; step?: string }>;
 }) {
   const { id } = await params;
-  const { error } = await searchParams;
+  const { error, step: stepParam } = await searchParams;
   const { org } = await requireOrgAdmin();
   const supabase = await createClient();
   const result = await supabase
@@ -59,6 +59,7 @@ export default async function CampaignDetailPage({
     peopleResult,
     questionResult,
     templateResult,
+    deptResult,
   ] = await Promise.all([
     supabase
       .from("campaign_subjects")
@@ -100,6 +101,11 @@ export default async function CampaignDetailPage({
       .eq("organization_id", org.id)
       .is("archived_at", null)
       .order("name"),
+    supabase
+      .from("departments")
+      .select("id, name")
+      .eq("organization_id", org.id)
+      .order("name"),
   ]);
   if (
     [
@@ -108,6 +114,7 @@ export default async function CampaignDetailPage({
       peopleResult,
       questionResult,
       templateResult,
+      deptResult,
     ].some((r) => r.error)
   )
     throw new Error("Unable to load campaign details");
@@ -117,6 +124,7 @@ export default async function CampaignDetailPage({
   const people = (peopleResult.data ?? []) as Person[];
   const questions = (questionResult.data ?? []) as TemplateQuestion[];
   const templates = (templateResult.data ?? []) as Template[];
+  const departments = (deptResult.data ?? []) as Department[];
   const peopleById = Object.fromEntries(people.map((p) => [p.id, p]));
   const progress = responseProgress(assignments);
   const setup = setupCompleteness({
@@ -134,16 +142,79 @@ export default async function CampaignDetailPage({
           a.subject_person_id === s.person_id && a.relationship === "manager",
       )?.respondent_person_id ?? null,
   }));
+  const templateName =
+    templates.find((t) => t.id === campaign.template_id)?.name ?? null;
+
+  if (campaign.status === "draft" && !is360) {
+    const step =
+      stepParam === "review" || (subjects.length > 0 && stepParam !== "people")
+        ? "review"
+        : "people";
+    return (
+      <>
+        {error && (
+          <p
+            role="alert"
+            className="mb-4 rounded-md border border-destructive/20 bg-destructive/5 px-3 py-2 text-sm text-destructive"
+          >
+            {error}
+          </p>
+        )}
+        <AnnualDraftBuilder
+          key={`${JSON.stringify(initialSubjects)}-${step}`}
+          campaignId={id}
+          campaignName={campaign.name}
+          templateName={templateName}
+          questionCount={questions.length}
+          questions={questions}
+          closesAt={campaign.closes_at}
+          timezone={campaign.timezone}
+          people={people
+            .filter((p) => !p.archived_at)
+            .map((p) => ({
+              id: p.id,
+              full_name: p.full_name,
+              email: p.email,
+              department_id: p.department_id,
+              manager_person_id: p.manager_person_id,
+            }))}
+          departments={departments.map((d) => ({ id: d.id, name: d.name }))}
+          initialSubjects={initialSubjects}
+          ready={ready}
+          initialStep={step}
+        />
+      </>
+    );
+  }
+
+  if (campaign.status === "draft" && is360) {
+    return (
+      <>
+        {error && (
+          <p
+            role="alert"
+            className="mb-4 rounded-md border border-destructive/20 bg-destructive/5 px-3 py-2 text-sm text-destructive"
+          >
+            {error}
+          </p>
+        )}
+        <Feedback360DraftReview
+          campaign={campaign}
+          subject={peopleById[subjects[0]?.person_id] ?? null}
+          assignments={assignments}
+          peopleById={peopleById}
+          questions={questions}
+          templateName={templateName}
+          ready={ready}
+        />
+      </>
+    );
+  }
 
   const meta = [
     campaignTypeLabel(campaign.campaign_type),
     campaign.closes_at
       ? `Closes ${campaignDate(campaign.closes_at, campaign.timezone)}`
-      : null,
-    campaign.status === "draft"
-      ? is360
-        ? `${assignments.length} reviewers · ${questions.length} questions`
-        : `${subjects.length} ${subjects.length === 1 ? "person" : "people"} · ${questions.length} questions`
       : null,
   ]
     .filter(Boolean)
@@ -170,7 +241,6 @@ export default async function CampaignDetailPage({
 
   return (
     <div className="space-y-5">
-      {/* Product header — identity + lifecycle in one composition */}
       <header>
         <Link
           href="/dashboard/campaigns"
@@ -202,11 +272,7 @@ export default async function CampaignDetailPage({
           )}
         </div>
 
-        {/* Lifecycle territory — setup OR response, never both */}
         <div className="mt-4 border-t border-border pt-3">
-          {campaign.status === "draft" && (
-            <SetupSteps steps={setup.steps} percent={setup.percent} />
-          )}
           {campaign.status === "scheduled" && (
             <ResponseStrip
               label={
@@ -252,7 +318,6 @@ export default async function CampaignDetailPage({
         <div className="mt-3">
           <CockpitNext
             campaign={campaign}
-            setup={setup}
             progress={progress}
             is360={is360}
             id={id}
@@ -299,188 +364,52 @@ export default async function CampaignDetailPage({
       )}
 
       <section>
-        <h2 className="text-sm font-semibold text-foreground">
-          {campaign.status === "draft" ? "People & send" : "Participants"}
-        </h2>
-
-        {campaign.status === "draft" ? (
-          is360 ? (
-            <div className="mt-3 border-t border-border pt-4">
-              <h3 className="text-sm font-semibold text-foreground">
-                Review before sending
-              </h3>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Feedback for{" "}
-                {peopleById[subjects[0]?.person_id]?.full_name ||
-                  peopleById[subjects[0]?.person_id]?.email}{" "}
-                · {assignments.length} reviewers · {questions.length} questions
-              </p>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Reviewers stay anonymous. Results need five responses and
-                closure. Setup is locked — create a new draft to change it.
-              </p>
-              <ul className="mt-3 space-y-1 text-sm">
-                {assignments.map((a) => (
-                  <li key={a.id}>
-                    {peopleById[a.respondent_person_id]?.full_name ||
-                      peopleById[a.respondent_person_id]?.email}{" "}
-                    <span className="text-muted-foreground">
-                      · {(a.relationship || "other").replaceAll("_", " ")}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-              <details className="mt-3">
-                <summary className="cursor-pointer text-sm font-medium text-primary">
-                  Review questions
-                </summary>
-                <ol className="mt-2 list-decimal space-y-1 pl-5 text-sm">
-                  {questions.map((q) => (
-                    <li key={q.id}>{q.prompt}</li>
-                  ))}
-                </ol>
-              </details>
-              {ready && (
-                <SendControls
-                  feedback
-                  campaignId={id}
-                  timezone={campaign.timezone}
-                />
-              )}
-            </div>
-          ) : (
-            <div className="mt-3">
-              <DraftSetup
-                key={JSON.stringify(initialSubjects)}
-                campaignId={id}
-                people={people}
-                initialSubjects={initialSubjects}
-              >
-                <div className="mt-4 border-t border-border pt-4">
-                  <h3 className="text-sm font-semibold text-foreground">
-                    Review before sending
-                  </h3>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    {subjects.length} saved participants · {progress.total}{" "}
-                    invitations · {questions.length} questions
-                  </p>
-                  {(!campaign.template_id || !questions.length) && (
-                    <form
-                      action={setCampaignTemplate.bind(null, id)}
-                      className="mt-3 space-y-2"
-                    >
-                      <label
-                        htmlFor="repair-template"
-                        className="block text-sm font-medium"
-                      >
-                        Choose a question template to continue
-                      </label>
-                      <select
-                        id="repair-template"
-                        name="template_id"
-                        required
-                        className="w-full rounded-lg border border-input bg-surface p-2.5 text-sm"
-                      >
-                        <option value="">Choose a template</option>
-                        {templates.map((t) => (
-                          <option key={t.id} value={t.id}>
-                            {t.name}
-                          </option>
-                        ))}
-                      </select>
-                      <Button type="submit" variant="outline" size="sm">
-                        Save template
-                      </Button>
-                    </form>
-                  )}
-                  <details className="mt-3">
-                    <summary className="cursor-pointer text-sm font-medium text-primary">
-                      Review questions
-                    </summary>
-                    <ol className="mt-2 list-decimal space-y-1.5 pl-5 text-sm">
-                      {questions.map((q) => (
-                        <li key={q.id}>
-                          {q.prompt}
-                          {q.required && (
-                            <span className="text-muted-foreground">
-                              {" "}
-                              (required)
-                            </span>
-                          )}
-                        </li>
-                      ))}
-                    </ol>
-                    {campaign.template_id && !campaign.questions_frozen_at && (
-                      <Link
-                        href={`/dashboard/templates/${campaign.template_id}`}
-                        className="mt-2 inline-block text-sm text-primary hover:underline"
-                      >
-                        Edit this template
-                      </Link>
-                    )}
-                  </details>
-                  {ready ? (
-                    <SendControls
-                      campaignId={id}
-                      timezone={campaign.timezone}
-                    />
-                  ) : (
-                    <p className="mt-3 text-sm text-muted-foreground">
-                      Save at least one participant and choose a template with
-                      questions before sending.
-                    </p>
-                  )}
-                </div>
-              </DraftSetup>
-            </div>
-          )
-        ) : (
-          <div className="mt-2 divide-y divide-border border-t border-border">
-            {assignments.map((a) => (
-              <div
-                key={a.id}
-                className="flex flex-wrap items-center justify-between gap-2 py-2.5"
-              >
-                <div className="min-w-0">
-                  <p className="text-sm font-medium break-words">
-                    {peopleById[a.respondent_person_id]?.full_name ??
-                      peopleById[a.respondent_person_id]?.email ??
-                      "Archived reviewer"}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {is360
-                      ? (a.relationship || "other").replaceAll("_", " ")
-                      : a.relationship === "self"
-                        ? "Self appraisal"
-                        : "Manager review"}{" "}
-                    ·{" "}
-                    {a.subject_person_id
-                      ? (peopleById[a.subject_person_id]?.full_name ??
-                        peopleById[a.subject_person_id]?.email ??
-                        "Archived employee")
-                      : "Employee review"}
-                  </p>
-                </div>
-                <span
-                  className={`text-xs font-medium ${
-                    a.status === "submitted"
-                      ? "text-primary"
-                      : a.status === "bounced"
-                        ? "text-destructive"
-                        : "text-muted-foreground"
-                  }`}
-                >
-                  {responseLabels[a.status] ?? a.status}
-                </span>
+        <h2 className="text-sm font-semibold text-foreground">Participants</h2>
+        <div className="mt-2 divide-y divide-border border-t border-border">
+          {assignments.map((a) => (
+            <div
+              key={a.id}
+              className="flex flex-wrap items-center justify-between gap-2 py-2.5"
+            >
+              <div className="min-w-0">
+                <p className="text-sm font-medium break-words">
+                  {peopleById[a.respondent_person_id]?.full_name ??
+                    peopleById[a.respondent_person_id]?.email ??
+                    "Archived reviewer"}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {is360
+                    ? (a.relationship || "other").replaceAll("_", " ")
+                    : a.relationship === "self"
+                      ? "Self appraisal"
+                      : "Manager review"}{" "}
+                  ·{" "}
+                  {a.subject_person_id
+                    ? (peopleById[a.subject_person_id]?.full_name ??
+                      peopleById[a.subject_person_id]?.email ??
+                      "Archived employee")
+                    : "Employee review"}
+                </p>
               </div>
-            ))}
-            {!assignments.length && (
-              <p className="py-3 text-sm text-muted-foreground">
-                No participants in this appraisal.
-              </p>
-            )}
-          </div>
-        )}
+              <span
+                className={`text-xs font-medium ${
+                  a.status === "submitted"
+                    ? "text-primary"
+                    : a.status === "bounced"
+                      ? "text-destructive"
+                      : "text-muted-foreground"
+                }`}
+              >
+                {responseLabels[a.status] ?? a.status}
+              </span>
+            </div>
+          ))}
+          {!assignments.length && (
+            <p className="py-3 text-sm text-muted-foreground">
+              No participants in this appraisal.
+            </p>
+          )}
+        </div>
       </section>
 
       {campaign.status === "active" && (
@@ -505,33 +434,17 @@ export default async function CampaignDetailPage({
 
 function CockpitNext({
   campaign,
-  setup,
   progress,
   is360,
   id,
   showResults,
 }: {
   campaign: Campaign;
-  setup: ReturnType<typeof setupCompleteness>;
   progress: ReturnType<typeof responseProgress>;
   is360: boolean;
   id: string;
   showResults: boolean;
 }) {
-  if (campaign.status === "draft") {
-    return (
-      <NextAction
-        compact
-        label={setup.nextLabel}
-        detail={
-          setup.ready
-            ? "Review below, then send or schedule."
-            : "Complete the open setup steps, then send."
-        }
-      />
-    );
-  }
-
   if (campaign.status === "scheduled") {
     return (
       <NextAction

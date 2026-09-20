@@ -6,18 +6,22 @@ import type { SetupStep } from "./campaigns/presentation";
 export function StatusBadge({
   children,
   tone = "neutral",
+  className,
 }: {
   children: React.ReactNode;
-  tone?: "neutral" | "accent" | "warn" | "muted";
+  tone?: "neutral" | "accent" | "ready" | "warn" | "muted";
+  className?: string;
 }) {
   return (
     <span
       className={cn(
         "inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium",
         tone === "accent" && "bg-accent text-accent-foreground",
+        tone === "ready" && "bg-warm/25 text-warm-foreground",
         tone === "warn" && "bg-destructive/10 text-destructive",
         tone === "muted" && "bg-surface text-muted-foreground",
         tone === "neutral" && "bg-surface text-foreground",
+        className,
       )}
     >
       {children}
@@ -291,7 +295,7 @@ export function AttentionRow({
 }: {
   href: string;
   badge: string;
-  badgeTone?: "neutral" | "accent" | "warn" | "muted";
+  badgeTone?: "neutral" | "accent" | "ready" | "warn" | "muted";
   title: string;
   detail: string;
   actionLabel: string;

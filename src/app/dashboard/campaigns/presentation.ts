@@ -332,7 +332,7 @@ export function homeWorkAction(kind: AttentionKind): string {
     case "ready_to_close":
       return "Close";
     case "view_results":
-      return "Results";
+      return "View results";
     default:
       return "Open";
   }
@@ -345,18 +345,45 @@ export function homeWorkHref(item: AttentionItem): string {
   return `/dashboard/campaigns/${item.campaign.id}`;
 }
 
+/** Second-line metadata for Home Your work rows. */
+export function homeWorkMeta(item: AttentionItem): string {
+  const type = campaignTypeLabel(item.campaign.campaign_type);
+  const detail = item.detail?.trim();
+  if (!detail || detail === "—") return type;
+
+  // Collecting / results counts arrive as "3/8" — prefer readable copy.
+  const count = detail.match(/^(\d+)\/(\d+)$/);
+  if (count) {
+    const done = count[1];
+    const total = count[2];
+    return `${type} · ${done} of ${total} responses`;
+  }
+
+  if (detail.startsWith(type)) return detail;
+  return `${type} · ${detail}`;
+}
+
+/**
+ * Status colour semantics:
+ * - accent (green): live / collecting / scheduled
+ * - ready (amber): waiting for the user to send / close
+ * - neutral (grey): draft / unfinished setup
+ * - warn (red): delivery / genuine error
+ * - muted: completed / archived
+ */
 export function statusTone(
   status: CampaignStatus | AttentionKind,
-): "neutral" | "accent" | "warn" | "muted" {
+): "neutral" | "accent" | "ready" | "warn" | "muted" {
   if (status === "delivery_issue") return "warn";
+  if (status === "ready_to_send" || status === "ready_to_close") return "ready";
   if (
     status === "active" ||
     status === "collecting" ||
-    status === "ready_to_send" ||
-    status === "ready_to_close"
+    status === "scheduled"
   )
     return "accent";
   if (status === "closed" || status === "view_results" || status === "archived")
     return "muted";
+  // draft, needs_setup, and unknown → neutral
   return "neutral";
 }

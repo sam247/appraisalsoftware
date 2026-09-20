@@ -44,7 +44,7 @@ export default function TemplateEditor({
   const closeEditor = useCallback(() => setOpenId(null), []);
 
   return (
-    <div className="w-full max-w-3xl">
+    <div className="w-full max-w-7xl">
       <p className="mb-3 text-xs">
         <Link
           href="/dashboard/templates"

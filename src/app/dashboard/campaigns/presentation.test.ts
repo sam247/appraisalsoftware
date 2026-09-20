@@ -3,6 +3,9 @@ import {
   setupCompleteness,
   buildAttentionItems,
   responseProgress,
+  homeWorkMeta,
+  statusTone,
+  dedupeAttentionByCampaign,
 } from "./presentation";
 import type { Campaign, CampaignAssignment } from "@/lib/types/database";
 
@@ -155,11 +158,32 @@ describe("responseProgress outstanding", () => {
   });
 });
 
+describe("homeWorkMeta and statusTone", () => {
+  it("formats response counts for Your work rows", () => {
+    const item = {
+      campaign: campaign({ id: "1", name: "Q1", status: "active" }),
+      kind: "collecting" as const,
+      title: "Q1",
+      detail: "0/1",
+      actionLabel: "Open",
+      priority: 40,
+    };
+    expect(homeWorkMeta(item)).toBe("Annual appraisal · 0 of 1 responses");
+  });
+
+  it("maps ready states to amber and live states to green", () => {
+    expect(statusTone("ready_to_send")).toBe("ready");
+    expect(statusTone("collecting")).toBe("accent");
+    expect(statusTone("needs_setup")).toBe("neutral");
+    expect(statusTone("delivery_issue")).toBe("warn");
+    expect(statusTone("view_results")).toBe("muted");
+  });
+});
+
 describe("dedupeAttentionByCampaign", () => {
-  it("keeps the higher-priority signal per campaign", async () => {
-    const { dedupeAttentionByCampaign } = await import("./presentation");
+  it("keeps the higher-priority signal per campaign", () => {
     const live = campaign({ id: "a1", name: "Live", status: "active" });
-    const assignments = [
+    const assignments: CampaignAssignment[] = [
       {
         id: "1",
         campaign_id: "a1",
@@ -168,6 +192,9 @@ describe("dedupeAttentionByCampaign", () => {
         subject_person_id: "p1",
         relationship: "self",
         status: "bounced",
+        sent_at: null,
+        submitted_at: null,
+        last_reminded_at: null,
         created_at: "2026-01-01",
         updated_at: "2026-01-01",
       },
@@ -179,10 +206,13 @@ describe("dedupeAttentionByCampaign", () => {
         subject_person_id: "p1",
         relationship: "manager",
         status: "sent",
+        sent_at: null,
+        submitted_at: null,
+        last_reminded_at: null,
         created_at: "2026-01-01",
         updated_at: "2026-01-01",
       },
-    ] as CampaignAssignment[];
+    ];
     const items = buildAttentionItems([live], assignments, { a1: 1 });
     const deduped = dedupeAttentionByCampaign(items);
     expect(deduped).toHaveLength(1);

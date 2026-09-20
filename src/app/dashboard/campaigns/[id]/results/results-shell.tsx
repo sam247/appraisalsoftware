@@ -23,7 +23,7 @@ export function ResultsShell({
   children: ReactNode;
 }) {
   return (
-    <div className="w-full max-w-5xl">
+    <div className="w-full max-w-7xl">
       <Link
         href={`/dashboard/campaigns/${campaign.id}`}
         className="text-xs text-muted-foreground hover:text-foreground"

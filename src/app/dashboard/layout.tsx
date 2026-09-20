@@ -29,7 +29,7 @@ export default async function DashboardLayout({
   const supabase = await createClient();
   const { data: profile } = await supabase
     .from("profiles")
-    .select("full_name")
+    .select("full_name, avatar_url")
     .eq("id", userId)
     .maybeSingle();
 
@@ -42,6 +42,7 @@ export default async function DashboardLayout({
       displayName={displayName}
       email={email}
       role={membership.role}
+      avatarUrl={profile?.avatar_url ?? null}
       showUpgrade={isFreePlan(org)}
     >
       <div className="w-full px-4 py-5 sm:px-6 md:px-8 md:py-6">
