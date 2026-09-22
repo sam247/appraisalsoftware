@@ -52,8 +52,8 @@ export function ConsentManager({ children }: { children: ReactNode }) {
           },
           typography: {
             fontFamily: "var(--font-inter), ui-sans-serif, system-ui, sans-serif",
-            fontSize: { base: "0.9375rem" },
-            lineHeight: { normal: "1.5" },
+            fontSize: { base: "0.8125rem" },
+            lineHeight: { normal: "1.45" },
           },
           radius: {
             sm: "0.5rem",
@@ -70,11 +70,12 @@ export function ConsentManager({ children }: { children: ReactNode }) {
             customize: { variant: "neutral", mode: "stroke" },
           },
           slots: {
-            consentBannerCard: "rounded-2xl border shadow-lg",
-            consentBannerHeader: "gap-2",
-            consentBannerTitle: "font-semibold tracking-tight",
-            consentBannerDescription: "leading-relaxed",
-            consentBannerFooter: "gap-3 border-t",
+            consentBannerCard:
+              "max-w-xs rounded-xl border p-4 shadow-lg sm:max-w-sm",
+            consentBannerHeader: "gap-1",
+            consentBannerTitle: "text-sm font-semibold tracking-tight",
+            consentBannerDescription: "text-xs leading-relaxed",
+            consentBannerFooter: "gap-2 pt-1",
             consentDialogCard: "rounded-2xl border shadow-lg",
             consentDialogHeader: "gap-2",
             consentDialogTitle: "font-semibold tracking-tight",
@@ -86,8 +87,8 @@ export function ConsentManager({ children }: { children: ReactNode }) {
       <ConsentBanner
         hideBranding
         legalLinks={["privacyPolicy"]}
-        title="Your privacy matters"
-        description="We use essential cookies to keep Appraisal Software secure and optional cookies to understand how our site is used. Choose what you are comfortable with."
+        title="Cookies"
+        description="We use essential cookies to run the site and optional cookies to measure usage."
         layout={["customize", ["reject", "accept"]]}
         primaryButton="accept"
       />
