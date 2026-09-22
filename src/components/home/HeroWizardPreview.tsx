@@ -69,15 +69,17 @@ export default function HeroWizardPreview() {
           ))}
         </div>
 
-        {/* Step content */}
-        <div
-          key={step}
-          className="mt-5 min-h-[15.5rem] [animation:fade-in_0.5s_ease]"
-        >
-          {step === 0 && <DetailsStep />}
-          {step === 1 && <QuestionsStep />}
-          {step === 2 && <ReviewersStep />}
-          {step === 3 && <ReviewStep />}
+        {/* Fixed-height stage so step changes never push the page */}
+        <div className="relative mt-5 h-[16.5rem] overflow-hidden">
+          <div
+            key={step}
+            className="absolute inset-0 [animation:fade-in_0.45s_ease]"
+          >
+            {step === 0 && <DetailsStep />}
+            {step === 1 && <QuestionsStep />}
+            {step === 2 && <ReviewersStep />}
+            {step === 3 && <ReviewStep />}
+          </div>
         </div>
       </div>
     </ProductFrame>
@@ -86,7 +88,7 @@ export default function HeroWizardPreview() {
 
 function FieldPill({ label, value }: { label: string; value: string }) {
   return (
-    <label className="block">
+    <label className="flex flex-1 flex-col justify-center">
       <span className="text-xs font-medium text-foreground">{label}</span>
       <span className="mt-1.5 flex h-10 items-center rounded-lg border border-input bg-surface/50 px-3.5 text-[13px] text-foreground">
         {value}
@@ -97,24 +99,26 @@ function FieldPill({ label, value }: { label: string; value: string }) {
 
 function DetailsStep() {
   return (
-    <div className="space-y-3.5">
+    <div className="flex h-full flex-col justify-between gap-3">
       <FieldPill label="Campaign name" value="Leadership 360 — Alex Morgan" />
       <FieldPill label="Person receiving feedback" value="Alex Morgan" />
+      <FieldPill label="Close date" value="30 April 2026" />
     </div>
   );
 }
 
 function QuestionsStep() {
   return (
-    <div className="space-y-2.5">
+    <div className="flex h-full flex-col gap-2.5">
       {[
         ["Leadership behaviours", "8 questions · rating + text", true],
         ["Collaboration & communication", "6 questions · rating + text", false],
+        ["Development priorities", "4 questions · text", false],
       ].map(([name, meta, selected]) => (
         <div
           key={name as string}
           className={cn(
-            "flex items-center justify-between gap-3 rounded-xl border px-4 py-3.5 transition-colors",
+            "flex flex-1 items-center justify-between gap-3 rounded-xl border px-4 py-3",
             selected
               ? "border-primary/40 bg-accent/50 ring-1 ring-primary/20"
               : "border-border bg-surface/40",
@@ -141,22 +145,25 @@ function QuestionsStep() {
 
 function ReviewersStep() {
   return (
-    <div>
+    <div className="flex h-full flex-col">
       <div className="flex items-center justify-between">
         <p className="text-xs text-muted-foreground">Feedback cohort</p>
         <span className="text-[11px] font-semibold text-primary">
           5 of 5 selected
         </span>
       </div>
-      <ul className="mt-2.5 divide-y divide-border/70 rounded-xl border border-border">
+      <ul className="mt-2 flex flex-1 flex-col divide-y divide-border/70 overflow-hidden rounded-xl border border-border">
         {REVIEWERS.map((r, i) => (
-          <li key={r.name} className="flex items-center gap-3 px-3.5 py-2.5">
-            <Avatar initials={r.initials} tone={i} />
+          <li
+            key={r.name}
+            className="flex flex-1 items-center gap-3 px-3.5"
+          >
+            <Avatar initials={r.initials} tone={i} className="size-6 text-[9px]" />
             <div className="min-w-0 flex-1">
-              <p className="truncate text-[13px] font-medium text-foreground">
+              <p className="truncate text-[12px] font-medium text-foreground">
                 {r.name}
               </p>
-              <p className="text-[11px] text-muted-foreground">
+              <p className="text-[10px] text-muted-foreground">
                 {r.relationship}
               </p>
             </div>
@@ -172,15 +179,18 @@ function ReviewersStep() {
 
 function ReviewStep() {
   return (
-    <div className="space-y-3.5">
-      <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-border bg-border">
+    <div className="flex h-full flex-col gap-3">
+      <dl className="grid flex-1 grid-cols-2 gap-px overflow-hidden rounded-xl border border-border bg-border">
         {[
           ["Type", "Anonymous 360"],
           ["Subject", "Alex Morgan"],
           ["Reviewers", "5"],
           ["Close date", "30 Apr 2026"],
         ].map(([label, value]) => (
-          <div key={label} className="bg-surface/70 px-3.5 py-3">
+          <div
+            key={label}
+            className="flex flex-col justify-center bg-surface/70 px-3.5 py-3"
+          >
             <dt className="text-[11px] text-muted-foreground">{label}</dt>
             <dd className="mt-0.5 truncate text-[13px] font-semibold text-foreground">
               {value}
@@ -188,14 +198,14 @@ function ReviewStep() {
           </div>
         ))}
       </dl>
-      <div className="flex items-center justify-between gap-3 rounded-xl border border-border bg-surface/50 px-4 py-3">
-        <div className="flex items-center gap-2">
+      <div className="flex shrink-0 items-center justify-between gap-3 rounded-xl border border-border bg-surface/50 px-4 py-3">
+        <div className="flex min-w-0 items-center gap-2">
           <StatusChip status="Draft" />
-          <span className="text-[11px] text-muted-foreground">
+          <span className="truncate text-[11px] text-muted-foreground">
             Anonymity policy accepted
           </span>
         </div>
-        <span className="inline-flex h-8 items-center rounded-lg bg-primary px-3.5 text-[11px] font-semibold text-primary-foreground">
+        <span className="inline-flex h-8 shrink-0 items-center rounded-lg bg-primary px-3.5 text-[11px] font-semibold text-primary-foreground">
           Create campaign →
         </span>
       </div>
