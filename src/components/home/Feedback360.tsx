@@ -4,22 +4,38 @@ import { ArrowRight } from "lucide-react";
 import {
   SectionHeading,
 } from "@/components/product/primitives";
+import { Button } from "@/components/ui/button";
+import {
+  PRIMARY_CTA_LABEL,
+  PRIMARY_CTA_URL,
+} from "@/lib/links";
 import { ROUTES } from "@/lib/routes";
 
 /**
- * 360 resource links. The product release gate remains off, so this surface
- * must not present fictional reporting as an available feature.
+ * Homepage 360 section — live anonymous multi-rater campaigns, with free
+ * guides and templates as supporting preparation material.
  */
 export function UnderstandResultsSection() {
   return (
     <section id="feedback-360" className="bg-surface/60 py-20 sm:py-24">
       <div className="mx-auto max-w-6xl px-5 lg:px-8">
         <SectionHeading
-          eyebrow="360° feedback resources"
-          title="Prepare for a useful 360 review."
-          copy="Use clear questions, practical examples and a proportionate process when you need feedback from more than one perspective."
+          eyebrow="360° feedback"
+          title="Gather anonymous feedback from the people who see the work."
+          copy="Invite managers, peers and direct reports into one campaign. Responses stay anonymous to your organisation until enough reviewers have completed and the campaign is closed."
           align="center"
         />
+
+        <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
+          <Button asChild>
+            <a href={PRIMARY_CTA_URL}>{PRIMARY_CTA_LABEL}</a>
+          </Button>
+          <Button asChild variant="outline">
+            <Link href={ROUTES.feedback360Software}>
+              See 360 feedback software
+            </Link>
+          </Button>
+        </div>
 
         <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {[
@@ -37,13 +53,6 @@ export function UnderstandResultsSection() {
             </Link>
           ))}
         </div>
-
-        <p className="mt-10 text-center text-sm text-muted-foreground">
-          The current product focuses on annual employee and manager appraisals.{" "}
-          <Link href={ROUTES.annualAppraisalSoftware} className="font-medium text-foreground underline decoration-border underline-offset-2 hover:text-primary">
-            See annual appraisal software
-          </Link>
-        </p>
       </div>
     </section>
   );

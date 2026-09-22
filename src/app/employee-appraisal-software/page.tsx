@@ -128,9 +128,9 @@ export default function EmployeeAppraisalSoftwarePage() {
           later.
         </p>
         <p>
-          If you are planning input from peers or direct reports, use the{" "}
-          <TextLink href={ROUTES.feedback360Software}>360° feedback resources</TextLink>.
-          The current campaign workflow is for identified self and manager responses.
+          If you also need input from peers or direct reports, use{" "}
+          <TextLink href={ROUTES.feedback360Software}>360 feedback software</TextLink>{" "}
+          to run an anonymous multi-rater campaign alongside the appraisal cycle.
         </p>
       </ContentSection>
 

@@ -48,7 +48,7 @@ const faqs = [
   {
     question: "Can 360° feedback sit inside the annual cycle?",
     answer:
-      "The current product is focused on employee and manager annual appraisals. If you are planning a 360 exercise, use the 360 feedback guide, questions, examples and template as a separate resource set.",
+      "Yes. Annual appraisals stay focused on the employee and manager pair. If you also need peer or direct-report input, run a separate anonymous 360 campaign for that person in Appraisal Software.",
   },
 ];
 

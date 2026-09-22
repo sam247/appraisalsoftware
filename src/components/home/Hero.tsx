@@ -45,7 +45,7 @@ export function Hero() {
           </div>
         </div>
 
-        {/* Real creation launcher component, limited to currently available workflows */}
+        {/* Real creation launcher — marketing preview of available workflows */}
         <div className="reveal relative mx-auto mt-16 sm:mt-20" style={{ animationDelay: "0.15s" }}>
           <ProductFrame
             title="What would you like to do?"
@@ -62,10 +62,10 @@ export function Hero() {
                     icon: "annual",
                   },
                   {
-                    href: "/dashboard/campaigns/new",
-                    title: "Probation review",
-                    description: "Review a new team member",
-                    icon: "probation",
+                    href: "/dashboard/campaigns/new?type=360",
+                    title: "360 feedback",
+                    description: "Anonymous multi-reviewer feedback",
+                    icon: "feedback",
                   },
                   {
                     href: "/dashboard/templates",

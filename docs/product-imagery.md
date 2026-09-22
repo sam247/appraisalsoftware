@@ -23,25 +23,19 @@ The source components are imported from the real authenticated respondent and
 results surfaces where practical. Keep the preview data generic and never use
 customer, personal, test or fixture data.
 
-## Deferred 360 imagery
+## 360 imagery candidates
 
-The following authenticated surfaces were inspected but deliberately not
-published:
-
-- 360 campaign creation
-- 360 campaign management
-- anonymous 360 results
-- Self-vs-Others reporting
-
-The 360 release gate is disabled in the repository. When it is enabled and
-validated for customers, the strongest future candidates are:
+360 product capability is released. Prefer these authenticated surfaces when
+adding product proof for multi-rater pages:
 
 - `src/app/dashboard/campaigns/new/create-campaign-form.tsx`
 - `src/app/dashboard/campaigns/[id]/feedback-360-draft-review.tsx`
 - `src/app/dashboard/campaigns/[id]/results/feedback-results.tsx`
 
-Do not expose these as current product proof until the release gate and
-production workflow are enabled.
+Until those are adapted into sanitized marketing previews, keep 360 commercial
+copy accurate about the live campaign workflow and use educational process
+visuals on resource pages. Do not invent Self-vs-Others charts or anonymous
+report screenshots that do not match the shipped UI.
 
 ## Presentation rules
 

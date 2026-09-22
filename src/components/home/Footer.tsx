@@ -23,7 +23,7 @@ const footerLinks = {
     { label: "Annual appraisal template", href: ROUTES.annualAppraisalTemplate },
     { label: "Appraisal questions", href: ROUTES.appraisalQuestions },
     { label: "Appraisal objectives", href: ROUTES.appraisalObjectives },
-    { label: "360 feedback resources", href: ROUTES.feedback360Software },
+    { label: "What is 360 feedback?", href: ROUTES.feedback360Guide },
     { label: "360 feedback template", href: ROUTES.feedback360Template },
   ],
   company: [
@@ -50,7 +50,8 @@ export function Footer() {
             </Link>
             <p className="mt-4 max-w-xs text-xs leading-relaxed text-muted-foreground">
               Appraisal software for UK teams, with free review templates and practical
-              guides. Run employee and manager reviews without a heavyweight HR system.
+              guides. Run employee appraisals and anonymous 360 feedback without a
+              heavyweight HR system.
             </p>
           </div>
           <div className="grid gap-8 sm:grid-cols-3">

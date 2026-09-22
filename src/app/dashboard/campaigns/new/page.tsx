@@ -21,8 +21,7 @@ export default async function NewCampaignPage({
 
   const params = await searchParams;
   const supabase = await createClient();
-  const enabled = process.env.ENABLE_360_FEEDBACK === "true";
-  const is360 = enabled && params.type === "360";
+  const is360 = params.type === "360";
   const initialTemplateId = params.template?.trim() || "";
 
   const { data: rawTemplates, error: templateError } = await supabase
@@ -98,7 +97,6 @@ export default async function NewCampaignPage({
   return (
     <CreateCampaignForm
       is360={is360}
-      enabled360={enabled}
       templates={templates}
       people={people}
       departments={departments}

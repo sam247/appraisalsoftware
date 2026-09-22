@@ -55,7 +55,7 @@ export default function HomePage() {
           { href: "/appraisal-questions", label: "Appraisal questions", copy: "Choose focused prompts for employee and manager discussion." },
           { href: "/appraisal-answers", label: "Employee appraisal answers", copy: "Use evidence to explain achievements and development needs." },
           { href: "/appraisal-comments", label: "Manager appraisal comments", copy: "Write observations that help the next conversation." },
-          { href: "/360-feedback-software", label: "360 feedback resources", copy: "Plan a multi-rater exercise with clear questions and examples." },
+          { href: "/360-feedback-software", label: "360 feedback software", copy: "Run anonymous multi-rater campaigns with combined results after closure." },
           { href: "/resources", label: "All appraisal resources", copy: "Find practical guides, original examples and free forms." },
         ]} />
         <HomeFaqSection />

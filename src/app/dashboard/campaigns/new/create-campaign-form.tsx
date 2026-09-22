@@ -13,9 +13,13 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useMemo, useState, useTransition } from "react";
 import { createCampaign } from "../actions";
-import CreationProgress, {
-  type CreationStepKey,
-} from "../creation-progress";
+import {
+  ANNUAL_STEPS,
+  CampaignWizard,
+  FEEDBACK_STEPS,
+  ReviewSummary,
+  WizardFooter,
+} from "../campaign-wizard";
 import PeoplePicker, {
   type PickerDepartment,
   type PickerPerson,
@@ -42,7 +46,6 @@ function formatCloseDate(closesAt: string) {
 
 export default function CreateCampaignForm({
   is360,
-  enabled360,
   templates,
   people,
   departments,
@@ -51,7 +54,6 @@ export default function CreateCampaignForm({
   initialTemplateId = "",
 }: {
   is360: boolean;
-  enabled360: boolean;
   templates: CreateTemplateOption[];
   people: CreatePersonOption[];
   departments: PickerDepartment[];
@@ -62,7 +64,6 @@ export default function CreateCampaignForm({
   if (is360) {
     return (
       <Feedback360Wizard
-        enabled360={enabled360}
         templates={templates}
         people={people}
         departments={departments}
@@ -75,7 +76,6 @@ export default function CreateCampaignForm({
 
   return (
     <AnnualSetupForm
-      enabled360={enabled360}
       templates={templates}
       timezone={timezone}
       error={error}
@@ -84,123 +84,171 @@ export default function CreateCampaignForm({
   );
 }
 
+function FieldLabel({
+  children,
+  optional,
+}: {
+  children: React.ReactNode;
+  optional?: boolean;
+}) {
+  return (
+    <span className="font-medium text-foreground">
+      {children}
+      {optional && (
+        <span className="ml-1.5 font-normal text-muted-foreground">
+          Optional
+        </span>
+      )}
+    </span>
+  );
+}
+
+const inputClass =
+  "mt-1.5 w-full rounded-lg border border-input bg-card px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring";
+
 function AnnualSetupForm({
-  enabled360,
   templates,
   timezone,
   error,
   initialTemplateId,
 }: {
-  enabled360: boolean;
   templates: CreateTemplateOption[];
   timezone: string;
   error?: string;
   initialTemplateId: string;
 }) {
-  const [templateId, setTemplateId] = useState(initialTemplateId);
+  const [sub, setSub] = useState<"details" | "questions">("details");
+  const [name, setName] = useState("");
   const [closesAt, setClosesAt] = useState("");
+  const [templateId, setTemplateId] = useState(initialTemplateId);
   const [chooserOpen, setChooserOpen] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [localError, setLocalError] = useState<string | null>(null);
+
   const selected = useMemo(
     () => templates.find((t) => t.id === templateId) ?? null,
     [templates, templateId],
   );
 
+  const goQuestions = () => {
+    setLocalError(null);
+    if (!name.trim()) {
+      setLocalError("Give the campaign a name");
+      return;
+    }
+    setSub("questions");
+  };
+
   return (
-    <div className="mx-auto w-full max-w-5xl">
-      <h1 className="text-xl font-medium tracking-tight text-foreground">
-        Create an annual appraisal
-      </h1>
-
-      {enabled360 && (
-        <TypeSwitcher is360={false} className="mt-4" />
-      )}
-
-      <CreationProgress current="setup" className="mt-4" />
-
-      {error && (
-        <div
-          className="mt-3 rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive"
-          role="alert"
-        >
-          {error}
-        </div>
-      )}
-
-      {!templates.length && (
-        <p className="mt-4 text-sm">
-          <Link href="/dashboard/templates" className="text-primary underline">
-            Create a question template
-          </Link>{" "}
-          to start your appraisal.
-        </p>
-      )}
-
-      <form action={createCampaign} className="mt-5 space-y-5">
-        <input type="hidden" name="campaign_type" value="annual_appraisal" />
-        <input type="hidden" name="template_id" value={templateId} required />
-
-        <div className="grid gap-4 sm:grid-cols-2">
-          <label className="block text-sm sm:col-span-1">
-            <span className="font-medium text-foreground">Campaign name</span>
-            <input
-              name="name"
-              type="text"
-              required
-              placeholder="e.g. 2026 Annual Appraisals"
-              className="mt-1.5 w-full rounded-lg border border-input bg-card px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-            />
-          </label>
-          <label className="block text-sm">
-            <span className="font-medium text-foreground">
-              Close date
-              <span className="ml-1.5 font-normal text-muted-foreground">
-                Optional
+    <CampaignWizard
+      typeLabel="Annual appraisal"
+      title="New annual appraisal"
+      steps={ANNUAL_STEPS}
+      current={sub}
+      error={localError ?? error}
+    >
+      {sub === "details" && (
+        <div className="space-y-5">
+          <TypeSwitcher is360={false} />
+          <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
+            Each employee you add later completes a self appraisal, and their
+            manager receives the matching manager review.
+          </p>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <label className="block text-sm">
+              <FieldLabel>Campaign name</FieldLabel>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="e.g. 2026 Annual Appraisals"
+                className={inputClass}
+              />
+            </label>
+            <label className="block text-sm">
+              <FieldLabel optional>Close date</FieldLabel>
+              <input
+                type="date"
+                value={closesAt}
+                onChange={(e) => setClosesAt(e.target.value)}
+                className={inputClass}
+              />
+              <span className="mt-1 block text-xs text-muted-foreground">
+                Ends at the end of the selected day ({timezone}).
               </span>
-            </span>
-            <input
-              name="closes_at"
-              type="date"
-              value={closesAt}
-              onChange={(e) => setClosesAt(e.target.value)}
-              className="mt-1.5 w-full rounded-lg border border-input bg-card px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-            />
-            <span className="mt-1 block text-xs text-muted-foreground">
-              End of selected day ({timezone}).
-            </span>
-          </label>
+            </label>
+          </div>
+
+          <WizardFooter>
+            <Button type="button" onClick={goQuestions}>
+              Continue to questions →
+            </Button>
+            <Button asChild variant="ghost">
+              <Link href="/dashboard/campaigns">Cancel</Link>
+            </Button>
+          </WizardFooter>
         </div>
+      )}
 
-        <TemplateField
-          selected={selected}
-          templates={templates}
-          chooserOpen={chooserOpen}
-          setChooserOpen={setChooserOpen}
-          previewOpen={previewOpen}
-          setPreviewOpen={setPreviewOpen}
-          setTemplateId={setTemplateId}
-          templateId={templateId}
-          is360={false}
-        />
+      <form
+        action={createCampaign}
+        className={cn("space-y-5", sub !== "questions" && "hidden")}
+      >
+        <input type="hidden" name="campaign_type" value="annual_appraisal" />
+        <input type="hidden" name="template_id" value={templateId} />
+        <input type="hidden" name="name" value={name} />
+        <input type="hidden" name="closes_at" value={closesAt} />
 
-        <div className="flex flex-wrap items-center gap-3 border-t border-border/60 pt-4">
+        {!templates.length ? (
+          <div className="rounded-xl border border-dashed border-border px-4 py-6 text-sm">
+            <p className="font-medium text-foreground">
+              No question templates yet
+            </p>
+            <p className="mt-1 max-w-md text-muted-foreground">
+              <Link
+                href="/dashboard/templates"
+                className="text-primary underline"
+              >
+                Create a question template
+              </Link>{" "}
+              to choose the questions people will answer.
+            </p>
+          </div>
+        ) : (
+          <TemplateField
+            selected={selected}
+            templates={templates}
+            chooserOpen={chooserOpen}
+            setChooserOpen={setChooserOpen}
+            previewOpen={previewOpen}
+            setPreviewOpen={setPreviewOpen}
+            setTemplateId={setTemplateId}
+            templateId={templateId}
+            is360={false}
+          />
+        )}
+
+        <WizardFooter>
           <FormSubmit
             disabled={!templates.length || !templateId}
-            pendingLabel="Continuing…"
+            pendingLabel="Creating…"
           >
             Continue to people →
           </FormSubmit>
-          <Button asChild variant="ghost">
-            <Link href="/dashboard/campaigns">Cancel</Link>
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={() => setSub("details")}
+          >
+            ← Back to details
           </Button>
-        </div>
+        </WizardFooter>
       </form>
-    </div>
+    </CampaignWizard>
   );
 }
 
 function Feedback360Wizard({
-  enabled360,
   templates,
   people,
   departments,
@@ -208,7 +256,6 @@ function Feedback360Wizard({
   error,
   initialTemplateId,
 }: {
-  enabled360: boolean;
   templates: CreateTemplateOption[];
   people: CreatePersonOption[];
   departments: PickerDepartment[];
@@ -216,7 +263,9 @@ function Feedback360Wizard({
   error?: string;
   initialTemplateId: string;
 }) {
-  const [step, setStep] = useState<CreationStepKey>("setup");
+  const [step, setStep] = useState<
+    "details" | "questions" | "reviewers" | "review"
+  >("details");
   const [name, setName] = useState("");
   const [subjectId, setSubjectId] = useState("");
   const [templateId, setTemplateId] = useState(initialTemplateId);
@@ -255,7 +304,7 @@ function Feedback360Wizard({
     });
   };
 
-  const goPeople = () => {
+  const goQuestions = () => {
     setLocalError(null);
     if (!name.trim()) {
       setLocalError("Name the campaign");
@@ -265,11 +314,16 @@ function Feedback360Wizard({
       setLocalError("Choose the person receiving feedback");
       return;
     }
+    setStep("questions");
+  };
+
+  const goReviewers = () => {
+    setLocalError(null);
     if (!templateId) {
       setLocalError("Choose a question template");
       return;
     }
-    setStep("people");
+    setStep("reviewers");
   };
 
   const goReview = () => {
@@ -303,83 +357,50 @@ function Feedback360Wizard({
     });
   };
 
-  const displayError = localError || error;
-
   return (
-    <div
-      className={cn(
-        "mx-auto w-full",
-        step === "people" ? "max-w-6xl" : "max-w-5xl",
-      )}
+    <CampaignWizard
+      typeLabel="Anonymous 360"
+      title={name.trim() || "New 360 feedback"}
+      steps={FEEDBACK_STEPS}
+      current={step}
+      error={localError ?? error}
+      wide={step === "reviewers"}
     >
-      <h1 className="text-xl font-medium tracking-tight text-foreground">
-        Create anonymous 360 feedback
-      </h1>
-
-      {enabled360 && <TypeSwitcher is360 className="mt-4" />}
-
-      <CreationProgress current={step} className="mt-4" />
-
-      {displayError && (
-        <div
-          className="mt-3 rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive"
-          role="alert"
-        >
-          {displayError}
-        </div>
-      )}
-
-      {!templates.length && (
-        <p className="mt-4 text-sm">
-          <Link href="/dashboard/templates" className="text-primary underline">
-            Create a question template
-          </Link>{" "}
-          to start your 360 campaign.
-        </p>
-      )}
-
-      {step === "setup" && (
-        <div className="mt-5 space-y-5">
-          <p className="text-sm text-muted-foreground">
+      {step === "details" && (
+        <div className="space-y-5">
+          <TypeSwitcher is360 />
+          <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
             360 feedback is combined anonymously and requires at least five
             completed reviewers before results are available.
           </p>
 
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="block text-sm">
-              <span className="font-medium text-foreground">Campaign name</span>
+              <FieldLabel>Campaign name</FieldLabel>
               <input
                 type="text"
-                required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Leadership 360 — Alex Morgan"
-                className="mt-1.5 w-full rounded-lg border border-input bg-card px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                className={inputClass}
               />
             </label>
             <label className="block text-sm">
-              <span className="font-medium text-foreground">
-                Close date
-                <span className="ml-1.5 font-normal text-muted-foreground">
-                  Optional
-                </span>
-              </span>
+              <FieldLabel optional>Close date</FieldLabel>
               <input
                 type="date"
                 value={closesAt}
                 onChange={(e) => setClosesAt(e.target.value)}
-                className="mt-1.5 w-full rounded-lg border border-input bg-card px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                className={inputClass}
               />
               <span className="mt-1 block text-xs text-muted-foreground">
-                End of selected day ({timezone}).
+                Ends at the end of the selected day ({timezone}).
               </span>
             </label>
           </div>
 
           <label className="block text-sm">
-            <span className="font-medium text-foreground">
-              Person receiving feedback
-            </span>
+            <FieldLabel>Person receiving feedback</FieldLabel>
             <select
               value={subjectId}
               onChange={(e) => {
@@ -387,7 +408,7 @@ function Feedback360Wizard({
                 setSubjectId(next);
                 setReviewerIds((ids) => ids.filter((id) => id !== next));
               }}
-              className="mt-1.5 w-full max-w-lg rounded-lg border border-input bg-card px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              className={cn(inputClass, "max-w-lg")}
             >
               <option value="">Choose a person</option>
               {people.map((p) => (
@@ -398,46 +419,75 @@ function Feedback360Wizard({
             </select>
           </label>
 
-          <TemplateField
-            selected={selected}
-            templates={templates}
-            chooserOpen={chooserOpen}
-            setChooserOpen={setChooserOpen}
-            previewOpen={previewOpen}
-            setPreviewOpen={setPreviewOpen}
-            setTemplateId={setTemplateId}
-            templateId={templateId}
-            is360
-          />
-
-          <div className="flex flex-wrap items-center gap-3 border-t border-border/60 pt-4">
-            <Button
-              type="button"
-              disabled={!templates.length || !templateId}
-              onClick={goPeople}
-            >
-              Continue to people →
+          <WizardFooter>
+            <Button type="button" onClick={goQuestions}>
+              Continue to questions →
             </Button>
             <Button asChild variant="ghost">
               <Link href="/dashboard/campaigns">Cancel</Link>
             </Button>
-          </div>
+          </WizardFooter>
         </div>
       )}
 
-      {step === "people" && (
-        <div className="mt-5 space-y-5">
-          <div>
-            <h2 className="text-lg font-medium tracking-tight text-foreground">
-              Choose reviewers
-            </h2>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Feedback for{" "}
-              <span className="font-medium text-foreground">
-                {subject?.full_name || subject?.email || "—"}
-              </span>
-            </p>
-          </div>
+      {step === "questions" && (
+        <div className="space-y-5">
+          {!templates.length ? (
+            <div className="rounded-xl border border-dashed border-border px-4 py-6 text-sm">
+              <p className="font-medium text-foreground">
+                No question templates yet
+              </p>
+              <p className="mt-1 max-w-md text-muted-foreground">
+                <Link
+                  href="/dashboard/templates"
+                  className="text-primary underline"
+                >
+                  Create a question template
+                </Link>{" "}
+                with rating and text questions to start a 360 campaign.
+              </p>
+            </div>
+          ) : (
+            <TemplateField
+              selected={selected}
+              templates={templates}
+              chooserOpen={chooserOpen}
+              setChooserOpen={setChooserOpen}
+              previewOpen={previewOpen}
+              setPreviewOpen={setPreviewOpen}
+              setTemplateId={setTemplateId}
+              templateId={templateId}
+              is360
+            />
+          )}
+
+          <WizardFooter>
+            <Button
+              type="button"
+              disabled={!templates.length || !templateId}
+              onClick={goReviewers}
+            >
+              Continue to reviewers →
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => setStep("details")}
+            >
+              ← Back to details
+            </Button>
+          </WizardFooter>
+        </div>
+      )}
+
+      {step === "reviewers" && (
+        <div className="space-y-5">
+          <p className="text-sm text-muted-foreground">
+            Feedback for{" "}
+            <span className="font-medium text-foreground">
+              {subject?.full_name || subject?.email || "—"}
+            </span>
+          </p>
 
           {people.length === 0 ? (
             <p className="text-sm">
@@ -484,130 +534,92 @@ function Feedback360Wizard({
             </label>
           </section>
 
-          <div className="flex flex-wrap items-center gap-3 border-t border-border/60 pt-4">
+          <WizardFooter>
             <Button type="button" onClick={goReview}>
               Continue to review →
             </Button>
-            <Button type="button" variant="ghost" onClick={() => setStep("setup")}>
-              ← Back to setup
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => setStep("questions")}
+            >
+              ← Back to questions
             </Button>
-          </div>
+          </WizardFooter>
         </div>
       )}
 
       {step === "review" && (
-        <div className="mt-5">
-          <div className="grid gap-6 lg:grid-cols-[minmax(0,1.6fr)_minmax(14rem,1fr)]">
-            <div className="min-w-0 space-y-5">
-              <div>
-                <h2 className="text-xl font-medium tracking-tight text-foreground">
-                  {name.trim() || "Untitled 360"}
-                </h2>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  Anonymous 360
-                  {subject
-                    ? ` · Feedback for ${subject.full_name || subject.email}`
-                    : ""}
-                  {` · ${reviewerIds.length} reviewers invited`}
-                  {selected ? ` · ${selected.name}` : ""}
-                  {closesAt
-                    ? ` · Closes ${formatCloseDate(closesAt)}`
-                    : ""}
-                </p>
-              </div>
+        <div className="space-y-6">
+          <ReviewSummary
+            items={[
+              { label: "Type", value: "Anonymous 360" },
+              {
+                label: "Subject",
+                value: subject?.full_name || subject?.email || "—",
+              },
+              { label: "Reviewers", value: String(reviewerIds.length) },
+              {
+                label: "Close date",
+                value: formatCloseDate(closesAt) ?? "Not set",
+              },
+            ]}
+          />
 
-              <section>
-                <h3 className="text-sm font-semibold text-foreground">Privacy</h3>
-                <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
-                  <li>{reviewerIds.length} reviewers selected</li>
-                  <li>
-                    {reviewerIds.length >= 5
-                      ? "Minimum reviewer cohort met"
-                      : "Need at least five reviewers"}
+          <section>
+            <h3 className="text-sm font-semibold text-foreground">Privacy</h3>
+            <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
+              <li>{reviewerIds.length} reviewers selected</li>
+              <li>
+                {reviewerIds.length >= 5
+                  ? "Minimum reviewer cohort met"
+                  : "Need at least five reviewers"}
+              </li>
+              <li>
+                Results available only after closure and at least five completed
+                reviewer responses
+              </li>
+            </ul>
+          </section>
+
+          <section>
+            <h3 className="text-sm font-semibold text-foreground">Reviewers</h3>
+            <ul className="mt-2 divide-y divide-border/60 border-y border-border/60 text-sm">
+              {reviewerIds.map((id) => {
+                const p = peopleById[id];
+                const rel = (relationships[id] ?? "peer").replaceAll("_", " ");
+                return (
+                  <li
+                    key={id}
+                    className="flex flex-wrap items-center justify-between gap-2 py-2"
+                  >
+                    <span className="font-medium text-foreground">
+                      {p?.full_name || p?.email || "Person"}
+                    </span>
+                    <span className="capitalize text-muted-foreground">
+                      {rel}
+                    </span>
                   </li>
-                  <li>
-                    Results available only after closure and at least five
-                    completed reviewer responses
-                  </li>
-                </ul>
-              </section>
+                );
+              })}
+            </ul>
+          </section>
 
-              <section>
-                <h3 className="text-sm font-semibold text-foreground">
-                  Reviewers
-                </h3>
-                <ul className="mt-2 divide-y divide-border/60 border-y border-border/60 text-sm">
-                  {reviewerIds.map((id) => {
-                    const p = peopleById[id];
-                    const rel = (relationships[id] ?? "peer").replaceAll(
-                      "_",
-                      " ",
-                    );
-                    return (
-                      <li
-                        key={id}
-                        className="flex flex-wrap items-center justify-between gap-2 py-2"
-                      >
-                        <span className="font-medium text-foreground">
-                          {p?.full_name || p?.email || "Person"}
-                        </span>
-                        <span className="text-muted-foreground capitalize">
-                          {rel}
-                        </span>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </section>
+          <section>
+            <h3 className="text-sm font-semibold text-foreground">Questions</h3>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {selected
+                ? `${selected.name} · ${selected.questionCount} questions`
+                : "Not selected"}
+            </p>
+          </section>
 
-              <section>
-                <h3 className="text-sm font-semibold text-foreground">
-                  Questions
-                </h3>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {selected
-                    ? `${selected.name} · ${selected.questionCount} questions`
-                    : "Not selected"}
-                </p>
-              </section>
-            </div>
+          <p className="text-xs text-muted-foreground">
+            Creating this campaign locks the setup and prepares invitations.
+            Nothing is emailed until you send from the next screen.
+          </p>
 
-            <aside className="min-w-0 space-y-3 rounded-xl border border-border/70 bg-surface/50 p-4 text-sm lg:self-start">
-              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                Ready to send
-              </p>
-              <dl className="space-y-2">
-                <div>
-                  <dt className="text-muted-foreground">Type</dt>
-                  <dd className="font-medium text-foreground">Anonymous 360</dd>
-                </div>
-                <div>
-                  <dt className="text-muted-foreground">Subject</dt>
-                  <dd className="font-medium text-foreground">
-                    {subject?.full_name || subject?.email || "—"}
-                  </dd>
-                </div>
-                <div>
-                  <dt className="text-muted-foreground">Reviewers</dt>
-                  <dd className="font-medium text-foreground">
-                    {reviewerIds.length}
-                  </dd>
-                </div>
-                <div>
-                  <dt className="text-muted-foreground">Close date</dt>
-                  <dd className="font-medium text-foreground">
-                    {formatCloseDate(closesAt) ?? "Not set"}
-                  </dd>
-                </div>
-              </dl>
-              <p className="text-xs text-muted-foreground">
-                Creating this campaign locks the setup and prepares invitations.
-                Nothing is emailed until you send from the next screen.
-              </p>
-            </aside>
-          </div>
-
-          <div className="mt-6 flex flex-wrap items-center gap-3 border-t border-border/60 pt-4">
+          <WizardFooter>
             <Button type="button" disabled={isPending} onClick={submit}>
               {isPending ? "Creating…" : "Create campaign →"}
             </Button>
@@ -615,14 +627,14 @@ function Feedback360Wizard({
               type="button"
               variant="ghost"
               disabled={isPending}
-              onClick={() => setStep("people")}
+              onClick={() => setStep("reviewers")}
             >
-              ← Back to people
+              ← Back to reviewers
             </Button>
-          </div>
+          </WizardFooter>
         </div>
       )}
-    </div>
+    </CampaignWizard>
   );
 }
 
@@ -715,8 +727,12 @@ function TemplateField({
     <>
       <div>
         <p className="text-sm font-medium text-foreground">Question template</p>
+        <p className="mt-0.5 text-sm text-muted-foreground">
+          Pick the questions people will answer. You can preview before
+          continuing.
+        </p>
         {selected ? (
-          <div className="mt-1.5 rounded-xl border border-border/80 bg-card/50 px-3.5 py-3">
+          <div className="mt-3 rounded-xl border border-border/80 bg-card/50 px-3.5 py-3">
             <div className="flex flex-wrap items-start justify-between gap-2">
               <div className="min-w-0">
                 <p className="font-medium text-foreground">{selected.name}</p>
@@ -746,13 +762,14 @@ function TemplateField({
             </div>
           </div>
         ) : (
-          <div className="mt-1.5 rounded-xl border border-dashed border-border px-3.5 py-6">
+          <div className="mt-3 rounded-xl border border-dashed border-border px-3.5 py-6">
             <p className="text-sm font-medium text-foreground">
               Choose a question template
             </p>
             <p className="mt-1 max-w-md text-sm text-muted-foreground">
-              Pick the questions people will answer. You can preview before
-              continuing.
+              {is360
+                ? "Only rating and text templates can be used for 360 feedback."
+                : "Pick the questions people will answer in this campaign."}
             </p>
             <Button
               type="button"

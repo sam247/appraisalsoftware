@@ -33,8 +33,6 @@ export async function createCampaign(formData: FormData): Promise<void> {
       redirect(
         "/dashboard/campaigns/new?type=360&error=Read+and+accept+the+anonymity+policy",
       );
-    if (process.env.ENABLE_360_FEEDBACK !== "true")
-      redirect("/dashboard/campaigns/new?error=360+feedback+is+not+enabled");
     if (!name || !templateId || (closesAt && !validDate(closesAt)))
       redirect(
         "/dashboard/campaigns/new?type=360&error=Check+the+name,+template+and+date",

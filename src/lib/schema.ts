@@ -8,9 +8,10 @@ export type FaqItem = {
 
 const SOFTWARE_FEATURES = [
   "Annual appraisal campaigns",
+  "Anonymous 360 feedback campaigns",
   "Reusable appraisal questions",
   "Employee self-assessments and manager responses",
-  "Completion tracking",
+  "Multi-rater invitations and completion tracking",
   "Email invitations and reminders",
   "Self vs Manager results",
 ];

@@ -25,7 +25,7 @@ Each page was assessed for audience, primary intent and unique material before d
 | `/` | UK small teams choosing appraisal software | Overall product proposition; connects commercial pages and resources |
 | `/employee-appraisal-software` | Managers and employees evaluating reviews | Preparation and paired employee/manager perspectives; broader than the annual cycle |
 | `/annual-appraisal-software` | Organisers evaluating yearly cycle administration | Campaign planning, assignments, collection and follow-up |
-| `/360-feedback-software` | Buyers investigating multi-rater software | Explicit planned capability status and intended workflow; no collection promise |
+| `/360-feedback-software` | Buyers investigating multi-rater software | Live anonymous 360 campaigns: subject, reviewers, collection and closed combined results |
 | `/annual-appraisal-template` | Managers and employees needing a form | Complete blank yearly form, usage and fictional completed example |
 | `/self-appraisal-template` | Employees preparing self-assessment | Blank reflection form; links to completed employee answers |
 | `/probation-review-template` | Managers reviewing new starters | Expectations, induction support and progress form; not a formal outcome decision tool |
@@ -41,15 +41,15 @@ Each page was assessed for audience, primary intent and unique material before d
 | `/360-feedback-examples` | Reviewers and facilitators interpreting feedback | Fictional comments, summary and development action; no actual product report |
 | `/templates` | Visitors finding blank forms | Concise discovery hub, not another long guide |
 | `/resources` | Visitors finding task-based guidance | Groups process, writing and 360 resources |
-| `/how-it-works` | Prospective users evaluating product flow | Illustrated employee/manager workflow and current versus planned capabilities |
+| `/how-it-works` | Prospective users evaluating product flow | Illustrated employee/manager and 360 workflows |
 
 Resource copy and template blocks are maintained in `src/lib/resource-content.ts`; explicit page wrappers preserve readable routes. Question-bank content stays in its existing page. Hubs are concise by design. Avoid duplicating substantial text across these destinations.
 
 ## Conversion and product accuracy
 
-Start free links to the existing `/signup`; no account was created during verification. Shared navigation has the product CTA; the footer has no signup promotion. Templates open with the usable form and copy/print actions. Most appraisal resources have one contextual product bridge after the useful material. Hubs have no body signup CTA. 360 resources link to product status instead of promising collection.
+Start free links to the existing `/signup`; no account was created during verification. Shared navigation has the product CTA; the footer has no signup promotion. Templates open with the usable form and copy/print actions. Most appraisal and 360 resources have one contextual product bridge after the useful material. Hubs have no body signup CTA.
 
-Current product evidence was read from the phase records and results/respondent code: annual campaigns, reusable questions, identified self/manager assignments, invitations/reminders, completion and Self vs Manager answers. 360 collection, anonymity, advanced analytics and app PDF/CSV exports remain planned. Browser printing of resource forms is independent of those app exports. Marketing form/report panels are labelled as illustrations or planned designs. No plan prices, unlimited allowances or guaranteed anonymity are asserted.
+Current product evidence was read from the phase records and results/respondent code: annual campaigns, anonymous 360 campaigns, reusable questions, identified self/manager assignments, multi-rater invitations, reminders, completion, Self vs Manager answers and closed 360 combined results. Advanced analytics and app PDF/CSV exports remain planned. Browser printing of resource forms is independent of those app exports. Marketing form/report panels are labelled as illustrations or product previews. No plan prices, unlimited allowances or guaranteed anonymity are asserted.
 
 ## Adjacent commercial research: performance review software
 

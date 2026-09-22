@@ -24,8 +24,6 @@ import type {
 export default async function OverviewPage() {
   const { org, userId } = await requireOrgAdmin();
   const supabase = await createClient();
-  const enabled360 = process.env.ENABLE_360_FEEDBACK === "true";
-
   const [campaignResult, assignmentResult, subjectResult, profileResult, templateResult] =
     await Promise.all([
       supabase
@@ -94,9 +92,7 @@ export default async function OverviewPage() {
       icon: "annual",
     },
     {
-      href: enabled360
-        ? "/dashboard/campaigns/new?type=360"
-        : "/dashboard/campaigns/new",
+      href: "/dashboard/campaigns/new?type=360",
       title: "360 feedback",
       description: "Anonymous multi-reviewer feedback",
       icon: "feedback",

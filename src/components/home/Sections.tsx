@@ -39,8 +39,8 @@ const workflowTypes = [
   },
   {
     label: "360° Feedback",
-    description: "Plan a thoughtful multi-rater review with practical guides, questions, examples and a ready-to-use template.",
-    includes: ["Reviewer planning", "Useful 360 questions", "Example feedback", "Ready-to-use template"],
+    description: "Invite managers, peers and direct reports into an anonymous multi-rater campaign, then release combined feedback after closure.",
+    includes: ["Subject and reviewers", "Anonymous collection", "Reusable questions", "Combined results after close"],
     href: ROUTES.feedback360Software,
     linkLabel: "360 feedback software",
   },
@@ -662,17 +662,17 @@ const homeFaqs = [
   {
     question: "What types of review can we run?",
     answer:
-      "The current workflow supports employee self-assessments and manager reviews using reusable questions. You can adapt the questions for your review process. Use the 360 guides and templates when you are planning a multi-rater exercise.",
+      "You can run annual employee and manager appraisals, and anonymous 360 feedback campaigns for a single subject with multiple reviewers. Reusable question templates keep both workflows consistent.",
   },
   {
     question: "How does 360° feedback work?",
     answer:
-      "A 360 exercise gathers observations from several relationships. Our free guides, questions, examples and templates help you choose reviewers, explain the process and prepare a useful discussion.",
+      "Create a 360 campaign for one person, invite at least five reviewers, and collect responses through secure personal links. Combined anonymous results unlock after closure once enough reviewers have completed. Free guides and templates help you plan the questions and conversation.",
   },
   {
     question: "Is feedback anonymous?",
     answer:
-      "Current appraisal campaigns use identified employee and manager responses. For 360 exercises, explain how feedback will be handled before collecting it and remember that comments can identify their author.",
+      "Annual appraisals use identified employee and manager responses. 360 campaigns show combined feedback without reviewer names or response times. Written comments may still identify their author, so explain that before collecting responses.",
   },
   {
     question: "Who is this for?",

@@ -63,7 +63,7 @@ describe("marketing routes and indexability", () => {
     for (const resource of resources) {
       expect(INDEXABLE_PATHS).toContain(`/${resource.slug}`);
       for (const related of resource.related) expect(INDEXABLE_PATHS).toContain(`/${related}`);
-      if (resource.slug.startsWith("360")) expect(resource.bridge).toBeUndefined();
+      if (resource.slug.startsWith("360")) expect(resource.bridge).toBeDefined();
     }
   });
 

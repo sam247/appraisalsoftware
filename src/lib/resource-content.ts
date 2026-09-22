@@ -435,6 +435,10 @@ export const resources: ResourceContent[] = [
       "360-feedback-examples",
       "360-feedback-software"
     ],
+    "bridge": {
+      "title": "Run this as an anonymous 360 campaign",
+      "copy": "Use Appraisal Software to invite reviewers, collect responses through personal links, and unlock combined anonymous feedback after closure."
+    },
     "template": [
       {
         "title": "Feedback details",
@@ -795,6 +799,10 @@ export const resources: ResourceContent[] = [
       "360-feedback-examples",
       "360-feedback-software"
     ],
+    "bridge": {
+      "title": "Collect the feedback in Appraisal Software",
+      "copy": "Create a 360 campaign for one person, invite at least five reviewers and release combined anonymous results once the campaign is closed."
+    },
     "sources": [
       {
         "label": "Center for Creative Leadership: implementing a 360 feedback initiative",
@@ -884,7 +892,11 @@ export const resources: ResourceContent[] = [
       "360-feedback-template",
       "360-degree-feedback",
       "360-feedback-software"
-    ]
+    ],
+    "bridge": {
+      "title": "Turn these prompts into a 360 campaign",
+      "copy": "Save the questions as a reusable template in Appraisal Software, then invite reviewers to answer the same prompts through secure personal links."
+    }
   },
   {
     "slug": "360-feedback-examples",
@@ -943,6 +955,10 @@ export const resources: ResourceContent[] = [
       "360-feedback-template",
       "360-degree-feedback"
     ],
+    "bridge": {
+      "title": "See how themes appear after a live 360",
+      "copy": "Appraisal Software combines anonymous reviewer responses after closure. Use these fictional examples to prepare the conversation before you send invitations."
+    },
     "sources": [
       {
         "label": "Center for Creative Leadership: understanding 360 results",
