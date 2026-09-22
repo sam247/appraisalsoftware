@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 
+import { ConsentManager } from "@/components/consent/ConsentManager";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { websiteAndOrganizationGraph } from "@/lib/schema";
 import {
@@ -50,7 +51,7 @@ export default function RootLayout({
     <html lang="en-GB" className={`${inter.variable} h-full antialiased`}>
       <body className="min-h-full bg-background text-foreground">
         <JsonLd data={websiteAndOrganizationGraph()} />
-        {children}
+        <ConsentManager>{children}</ConsentManager>
       </body>
     </html>
   );
