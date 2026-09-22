@@ -12,6 +12,7 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { pageMetadata } from "@/lib/metadata";
 import { ROUTES } from "@/lib/routes";
 import { breadcrumbSchema, faqPageSchema, softwareApplicationSchema } from "@/lib/schema";
+import { RespondentProof } from "@/components/product-marketing/RespondentProof";
 
 const TITLE = "Employee Appraisal Software for UK Teams | Appraisal Software";
 const DESCRIPTION =
@@ -41,7 +42,7 @@ const faqs = [
   {
     question: "How is this different from annual appraisal software?",
     answer:
-      "The annual page is for the yearly cycle. This page covers employee reviews more broadly — including teams that also run probation or mid-year reviews with the same forms.",
+      "The annual appraisal page is the dedicated route for the yearly cycle. This page explains the employee and manager workflow more generally, including how people prepare, respond and review the finished record.",
   },
 ];
 
@@ -104,6 +105,22 @@ export default function EmployeeAppraisalSoftwarePage() {
         </p>
       </ContentSection>
 
+      <section className="border-b border-border bg-surface/50 py-12 sm:py-16">
+        <div className="mx-auto grid max-w-6xl gap-10 px-5 lg:grid-cols-[1fr_0.9fr] lg:items-center lg:gap-16 lg:px-8">
+          <div>
+            <h2 className="font-display text-[1.5rem] font-semibold leading-[1.15] tracking-[-0.025em] text-foreground sm:text-[1.75rem]">
+              A clear form instead of a document chase
+            </h2>
+            <p className="mt-4 max-w-xl text-[0.9375rem] leading-relaxed text-muted-foreground sm:text-base">
+              The respondent journey is focused on one question at a time,
+              keeps progress visible and gives employees and managers space to
+              provide useful answers.
+            </p>
+          </div>
+          <RespondentProof />
+        </div>
+      </section>
+
       <ContentSection title="Collect manager and employee feedback">
         <p>
           A useful appraisal has both voices: what the employee thinks happened in the period, and
@@ -111,8 +128,9 @@ export default function EmployeeAppraisalSoftwarePage() {
           later.
         </p>
         <p>
-          If you also want input from peers or direct reports, that is a planned{" "}
-          <TextLink href={ROUTES.feedback360Software}>360° feedback</TextLink> addition. Current campaigns support self and manager responses; multi-rater collection is not yet available.
+          If you are planning input from peers or direct reports, use the{" "}
+          <TextLink href={ROUTES.feedback360Software}>360° feedback resources</TextLink>.
+          The current campaign workflow is for identified self and manager responses.
         </p>
       </ContentSection>
 
@@ -159,6 +177,11 @@ export default function EmployeeAppraisalSoftwarePage() {
             href: ROUTES.home,
             label: "Appraisal Software homepage",
             copy: "What the product is, who it is for, and how a cycle works.",
+          },
+          {
+            href: ROUTES.appraisalObjectives,
+            label: "Appraisal objectives",
+            copy: "Examples to help employees and managers agree useful next steps.",
           },
         ]}
       />

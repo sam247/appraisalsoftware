@@ -39,8 +39,8 @@ const workflowTypes = [
   },
   {
     label: "360° Feedback",
-    description: "Planned: collect feedback from self, manager, peers and direct reports. Prepare now with free 360 resources.",
-    includes: ["Planned multi-rater collection", "Planned Self vs Others", "Planned anonymity controls", "Free preparation resources"],
+    description: "Plan a thoughtful multi-rater review with practical guides, questions, examples and a ready-to-use template.",
+    includes: ["Reviewer planning", "Useful 360 questions", "Example feedback", "Ready-to-use template"],
     href: ROUTES.feedback360Software,
     linkLabel: "360 feedback software",
   },
@@ -53,15 +53,15 @@ const workflowTypes = [
   },
   {
     label: "Employee Feedback",
-    description: "Collect structured feedback at any time — not just at annual review. Useful for projects and team health.",
-    includes: ["Flexible timing", "Reusable forms", "Completion tracking", "Feedback records"],
+    description: "Run a structured employee and manager appraisal with reusable questions and a clear record of the review.",
+    includes: ["Employee reflection", "Manager response", "Completion tracking", "Review record"],
     href: ROUTES.employeeAppraisalSoftware,
     linkLabel: "Employee appraisal software",
   },
   {
     label: "Probation Review",
-    description: "A focused review at the end of a probation period. Shorter form, clear outcome, stored with the employee.",
-    includes: ["Probation-specific form", "Clear pass/extend/fail", "Manager and employee input", "Record keeping"],
+    description: "Use a focused probation review template to structure the conversation and agree practical next steps.",
+    includes: ["Probation-specific form", "Role expectations", "Manager observations", "Next steps"],
     href: ROUTES.probationReviewTemplate,
     linkLabel: "Probation review template",
   },
@@ -212,7 +212,7 @@ export function WorkflowStepsSection() {
         <SectionHeading
           eyebrow="How it works"
           title="Create. Send. Collect. Understand."
-          copy="Four steps from blank page to finished appraisal cycle. No spreadsheets. No email chasing."
+          copy="Four steps from reusable questions to a finished employee and manager appraisal cycle."
           align="center"
         />
 
@@ -422,7 +422,7 @@ export function CampaignSection() {
             <ul className="mt-8 space-y-3 text-sm text-foreground">
               {[
                 "One view of every employee's status",
-                "Automated reminders before the close date",
+                "Configured campaign reminders for outstanding forms",
                 "Manager and employee responses on the same record",
                 "Read employee and manager answers when responses arrive",
               ].map((item) => (
@@ -589,7 +589,7 @@ export function PricingSection() {
         <SectionHeading
           eyebrow="Pricing"
           title="A focused appraisal product."
-          copy="Pricing details will be published when confirmed."
+          copy="Create an appraisal workspace and start with the focused workflow your team needs."
           align="center"
         />
 
@@ -597,7 +597,7 @@ export function PricingSection() {
         <div className="mt-12 grid gap-10 lg:grid-cols-2 lg:items-center lg:gap-16">
           <div>
             <p className="text-[15px] leading-relaxed text-muted-foreground">
-              The current workflow focuses on employee and manager appraisal campaigns. Start with reusable questions, collect responses and review both perspectives. Final pricing and plan limits have not been announced.
+              Start with reusable questions, collect employee and manager responses, track completion and review both perspectives in one place. The product is designed for teams that want appraisal software without a wider HR suite.
             </p>
             <ul className="mt-8 space-y-3 text-sm text-foreground">
               {[
@@ -624,9 +624,9 @@ export function PricingSection() {
               Employee and manager appraisals.
             </p>
             <div className="my-8 border-t border-border" />
-            <p className="text-sm font-semibold text-foreground">Pricing coming soon</p>
+            <p className="text-sm font-semibold text-foreground">Create your workspace</p>
             <p className="mt-2 text-xs text-muted-foreground">
-              We will share pricing when the product launches.
+              Set up an account and explore the appraisal workflow.
             </p>
             <Button className="mt-6 w-full" asChild>
               <a href={PRIMARY_CTA_URL}>
@@ -654,22 +654,22 @@ const homeFaqs = [
   {
     question: "Can we run appraisals without a full HR system?",
     answer:
-      "Yes. Appraisal Software focuses on employee and manager appraisals. 360 collection is planned. No payroll, no absence management, no recruitment. If you already know how your appraisals should work, this is the process around them.",
+      "Yes. Appraisal Software focuses on employee and manager appraisals. No payroll, no absence management and no recruitment. If you already know how your appraisals should work, this is the process around them.",
   },
   {
     question: "What types of review can we run?",
     answer:
-      "The current workflow supports employee self-assessments and manager reviews using reusable questions. You can adapt the questions for your review process. Multi-rater 360 collection is planned.",
+      "The current workflow supports employee self-assessments and manager reviews using reusable questions. You can adapt the questions for your review process. Use the 360 guides and templates when you are planning a multi-rater exercise.",
   },
   {
     question: "How does 360° feedback work?",
     answer:
-      "A 360 exercise gathers observations from several relationships. Our free guides and forms help you prepare; peer and direct-report collection and Self vs Others reporting are planned product additions.",
+      "A 360 exercise gathers observations from several relationships. Our free guides, questions, examples and templates help you choose reviewers, explain the process and prepare a useful discussion.",
   },
   {
     question: "Is feedback anonymous?",
     answer:
-      "Current appraisals use identified employee and manager responses. Anonymity controls for 360 feedback are planned and are not currently available.",
+      "Current appraisal campaigns use identified employee and manager responses. For 360 exercises, explain how feedback will be handled before collecting it and remember that comments can identify their author.",
   },
   {
     question: "Who is this for?",

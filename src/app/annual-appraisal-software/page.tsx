@@ -12,6 +12,8 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { pageMetadata } from "@/lib/metadata";
 import { ROUTES } from "@/lib/routes";
 import { breadcrumbSchema, faqPageSchema, softwareApplicationSchema } from "@/lib/schema";
+import { RespondentProof } from "@/components/product-marketing/RespondentProof";
+import { ResultsProof } from "@/components/product-marketing/ResultsProof";
 
 const TITLE = "Annual Appraisal Software for UK Teams | Appraisal Software";
 const DESCRIPTION =
@@ -46,7 +48,7 @@ const faqs = [
   {
     question: "Can 360° feedback sit inside the annual cycle?",
     answer:
-      "The current product collects employee and manager responses. Peer and direct-report collection and anonymity are planned. Prepare the questions now, but do not rely on those features for the current cycle.",
+      "The current product is focused on employee and manager annual appraisals. If you are planning a 360 exercise, use the 360 feedback guide, questions, examples and template as a separate resource set.",
   },
 ];
 
@@ -143,6 +145,22 @@ export default function AnnualAppraisalSoftwarePage() {
         </p>
       </ContentSection>
 
+      <section className="border-b border-border bg-surface/50 py-12 sm:py-16">
+        <div className="mx-auto grid max-w-6xl gap-10 px-5 lg:grid-cols-2 lg:items-center lg:gap-16 lg:px-8">
+          <div>
+            <h2 className="font-display text-[1.5rem] font-semibold leading-[1.15] tracking-[-0.025em] text-foreground sm:text-[1.75rem]">
+              A respondent experience people can finish
+            </h2>
+            <p className="mt-4 max-w-xl text-[0.9375rem] leading-relaxed text-muted-foreground sm:text-base">
+              Employees and managers answer focused questions through the same
+              structured appraisal experience, with progress visible as they
+              work.
+            </p>
+          </div>
+          <RespondentProof />
+        </div>
+      </section>
+
       <ContentSection title="Plan the cycle before sending invitations">
         <p>
           Agree the review period, who is in the cycle and which managers will respond. Share the
@@ -186,7 +204,9 @@ export default function AnnualAppraisalSoftwarePage() {
           <li>Manager and employee responses on one record.</li>
           <li>Completion tracking and configured campaign reminders.</li>
           <li>Self vs Manager results by subject and question.</li>
-          <li>360 collection, anonymity and exports are planned additions.</li>
+          <li>Organisation branding for a more recognisable respondent experience.</li>
+          <li>Team administrator controls for shared workspace ownership.</li>
+          <li>A focused annual workflow without payroll, absence or recruitment modules.</li>
         </ul>
         <p>
           If you also run probation or mid-year reviews with the same approach, see{" "}
@@ -194,6 +214,12 @@ export default function AnnualAppraisalSoftwarePage() {
           for the broader review process. This page stays focused on the yearly cycle.
         </p>
       </ContentSection>
+
+      <section className="border-b border-border py-12 sm:py-16">
+        <div className="mx-auto max-w-6xl px-5 lg:px-8">
+          <ResultsProof />
+        </div>
+      </section>
 
       <FaqSection
         items={faqs.map((faq) => ({
@@ -218,6 +244,11 @@ export default function AnnualAppraisalSoftwarePage() {
             href: ROUTES.appraisalQuestions,
             label: "Appraisal questions",
             copy: "A practical list of questions grouped for UK annual reviews.",
+          },
+          {
+            href: ROUTES.appraisalObjectives,
+            label: "Appraisal objectives",
+            copy: "Examples of clear objectives to discuss and review.",
           },
           {
             href: ROUTES.home,

@@ -10,7 +10,7 @@ const commercialLinks: Record<string, { label: string; copy: string }> = {
   "appraisal-questions": { label: "Appraisal questions", copy: "Choose focused prompts for employee reflection and manager discussion." },
   "annual-appraisal-software": { label: "Annual appraisal software", copy: "Coordinate the yearly employee and manager review cycle." },
   "employee-appraisal-software": { label: "Employee appraisal software", copy: "Prepare employee and manager responses in one place." },
-  "360-feedback-software": { label: "360 feedback software", copy: "See the planned workflow and current capability status." },
+  "360-feedback-software": { label: "360 feedback resources", copy: "Plan a thoughtful multi-rater review with practical guidance and examples." },
 };
 
 export function ResourcePage({ resource }: { resource: ResourceContent }) {
@@ -60,9 +60,9 @@ export function ResourcePage({ resource }: { resource: ResourceContent }) {
           const commercial = commercialLinks[slug];
           return { href: `/${slug}`, label: sibling?.title ?? commercial.label, copy: sibling?.description ?? commercial.copy };
         })} />
-        {resource.bridge ? <CtaBand title={resource.bridge.title} copy={resource.bridge.copy} secondaryHref={resource.slug === "annual-appraisal-template" || resource.slug === "annual-appraisal-guide" ? "/annual-appraisal-software" : "/employee-appraisal-software"} secondaryLabel="See the appraisal workflow" /> : resource.slug.startsWith("360") ? <ContentSection title="Planning to collect responses through the product?">
-          <p>360 collection, anonymity controls and Self vs Others reporting are planned for Appraisal Software. These resources can help you prepare now; they do not mean those features are available in the app.</p>
-          <Link href="/360-feedback-software" className="font-medium text-foreground underline underline-offset-4">Read the 360 product status</Link>
+        {resource.bridge ? <CtaBand title={resource.bridge.title} copy={resource.bridge.copy} secondaryHref={resource.slug === "annual-appraisal-template" || resource.slug === "annual-appraisal-guide" ? "/annual-appraisal-software" : "/employee-appraisal-software"} secondaryLabel="See the appraisal workflow" /> : resource.slug.startsWith("360") ? <ContentSection title="Using these resources">
+          <p>The current Appraisal Software campaign workflow focuses on identified employee and manager appraisals. Use these 360 resources to plan a separate multi-rater exercise with clear questions, reviewer expectations and careful privacy wording.</p>
+          <Link href="/360-feedback-software" className="font-medium text-foreground underline underline-offset-4">See the 360 feedback resource hub</Link>
         </ContentSection> : null}
       </div>
     </article>

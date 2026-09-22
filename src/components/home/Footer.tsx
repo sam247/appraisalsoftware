@@ -22,6 +22,8 @@ const footerLinks = {
     { label: "Blog", href: ROUTES.blog },
     { label: "Annual appraisal template", href: ROUTES.annualAppraisalTemplate },
     { label: "Appraisal questions", href: ROUTES.appraisalQuestions },
+    { label: "Appraisal objectives", href: ROUTES.appraisalObjectives },
+    { label: "360 feedback resources", href: ROUTES.feedback360Software },
     { label: "360 feedback template", href: ROUTES.feedback360Template },
   ],
   company: [

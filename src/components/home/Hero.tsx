@@ -1,8 +1,6 @@
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
-  Avatar,
-  Panel,
   StatusChip,
 } from "@/components/product/primitives";
 import {
@@ -12,14 +10,8 @@ import {
   SEE_HOW_IT_WORKS_LABEL,
 } from "@/lib/links";
 import { marketingType } from "@/lib/marketing-typography";
-
-const participants = [
-  { name: "Sarah Mitchell", role: "Account Manager", status: "Complete" as const },
-  { name: "James Cooper", role: "Engineering", status: "In progress" as const },
-  { name: "Priya Raman", role: "Marketing", status: "Not started" as const },
-  { name: "Daniel Okoye", role: "Operations", status: "Complete" as const },
-  { name: "Tom Whitfield", role: "Finance", status: "Complete" as const },
-];
+import CreationLauncher from "@/app/dashboard/home/creation-launcher";
+import { ProductFrame } from "@/components/product-marketing/ProductFrame";
 
 export function Hero() {
   return (
@@ -53,104 +45,50 @@ export function Hero() {
           </div>
         </div>
 
-        {/* Product demo — realistic campaign overview */}
+        {/* Real creation launcher component, limited to currently available workflows */}
         <div className="reveal relative mx-auto mt-16 sm:mt-20" style={{ animationDelay: "0.15s" }}>
-          <Panel title="Annual Appraisal 2026" meta="Illustrative example">
-            {/* App nav — real software feel */}
-            <div className="flex items-center gap-1 border-b border-border px-4 sm:px-6">
-              {["Campaigns", "People", "Templates", "Results"].map((tab, i) => (
-                <span
-                  key={tab}
-                  className={
-                    "border-b-2 px-3 py-2.5 text-[11px] font-medium transition-colors " +
-                    (i === 0
-                      ? "border-primary text-foreground"
-                      : "border-transparent text-muted-foreground")
-                  }
-                >
-                  {tab}
-                </span>
-              ))}
-            </div>
-            <div className="grid gap-0 lg:grid-cols-[1.3fr_1fr]">
-              {/* Left: campaign overview */}
-              <div className="border-b border-border p-5 sm:p-6 lg:border-r lg:border-b-0">
-                <div className="flex items-center justify-between gap-3">
+          <ProductFrame
+            title="What would you like to do?"
+            description="The live workspace starts with the action your team wants to take, then keeps current campaigns and templates close at hand."
+          >
+            <div className="p-4 sm:p-6">
+              <CreationLauncher
+                actions={[
+                  {
+                    href: "/dashboard/campaigns/new",
+                    title: "Annual appraisal",
+                    description: "Self and manager review",
+                    icon: "annual",
+                  },
+                  {
+                    href: "/dashboard/campaigns/new",
+                    title: "Probation review",
+                    description: "Review a new team member",
+                    icon: "probation",
+                  },
+                  {
+                    href: "/dashboard/templates",
+                    title: "Start from a template",
+                    description: "Use a reusable question set",
+                    icon: "template",
+                  },
+                ]}
+              />
+              <div className="mt-5 border-t border-border pt-4">
+                <div className="flex items-baseline justify-between gap-3">
+                  <p className="text-xs font-semibold text-foreground">Your work</p>
+                  <span className="text-[10px] text-muted-foreground">Annual Appraisal 2026</span>
+                </div>
+                <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border bg-surface/60 px-3 py-2.5">
                   <div>
-                    <p className="text-sm font-semibold text-foreground">24 employees</p>
-                    <p className="mt-0.5 text-[11px] text-muted-foreground">
-                      Opens 1 May · Closes 30 Jun 2026
-                    </p>
+                    <p className="text-xs font-medium text-foreground">2026 Annual Appraisals</p>
+                    <p className="mt-0.5 text-[10px] text-muted-foreground">24 people · 75% complete</p>
                   </div>
                   <StatusChip status="Collecting" />
                 </div>
-
-                {/* Progress bar */}
-                <div className="mt-5">
-                  <div className="flex items-baseline justify-between gap-2">
-                    <span className="text-xs font-medium text-foreground">75% complete</span>
-                    <span className="text-[11px] text-muted-foreground">18 of 24</span>
-                  </div>
-                  <div className="mt-2 h-2 overflow-hidden rounded-full bg-surface-2">
-                    <div className="h-full w-[75%] rounded-full bg-primary" />
-                  </div>
-                </div>
-
-                {/* Status breakdown */}
-                <div className="mt-5 grid grid-cols-3 gap-2">
-                  {[
-                    { n: "18", label: "Completed", color: "text-primary" },
-                    { n: "4", label: "In progress", color: "text-warm-foreground" },
-                    { n: "2", label: "Not started", color: "text-muted-foreground" },
-                  ].map((stat) => (
-                    <div key={stat.label} className="rounded-lg border border-border p-2.5 text-center">
-                      <p className={`text-lg font-semibold tabular-nums ${stat.color}`}>{stat.n}</p>
-                      <p className="text-[10px] text-muted-foreground">{stat.label}</p>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Next reminder */}
-                <div className="mt-4 flex items-center gap-2 rounded-lg bg-surface px-3 py-2">
-                  <span className="size-1.5 rounded-full bg-primary" aria-hidden />
-                  <span className="text-[11px] text-muted-foreground">
-                    Next reminder: <span className="font-medium text-foreground">Monday 10am</span>
-                  </span>
-                </div>
-              </div>
-
-              {/* Right: participant list */}
-              <div className="p-5 sm:p-6">
-                <div className="flex items-center justify-between gap-3">
-                  <p className="text-xs font-semibold text-foreground">Recent activity</p>
-                  <span className="text-[10px] text-muted-foreground">5 of 24</span>
-                </div>
-                <div className="mt-3 space-y-1">
-                  {participants.map((p) => (
-                    <div
-                      key={p.name}
-                      className="flex items-center justify-between gap-3 rounded-lg px-2 py-2 transition-colors hover:bg-surface"
-                    >
-                      <div className="flex items-center gap-2.5 min-w-0">
-                        <Avatar
-                          initials={p.name
-                            .split(" ")
-                            .map((n) => n[0])
-                            .join("")}
-                          tone={p.name.length}
-                        />
-                        <div className="min-w-0">
-                          <p className="truncate text-xs font-medium text-foreground">{p.name}</p>
-                          <p className="truncate text-[10px] text-muted-foreground">{p.role}</p>
-                        </div>
-                      </div>
-                      <StatusChip status={p.status} />
-                    </div>
-                  ))}
-                </div>
               </div>
             </div>
-          </Panel>
+          </ProductFrame>
         </div>
       </div>
     </section>

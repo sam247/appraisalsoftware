@@ -5,7 +5,7 @@ export const SITE_URL = "https://appraisalsoftware.co.uk/";
 export const SITE_NAME = "Appraisal Software";
 
 export const SITE_TITLE =
-  "Appraisal Software for UK Teams | Appraisals & 360 Feedback";
+  "Appraisal Software for UK Teams | Employee Appraisals";
 
 export const SITE_DESCRIPTION =
   "Appraisal software for UK teams. Run employee and manager reviews with reusable forms and completion tracking, and explore free appraisal and 360 feedback resources.";
