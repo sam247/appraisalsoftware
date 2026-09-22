@@ -8,6 +8,7 @@ import {
 } from "@/components/marketing/PageSections";
 import { SiteChrome } from "@/components/layout/SiteChrome";
 import { JsonLd } from "@/components/seo/JsonLd";
+import { QuestionGroupsPreview } from "@/components/resources/ResourceVisual";
 import { pageMetadata } from "@/lib/metadata";
 import { ROUTES } from "@/lib/routes";
 import { articleSchema, breadcrumbSchema } from "@/lib/schema";
@@ -122,6 +123,14 @@ export default function AppraisalQuestionsPage() {
         <p className="text-xs text-muted-foreground">Written and reviewed by the Appraisal Software team · 18 September 2026</p>
         <ul className="mt-4 flex flex-wrap gap-4 text-sm">{groups.map((group, index) => <li key={group.title}><a className="underline underline-offset-4" href={`#question-group-${index + 1}`}>{group.title}</a></li>)}</ul>
       </nav>
+      <QuestionGroupsPreview
+        groups={groups.map((group) => ({
+          title: group.title,
+          copy: group.intro,
+          count: group.questions.length,
+          example: group.questions[0],
+        }))}
+      />
       <ContentSection title="How to use these questions">
         <p>
           Ten to fifteen questions is enough for an annual appraisal. Repeat the same set across the

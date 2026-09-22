@@ -25,7 +25,7 @@ export function Hero() {
             {" "}the heavyweight HR system.
           </h1>
           <p className={`mx-auto mt-5 max-w-lg ${marketingType.lead}`}>
-            Run employee and manager appraisals in one simple place. Prepare with free templates and practical guidance for UK teams.
+            Built for UK small teams that need a repeatable appraisal process, not a wider HR platform. Run employee and manager reviews in one place, with free templates and practical guidance when you need them.
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Button size="lg" className="w-full px-7 sm:w-auto" asChild>
@@ -49,10 +49,11 @@ export function Hero() {
         <div className="reveal relative mx-auto mt-16 sm:mt-20" style={{ animationDelay: "0.15s" }}>
           <ProductFrame
             title="What would you like to do?"
-            description="The live workspace starts with the action your team wants to take, then keeps current campaigns and templates close at hand."
+            description="Start with the review your team needs, then keep current campaigns and templates close at hand."
           >
             <div className="p-4 sm:p-6">
               <CreationLauncher
+                interactive={false}
                 actions={[
                   {
                     href: "/dashboard/campaigns/new",

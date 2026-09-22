@@ -78,8 +78,8 @@ export function AnnualResultsSection() {
         <div>
           <SectionHeading
             eyebrow="Annual appraisal results"
-            title="Get something useful back."
-            copy="The product brings employee and manager answers together, highlights differences and gives the review conversation somewhere concrete to start."
+            title="See both perspectives in one appraisal."
+            copy="Ratings and written responses stay together in a retained review record. Compare employee and manager answers, use differences as prompts, and carry useful context into the conversation."
           />
         </div>
         <ResultsProof />

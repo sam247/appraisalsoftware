@@ -77,6 +77,7 @@ export function WorkflowTypesSection() {
         <SectionHeading
           eyebrow="Flexible"
           title="What would you like to run?"
+          copy="Some teams still stitch appraisals together from Word documents, PDFs, spreadsheets and email. Choose a focused workflow, then keep questions, responses and completion in one place."
           align="center"
         />
 
@@ -194,7 +195,7 @@ const workflowSteps = [
         { label: "Responses", value: "24 of 24" },
         { label: "Avg. score", value: "4.1 / 5.0" },
         { label: "Results", value: "Self vs Manager answers" },
-        { label: "360 view", value: "Planned addition" },
+        { label: "Record", value: "Ratings and written answers" },
       ],
       meta: "Complete",
       action: "Review answers",
@@ -212,7 +213,7 @@ export function WorkflowStepsSection() {
         <SectionHeading
           eyebrow="How it works"
           title="Create. Send. Collect. Understand."
-          copy="Four steps from reusable questions to a finished employee and manager appraisal cycle."
+          copy="Set up reusable questions and the people being reviewed, send the forms, track responses, then review the completed record together."
           align="center"
         />
 
@@ -333,7 +334,7 @@ export function PositioningSection() {
         <SectionHeading
           eyebrow="Why this exists"
           title="You don't need another HR system."
-          copy="Most appraisal software is buried inside a platform you don't need. We built the appraisal part only."
+          copy="Some teams are still stitching appraisals together from Word documents, PDFs, spreadsheets and email. Appraisal Software keeps the review process focused without asking you to adopt a wider HR suite."
           align="center"
         />
 
@@ -423,6 +424,8 @@ export function CampaignSection() {
               {[
                 "One view of every employee's status",
                 "Configured campaign reminders for outstanding forms",
+                "Personal response links for each respondent",
+                "Organisation branding on respondent forms and results",
                 "Manager and employee responses on the same record",
                 "Read employee and manager answers when responses arrive",
               ].map((item) => (
@@ -588,8 +591,8 @@ export function PricingSection() {
       <div className="mx-auto max-w-6xl px-5 lg:px-8">
         <SectionHeading
           eyebrow="Pricing"
-          title="A focused appraisal product."
-          copy="Create an appraisal workspace and start with the focused workflow your team needs."
+          title="A focused appraisal workflow."
+          copy="Create the campaign, assign employee and manager responses, follow completion and keep the finished appraisal record."
           align="center"
         />
 
@@ -597,7 +600,7 @@ export function PricingSection() {
         <div className="mt-12 grid gap-10 lg:grid-cols-2 lg:items-center lg:gap-16">
           <div>
             <p className="text-[15px] leading-relaxed text-muted-foreground">
-              Start with reusable questions, collect employee and manager responses, track completion and review both perspectives in one place. The product is designed for teams that want appraisal software without a wider HR suite.
+              Start with reusable questions, collect employee and manager responses, track completion and review both perspectives in one place. It is designed for UK teams that need a repeatable appraisal process without a wider HR suite.
             </p>
             <ul className="mt-8 space-y-3 text-sm text-foreground">
               {[

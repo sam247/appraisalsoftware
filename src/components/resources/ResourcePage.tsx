@@ -3,6 +3,7 @@ import { SiteChrome } from "@/components/layout/SiteChrome";
 import { ContentSection, CtaBand, PageHero, RelatedLinks, homeCrumb } from "@/components/marketing/PageSections";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { TemplateActions } from "@/components/resources/TemplateActions";
+import { ResourceVisual } from "@/components/resources/ResourceVisual";
 import { RESOURCE_REVIEW_DATE, resources, type ResourceContent } from "@/lib/resource-content";
 import { articleSchema, breadcrumbSchema } from "@/lib/schema";
 
@@ -23,6 +24,7 @@ export function ResourcePage({ resource }: { resource: ResourceContent }) {
       <JsonLd data={breadcrumbSchema(crumbs.map((crumb) => ({ name: crumb.label, path: crumb.href })))} />
       {resource.kind === "guide" ? <JsonLd data={articleSchema({ title: resource.title, description: resource.description, path, dateModified: RESOURCE_REVIEW_DATE })} /> : null}
       <PageHero compact={Boolean(resource.template)} eyebrow={resource.kind === "template" ? "Free template" : "Practical guide"} title={resource.title} description={resource.description} breadcrumbs={crumbs} />
+      <ResourceVisual resource={resource} />
       {resource.template ? <section id="template" className="border-b border-border py-10 sm:py-12">
         <div className="mx-auto max-w-6xl px-5 lg:px-8">
           <div className="max-w-3xl">

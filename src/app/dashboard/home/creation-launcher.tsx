@@ -29,8 +29,10 @@ const ICONS: Record<LauncherAction["icon"], Icon> = {
 
 export default function CreationLauncher({
   actions,
+  interactive = true,
 }: {
   actions: LauncherAction[];
+  interactive?: boolean;
 }) {
   return (
     <div className="relative">
@@ -53,20 +55,16 @@ export default function CreationLauncher({
             const Icon = ICONS[action.icon];
             const rightEdge = index % 2 === 0;
             const topRow = index < 2;
-            return (
-              <Link
-                key={action.title}
-                href={action.href}
-                role="listitem"
-                className={cn(
-                  "group relative flex gap-3.5 px-4 py-4 outline-none transition-[background-color,box-shadow,transform] duration-200 sm:px-5 sm:py-5",
-                  "hover:bg-accent/50 focus-visible:bg-accent/50 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
-                  "motion-safe:hover:-translate-y-px",
-                  rightEdge && "sm:border-r sm:border-border/80",
-                  topRow && "border-b border-border/80 sm:border-b",
-                  !topRow && "border-b border-border/80 last:border-b-0 sm:border-b-0",
-                )}
-              >
+            const className = cn(
+              "group relative flex gap-3.5 px-4 py-4 sm:px-5 sm:py-5",
+              interactive &&
+                "outline-none transition-[background-color,box-shadow,transform] duration-200 hover:bg-accent/50 focus-visible:bg-accent/50 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset motion-safe:hover:-translate-y-px",
+              rightEdge && "sm:border-r sm:border-border/80",
+              topRow && "border-b border-border/80 sm:border-b",
+              !topRow && "border-b border-border/80 last:border-b-0 sm:border-b-0",
+            );
+            const content = (
+              <>
                 <span
                   className={cn(
                     "mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-xl border border-border/80 bg-surface text-primary transition-colors duration-200",
@@ -81,22 +79,34 @@ export default function CreationLauncher({
                     <span className="text-sm font-semibold tracking-tight text-foreground">
                       {action.title}
                     </span>
-                    <ArrowUpRight
-                      className={cn(
-                        "mt-0.5 size-3.5 shrink-0 text-muted-foreground/70 transition-all duration-200",
-                        "group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-primary",
-                        "group-focus-visible:text-primary",
-                        "motion-reduce:transition-none motion-reduce:group-hover:translate-x-0 motion-reduce:group-hover:translate-y-0",
-                      )}
-                      aria-hidden
-                      strokeWidth={2}
-                    />
+                    {interactive ? (
+                      <ArrowUpRight
+                        className={cn(
+                          "mt-0.5 size-3.5 shrink-0 text-muted-foreground/70 transition-all duration-200",
+                          "group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-primary",
+                          "group-focus-visible:text-primary",
+                          "motion-reduce:transition-none motion-reduce:group-hover:translate-x-0 motion-reduce:group-hover:translate-y-0",
+                        )}
+                        aria-hidden
+                        strokeWidth={2}
+                      />
+                    ) : null}
                   </span>
                   <span className="mt-0.5 block text-xs leading-relaxed text-muted-foreground">
                     {action.description}
                   </span>
                 </span>
+              </>
+            );
+
+            return interactive ? (
+              <Link key={action.title} href={action.href} role="listitem" className={className}>
+                {content}
               </Link>
+            ) : (
+              <div key={action.title} role="listitem" className={className}>
+                {content}
+              </div>
             );
           })}
         </div>
