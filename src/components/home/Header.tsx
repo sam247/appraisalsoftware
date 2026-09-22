@@ -42,7 +42,7 @@ export function Header() {
         <Link href={ROUTES.home} className="shrink-0" aria-label="appraisal.software home">
           <BrandMark size={36} />
         </Link>
-        <nav aria-label="Main navigation" className="hidden flex-1 items-center justify-center gap-8 lg:flex">
+        <nav aria-label="Main navigation" className="hidden flex-1 items-center justify-start gap-7 lg:flex">
           {nav.map((item) => (
             <Link
               key={item.label}

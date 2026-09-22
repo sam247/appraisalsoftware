@@ -52,8 +52,8 @@ export function ConsentManager({ children }: { children: ReactNode }) {
           },
           typography: {
             fontFamily: "var(--font-inter), ui-sans-serif, system-ui, sans-serif",
-            fontSize: { base: "0.8125rem" },
-            lineHeight: { normal: "1.45" },
+            fontSize: { base: "0.75rem" },
+            lineHeight: { normal: "1.4" },
           },
           radius: {
             sm: "0.5rem",
@@ -61,7 +61,7 @@ export function ConsentManager({ children }: { children: ReactNode }) {
             lg: "1rem",
           },
           shadows: {
-            lg: "0 24px 60px oklch(0.14 0.01 75 / 0.16)",
+            lg: "0 16px 40px oklch(0.14 0.01 75 / 0.14)",
           },
           consentActions: {
             default: { mode: "stroke" },
@@ -71,11 +71,11 @@ export function ConsentManager({ children }: { children: ReactNode }) {
           },
           slots: {
             consentBannerCard:
-              "max-w-xs rounded-xl border p-4 shadow-lg sm:max-w-sm",
-            consentBannerHeader: "gap-1",
-            consentBannerTitle: "text-sm font-semibold tracking-tight",
-            consentBannerDescription: "text-xs leading-relaxed",
-            consentBannerFooter: "gap-2 pt-1",
+              "max-w-[15.5rem] rounded-lg border p-3 shadow-lg sm:max-w-[17rem]",
+            consentBannerHeader: "gap-0.5",
+            consentBannerTitle: "text-xs font-semibold tracking-tight",
+            consentBannerDescription: "text-[11px] leading-snug",
+            consentBannerFooter: "gap-1.5 pt-0.5",
             consentDialogCard: "rounded-2xl border shadow-lg",
             consentDialogHeader: "gap-2",
             consentDialogTitle: "font-semibold tracking-tight",
@@ -88,7 +88,7 @@ export function ConsentManager({ children }: { children: ReactNode }) {
         hideBranding
         legalLinks={["privacyPolicy"]}
         title="Cookies"
-        description="We use essential cookies to run the site and optional cookies to measure usage."
+        description="Essential cookies to run the site, plus optional ones to measure usage."
         layout={["customize", ["reject", "accept"]]}
         primaryButton="accept"
       />
