@@ -4,6 +4,15 @@ import Link from "next/link";
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { importPeopleCsv } from "../../../people/actions";
 import { saveSubjectsAndAssignments } from "../../actions";
 import type { PickerDepartment, PickerPerson } from "../../people-picker";
 
@@ -12,6 +21,73 @@ type SubjectRow = { personId: string; managerPersonId: string | null };
 
 function label(person: PersonRow): string {
   return person.full_name?.trim() || person.email;
+}
+
+function ImportPeopleDialog({
+  campaignId,
+  open,
+  onOpenChange,
+}: {
+  campaignId: string;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
+  const [file, setFile] = useState<File | null>(null);
+  const returnTo = `/dashboard/campaigns/${campaignId}/people`;
+
+  return (
+    <Dialog
+      open={open}
+      onOpenChange={(nextOpen) => {
+        if (!nextOpen) setFile(null);
+        onOpenChange(nextOpen);
+      }}
+    >
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Import people</DialogTitle>
+          <DialogDescription>
+            Add people to your workspace. They&apos;ll be available for this and
+            future appraisals.
+          </DialogDescription>
+        </DialogHeader>
+        <form action={importPeopleCsv} encType="multipart/form-data">
+          <input type="hidden" name="return_to" value={returnTo} />
+          <label className="block text-sm font-medium">
+            Upload a CSV file
+            <input
+              aria-label="People CSV file"
+              name="file"
+              type="file"
+              accept=".csv,text/csv"
+              required
+              onChange={(event) =>
+                setFile(event.target.files?.[0] ?? null)
+              }
+              className="mt-2 w-full text-sm file:mr-3 file:rounded-md file:border-0 file:bg-surface file:px-3 file:py-2 file:text-sm"
+            />
+          </label>
+          <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+            Required column: <span className="font-medium text-foreground">email</span>.
+            Optional columns: full_name, job_title and department. Existing
+            emails are skipped.
+          </p>
+          <DialogFooter className="mt-6">
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => onOpenChange(false)}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" disabled={!file}>
+              Import people
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
 }
 
 export default function PeopleWorkspace({
@@ -45,6 +121,7 @@ export default function PeopleWorkspace({
   );
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+  const [importOpen, setImportOpen] = useState(false);
 
   const byId = useMemo(
     () => Object.fromEntries(people.map((person) => [person.id, person])),
@@ -202,12 +279,12 @@ export default function PeopleWorkspace({
                 className="field w-full"
               />
             </label>
-            <label className="text-sm">
+            <label className="w-full text-sm sm:w-48 xl:w-52">
               <span className="sr-only">Department</span>
               <select
                 value={departmentId}
                 onChange={(event) => setDepartmentId(event.target.value)}
-                className="field"
+                className="field w-full"
               >
                 <option value="">All departments</option>
                 {departments.map((department) => (
@@ -217,12 +294,9 @@ export default function PeopleWorkspace({
                 ))}
               </select>
             </label>
-            <Link
-              href={`/dashboard/people/import?returnTo=${encodeURIComponent(`/dashboard/campaigns/${campaignId}/people`)}`}
-              className="inline-flex h-9 items-center rounded-md border border-input px-3 text-sm font-medium text-foreground hover:bg-surface"
-            >
+            <Button type="button" variant="outline" onClick={() => setImportOpen(true)}>
               Import people
-            </Link>
+            </Button>
           </div>
 
           <div className="flex flex-wrap items-center gap-2 py-3">
@@ -440,13 +514,24 @@ export default function PeopleWorkspace({
 
       {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
       <div className="flex flex-wrap gap-2 border-t border-border pt-5">
-        <Button type="button" disabled={pending} onClick={save}>
-          {pending ? "Saving…" : `Save ${selectedPeople.length} people`}
+        <Button
+          type="button"
+          disabled={pending || selectedPeople.length === 0}
+          onClick={save}
+        >
+          {pending
+            ? "Saving…"
+            : `Save ${selectedPeople.length} ${selectedPeople.length === 1 ? "person" : "people"}`}
         </Button>
         <Button type="button" variant="ghost" disabled={pending} onClick={confirmCancel}>
           Cancel
         </Button>
       </div>
+      <ImportPeopleDialog
+        campaignId={campaignId}
+        open={importOpen}
+        onOpenChange={setImportOpen}
+      />
     </div>
   );
 }
