@@ -1,13 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import PeoplePicker, { type PickerDepartment, type PickerPerson } from "../people-picker";
 import { campaignDate, campaignLocalDate, reminderSummary, setupCompleteness } from "../presentation";
 import {
-  finalizeFeedback360Draft, saveFeedback360Cohort, saveFeedback360Name,
+  finalizeFeedback360Draft, saveFeedback360Name,
   saveFeedback360Template, saveFeedback360Timing,
 } from "../actions";
 import type { Campaign, CampaignAssignment, Person, TemplateQuestion } from "@/lib/types/database";
@@ -17,20 +16,15 @@ type TemplateOption = { id: string; name: string; questions: { id: string; promp
 const field = "mt-1.5 w-full field";
 
 export default function Feedback360DraftBuilder({
-  campaign, subject, assignments, people, departments, questions, templateName, templates, ready,
+  campaign, subject, assignments, validReviewerCount, questions, templateName, templates, ready,
 }: {
   campaign: Campaign; subject: Person | null; assignments: CampaignAssignment[];
-  people: PickerPerson[]; departments: PickerDepartment[]; questions: TemplateQuestion[];
+  validReviewerCount: number; questions: TemplateQuestion[];
   templateName: string | null; templates: TemplateOption[]; ready: boolean;
 }) {
   const router = useRouter();
   const [expanded, setExpanded] = useState<Section | null>(null);
   const [name, setName] = useState(campaign.name);
-  const [subjectId, setSubjectId] = useState(subject?.id ?? "");
-  const [reviewerIds, setReviewerIds] = useState(assignments.map((a) => a.respondent_person_id));
-  const [relationships, setRelationships] = useState<Record<string, string>>(
-    Object.fromEntries(assignments.map((a) => [a.respondent_person_id, a.relationship ?? "peer"])),
-  );
   const [templateId, setTemplateId] = useState(campaign.template_id ?? "");
   const [mode, setMode] = useState<"" | "now" | "later">(
     campaign.settings?.draft_delivery_mode === "now" || campaign.settings?.draft_delivery_mode === "later"
@@ -42,14 +36,10 @@ export default function Feedback360DraftBuilder({
   const [acknowledged, setAcknowledged] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
-  const peopleById = useMemo(() => Object.fromEntries(people.map((p) => [p.id, p])), [people]);
   const selectedTemplate = templates.find((t) => t.id === templateId);
   const allowedTemplates = templates.filter((t) => t.questions.length > 0 && t.questions.every((q) => q.type === "rating" || q.type === "text"));
   const savedMode = campaign.settings?.draft_delivery_mode;
-  const savedReviewerCount = new Set(assignments.filter((a) => a.status === "pending" && !!peopleById[a.respondent_person_id] && a.respondent_person_id !== subject?.id && a.subject_person_id === subject?.id && ["manager", "peer", "direct_report", "other"].includes(a.relationship ?? "")).map((a) => a.respondent_person_id)).size;
   const dirty = expanded === "details" ? name !== campaign.name
-    : expanded === "people" ? subjectId !== (subject?.id ?? "") ||
-      JSON.stringify(reviewerIds.map((id) => [id, relationships[id] ?? "peer"]).sort()) !== JSON.stringify(assignments.map((a) => [a.respondent_person_id, a.relationship ?? "peer"]).sort())
     : expanded === "questions" ? templateId !== (campaign.template_id ?? "")
     : expanded === "timing" ? mode !== (savedMode ?? "") || sendDate !== localDate(campaign.opens_at) || closeDate !== localDate(campaign.closes_at)
     : false;
@@ -62,9 +52,6 @@ export default function Feedback360DraftBuilder({
   const changeSection = (next: Section | null) => {
     if (dirty && !window.confirm("Discard unsaved changes in this section?")) return;
     setName(campaign.name);
-    setSubjectId(subject?.id ?? "");
-    setReviewerIds(assignments.map((a) => a.respondent_person_id));
-    setRelationships(Object.fromEntries(assignments.map((a) => [a.respondent_person_id, a.relationship ?? "peer"])));
     setTemplateId(campaign.template_id ?? "");
     setMode(savedMode === "now" || savedMode === "later" ? savedMode : "");
     setSendDate(localDate(campaign.opens_at));
@@ -82,7 +69,7 @@ export default function Feedback360DraftBuilder({
     const section = expanded;
     startTransition(async () => {
       const result = section === "details" ? await saveFeedback360Name(campaign.id, name)
-        : section === "people" ? await saveFeedback360Cohort(campaign.id, subjectId, reviewerIds.map((personId) => ({ personId, relationship: relationships[personId] ?? "peer" })))
+        : section === "people" ? { error: "Open Edit subject & reviewers to change participants" }
         : section === "questions" ? await saveFeedback360Template(campaign.id, templateId)
         : await saveFeedback360Timing(campaign.id, mode as "now" | "later", mode === "later" ? sendDate : "", closeDate);
       if (result.error) { setError(result.error); return; }
@@ -99,10 +86,10 @@ export default function Feedback360DraftBuilder({
     });
   };
   const setup = setupCompleteness({
-    campaign, subjectCount: subject && peopleById[subject.id] ? 1 : 0,
-    assignmentCount: savedReviewerCount === assignments.length ? savedReviewerCount : 0, questionCount: questions.every((q) => q.type === "rating" || q.type === "text") && (campaign.questions_frozen_at !== null || templates.some((t) => t.id === campaign.template_id)) ? questions.length : 0,
+    campaign, subjectCount: subject ? 1 : 0,
+    assignmentCount: validReviewerCount === assignments.length ? validReviewerCount : 0, questionCount: questions.every((q) => q.type === "rating" || q.type === "text") && (campaign.questions_frozen_at !== null || templates.some((t) => t.id === campaign.template_id)) ? questions.length : 0,
   });
-  const canFinish = ready && setup.ready && savedReviewerCount >= 5;
+  const canFinish = ready && setup.ready && validReviewerCount >= 5;
   const sections: { key: Section; label: string; summary: string; done: boolean }[] = [
     { key: "details", label: "Details", summary: campaign.name + " · Anonymous 360 feedback", done: !!campaign.name.trim() },
     { key: "people", label: "Subject & Reviewers", summary: subject ? `${subject.full_name || subject.email} · ${assignments.length} ${assignments.length === 1 ? "reviewer" : "reviewers"}` : "Choose a subject and reviewers", done: setup.steps[1].done },
@@ -128,28 +115,27 @@ export default function Feedback360DraftBuilder({
       <div className="border-t border-border">
         {sections.map((section) => (
           <section key={section.key} className="border-b border-border last:border-b-0">
-            <button type="button" onClick={() => changeSection(expanded === section.key ? null : section.key)}
+            <button type="button" onClick={() => section.key === "people"
+              ? router.push(`/dashboard/campaigns/${campaign.id}/reviewers`)
+              : changeSection(expanded === section.key ? null : section.key)}
               aria-expanded={expanded === section.key} aria-controls={`editor-${section.key}`}
               className="flex w-full items-start justify-between gap-4 py-4 text-left sm:py-5">
               <span className="min-w-0"><span className="flex items-center gap-2 text-sm font-medium"><span className={`h-1.5 w-1.5 shrink-0 rounded-full ${section.done ? "bg-primary" : "bg-border-strong"}`} />{section.label}</span>
                 <span className="mt-1 block text-sm text-muted-foreground">{section.summary}</span></span>
-              <span className="shrink-0 text-xs font-medium text-primary">{expanded === section.key ? "Close" : section.done ? "Edit" : "Set up"}</span>
+              <span className="shrink-0 text-xs font-medium text-primary">
+                {section.key === "people"
+                  ? "Edit subject & reviewers →"
+                  : expanded === section.key
+                    ? "Close"
+                    : section.done
+                      ? "Edit"
+                      : "Set up"}
+              </span>
             </button>
             {expanded === section.key && <div id={`editor-${section.key}`} className="space-y-5 pb-6">
               {section.key === "details" && <div className="max-w-xl space-y-3">
                 <label className="block text-sm font-medium">Campaign name<input autoFocus className={field} value={name} onChange={(e) => setName(e.target.value)} maxLength={160} /></label>
                 <p className="text-xs text-muted-foreground">Anonymous 360 feedback. Reviewer identity and answer content remain separate.</p>
-              </div>}
-              {section.key === "people" && <div className="space-y-4">
-                <label className="block max-w-xl text-sm font-medium">Appraisal subject
-                  <select className={field} value={subjectId} onChange={(e) => { setSubjectId(e.target.value); setReviewerIds((ids) => ids.filter((id) => id !== e.target.value)); }}>
-                    <option value="">Choose a subject</option>{people.map((p) => <option key={p.id} value={p.id}>{p.full_name || p.email}</option>)}
-                  </select>
-                </label>
-                <p className="text-sm text-muted-foreground">Choose at least five distinct reviewers. Saved partial cohorts remain drafts. Reviewer names support delivery tracking, but no normal admin view links a reviewer to anonymous answers.</p>
-                {reviewerIds.some((id) => !peopleById[id]) && <p className="rounded-md bg-warning px-3 py-2.5 text-sm text-warning-foreground">Some saved reviewers are no longer available. <button type="button" className="font-medium underline" onClick={() => setReviewerIds((ids) => ids.filter((id) => !!peopleById[id]))}>Remove unavailable reviewers</button> and save a valid cohort.</p>}
-                {subjectId ? <PeoplePicker people={people} departments={departments} mode="360" excludeIds={[subjectId]} selectedIds={reviewerIds} onChange={setReviewerIds} relationships={relationships} onRelationshipChange={(id, value) => setRelationships((prev) => ({ ...prev, [id]: value }))} /> : <p className="text-sm text-muted-foreground">Choose a subject first.</p>}
-                <p className="text-xs text-muted-foreground">{reviewerIds.length} reviewers selected · At least five are required before send.</p>
               </div>}
               {section.key === "questions" && <div className="max-w-3xl space-y-3">
                 <label className="block max-w-xl text-sm font-medium">360 question template<select className={field} value={templateId} onChange={(e) => setTemplateId(e.target.value)}>
@@ -177,7 +163,7 @@ export default function Feedback360DraftBuilder({
         <div><h2 className="font-display text-lg font-semibold">Review &amp; Send</h2><p className="mt-1 text-sm text-muted-foreground">Review the saved anonymous feedback setup.</p></div>
         <dl className="grid gap-5 text-sm sm:grid-cols-2 xl:grid-cols-3">
           <div><dt className="text-xs text-muted-foreground">Subject</dt><dd>{subject?.full_name || subject?.email || "Not selected"}</dd></div>
-          <div><dt className="text-xs text-muted-foreground">Reviewers</dt><dd>{assignments.length} saved · {savedReviewerCount >= 5 ? "Five-reviewer minimum met" : "At least five required"}</dd></div>
+          <div><dt className="text-xs text-muted-foreground">Reviewers</dt><dd>{validReviewerCount} saved · {validReviewerCount >= 5 ? "Five-reviewer minimum met" : "At least five required"}</dd></div>
           <div><dt className="text-xs text-muted-foreground">Questions</dt><dd>{templateName ?? "No template"} · {questions.length} {questions.length === 1 ? "question" : "questions"}</dd></div>
           <div><dt className="text-xs text-muted-foreground">Delivery</dt><dd>{sections[3].summary}</dd></div>
           <div><dt className="text-xs text-muted-foreground">Reminders</dt><dd>{reminderSummary(campaign.reminder_settings)}</dd></div>

@@ -25,7 +25,6 @@ import type {
   Campaign,
   CampaignAssignment,
   CampaignSubject,
-  Department,
   Person,
   TemplateQuestion,
   Template,
@@ -56,10 +55,8 @@ export default async function CampaignDetailPage({
   const [
     subjectResult,
     assignmentResult,
-    peopleResult,
     questionResult,
     templateResult,
-    deptResult,
     templateQuestionsResult,
   ] = await Promise.all([
     supabase
@@ -75,11 +72,6 @@ export default async function CampaignDetailPage({
       .eq("campaign_id", id)
       .eq("organization_id", org.id)
       .order("respondent_person_id"),
-    supabase
-      .from("people")
-      .select("*")
-      .eq("organization_id", org.id)
-      .order("full_name"),
     campaign.questions_frozen_at
       ? supabase
           .from("campaign_questions")
@@ -102,13 +94,31 @@ export default async function CampaignDetailPage({
       .eq("organization_id", org.id)
       .is("archived_at", null)
       .order("name"),
-    supabase
-      .from("departments")
-      .select("id, name")
-      .eq("organization_id", org.id)
-      .order("name"),
     supabase.from("template_questions").select("id, template_id, prompt, type").eq("organization_id", org.id),
   ]);
+  const savedPersonIds = [
+    ...new Set([
+      ...(subjectResult.data ?? []).map((subject) => subject.person_id),
+      ...(assignmentResult.data ?? []).map(
+        (assignment) => assignment.respondent_person_id,
+      ),
+    ]),
+  ];
+  const peopleResult =
+    campaign.status === "draft"
+      ? savedPersonIds.length
+        ? await supabase
+            .from("people")
+            .select("*")
+            .eq("organization_id", org.id)
+            .in("id", savedPersonIds)
+            .order("full_name")
+        : { data: [], error: null }
+      : await supabase
+          .from("people")
+          .select("*")
+          .eq("organization_id", org.id)
+          .order("full_name");
   if (
     [
       subjectResult,
@@ -116,7 +126,6 @@ export default async function CampaignDetailPage({
       peopleResult,
       questionResult,
       templateResult,
-      deptResult,
       templateQuestionsResult,
     ].some((r) => r.error)
   )
@@ -127,7 +136,6 @@ export default async function CampaignDetailPage({
   const people = (peopleResult.data ?? []) as Person[];
   const questions = (questionResult.data ?? []) as TemplateQuestion[];
   const templates = (templateResult.data ?? []) as Template[];
-  const departments = (deptResult.data ?? []) as Department[];
   const peopleById = Object.fromEntries(people.map((p) => [p.id, p]));
   const activePersonIds = new Set(people.filter((p) => !p.archived_at).map((p) => p.id));
   const subjectId = subjects[0]?.person_id;
@@ -177,16 +185,6 @@ export default async function CampaignDetailPage({
           questions={questions}
           closesAt={campaign.closes_at}
           timezone={campaign.timezone}
-          people={people
-            .filter((p) => !p.archived_at)
-            .map((p) => ({
-              id: p.id,
-              full_name: p.full_name,
-              email: p.email,
-              department_id: p.department_id,
-              manager_person_id: p.manager_person_id,
-            }))}
-          departments={departments.map((d) => ({ id: d.id, name: d.name }))}
           initialSubjects={initialSubjects}
           pendingAssignmentCount={assignments.filter((a) => a.status === "pending").length}
           ready={ready}
@@ -211,8 +209,7 @@ export default async function CampaignDetailPage({
           campaign={campaign}
           subject={peopleById[subjects[0]?.person_id] ?? null}
           assignments={assignments}
-          people={people.filter((p) => !p.archived_at).map((p) => ({ id: p.id, full_name: p.full_name, email: p.email, department_id: p.department_id, manager_person_id: p.manager_person_id }))}
-          departments={departments.map((d) => ({ id: d.id, name: d.name }))}
+          validReviewerCount={valid360Reviewers}
           questions={questions}
           templateName={templateName}
           templates={templates.map((t) => ({ id: t.id, name: t.name, questions: (templateQuestionsResult.data ?? []).filter((q) => q.template_id === t.id).map((q) => ({ id: q.id, prompt: q.prompt, type: q.type })) }))}

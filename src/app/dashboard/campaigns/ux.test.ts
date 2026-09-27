@@ -36,7 +36,12 @@ import {
   finalizeFeedback360Draft,
 } from "./actions";
 import { upsertQuestion } from "../templates/actions";
-import { createPerson, updatePerson, archivePerson } from "../people/actions";
+import {
+  createPerson,
+  updatePerson,
+  archivePerson,
+  importPeopleCsv,
+} from "../people/actions";
 
 function query(result: object) {
   const chain: Record<string, unknown> = {};
@@ -336,6 +341,32 @@ describe("annual appraisal UX safeguards", () => {
       department_id: null,
       created_by: "owner",
     });
+  });
+
+  it("returns contextual people imports to the campaign participant workspace", async () => {
+    const existing = query({ data: [{ email: "existing@example.test" }] });
+    const departments = query({ data: [] });
+    const insert = query({ error: null });
+    mocks.from
+      .mockReturnValueOnce(existing)
+      .mockReturnValueOnce(departments)
+      .mockReturnValueOnce(insert);
+    const data = new FormData();
+    data.set(
+      "file",
+      new File(["email,full_name\nnew@example.test,New Person"], "people.csv"),
+    );
+    data.set("return_to", "/dashboard/campaigns/campaign/people");
+
+    await expect(importPeopleCsv(data)).rejects.toThrow(
+      "/dashboard/campaigns/campaign/people?ok=1%20ready%20imported",
+    );
+    expect(insert.insert).toHaveBeenCalledWith([
+      expect.objectContaining({
+        email: "new@example.test",
+        full_name: "New Person",
+      }),
+    ]);
   });
 });
 

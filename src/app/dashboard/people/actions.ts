@@ -264,12 +264,13 @@ async function resolveDepartmentIds(
 
 export async function importPeopleCsv(formData: FormData): Promise<void> {
   const { userId, org } = await requireOrgAdmin();
+  const returnTo = importReturnPath(formData.get("return_to"));
   const file = formData.get("file");
   if (!(file instanceof File) || file.size === 0) {
-    redirect("/dashboard/people?error=Choose+a+CSV+file+to+upload");
+    redirect(`${returnTo}?error=Choose+a+CSV+file+to+upload`);
   }
   if (file.size > 1_000_000) {
-    redirect("/dashboard/people?error=CSV+must+be+under+1MB");
+    redirect(`${returnTo}?error=CSV+must+be+under+1MB`);
   }
 
   const { parsePeopleCsv } = await import("@/lib/people/csv");
@@ -277,7 +278,7 @@ export async function importPeopleCsv(formData: FormData): Promise<void> {
   const { rows, errors } = parsePeopleCsv(text);
   if (!rows.length) {
     const msg = errors[0] ?? "No valid rows found";
-    redirect(`/dashboard/people?error=${encodeURIComponent(msg)}`);
+    redirect(`${returnTo}?error=${encodeURIComponent(msg)}`);
   }
 
   const supabase = await createClient();
@@ -304,7 +305,7 @@ export async function importPeopleCsv(formData: FormData): Promise<void> {
     );
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Could not create departments";
-    redirect(`/dashboard/people?error=${encodeURIComponent(msg)}`);
+    redirect(`${returnTo}?error=${encodeURIComponent(msg)}`);
   }
 
   if (toInsert.length) {
@@ -321,12 +322,13 @@ export async function importPeopleCsv(formData: FormData): Promise<void> {
       })),
     );
     if (error) {
-      redirect(`/dashboard/people?error=${encodeURIComponent(error.message)}`);
+      redirect(`${returnTo}?error=${encodeURIComponent(error.message)}`);
     }
   }
 
   revalidatePath("/dashboard/people");
   revalidatePath("/dashboard");
+  revalidatePath(returnTo);
 
   const summary = [
     `${toInsert.length} ready imported`,
@@ -335,5 +337,13 @@ export async function importPeopleCsv(formData: FormData): Promise<void> {
   ]
     .filter(Boolean)
     .join(" · ");
-  redirect(`/dashboard/people?ok=${encodeURIComponent(summary)}`);
+  redirect(`${returnTo}?ok=${encodeURIComponent(summary)}`);
+}
+
+function importReturnPath(value: FormDataEntryValue | null): string {
+  if (typeof value !== "string") return "/dashboard/people";
+  if (/^\/dashboard\/campaigns\/[^/]+\/(people|reviewers)$/.test(value)) {
+    return value;
+  }
+  return "/dashboard/people";
 }
