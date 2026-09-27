@@ -37,6 +37,8 @@ interface RespondFormProps {
   initialAnswers: Answer[];
   anonymous?: boolean;
   subjectName?: string;
+  preview?: boolean;
+  previewQuestionIndex?: number;
 }
 
 type Phase = "cover" | "questions" | "complete";
@@ -130,6 +132,8 @@ export default function RespondForm({
   initialAnswers,
   anonymous = false,
   subjectName,
+  preview = false,
+  previewQuestionIndex,
 }: RespondFormProps) {
   const accent = accentForWhiteText(orgBrandColor);
   const brandStyle = {
@@ -142,11 +146,14 @@ export default function RespondForm({
   );
   const [phase, setPhase] = useState<Phase>(() => {
     if (alreadySubmitted) return "complete";
+    if (preview && previewQuestionIndex !== undefined) return "questions";
     if (initialAnswers.some(isAnswered)) return "questions";
     return "cover";
   });
   const [questionIndex, setQuestionIndex] = useState(() =>
-    initialAnswers.some(isAnswered)
+    preview && previewQuestionIndex !== undefined
+      ? Math.max(0, Math.min(questions.length - 1, previewQuestionIndex))
+      : initialAnswers.some(isAnswered)
       ? firstUnansweredIndex(
           questions,
           Object.fromEntries(
@@ -183,6 +190,7 @@ export default function RespondForm({
   };
 
   const persistAnswers = (nextAnswers: Record<string, Answer>) => {
+    if (preview) return;
     startSaveTransition(async () => {
       try {
         const res = await fetch("/api/respond", {
@@ -210,6 +218,7 @@ export default function RespondForm({
   const handleSave = () => persistAnswers(answers);
 
   const submitAll = () => {
+    if (preview) { setSubmitted(true); setPhase("complete"); return; }
     setError(null);
     for (const q of questions) {
       if (q.required && !isAnswered(answers[q.id])) {
@@ -289,7 +298,7 @@ export default function RespondForm({
 
   if (submitted || phase === "complete") {
     return (
-      <Shell style={brandStyle}>
+      <Shell style={brandStyle} embedded={preview}>
         <div className="flex flex-1 flex-col items-center justify-center text-center py-10">
           <div
             className="mb-5 flex h-14 w-14 items-center justify-center rounded-full text-2xl text-white"
@@ -308,10 +317,10 @@ export default function RespondForm({
             Thank you
           </h1>
           <p className="mt-3 max-w-md text-sm leading-relaxed text-muted-foreground">
-            Your responses have been submitted successfully.
-            {anonymous &&
+            {preview ? "This is the completion preview. No response was recorded." : "Your responses have been submitted successfully."}
+            {!preview && anonymous &&
               " Anonymous results will be released only after closure and when five reviewers have responded."}
-            {!anonymous && orgName
+            {!preview && !anonymous && orgName
               ? ` ${orgName} can now include them in the review.`
               : ""}
           </p>
@@ -332,7 +341,7 @@ export default function RespondForm({
     const minutes = estimateMinutes(questions.length);
 
     return (
-      <Shell style={brandStyle}>
+      <Shell style={brandStyle} embedded={preview}>
         <div className="flex flex-1 flex-col justify-center gap-8 py-6">
           <OrgIdentityHeader
             orgName={orgName}
@@ -374,8 +383,7 @@ export default function RespondForm({
               {copy.cta}
             </Button>
             <p className="text-center text-xs text-muted-foreground">
-              You can close this page and return using the link in your email.
-              Progress saves as you go.
+              {preview ? "This is a preview. Nothing you enter will be saved or submitted." : "You can close this page and return using the link in your email. Progress saves as you go."}
             </p>
           </div>
         </div>
@@ -387,14 +395,14 @@ export default function RespondForm({
   const current = questions[questionIndex];
   if (!current) {
     return (
-      <Shell style={brandStyle}>
+      <Shell style={brandStyle} embedded={preview}>
         <p className="text-sm text-muted-foreground">No questions available.</p>
       </Shell>
     );
   }
 
   return (
-    <Shell style={brandStyle}>
+    <Shell style={brandStyle} embedded={preview}>
       <div className="flex flex-1 flex-col">
         <div className="space-y-3 pb-6">
           <div
@@ -490,13 +498,15 @@ export default function RespondForm({
 function Shell({
   children,
   style,
+  embedded = false,
 }: {
   children: ReactNode;
   style?: CSSProperties;
+  embedded?: boolean;
 }) {
   return (
-    <div className="min-h-dvh bg-surface text-foreground" style={style}>
-      <div className="mx-auto flex min-h-dvh w-full max-w-xl flex-col px-5 py-8 sm:px-8 sm:py-12">
+    <div className={`${embedded ? "min-h-[38rem]" : "min-h-dvh"} bg-surface text-foreground`} style={style}>
+      <div className={`mx-auto flex ${embedded ? "min-h-[38rem]" : "min-h-dvh"} w-full max-w-xl flex-col px-5 py-8 sm:px-8 sm:py-12`}>
         {children}
       </div>
     </div>

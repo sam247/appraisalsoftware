@@ -57,7 +57,6 @@ export default async function CampaignDetailPage({
     assignmentResult,
     questionResult,
     templateResult,
-    templateQuestionsResult,
   ] = await Promise.all([
     supabase
       .from("campaign_subjects")
@@ -72,7 +71,7 @@ export default async function CampaignDetailPage({
       .eq("campaign_id", id)
       .eq("organization_id", org.id)
       .order("respondent_person_id"),
-    campaign.questions_frozen_at
+    campaign.questions_frozen_at || campaign.form_started_at
       ? supabase
           .from("campaign_questions")
           .select("*")
@@ -94,7 +93,6 @@ export default async function CampaignDetailPage({
       .eq("organization_id", org.id)
       .is("archived_at", null)
       .order("name"),
-    supabase.from("template_questions").select("id, template_id, prompt, type").eq("organization_id", org.id),
   ]);
   const savedPersonIds = [
     ...new Set([
@@ -126,7 +124,6 @@ export default async function CampaignDetailPage({
       peopleResult,
       questionResult,
       templateResult,
-      templateQuestionsResult,
     ].some((r) => r.error)
   )
     throw new Error("Unable to load campaign details");
@@ -140,7 +137,7 @@ export default async function CampaignDetailPage({
   const activePersonIds = new Set(people.filter((p) => !p.archived_at).map((p) => p.id));
   const subjectId = subjects[0]?.person_id;
   const valid360Reviewers = new Set(assignments.filter((a) => a.status === "pending" && activePersonIds.has(a.respondent_person_id) && a.respondent_person_id !== subjectId && a.subject_person_id === subjectId && ["manager", "peer", "direct_report", "other"].includes(a.relationship ?? "")).map((a) => a.respondent_person_id)).size;
-  const valid360Questions = questions.length > 0 && questions.every((q) => q.type === "rating" || q.type === "text") && (campaign.questions_frozen_at !== null || templates.some((t) => t.id === campaign.template_id));
+  const valid360Questions = questions.length > 0 && questions.every((q) => q.type === "rating" || q.type === "text") && (!!campaign.questions_frozen_at || !!campaign.form_started_at || templates.some((t) => t.id === campaign.template_id));
   const progress = responseProgress(assignments);
   const setup = setupCompleteness({
     campaign,
@@ -176,13 +173,12 @@ export default async function CampaignDetailPage({
           campaignId={id}
           campaignName={campaign.name}
           campaignSettings={campaign.settings}
+          formStartedAt={campaign.form_started_at}
           reminderSettings={campaign.reminder_settings}
           opensAt={campaign.opens_at}
           templateName={templateName}
           templateId={campaign.template_id}
-          templates={templates.map((t) => ({ id: t.id, name: t.name, questions: (templateQuestionsResult.data ?? []).filter((q) => q.template_id === t.id).map((q) => ({ id: q.id, prompt: q.prompt, type: q.type })) }))}
           questionCount={questions.length}
-          questions={questions}
           closesAt={campaign.closes_at}
           timezone={campaign.timezone}
           initialSubjects={initialSubjects}
@@ -212,7 +208,6 @@ export default async function CampaignDetailPage({
           validReviewerCount={valid360Reviewers}
           questions={questions}
           templateName={templateName}
-          templates={templates.map((t) => ({ id: t.id, name: t.name, questions: (templateQuestionsResult.data ?? []).filter((q) => q.template_id === t.id).map((q) => ({ id: q.id, prompt: q.prompt, type: q.type })) }))}
           ready={ready}
         />
       </>

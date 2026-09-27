@@ -102,7 +102,7 @@ export type SetupCompleteness = {
 
 /** Genuine draft setup completeness — not a cosmetic wizard. */
 export function setupCompleteness(input: {
-  campaign: Pick<Campaign, "campaign_type" | "template_id" | "name" | "settings" | "opens_at" | "closes_at">;
+  campaign: Pick<Campaign, "campaign_type" | "template_id" | "name" | "settings" | "opens_at" | "closes_at"> & Partial<Pick<Campaign, "form_started_at" | "questions_frozen_at">>;
   subjectCount: number;
   assignmentCount: number;
   questionCount: number;
@@ -111,8 +111,7 @@ export function setupCompleteness(input: {
   const hasPeople = is360
     ? input.subjectCount === 1 && input.assignmentCount >= 5
     : input.subjectCount > 0 && input.assignmentCount >= 1;
-  const hasQuestions =
-    !!input.campaign.template_id && input.questionCount > 0;
+  const hasQuestions = input.questionCount > 0 && !!(input.campaign.form_started_at || input.campaign.questions_frozen_at || input.campaign.template_id);
   const mode = input.campaign.settings?.draft_delivery_mode;
   const hasTiming = (mode === "now" || (mode === "later" && !!input.campaign.opens_at && new Date(input.campaign.opens_at).getTime() > Date.now())) &&
     (!input.campaign.closes_at || new Date(input.campaign.closes_at).getTime() > (mode === "later" && input.campaign.opens_at ? new Date(input.campaign.opens_at).getTime() : Date.now()));
@@ -195,7 +194,7 @@ export function buildAttentionItems(
       campaign,
       subjectCount: subjects,
       assignmentCount: is360 ? ((valid360ReviewerCounts[campaign.id] ?? 0) === campAssignments.length ? campAssignments.length : 0) : campAssignments.filter((a) => a.status === "pending").length,
-      questionCount: questionCounts[campaign.id] ?? questionCounts[campaign.template_id ?? ""] ?? 0,
+      questionCount: campaign.form_started_at || campaign.questions_frozen_at ? (questionCounts[campaign.id] ?? 0) : (questionCounts[campaign.template_id ?? ""] ?? 0),
     });
 
     if (campaign.status === "draft") {

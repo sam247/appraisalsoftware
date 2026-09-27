@@ -10,29 +10,26 @@ import DraftConfirmationDialog from "../draft-confirmation-dialog";
 import {
   finalizeAnnualDraft,
   saveAnnualName,
-  saveAnnualTemplate,
   saveAnnualTiming,
 } from "../actions";
-import type { Campaign, TemplateQuestion } from "@/lib/types/database";
+import type { Campaign } from "@/lib/types/database";
 
 export type SubjectRow = { personId: string; managerPersonId: string | null };
 type Section = "details" | "people" | "questions" | "timing";
-type TemplateOption = { id: string; name: string; questions: { id: string; prompt: string; type: string }[] };
 const field = "mt-1.5 w-full field";
 
 export default function AnnualDraftBuilder({
-  campaignId, campaignName, campaignSettings, reminderSettings, opensAt, templateId, templateName, templates,
+  campaignId, campaignName, campaignSettings, reminderSettings, opensAt, templateId, templateName, formStartedAt,
   questionCount, closesAt, timezone, initialSubjects, pendingAssignmentCount, ready,
 }: {
   campaignId: string; campaignName: string; campaignSettings: Campaign["settings"]; reminderSettings: Campaign["reminder_settings"]; opensAt: string | null;
-  templateId: string | null; templateName: string | null; templates: TemplateOption[];
-  questionCount: number; questions: TemplateQuestion[]; closesAt: string | null; timezone: string;
+  templateId: string | null; templateName: string | null; formStartedAt: string | null;
+  questionCount: number; closesAt: string | null; timezone: string;
   initialSubjects: SubjectRow[]; pendingAssignmentCount: number; ready: boolean;
 }) {
   const router = useRouter();
   const [expanded, setExpanded] = useState<Section | null>(null);
   const [name, setName] = useState(campaignName);
-  const [selectedTemplate, setSelectedTemplate] = useState(templateId ?? "");
   const [mode, setMode] = useState<"" | "now" | "later">(
     campaignSettings?.draft_delivery_mode === "now" || campaignSettings?.draft_delivery_mode === "later"
       ? campaignSettings.draft_delivery_mode : "",
@@ -48,9 +45,7 @@ export default function AnnualDraftBuilder({
   const savedMode = campaignSettings?.draft_delivery_mode;
   const deliveryMode: DraftDeliveryMode =
     savedMode === "now" || savedMode === "later" ? savedMode : "";
-  const selected = templates.find((t) => t.id === selectedTemplate);
   const dirty = expanded === "details" ? name !== campaignName
-    : expanded === "questions" ? selectedTemplate !== (templateId ?? "")
     : expanded === "timing" ? mode !== (savedMode ?? "") || sendDate !== localDate(opensAt) || closeDate !== localDate(closesAt)
     : false;
   useEffect(() => {
@@ -62,7 +57,6 @@ export default function AnnualDraftBuilder({
   const changeSection = (next: Section | null) => {
     if (dirty && !window.confirm("Discard unsaved changes in this section?")) return;
     setName(campaignName);
-    setSelectedTemplate(templateId ?? "");
     setMode(savedMode === "now" || savedMode === "later" ? savedMode : "");
     setSendDate(localDate(opensAt));
     setCloseDate(localDate(closesAt));
@@ -80,7 +74,7 @@ export default function AnnualDraftBuilder({
     startTransition(async () => {
       const result = section === "details" ? await saveAnnualName(campaignId, name)
         : section === "people" ? { error: "Open Edit people to change participants" }
-        : section === "questions" ? await saveAnnualTemplate(campaignId, selectedTemplate)
+        : section === "questions" ? { error: "Open Edit form to change questions" }
         : await saveAnnualTiming(campaignId, mode as "now" | "later", mode === "later" ? sendDate : "", closeDate);
       if (result.error) { setError(result.error); return; }
       setExpanded(null);
@@ -102,13 +96,13 @@ export default function AnnualDraftBuilder({
     });
   };
   const setup = setupCompleteness({
-    campaign: { campaign_type: "annual_appraisal", name: campaignName, template_id: templateId, settings: campaignSettings, opens_at: opensAt, closes_at: closesAt },
+    campaign: { campaign_type: "annual_appraisal", name: campaignName, template_id: templateId, form_started_at: formStartedAt, settings: campaignSettings, opens_at: opensAt, closes_at: closesAt },
     subjectCount: initialSubjects.length, assignmentCount: pendingAssignmentCount, questionCount,
   });
   const sections: { key: Section; label: string; summary: string; done: boolean }[] = [
     { key: "details", label: "Details", summary: campaignName + " · Annual appraisal", done: !!campaignName.trim() },
     { key: "people", label: "People", summary: initialSubjects.length ? `${initialSubjects.length} ${initialSubjects.length === 1 ? "employee" : "employees"} · ${managerCount} manager ${managerCount === 1 ? "review" : "reviews"}${selfOnlyCount ? ` · ${selfOnlyCount} self-only` : ""}` : "Choose employees and managers", done: setup.steps[1].done },
-    { key: "questions", label: "Questions", summary: questionCount ? `${templateName ?? "Template"} · ${questionCount} ${questionCount === 1 ? "question" : "questions"}` : "Choose a question template", done: questionCount > 0 },
+    { key: "questions", label: "Questions", summary: questionCount ? `${templateName ?? "Campaign form"} · ${questionCount} ${questionCount === 1 ? "question" : "questions"}` : "Build the appraisal form", done: questionCount > 0 },
     { key: "timing", label: "Timing", summary: savedMode === "now" ? `Send now${closesAt ? ` · Closes ${campaignDate(closesAt, timezone)}` : ""}` : savedMode === "later" && opensAt ? `Send ${campaignDate(opensAt, timezone, true)}${closesAt ? ` · Closes ${campaignDate(closesAt, timezone)}` : ""}` : "Choose when to send", done: setup.steps[3].done },
   ];
   return (
@@ -143,14 +137,14 @@ export default function AnnualDraftBuilder({
       <div className="border-t border-border">
             {sections.map((section) => (
           <section key={section.key} className="border-b border-border last:border-b-0">
-            {section.key === "people" ? (
+            {section.key === "people" || section.key === "questions" ? (
               <div className="flex w-full items-start justify-between gap-4 py-4 text-left sm:py-5">
                 <span className="min-w-0">
                   <span className="flex items-center gap-2 text-sm font-medium"><span className={`h-1.5 w-1.5 shrink-0 rounded-full ${section.done ? "bg-primary" : "bg-border-strong"}`} />{section.label}</span>
                   <span className="mt-1 block text-sm text-muted-foreground">{section.summary}</span>
                 </span>
                 <Button asChild type="button" size="sm" variant="outline" className="shrink-0">
-                  <Link href={`/dashboard/campaigns/${campaignId}/people`}>Edit people</Link>
+                  <Link href={`/dashboard/campaigns/${campaignId}/${section.key === "people" ? "people" : "form"}`}>{section.key === "people" ? "Edit people" : questionCount ? "Edit form" : "Build form"}</Link>
                 </Button>
               </div>
             ) : <button type="button" onClick={() => changeSection(expanded === section.key ? null : section.key)}
@@ -169,16 +163,6 @@ export default function AnnualDraftBuilder({
                 {section.key === "details" && <div className="max-w-xl space-y-3">
                   <label className="block text-sm font-medium">Campaign name<input autoFocus className={field} value={name} onChange={(e) => setName(e.target.value)} maxLength={160} /></label>
                   <p className="text-xs text-muted-foreground">Annual appraisal · Each employee receives a self appraisal. Assigned managers receive a manager appraisal.</p>
-                </div>}
-                {section.key === "questions" && <div className="max-w-3xl space-y-3">
-                  <label className="block max-w-xl text-sm font-medium">Question template
-                    <select className={field} value={selectedTemplate} onChange={(e) => setSelectedTemplate(e.target.value)}>
-                      <option value="">Choose a template</option>
-                      {templates.map((t) => <option key={t.id} value={t.id}>{t.name} · {t.questions.length} {t.questions.length === 1 ? "question" : "questions"}</option>)}
-                    </select>
-                  </label>
-                  {selected && <div className="text-sm"><p className="font-medium">{selected.questions.length} {selected.questions.length === 1 ? "question" : "questions"}</p><ol className="mt-2 list-decimal space-y-1 pl-5 text-muted-foreground">{selected.questions.map((q) => <li key={q.id}>{q.prompt}</li>)}</ol></div>}
-                  <p className="text-xs text-muted-foreground">Questions are frozen when you send or schedule. Edit the template in <Link href="/dashboard/templates" className="text-primary underline">Templates</Link>.</p>
                 </div>}
                 {section.key === "timing" && <div className="max-w-xl space-y-4">
                   <fieldset><legend className="text-sm font-medium">Delivery</legend><div className="mt-2 flex flex-wrap gap-4">

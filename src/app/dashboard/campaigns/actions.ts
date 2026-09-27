@@ -70,6 +70,15 @@ export async function createCampaign(formData: FormData): Promise<void> {
       `/dashboard/campaigns/new?error=${encodeURIComponent(error?.message ?? "Failed to create")}`,
     );
 
+  if (templateId) {
+    const started = await supabase.rpc("start_campaign_form", {
+      p_campaign_id: campaign.id,
+      p_template_id: templateId,
+    });
+    if (started.error)
+      redirect(`/dashboard/campaigns/${campaign.id}?error=${encodeURIComponent("Draft created. Open Questions to choose a form: " + started.error.message)}`);
+  }
+
   redirect(`/dashboard/campaigns/${campaign.id}`);
 }
 

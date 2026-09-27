@@ -9,25 +9,23 @@ import { draftPrimaryAction, type DraftDeliveryMode } from "../draft-action";
 import DraftConfirmationDialog from "../draft-confirmation-dialog";
 import {
   finalizeFeedback360Draft, saveFeedback360Name,
-  saveFeedback360Template, saveFeedback360Timing,
+  saveFeedback360Timing,
 } from "../actions";
 import type { Campaign, CampaignAssignment, Person, TemplateQuestion } from "@/lib/types/database";
 
 type Section = "details" | "people" | "questions" | "timing";
-type TemplateOption = { id: string; name: string; questions: { id: string; prompt: string; type: string }[] };
 const field = "mt-1.5 w-full field";
 
 export default function Feedback360DraftBuilder({
-  campaign, subject, assignments, validReviewerCount, questions, templateName, templates, ready,
+  campaign, subject, assignments, validReviewerCount, questions, templateName, ready,
 }: {
   campaign: Campaign; subject: Person | null; assignments: CampaignAssignment[];
   validReviewerCount: number; questions: TemplateQuestion[];
-  templateName: string | null; templates: TemplateOption[]; ready: boolean;
+  templateName: string | null; ready: boolean;
 }) {
   const router = useRouter();
   const [expanded, setExpanded] = useState<Section | null>(null);
   const [name, setName] = useState(campaign.name);
-  const [templateId, setTemplateId] = useState(campaign.template_id ?? "");
   const [mode, setMode] = useState<"" | "now" | "later">(
     campaign.settings?.draft_delivery_mode === "now" || campaign.settings?.draft_delivery_mode === "later"
       ? campaign.settings.draft_delivery_mode : "",
@@ -38,13 +36,10 @@ export default function Feedback360DraftBuilder({
   const [error, setError] = useState<string | null>(null);
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [pending, startTransition] = useTransition();
-  const selectedTemplate = templates.find((t) => t.id === templateId);
-  const allowedTemplates = templates.filter((t) => t.questions.length > 0 && t.questions.every((q) => q.type === "rating" || q.type === "text"));
   const savedMode = campaign.settings?.draft_delivery_mode;
   const deliveryMode: DraftDeliveryMode =
     savedMode === "now" || savedMode === "later" ? savedMode : "";
   const dirty = expanded === "details" ? name !== campaign.name
-    : expanded === "questions" ? templateId !== (campaign.template_id ?? "")
     : expanded === "timing" ? mode !== (savedMode ?? "") || sendDate !== localDate(campaign.opens_at) || closeDate !== localDate(campaign.closes_at)
     : false;
   useEffect(() => {
@@ -56,7 +51,6 @@ export default function Feedback360DraftBuilder({
   const changeSection = (next: Section | null) => {
     if (dirty && !window.confirm("Discard unsaved changes in this section?")) return;
     setName(campaign.name);
-    setTemplateId(campaign.template_id ?? "");
     setMode(savedMode === "now" || savedMode === "later" ? savedMode : "");
     setSendDate(localDate(campaign.opens_at));
     setCloseDate(localDate(campaign.closes_at));
@@ -74,7 +68,7 @@ export default function Feedback360DraftBuilder({
     startTransition(async () => {
       const result = section === "details" ? await saveFeedback360Name(campaign.id, name)
         : section === "people" ? { error: "Open Edit subject & reviewers to change participants" }
-        : section === "questions" ? await saveFeedback360Template(campaign.id, templateId)
+        : section === "questions" ? { error: "Open Edit form to change questions" }
         : await saveFeedback360Timing(campaign.id, mode as "now" | "later", mode === "later" ? sendDate : "", closeDate);
       if (result.error) { setError(result.error); return; }
       setExpanded(null);
@@ -96,14 +90,14 @@ export default function Feedback360DraftBuilder({
   };
   const setup = setupCompleteness({
     campaign, subjectCount: subject ? 1 : 0,
-    assignmentCount: validReviewerCount === assignments.length ? validReviewerCount : 0, questionCount: questions.every((q) => q.type === "rating" || q.type === "text") && (campaign.questions_frozen_at !== null || templates.some((t) => t.id === campaign.template_id)) ? questions.length : 0,
+    assignmentCount: validReviewerCount === assignments.length ? validReviewerCount : 0, questionCount: questions.every((q) => q.type === "rating" || q.type === "text") && (campaign.questions_frozen_at !== null || campaign.form_started_at !== null || !!campaign.template_id) ? questions.length : 0,
   });
   const canFinish = ready && setup.ready && validReviewerCount >= 5;
   const primaryAction = draftPrimaryAction(deliveryMode, canFinish);
   const sections: { key: Section; label: string; summary: string; done: boolean }[] = [
     { key: "details", label: "Details", summary: campaign.name + " · Anonymous 360 feedback", done: !!campaign.name.trim() },
     { key: "people", label: "Subject & Reviewers", summary: subject ? `${subject.full_name || subject.email} · ${assignments.length} ${assignments.length === 1 ? "reviewer" : "reviewers"}` : "Choose a subject and reviewers", done: setup.steps[1].done },
-    { key: "questions", label: "Questions", summary: questions.length ? `${templateName ?? "Template"} · ${questions.length} ${questions.length === 1 ? "question" : "questions"}` : "Choose a 360-safe template", done: setup.steps[2].done },
+    { key: "questions", label: "Questions", summary: questions.length ? `${templateName ?? "Campaign form"} · ${questions.length} ${questions.length === 1 ? "question" : "questions"}` : "Build the feedback form", done: setup.steps[2].done },
     { key: "timing", label: "Timing", summary: savedMode === "now" ? `Send now${campaign.closes_at ? ` · Closes ${campaignDate(campaign.closes_at, campaign.timezone)}` : ""}` : savedMode === "later" && campaign.opens_at ? `Send ${campaignDate(campaign.opens_at, campaign.timezone, true)}${campaign.closes_at ? ` · Closes ${campaignDate(campaign.closes_at, campaign.timezone)}` : ""}` : "Choose when to send", done: setup.steps[3].done },
   ];
   return (
@@ -136,12 +130,12 @@ export default function Feedback360DraftBuilder({
       <div className="border-t border-border">
         {sections.map((section) => (
           <section key={section.key} className="border-b border-border last:border-b-0">
-            {section.key === "people" ? (
+            {section.key === "people" || section.key === "questions" ? (
               <div className="flex w-full items-start justify-between gap-4 py-4 text-left sm:py-5">
                 <span className="min-w-0"><span className="flex items-center gap-2 text-sm font-medium"><span className={`h-1.5 w-1.5 shrink-0 rounded-full ${section.done ? "bg-primary" : "bg-border-strong"}`} />{section.label}</span>
                   <span className="mt-1 block text-sm text-muted-foreground">{section.summary}</span></span>
                 <Button asChild type="button" size="sm" variant="outline" className="shrink-0">
-                  <Link href={`/dashboard/campaigns/${campaign.id}/reviewers`}>Edit subject &amp; reviewers</Link>
+                  <Link href={`/dashboard/campaigns/${campaign.id}/${section.key === "people" ? "reviewers" : "form"}`}>{section.key === "people" ? "Edit subject & reviewers" : questions.length ? "Edit form" : "Build form"}</Link>
                 </Button>
               </div>
             ) : <button type="button" onClick={() => changeSection(expanded === section.key ? null : section.key)}
@@ -155,13 +149,6 @@ export default function Feedback360DraftBuilder({
               {section.key === "details" && <div className="max-w-xl space-y-3">
                 <label className="block text-sm font-medium">Campaign name<input autoFocus className={field} value={name} onChange={(e) => setName(e.target.value)} maxLength={160} /></label>
                 <p className="text-xs text-muted-foreground">Anonymous 360 feedback. Reviewer identity and answer content remain separate.</p>
-              </div>}
-              {section.key === "questions" && <div className="max-w-3xl space-y-3">
-                <label className="block max-w-xl text-sm font-medium">360 question template<select className={field} value={templateId} onChange={(e) => setTemplateId(e.target.value)}>
-                  <option value="">Choose a template</option>{allowedTemplates.map((t) => <option key={t.id} value={t.id}>{t.name} · {t.questions.length} {t.questions.length === 1 ? "question" : "questions"}</option>)}
-                </select></label>
-                {selectedTemplate && <div className="text-sm"><p className="font-medium">{selectedTemplate.questions.length} {selectedTemplate.questions.length === 1 ? "question" : "questions"}</p><ol className="mt-2 list-decimal space-y-1 pl-5 text-muted-foreground">{selectedTemplate.questions.map((q) => <li key={q.id}>{q.prompt}</li>)}</ol></div>}
-                <p className="text-xs text-muted-foreground">360 feedback supports rating and text questions. Edit questions in <Link href="/dashboard/templates" className="text-primary underline">Templates</Link>.</p>
               </div>}
               {section.key === "timing" && <div className="max-w-xl space-y-4">
                 <fieldset><legend className="text-sm font-medium">Delivery</legend><div className="mt-2 flex flex-wrap gap-4">

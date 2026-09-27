@@ -24,6 +24,8 @@ function campaign(
     closes_at: null,
     timezone: "Europe/London",
     questions_frozen_at: null,
+    form_started_at: null,
+    form_revision: 0,
     send_claimed_at: null,
     schedule_error: null,
     schedule_attempts: 0,
@@ -36,6 +38,11 @@ function campaign(
 }
 
 describe("setupCompleteness", () => {
+  it("uses saved campaign questions for a scratch form without a template", () => {
+    const draft = campaign({ id: "scratch", name: "Scratch", status: "draft", form_started_at: "2026-01-01", settings: { draft_delivery_mode: "now" } });
+    expect(setupCompleteness({ campaign: draft, subjectCount: 1, assignmentCount: 1, questionCount: 1 }).ready).toBe(true);
+    expect(setupCompleteness({ campaign: draft, subjectCount: 1, assignmentCount: 1, questionCount: 0 }).ready).toBe(false);
+  });
   it("requires five 360 reviewers and saved timing", () => {
     const draft = campaign({ id: "360", name: "360", status: "draft", campaign_type: "feedback_360", template_id: "template", settings: { anonymity: { mode: "anonymous" }, draft_delivery_mode: "now" } });
     expect(setupCompleteness({ campaign: draft, subjectCount: 1, assignmentCount: 4, questionCount: 2 }).ready).toBe(false);

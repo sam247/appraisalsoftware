@@ -199,7 +199,7 @@ export default function CampaignsDirectory({
   const rows = useMemo(
     () =>
       campaigns.map((c) =>
-        buildRow(c, assignments, subjectCounts[c.id] ?? 0, questionCounts[c.id] ?? questionCounts[c.template_id ?? ""] ?? 0, valid360ReviewerCounts[c.id] ?? 0),
+        buildRow(c, assignments, subjectCounts[c.id] ?? 0, c.form_started_at || c.questions_frozen_at ? (questionCounts[c.id] ?? 0) : (questionCounts[c.template_id ?? ""] ?? 0), valid360ReviewerCounts[c.id] ?? 0),
       ),
     [campaigns, assignments, subjectCounts, questionCounts, valid360ReviewerCounts],
   );

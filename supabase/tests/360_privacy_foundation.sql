@@ -3,11 +3,12 @@ SET request.jwt.claim.sub='';
 RESET ROLE;
 UPDATE private.feedback_360_release SET enabled=false;
 SELECT organization_id AS org_id FROM public.people WHERE id='30000000-0000-0000-0000-000000000001' \gset
-INSERT INTO public.campaigns(id,organization_id,name,campaign_type,questions_frozen_at) VALUES ('70000000-0000-0000-0000-000000000001', :'org_id','Private 360 fixture','feedback_360',now());
+INSERT INTO public.campaigns(id,organization_id,name,campaign_type) VALUES ('70000000-0000-0000-0000-000000000001', :'org_id','Private 360 fixture','feedback_360');
 INSERT INTO public.campaign_questions(id,campaign_id,organization_id,prompt,type,required,sort_order) VALUES
  ('71000000-0000-0000-0000-000000000001','70000000-0000-0000-0000-000000000001', :'org_id','Clarity','rating',true,0),
  ('71000000-0000-0000-0000-000000000002','70000000-0000-0000-0000-000000000001', :'org_id','Helpful feedback','text',true,1),
  ('71000000-0000-0000-0000-000000000003','70000000-0000-0000-0000-000000000001', :'org_id','Optional feedback','text',false,2);
+UPDATE public.campaigns SET questions_frozen_at=now() WHERE id='70000000-0000-0000-0000-000000000001';
 INSERT INTO private.feedback_360_contracts(campaign_id,organization_id,subject_person_id) VALUES ('70000000-0000-0000-0000-000000000001', :'org_id','30000000-0000-0000-0000-000000000001');
 DO $$ DECLARE org uuid; person uuid; assignment uuid; response uuid; i integer; BEGIN
  SELECT organization_id INTO org FROM public.campaigns WHERE id='70000000-0000-0000-0000-000000000001';
@@ -63,7 +64,7 @@ DO $$ DECLARE t text; report jsonb; BEGIN
  BEGIN PERFORM public.activate_campaign('70000000-0000-0000-0000-000000000001'); RAISE EXCEPTION 'expected activation denial'; EXCEPTION WHEN raise_exception THEN IF SQLERRM<>'360 feedback is not enabled' THEN RAISE; END IF; END;
  -- Anonymous plane does not hide identified annual results.
  ASSERT (SELECT count(*)=2 FROM public.responses WHERE campaign_id='40000000-0000-0000-0000-000000000001');
- ASSERT (SELECT count(*)=2 FROM public.response_answers a JOIN public.responses r ON r.id=a.response_id WHERE r.campaign_id='40000000-0000-0000-0000-000000000001');
+ ASSERT (SELECT count(*)=3 FROM public.response_answers a JOIN public.responses r ON r.id=a.response_id WHERE r.campaign_id='40000000-0000-0000-0000-000000000001');
  PERFORM public.close_campaign('70000000-0000-0000-0000-000000000001');
  ASSERT public.feedback_360_report('70000000-0000-0000-0000-000000000001')='{"state":"insufficient_responses","minimum_responses":5}'::jsonb;
 END $$;

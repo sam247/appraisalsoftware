@@ -86,6 +86,7 @@ try {
   ]);
   run("psql", [...args, "-f", join(root, "supabase/tests/360_workflow.sql")]);
   run("psql", [...args, "-f", join(root, "supabase/tests/360_draft_assembly.sql")]);
+  run("psql", [...args, "-f", join(root, "supabase/tests/campaign_local_forms.sql")]);
   const feedbackDraft = run("psql", [...args, "-At", "-c", "SELECT id FROM public.campaigns WHERE name='Legacy convertible'"]).trim();
   const feedbackLockFile = join(dir, "feedback-finalise.sql");
   writeFileSync(feedbackLockFile, `BEGIN; SET LOCAL request.jwt.claim.sub='10000000-0000-0000-0000-000000000001'; SET LOCAL ROLE authenticated; SELECT public.save_feedback_360_timing('${feedbackDraft}','now',NULL,NULL); SELECT public.finalize_feedback_360_draft('${feedbackDraft}',true); SELECT pg_sleep(1); COMMIT;`);
@@ -104,6 +105,7 @@ try {
   }
   assert(feedbackLocked, "360 finalisation did not acquire its transaction lock");
   assert.throws(() => sql(`SET request.jwt.claim.sub='10000000-0000-0000-0000-000000000001'; SET ROLE authenticated; SELECT public.save_feedback_360_cohort('${feedbackDraft}','30000000-0000-0000-0000-000000000001','[]');`), /Only a 360 draft can change reviewers/);
+  assert.throws(() => sql(`SET request.jwt.claim.sub='10000000-0000-0000-0000-000000000001'; SET ROLE authenticated; SELECT public.save_campaign_form('${feedbackDraft}',0,'[]');`), /Only a draft campaign form can be edited/);
   await feedbackDone;
   assert.match(sql(`SELECT status FROM public.campaigns WHERE id='${feedbackDraft}'`), /active/);
   // A held activation lock must serialize participant editing, not allow a late replacement.
@@ -145,6 +147,7 @@ try {
       ),
     /editable annual appraisal draft/,
   );
+  assert.throws(() => sql("SET request.jwt.claim.sub='10000000-0000-0000-0000-000000000001'; SET ROLE authenticated; SELECT public.save_campaign_form('40000000-0000-0000-0000-000000000003',0,'[]');"), /Only a draft campaign form can be edited/);
   await done;
   assert.match(
     sql(
@@ -162,7 +165,7 @@ try {
     ...args,
     "-At",
     "-c",
-    "SELECT id FROM public.campaign_questions WHERE campaign_id='40000000-0000-0000-0000-000000000003'",
+    "SELECT id FROM public.campaign_questions WHERE campaign_id='40000000-0000-0000-0000-000000000003' AND type='text'",
   ]).trim();
   sql(
     `SET ROLE anon; SELECT public.respond_save('${token}', jsonb_build_array(jsonb_build_object('campaign_question_id','${question}','text_value','Saved reflection')));`,

@@ -62,7 +62,7 @@ export default async function CampaignsPage({
   for (const q of frozenQuestions.data ?? []) questionCounts[q.campaign_id] = (questionCounts[q.campaign_id] ?? 0) + 1;
   for (const q of templateQuestions.data ?? []) if (!["rating", "text"].includes(q.type)) invalidQuestions.add(q.template_id);
   for (const q of frozenQuestions.data ?? []) if (!["rating", "text"].includes(q.type)) invalidQuestions.add(q.campaign_id);
-  for (const c of campaigns) if (c.campaign_type === "feedback_360" && (invalidQuestions.has(c.questions_frozen_at ? c.id : (c.template_id ?? "")) || (!c.questions_frozen_at && (!c.template_id || !activeTemplateIds.has(c.template_id))))) questionCounts[c.id] = 0;
+  for (const c of campaigns) if (c.campaign_type === "feedback_360" && (invalidQuestions.has(c.questions_frozen_at || c.form_started_at ? c.id : (c.template_id ?? "")) || (!c.questions_frozen_at && !c.form_started_at && (!c.template_id || !activeTemplateIds.has(c.template_id))))) questionCounts[c.id] = 0;
   const reviewerIdsByCampaign = new Map<string, Set<string>>();
   for (const a of assignments) if (a.status === "pending" && activePersonIds.has(a.respondent_person_id) && a.subject_person_id === subjectByCampaign[a.campaign_id] && a.respondent_person_id !== a.subject_person_id && ["manager", "peer", "direct_report", "other"].includes(a.relationship ?? ""))
     reviewerIdsByCampaign.set(a.campaign_id, (reviewerIdsByCampaign.get(a.campaign_id) ?? new Set<string>()).add(a.respondent_person_id));

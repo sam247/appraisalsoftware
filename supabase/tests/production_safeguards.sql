@@ -8,6 +8,7 @@ INSERT INTO public.organizations(id,name,slug) VALUES ('20000000-0000-0000-0000-
 INSERT INTO public.people(id,organization_id,email) VALUES ('30000000-0000-0000-0000-000000000001', :'org_id','employee@example.test'), ('30000000-0000-0000-0000-000000000002', :'org_id','manager@example.test'), ('30000000-0000-0000-0000-000000000003','20000000-0000-0000-0000-000000000002','foreign@example.test');
 INSERT INTO public.templates(id,organization_id,name) VALUES ('50000000-0000-0000-0000-000000000001', :'org_id','Annual'), ('50000000-0000-0000-0000-000000000002', :'org_id','Empty');
 INSERT INTO public.template_questions(id,template_id,organization_id,type,prompt,required) VALUES ('60000000-0000-0000-0000-000000000001','50000000-0000-0000-0000-000000000001', :'org_id','text','Your progress?',true);
+INSERT INTO public.template_questions(id,template_id,organization_id,type,prompt,options,required,sort_order) VALUES ('60000000-0000-0000-0000-000000000002','50000000-0000-0000-0000-000000000001', :'org_id','single_choice','Choice','["Yes","No"]',false,1);
 SET ROLE authenticated;
 INSERT INTO public.campaigns(id,organization_id,name,template_id) VALUES ('40000000-0000-0000-0000-000000000001', :'org_id','Atomic','50000000-0000-0000-0000-000000000001'), ('40000000-0000-0000-0000-000000000002', :'org_id','Empty','50000000-0000-0000-0000-000000000002'), ('40000000-0000-0000-0000-000000000003', :'org_id','Race','50000000-0000-0000-0000-000000000001');
 SET ROLE authenticated;
@@ -118,7 +119,7 @@ DO $$ DECLARE token text; foreign_question uuid; choice_question uuid; q_count i
   BEGIN PERFORM public.respond_save(token,jsonb_build_array(jsonb_build_object('campaign_question_id',foreign_question,'text_value','Wrong campaign'))); RAISE EXCEPTION 'expected question rejection'; EXCEPTION WHEN raise_exception THEN IF SQLERRM <> 'Question unavailable in this appraisal' THEN RAISE; END IF; END;
   BEGIN PERFORM public.respond_submit(token,'[]'); RAISE EXCEPTION 'expected required-field rejection'; EXCEPTION WHEN raise_exception THEN IF SQLERRM <> 'Please answer every required question' THEN RAISE; END IF; END;
   ASSERT (SELECT count(*)=0 FROM public.response_answers);
-  INSERT INTO public.campaign_questions(campaign_id,organization_id,type,prompt,options,required) SELECT '40000000-0000-0000-0000-000000000001',organization_id,'single_choice','Choice', '["Yes","No"]',false FROM public.campaigns WHERE id='40000000-0000-0000-0000-000000000001' RETURNING id INTO choice_question;
+  SELECT id INTO choice_question FROM public.campaign_questions WHERE campaign_id='40000000-0000-0000-0000-000000000001' AND type='single_choice';
   PERFORM public.respond_save(token,jsonb_build_array(jsonb_build_object('campaign_question_id',choice_question,'choice_values',jsonb_build_array('Yes'))));
   BEGIN PERFORM public.respond_save(token,jsonb_build_array(jsonb_build_object('campaign_question_id',choice_question,'choice_values',jsonb_build_array('Unavailable')))); RAISE EXCEPTION 'expected invalid-option rejection'; EXCEPTION WHEN raise_exception THEN IF SQLERRM <> 'Choose an available option' THEN RAISE; END IF; END;
   ASSERT (SELECT choice_values='["Yes"]'::jsonb FROM public.response_answers WHERE campaign_question_id=choice_question);
@@ -126,11 +127,10 @@ DO $$ DECLARE token text; foreign_question uuid; choice_question uuid; q_count i
   ASSERT NOT EXISTS (SELECT 1 FROM public.respond_get_saved_answers((SELECT payload->>'raw_token' FROM public.email_outbox WHERE payload->>'campaign_id'='40000000-0000-0000-0000-000000000001' AND payload->>'raw_token' <> token LIMIT 1)));
   BEGIN PERFORM public.respond_get_saved_answers('unknown-token'); RAISE EXCEPTION 'expected token rejection'; EXCEPTION WHEN no_data_found THEN NULL; END;
 
-  DELETE FROM public.campaign_questions WHERE id=choice_question;
 END $$;
 -- No external email is delivered. Test the existing real token and RPC engine.
 DO $$ DECLARE entry record; token text; qid uuid; BEGIN
-  SELECT id INTO qid FROM public.campaign_questions WHERE campaign_id='40000000-0000-0000-0000-000000000001' LIMIT 1;
+  SELECT id INTO qid FROM public.campaign_questions WHERE campaign_id='40000000-0000-0000-0000-000000000001' AND type='text' LIMIT 1;
   FOR entry IN SELECT payload FROM public.email_outbox WHERE payload->>'campaign_id'='40000000-0000-0000-0000-000000000001' LOOP
     ASSERT entry.payload->>'timezone'='Europe/London';
     token := entry.payload->>'raw_token';
@@ -139,11 +139,11 @@ DO $$ DECLARE entry record; token text; qid uuid; BEGIN
     PERFORM public.respond_resolve(token);
     -- save/resume then submit — proves annual self and manager paths
     PERFORM public.respond_save(token, jsonb_build_array(jsonb_build_object('campaign_question_id', qid, 'text_value', 'Draft reflection')));
-    ASSERT (SELECT count(*)=1 FROM public.respond_get_saved_answers(token));
+    ASSERT EXISTS(SELECT 1 FROM public.respond_get_saved_answers(token) WHERE campaign_question_id=qid AND text_value='Draft reflection');
     PERFORM public.respond_submit(token, jsonb_build_array(jsonb_build_object('campaign_question_id', qid, 'text_value', 'Useful reflection')));
   END LOOP;
   ASSERT (SELECT count(*)=2 FROM public.responses WHERE campaign_id='40000000-0000-0000-0000-000000000001' AND status='submitted');
-  ASSERT (SELECT count(*)=2 FROM public.response_answers);
+  ASSERT (SELECT count(*)=3 FROM public.response_answers);
 END $$;
 SET ROLE authenticated;
 SELECT public.close_campaign('40000000-0000-0000-0000-000000000001');

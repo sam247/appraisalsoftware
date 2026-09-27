@@ -2,7 +2,7 @@
 
 import { Suspense, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Menu,
   Plus,
@@ -253,12 +253,13 @@ export default function AppNavigation({
   children: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
+  const focusedForm = /^\/dashboard\/campaigns\/[^/]+\/form$/.test(usePathname());
 
   return (
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-40 flex h-14 items-center gap-3 border-b border-border/80 bg-background/90 px-3 backdrop-blur-md sm:px-4 md:px-5">
         <div className="flex shrink-0 items-center gap-1">
-          <Sheet open={open} onOpenChange={setOpen}>
+          {!focusedForm && <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
               <Button
                 variant="ghost"
@@ -290,21 +291,19 @@ export default function AppNavigation({
                 onNavigate={() => setOpen(false)}
               />
             </SheetContent>
-          </Sheet>
-          <Link
+          </Sheet>}
+          {focusedForm ? <span aria-label="Appraisal Software" className="shrink-0"><BrandMark size={28} /></span> : <Link
             href="/dashboard"
             aria-label="Appraisal Software home"
             className="shrink-0"
           >
             <BrandMark size={28} />
-          </Link>
+          </Link>}
         </div>
 
-        <div className="mx-auto flex min-w-0 flex-1 justify-center px-1 sm:px-4">
-          <SearchField />
-        </div>
+        {focusedForm ? <div className="min-w-0 flex-1 px-2 text-xs font-medium text-muted-foreground">Form builder</div> : <div className="mx-auto flex min-w-0 flex-1 justify-center px-1 sm:px-4"><SearchField /></div>}
 
-        <div className="flex shrink-0 items-center gap-3">
+        {!focusedForm && <div className="flex shrink-0 items-center gap-3">
           <a
             href={CONTACT_URL}
             target="_blank"
@@ -319,17 +318,17 @@ export default function AppNavigation({
             role={role}
             avatarUrl={avatarUrl}
           />
-        </div>
+        </div>}
       </header>
 
       <div className="md:flex">
-        <aside className="sticky top-14 hidden h-[calc(100vh-3.5rem)] w-[13.5rem] shrink-0 flex-col bg-background px-3 py-4 md:flex">
+        {!focusedForm && <aside className="sticky top-14 hidden h-[calc(100vh-3.5rem)] w-[13.5rem] shrink-0 flex-col bg-background px-3 py-4 md:flex">
           <CreateButton />
           <div className="mt-4 flex-1 overflow-y-auto">
             <AppLinks />
           </div>
           <SidebarFooter showUpgrade={showUpgrade} />
-        </aside>
+        </aside>}
 
         <main id="main-content" className="min-w-0 flex-1">
           {children}

@@ -148,6 +148,8 @@ export interface Campaign {
   closes_at: string | null;
   timezone: string;
   questions_frozen_at: string | null;
+  form_started_at: string | null;
+  form_revision: number;
   send_claimed_at: string | null;
   schedule_error: string | null;
   schedule_attempts: number;
@@ -458,6 +460,8 @@ export type Database = {
           closes_at?: string | null;
           timezone?: string;
           questions_frozen_at?: string | null;
+          form_started_at?: string | null;
+          form_revision?: number;
           cloned_from_campaign_id?: string | null;
           created_by?: string | null;
           created_at?: string;
