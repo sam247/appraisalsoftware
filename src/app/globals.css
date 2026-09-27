@@ -122,6 +122,14 @@
   }
 }
 
+@layer components {
+  .dashboard-workspace {
+    width: 100%;
+    max-width: 108rem;
+    margin-inline: auto;
+  }
+}
+
 @utility grid-bg {
   background-image:
     linear-gradient(

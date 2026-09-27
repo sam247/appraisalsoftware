@@ -110,7 +110,7 @@ export default function Feedback360DraftBuilder({
     { key: "timing", label: "Timing", summary: savedMode === "now" ? `Send now${campaign.closes_at ? ` · Closes ${campaignDate(campaign.closes_at, campaign.timezone)}` : ""}` : savedMode === "later" && campaign.opens_at ? `Send ${campaignDate(campaign.opens_at, campaign.timezone, true)}${campaign.closes_at ? ` · Closes ${campaignDate(campaign.closes_at, campaign.timezone)}` : ""}` : "Choose when to send", done: setup.steps[3].done },
   ];
   return (
-    <div className="mx-auto w-full max-w-5xl space-y-5 pb-10">
+    <div className="dashboard-workspace space-y-5 pb-10">
       <header className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
           <Link href="/dashboard/campaigns" onClick={(e) => { if (dirty && !window.confirm("Discard unsaved changes?")) e.preventDefault(); }} className="text-xs text-muted-foreground hover:text-foreground">← Campaigns</Link>
@@ -151,20 +151,20 @@ export default function Feedback360DraftBuilder({
                 {subjectId ? <PeoplePicker people={people} departments={departments} mode="360" excludeIds={[subjectId]} selectedIds={reviewerIds} onChange={setReviewerIds} relationships={relationships} onRelationshipChange={(id, value) => setRelationships((prev) => ({ ...prev, [id]: value }))} /> : <p className="text-sm text-muted-foreground">Choose a subject first.</p>}
                 <p className="text-xs text-muted-foreground">{reviewerIds.length} reviewers selected · At least five are required before send.</p>
               </div>}
-              {section.key === "questions" && <div className="max-w-2xl space-y-3">
-                <label className="block text-sm font-medium">360 question template<select className={field} value={templateId} onChange={(e) => setTemplateId(e.target.value)}>
+              {section.key === "questions" && <div className="max-w-3xl space-y-3">
+                <label className="block max-w-xl text-sm font-medium">360 question template<select className={field} value={templateId} onChange={(e) => setTemplateId(e.target.value)}>
                   <option value="">Choose a template</option>{allowedTemplates.map((t) => <option key={t.id} value={t.id}>{t.name} · {t.questions.length} {t.questions.length === 1 ? "question" : "questions"}</option>)}
                 </select></label>
                 {selectedTemplate && <div className="rounded-lg border border-border p-4 text-sm"><p className="font-medium">{selectedTemplate.questions.length} {selectedTemplate.questions.length === 1 ? "question" : "questions"}</p><ol className="mt-2 list-decimal space-y-1 pl-5 text-muted-foreground">{selectedTemplate.questions.map((q) => <li key={q.id}>{q.prompt}</li>)}</ol></div>}
                 <p className="text-xs text-muted-foreground">360 feedback supports rating and text questions. Edit questions in <Link href="/dashboard/templates" className="text-primary underline">Templates</Link>.</p>
               </div>}
-              {section.key === "timing" && <div className="max-w-2xl space-y-4">
+              {section.key === "timing" && <div className="max-w-xl space-y-4">
                 <fieldset><legend className="text-sm font-medium">Delivery</legend><div className="mt-2 flex flex-wrap gap-4">
                   <label className="flex items-center gap-2 text-sm"><input type="radio" checked={mode === "now"} onChange={() => { setMode("now"); setSendDate(""); }} />Send now</label>
                   <label className="flex items-center gap-2 text-sm"><input type="radio" checked={mode === "later"} onChange={() => setMode("later")} />Send later</label>
                 </div></fieldset>
-                {mode === "later" && <label className="block text-sm font-medium">Send date<input type="date" className={field} value={sendDate} onChange={(e) => setSendDate(e.target.value)} /><span className="mt-1 block text-xs font-normal text-muted-foreground">Sends at 09:00 in {campaign.timezone}.</span></label>}
-                <label className="block text-sm font-medium">Close date <span className="font-normal text-muted-foreground">Optional</span><input type="date" className={field} value={closeDate} onChange={(e) => setCloseDate(e.target.value)} /><span className="mt-1 block text-xs font-normal text-muted-foreground">Closes at the end of the selected day in {campaign.timezone}.</span></label>
+                {mode === "later" && <label className="block max-w-xs text-sm font-medium">Send date<input type="date" className={field} value={sendDate} onChange={(e) => setSendDate(e.target.value)} /><span className="mt-1 block text-xs font-normal text-muted-foreground">Sends at 09:00 in {campaign.timezone}.</span></label>}
+                <label className="block max-w-xs text-sm font-medium">Close date <span className="font-normal text-muted-foreground">Optional</span><input type="date" className={field} value={closeDate} onChange={(e) => setCloseDate(e.target.value)} /><span className="mt-1 block text-xs font-normal text-muted-foreground">Closes at the end of the selected day in {campaign.timezone}.</span></label>
                 <p className="text-xs text-muted-foreground">{reminderSummary(campaign.reminder_settings)}.</p>
               </div>}
               {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
@@ -173,9 +173,9 @@ export default function Feedback360DraftBuilder({
           </section>
         ))}
       </div>
-      <section className="space-y-4 rounded-xl border border-border bg-card p-4 sm:p-6">
+      <section className="space-y-4 rounded-xl border border-border bg-card p-4 sm:p-6 lg:p-8">
         <div><h2 className="font-display text-lg font-semibold">Review &amp; Send</h2><p className="mt-1 text-sm text-muted-foreground">Review the saved anonymous feedback setup.</p></div>
-        <dl className="grid gap-3 text-sm sm:grid-cols-2">
+        <dl className="grid gap-5 text-sm sm:grid-cols-2 xl:grid-cols-3">
           <div><dt className="text-xs text-muted-foreground">Subject</dt><dd>{subject?.full_name || subject?.email || "Not selected"}</dd></div>
           <div><dt className="text-xs text-muted-foreground">Reviewers</dt><dd>{assignments.length} saved · {savedReviewerCount >= 5 ? "Five-reviewer minimum met" : "At least five required"}</dd></div>
           <div><dt className="text-xs text-muted-foreground">Questions</dt><dd>{templateName ?? "No template"} · {questions.length} {questions.length === 1 ? "question" : "questions"}</dd></div>
@@ -183,7 +183,7 @@ export default function Feedback360DraftBuilder({
           <div><dt className="text-xs text-muted-foreground">Reminders</dt><dd>{reminderSummary(campaign.reminder_settings)}</dd></div>
           <div><dt className="text-xs text-muted-foreground">Privacy</dt><dd>Anonymous results after closure and five submitted reviewers; each question needs five answers.</dd></div>
         </dl>
-        {questions.length > 0 && <details className="text-sm"><summary className="cursor-pointer font-medium text-primary">Preview saved questions</summary><ol className="mt-2 list-decimal space-y-1 pl-5 text-muted-foreground">{questions.map((q) => <li key={q.id}>{q.prompt}</li>)}</ol></details>}
+        {questions.length > 0 && <details className="max-w-3xl text-sm"><summary className="cursor-pointer font-medium text-primary">Preview saved questions</summary><ol className="mt-2 list-decimal space-y-1 pl-5 text-muted-foreground">{questions.map((q) => <li key={q.id}>{q.prompt}</li>)}</ol></details>}
         {!canFinish && <div className="rounded-lg border border-border bg-surface/40 p-3 text-sm"><p className="font-medium">Complete before sending</p><ul className="mt-1 list-disc pl-5 text-muted-foreground">{sections.filter((s) => !s.done).map((s) => <li key={s.key}>{s.label}</li>)}</ul></div>}
         <label className="flex items-start gap-2 text-sm"><input type="checkbox" checked={acknowledged} onChange={(e) => setAcknowledged(e.target.checked)} className="mt-0.5" /><span>I understand that feedback is anonymous, reports require five submitted reviewers after closure, and individual answers cannot be tied to a reviewer.</span></label>
         {error && !expanded && <p role="alert" className="text-sm text-destructive">{error}</p>}

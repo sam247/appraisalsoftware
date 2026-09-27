@@ -120,7 +120,7 @@ export default function AnnualDraftBuilder({
     { key: "timing", label: "Timing", summary: savedMode === "now" ? `Send now${closesAt ? ` · Closes ${campaignDate(closesAt, timezone)}` : ""}` : savedMode === "later" && opensAt ? `Send ${campaignDate(opensAt, timezone, true)}${closesAt ? ` · Closes ${campaignDate(closesAt, timezone)}` : ""}` : "Choose when to send", done: setup.steps[3].done },
   ];
   return (
-    <div className="mx-auto w-full max-w-5xl space-y-5 pb-10">
+    <div className="dashboard-workspace space-y-5 pb-10">
       <header className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
           <Link href="/dashboard/campaigns" onClick={(e) => { if (dirty && !window.confirm("Discard unsaved changes?")) e.preventDefault(); }} className="text-xs text-muted-foreground hover:text-foreground">← Campaigns</Link>
@@ -161,8 +161,8 @@ export default function AnnualDraftBuilder({
                     : <p className="text-sm">Add people in <Link className="text-primary underline" href="/dashboard/people">People</Link> first.</p>}
                   <p className="text-xs text-muted-foreground">{selectedIds.length} {selectedIds.length === 1 ? "employee" : "employees"} · {selectedIds.length} self assignments · {selectedIds.filter((id) => !!resolveManager(id)).length} manager assignments</p>
                 </div>}
-                {section.key === "questions" && <div className="max-w-2xl space-y-3">
-                  <label className="block text-sm font-medium">Question template
+                {section.key === "questions" && <div className="max-w-3xl space-y-3">
+                  <label className="block max-w-xl text-sm font-medium">Question template
                     <select className={field} value={selectedTemplate} onChange={(e) => setSelectedTemplate(e.target.value)}>
                       <option value="">Choose a template</option>
                       {templates.map((t) => <option key={t.id} value={t.id}>{t.name} · {t.questions.length} {t.questions.length === 1 ? "question" : "questions"}</option>)}
@@ -171,13 +171,13 @@ export default function AnnualDraftBuilder({
                   {selected && <div className="rounded-lg border border-border p-4 text-sm"><p className="font-medium">{selected.questions.length} {selected.questions.length === 1 ? "question" : "questions"}</p><ol className="mt-2 list-decimal space-y-1 pl-5 text-muted-foreground">{selected.questions.map((q) => <li key={q.id}>{q.prompt}</li>)}</ol></div>}
                   <p className="text-xs text-muted-foreground">Questions are frozen when you send or schedule. Edit the template in <Link href="/dashboard/templates" className="text-primary underline">Templates</Link>.</p>
                 </div>}
-                {section.key === "timing" && <div className="max-w-2xl space-y-4">
+                {section.key === "timing" && <div className="max-w-xl space-y-4">
                   <fieldset><legend className="text-sm font-medium">Delivery</legend><div className="mt-2 flex flex-wrap gap-4">
                     <label className="flex items-center gap-2 text-sm"><input type="radio" checked={mode === "now"} onChange={() => { setMode("now"); setSendDate(""); }} />Send now</label>
                     <label className="flex items-center gap-2 text-sm"><input type="radio" checked={mode === "later"} onChange={() => setMode("later")} />Send later</label>
                   </div></fieldset>
-                  {mode === "later" && <label className="block text-sm font-medium">Send date<input type="date" className={field} value={sendDate} onChange={(e) => setSendDate(e.target.value)} /><span className="mt-1 block text-xs font-normal text-muted-foreground">Sends at 09:00 in {timezone}.</span></label>}
-                  <label className="block text-sm font-medium">Close date <span className="font-normal text-muted-foreground">Optional</span><input type="date" className={field} value={closeDate} onChange={(e) => setCloseDate(e.target.value)} /><span className="mt-1 block text-xs font-normal text-muted-foreground">Closes at the end of the selected day in {timezone}.</span></label>
+                  {mode === "later" && <label className="block max-w-xs text-sm font-medium">Send date<input type="date" className={field} value={sendDate} onChange={(e) => setSendDate(e.target.value)} /><span className="mt-1 block text-xs font-normal text-muted-foreground">Sends at 09:00 in {timezone}.</span></label>}
+                  <label className="block max-w-xs text-sm font-medium">Close date <span className="font-normal text-muted-foreground">Optional</span><input type="date" className={field} value={closeDate} onChange={(e) => setCloseDate(e.target.value)} /><span className="mt-1 block text-xs font-normal text-muted-foreground">Closes at the end of the selected day in {timezone}.</span></label>
                   <p className="text-xs text-muted-foreground">{reminderSummary(reminderSettings)}.</p>
                 </div>}
                 {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
@@ -187,15 +187,15 @@ export default function AnnualDraftBuilder({
           </section>
         ))}
       </div>
-      <section className="space-y-4 rounded-xl border border-border bg-card p-4 sm:p-6">
+      <section className="space-y-4 rounded-xl border border-border bg-card p-4 sm:p-6 lg:p-8">
         <div><h2 className="font-display text-lg font-semibold">Review &amp; Send</h2><p className="mt-1 text-sm text-muted-foreground">Review the saved configuration before the final action.</p></div>
-        <dl className="grid gap-3 text-sm sm:grid-cols-2">
+        <dl className="grid gap-5 text-sm sm:grid-cols-2 xl:grid-cols-4">
           <div><dt className="text-xs text-muted-foreground">People</dt><dd>{savedPeople.length} {savedPeople.length === 1 ? "employee" : "employees"} · {savedPeople.length} self · {savedPeople.length - missingManagers.length} manager assignments</dd></div>
           <div><dt className="text-xs text-muted-foreground">Questions</dt><dd>{templateName ?? "No template"} · {questionCount} {questionCount === 1 ? "question" : "questions"}</dd></div>
           <div><dt className="text-xs text-muted-foreground">Delivery</dt><dd>{sections[3].summary}</dd></div>
           <div><dt className="text-xs text-muted-foreground">Reminders</dt><dd>{reminderSummary(reminderSettings)}</dd></div>
         </dl>
-        {questions.length > 0 && <details className="text-sm"><summary className="cursor-pointer font-medium text-primary">Preview saved questions</summary><ol className="mt-2 list-decimal space-y-1 pl-5 text-muted-foreground">{questions.map((q) => <li key={q.id}>{q.prompt}</li>)}</ol></details>}
+        {questions.length > 0 && <details className="max-w-3xl text-sm"><summary className="cursor-pointer font-medium text-primary">Preview saved questions</summary><ol className="mt-2 list-decimal space-y-1 pl-5 text-muted-foreground">{questions.map((q) => <li key={q.id}>{q.prompt}</li>)}</ol></details>}
         {missingManagers.length > 0 && <p className="rounded-lg border border-amber-300/40 bg-amber-50/50 p-3 text-sm text-amber-900">Self-only warning: {missingManagers.join(", ")} {missingManagers.length === 1 ? "has" : "have"} no manager assigned.</p>}
         {!ready && <div className="rounded-lg border border-border bg-surface/40 p-3 text-sm"><p className="font-medium">Complete before sending</p><ul className="mt-1 list-disc pl-5 text-muted-foreground">{sections.filter((s) => !s.done).map((s) => <li key={s.key}>{s.label}</li>)}</ul></div>}
         {error && !expanded && <p role="alert" className="text-sm text-destructive">{error}</p>}

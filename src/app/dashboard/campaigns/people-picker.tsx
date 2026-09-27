@@ -127,7 +127,7 @@ export default function PeoplePicker({
       : 0;
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[minmax(0,1.4fr)_minmax(16rem,1fr)] lg:gap-6">
+    <div className="grid gap-4 xl:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] xl:gap-6">
       <div className="min-w-0 rounded-xl border border-border/80 bg-card/40">
         <div className="space-y-3 border-b border-border/70 p-3 sm:p-4">
           <div className="flex flex-wrap items-end gap-2">
