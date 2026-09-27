@@ -9,6 +9,7 @@ import {
 } from "@/components/marketing/PageSections";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { ProcessRail } from "@/components/resources/ResourceVisual";
+import HeroWizardPreview from "@/components/home/HeroWizardPreview";
 import { pageMetadata } from "@/lib/metadata";
 import { breadcrumbSchema, softwareApplicationSchema } from "@/lib/schema";
 
@@ -24,7 +25,7 @@ export const metadata = pageMetadata({
 
 export default function Page() {
   return (
-    <SiteChrome>
+    <SiteChrome commercial>
       <JsonLd
         data={breadcrumbSchema([
           { name: "Home", path: "/" },
@@ -39,6 +40,7 @@ export default function Page() {
         })}
       />
       <PageHero
+        showCta
         eyebrow="360 feedback software"
         title="Anonymous multi-rater feedback, without a heavyweight HR suite"
         description={description}
@@ -70,6 +72,16 @@ export default function Page() {
           },
         ]}
       />
+      <section className="border-b border-border py-16 sm:py-20">
+        <div className="mx-auto grid max-w-6xl gap-10 px-5 lg:grid-cols-[0.8fr_1.2fr] lg:items-center lg:gap-16 lg:px-8">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-primary">Inside the product</p>
+            <h2 className="mt-3 font-display text-2xl font-semibold text-foreground sm:text-3xl">Build a campaign around one person.</h2>
+            <p className="mt-4 max-w-xl leading-relaxed text-muted-foreground">This illustrative campaign setup shows the subject, questions and reviewer cohort together before invitations are sent.</p>
+          </div>
+          <HeroWizardPreview />
+        </div>
+      </section>
       <ContentSection title="Built for anonymous multi-rater reviews">
         <p>
           Appraisal Software’s 360 workflow is designed for development-focused

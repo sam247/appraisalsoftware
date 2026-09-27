@@ -34,8 +34,8 @@ export function Header() {
       className={
         "no-print sticky top-0 z-50 transition-all duration-300 " +
         (scrolled
-          ? "border-b border-border/80 bg-background/90 backdrop-blur-md"
-          : "border-b border-transparent bg-transparent")
+          ? "border-b border-border bg-background/95 backdrop-blur-md"
+          : "border-b border-border bg-background")
       }
     >
       <div className="mx-auto flex max-w-6xl items-center gap-6 px-5 py-3.5 lg:px-8">

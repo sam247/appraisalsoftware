@@ -52,6 +52,7 @@ export function RespondentProof() {
     >
       <div className="max-h-[34rem] overflow-hidden bg-background">
         <RespondForm
+          preview
           token="marketing-preview"
           campaignName="Annual Appraisal 2026"
           questions={questions}

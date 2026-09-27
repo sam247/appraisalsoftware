@@ -135,6 +135,41 @@
 }
 
 @layer components {
+  /* Public pages share the product palette, with a brighter editorial canvas. */
+  .marketing-site {
+    --background: oklch(0.995 0.002 85);
+    --surface: oklch(0.982 0.003 85);
+    --surface-2: oklch(0.954 0.006 85);
+    --border: oklch(0.925 0.003 85);
+  }
+
+  .marketing-contrast {
+    --foreground: oklch(0.97 0.003 85);
+    --ink: oklch(0.97 0.003 85);
+    --muted-foreground: oklch(0.78 0.006 85);
+    --border: oklch(0.38 0.005 85);
+    --card: oklch(0.21 0.005 85);
+    --surface: oklch(0.23 0.005 85);
+    --primary: oklch(0.77 0.12 158);
+    --primary-hover: oklch(0.83 0.11 158);
+    --primary-foreground: oklch(0.13 0.01 75);
+    background: oklch(0.16 0.006 75);
+    color: var(--foreground);
+  }
+
+  @media (min-width: 1024px) {
+    .commercial-site .marketing-content-section > div {
+      display: grid;
+      grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+      gap: 4rem;
+      align-items: start;
+    }
+
+    .commercial-site .marketing-content-section > div > div {
+      margin-top: 0;
+    }
+  }
+
   .dashboard-workspace {
     width: 100%;
     max-width: 108rem;

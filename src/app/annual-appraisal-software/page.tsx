@@ -60,7 +60,7 @@ export const metadata = pageMetadata({
 
 export default function AnnualAppraisalSoftwarePage() {
   return (
-    <SiteChrome>
+    <SiteChrome commercial>
       <JsonLd
         data={softwareApplicationSchema({
           path: ROUTES.annualAppraisalSoftware,
@@ -76,6 +76,7 @@ export default function AnnualAppraisalSoftwarePage() {
         ])}
       />
       <PageHero
+        showCta
         eyebrow="Yearly review cycles"
         title="Annual Appraisal Software"
         description="Run your company’s annual appraisal cycle in one place: create the campaign, collect employee and manager responses, track who is still outstanding, and keep a findable record for each person — without buying a full HR suite."

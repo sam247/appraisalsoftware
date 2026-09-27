@@ -54,7 +54,7 @@ export const metadata = pageMetadata({
 
 export default function EmployeeAppraisalSoftwarePage() {
   return (
-    <SiteChrome>
+    <SiteChrome commercial>
       <JsonLd
         data={softwareApplicationSchema({
           path: ROUTES.employeeAppraisalSoftware,
@@ -70,6 +70,7 @@ export default function EmployeeAppraisalSoftwarePage() {
         ])}
       />
       <PageHero
+        showCta
         eyebrow="Employee reviews"
         title="Employee Appraisal Software"
         description="Run employee appraisals with structured question forms, manager and employee feedback, completion tracking and a record of each review."

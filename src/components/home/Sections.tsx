@@ -329,7 +329,7 @@ const appraisalItems = [
 
 export function PositioningSection() {
   return (
-    <section className="py-20 sm:py-24">
+    <section className="marketing-contrast py-20 sm:py-28">
       <div className="mx-auto max-w-6xl px-5 lg:px-8">
         <SectionHeading
           eyebrow="Why this exists"
@@ -352,7 +352,7 @@ export function PositioningSection() {
                     "flex items-center gap-2.5 text-sm " +
                     (item === "Appraisals"
                       ? "font-medium text-foreground"
-                      : "text-muted-foreground/60 line-through decoration-border")
+                      : "text-muted-foreground line-through decoration-border")
                   }
                 >
                   <span
@@ -370,7 +370,7 @@ export function PositioningSection() {
           </div>
 
           {/* Appraisal Software */}
-          <div className="rounded-2xl border-2 border-primary/30 bg-primary/[0.03] p-6">
+          <div className="rounded-xl border border-primary/40 bg-card p-6">
             <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-primary">
               Appraisal Software
             </p>
@@ -534,7 +534,7 @@ const templates = [
 
 export function TemplatesSection() {
   return (
-    <section id="templates" className="bg-surface/60 py-20 sm:py-24">
+    <section id="templates" className="border-t border-border py-20 sm:py-24">
       <div className="mx-auto max-w-6xl px-5 lg:px-8">
         <SectionHeading
           eyebrow="Templates"
@@ -715,8 +715,8 @@ export function HomeFaqSection() {
 
 export function FinalCtaSection() {
   return (
-    <section className="px-5 pb-20 lg:px-8">
-      <div className="mx-auto max-w-6xl bg-surface px-6 py-16 text-center sm:px-12">
+    <section className="marketing-contrast px-5 py-20 lg:px-8">
+      <div className="mx-auto max-w-6xl py-5 text-center">
         <h2 className="font-display text-[1.75rem] font-semibold leading-[1.12] tracking-[-0.03em] text-foreground sm:text-[2rem]">
           Your next appraisal cycle
           <br />

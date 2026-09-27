@@ -37,14 +37,14 @@ export function UnderstandResultsSection() {
           </Button>
         </div>
 
-        <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-12 grid gap-x-8 gap-y-2 sm:grid-cols-2 lg:grid-cols-4">
           {[
             [ROUTES.feedback360Guide, "Understand 360 feedback", "Learn what the process is for and where privacy needs careful explanation."],
             [ROUTES.feedback360Questions, "Choose useful questions", "Use behaviour-focused prompts for different reviewer relationships."],
             [ROUTES.feedback360Examples, "See example feedback", "Use fictional comments and themes to prepare the review conversation."],
             [ROUTES.feedback360Template, "Start with a template", "Copy or print a practical 360 feedback form for your own process."],
           ].map(([href, title, copy]) => (
-            <Link key={href} href={href} className="group rounded-lg border border-border/80 bg-card p-5 transition-colors hover:border-border-strong">
+            <Link key={href} href={href} className="group border-t border-border py-5 transition-colors hover:text-primary">
               <p className="text-sm font-semibold text-foreground">{title}</p>
               <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{copy}</p>
               <span className="mt-4 inline-flex items-center gap-1 text-xs font-medium text-primary">

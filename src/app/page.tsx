@@ -11,6 +11,7 @@ import {
   FinalCtaSection,
 } from "@/components/home/Sections";
 import { CompleteAppraisalSection } from "@/components/home/AppraisalSection";
+import { HumanStory } from "@/components/home/HumanStory";
 import { UnderstandResultsSection } from "@/components/home/Feedback360";
 import { AnnualResultsSection } from "@/components/product-marketing/ResultsProof";
 import { RelatedLinks } from "@/components/marketing/PageSections";
@@ -29,7 +30,7 @@ export const metadata = pageMetadata({
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="marketing-site min-h-screen bg-background">
       <JsonLd
         data={softwareApplicationSchema({
           path: ROUTES.home,
@@ -43,6 +44,7 @@ export default function HomePage() {
         <WorkflowStepsSection />
         <CompleteAppraisalSection />
         <AnnualResultsSection />
+        <HumanStory />
         <UnderstandResultsSection />
         <PositioningSection />
         <CampaignSection />

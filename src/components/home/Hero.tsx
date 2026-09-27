@@ -11,11 +11,12 @@ import HeroWizardPreview from "@/components/home/HeroWizardPreview";
 
 export function Hero() {
   return (
-    <section className="relative overflow-hidden pb-20 pt-16 sm:pb-28 sm:pt-20 lg:pt-24">
+    <section className="relative overflow-hidden pb-20 pt-16 sm:pb-28 sm:pt-20 lg:pt-16">
       <div className="mx-auto max-w-6xl px-5 lg:px-8">
-        <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
+        <div className="grid items-center gap-12 lg:grid-cols-[1.06fr_0.94fr] lg:gap-16">
           {/* Left — copy + CTA */}
           <div className="reveal max-w-xl">
+            <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">For UK teams that want a clearer review process</p>
             <h1 className={marketingType.h1Home}>
               Appraisal software without the heavyweight HR system.
             </h1>
@@ -43,7 +44,7 @@ export function Hero() {
             </div>
           </div>
 
-          {/* Right — animated 360 campaign builder preview */}
+          {/* The existing campaign flow is an illustrative, sanitised product preview. */}
           <div
             className="reveal relative lg:pl-4"
             style={{ animationDelay: "0.15s" }}

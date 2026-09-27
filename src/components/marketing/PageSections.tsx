@@ -45,16 +45,18 @@ export function PageHero({
   description,
   breadcrumbs,
   compact = false,
+  showCta = false,
 }: {
   eyebrow?: string;
   title: string;
   description: string;
   breadcrumbs?: { label: string; href: string }[];
   compact?: boolean;
+  showCta?: boolean;
 }) {
   return (
-    <section className="border-b border-border">
-      <div className={cn("mx-auto max-w-6xl px-5 lg:px-8", compact ? "py-8 sm:py-10" : "py-14 lg:py-20")}>
+    <section className="border-b border-border bg-background">
+      <div className={cn("mx-auto max-w-6xl px-5 lg:px-8", compact ? "py-8 sm:py-10" : "py-16 sm:py-20 lg:py-28")}>
         {breadcrumbs && breadcrumbs.length > 0 ? (
           <nav aria-label="Breadcrumb" className="mb-6">
             <ol className="flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
@@ -78,12 +80,17 @@ export function PageHero({
             {eyebrow}
           </p>
         ) : null}
-        <h1 className="mt-3 max-w-3xl font-display text-[2rem] font-semibold leading-[1.1] tracking-[-0.035em] text-foreground sm:text-[2.5rem] lg:text-[2.75rem]">
+        <h1 className={cn("mt-3 max-w-4xl font-display font-semibold leading-[1.06] text-foreground", compact ? "text-[2rem] tracking-[-0.035em] sm:text-[2.5rem]" : "text-[2.25rem] tracking-[-0.045em] sm:text-[3.25rem] lg:text-[4rem]")}>
           {title}
         </h1>
-        <p className="mt-5 max-w-3xl text-[0.9375rem] leading-relaxed text-muted-foreground sm:text-base">
+        <p className="mt-6 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
           {description}
         </p>
+        {showCta ? (
+          <Button size="lg" className="mt-8 px-7" asChild>
+            <a href={PRIMARY_CTA_URL}>{PRIMARY_CTA_LABEL}<ArrowRight className="size-4" /></a>
+          </Button>
+        ) : null}
       </div>
     </section>
   );
@@ -99,7 +106,7 @@ export function ContentSection({
   children: React.ReactNode;
 }) {
   return (
-    <section id={id} className="border-b border-border py-12 sm:py-16">
+    <section id={id} className="marketing-content-section border-b border-border py-12 sm:py-16">
       <div className="mx-auto max-w-6xl px-5 lg:px-8">
         <h2 className="max-w-3xl font-display text-[1.5rem] font-semibold leading-[1.15] tracking-[-0.025em] text-foreground sm:text-[1.75rem]">
           {title}
@@ -150,8 +157,8 @@ export function CtaBand({
   secondaryLabel?: string;
 }) {
   return (
-    <section className="no-print px-5 py-16 lg:px-8">
-      <div className="mx-auto max-w-6xl bg-surface px-6 py-12 text-center sm:px-10 sm:py-14">
+    <section className="marketing-contrast no-print px-5 py-20 lg:px-8">
+      <div className="mx-auto max-w-6xl py-2 text-center sm:py-5">
         <h2 className="font-display text-[1.5rem] font-semibold leading-[1.15] tracking-[-0.025em] text-foreground sm:text-[1.75rem]">
           {title}
         </h2>

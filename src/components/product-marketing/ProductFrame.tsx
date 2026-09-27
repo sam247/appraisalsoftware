@@ -17,11 +17,11 @@ export function ProductFrame({
   return (
     <div
       className={cn(
-        "overflow-hidden rounded-xl border border-border bg-card",
+        "overflow-hidden rounded-lg border border-border bg-card",
         className,
       )}
     >
-      <div className="flex items-center justify-between gap-4 border-b border-border bg-surface/70 px-4 py-3 sm:px-5">
+      <div className="flex items-center justify-between gap-4 border-b border-border bg-surface/50 px-4 py-3 sm:px-5">
         <div className="min-w-0">
           <p className="text-[11px] text-primary">
             {eyebrow}
@@ -30,12 +30,9 @@ export function ProductFrame({
             {title}
           </p>
         </div>
-        <span className="hidden shrink-0 text-[10px] text-muted-foreground sm:block">
-          Product preview
-        </span>
       </div>
       {description ? (
-        <p className="border-b border-border px-4 py-3 text-xs leading-relaxed text-muted-foreground sm:px-5">
+        <p className="sr-only">
           {description}
         </p>
       ) : null}

@@ -1,6 +1,7 @@
 import { SiteChrome } from "@/components/layout/SiteChrome";
 import { ContentSection, CtaBand, PageHero, RelatedLinks, homeCrumb } from "@/components/marketing/PageSections";
 import { Panel } from "@/components/product/primitives";
+import { RespondentProof } from "@/components/product-marketing/RespondentProof";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { pageMetadata } from "@/lib/metadata";
 import { breadcrumbSchema } from "@/lib/schema";
@@ -12,13 +13,19 @@ const steps = [
   { title: "3. Send invitations and collect responses", copy: "Activation prepares invitations. Respondents use their invitation link to answer the questions. Completion tracking shows outstanding responses, with scheduled invitations and reminders supported by the current appraisal flow.", fields: [["Self-assessment", "Submitted"], ["Manager response", "Outstanding"], ["Reminder", "Configured campaign cadence"]] },
   { title: "4. Review both perspectives", copy: "Read Self vs Manager answers for each subject and question. Use differences as discussion prompts, not an automatic judgement. Agree objectives, development actions and support in the review meeting.", fields: [["Question", "What went well?"], ["Self", "Improved the weekly handover checklist"], ["Manager", "Clearer records; escalation still needs practice"]] },
 ];
-export default function Page() { return <SiteChrome>
+export default function Page() { return <SiteChrome commercial>
   <JsonLd data={breadcrumbSchema([{ name: "Home", path: "/" }, { name: "How it works", path: "/how-it-works" }])} />
-  <PageHero title="How Appraisal Software Works" description="A focused workflow for employee self-assessments and manager reviews. The panels below are illustrative examples, not live customer data." breadcrumbs={[homeCrumb(), { label: "How it works", href: "/how-it-works" }]} />
+  <PageHero showCta title="How Appraisal Software Works" description="A focused workflow for employee self-assessments and manager reviews. The panels below are illustrative examples, not live customer data." breadcrumbs={[homeCrumb(), { label: "How it works", href: "/how-it-works" }]} />
   {steps.map((step) => <ContentSection key={step.title} title={step.title}>
     <p>{step.copy}</p>
     <Panel title={step.title.slice(3)} meta="Illustrative example"><dl className="space-y-4 p-5">{step.fields.map(([label, value]) => <div key={label}><dt className="text-xs text-muted-foreground">{label}</dt><dd className="mt-1 text-sm font-medium text-foreground">{value}</dd></div>)}</dl></Panel>
   </ContentSection>)}
+  <section className="border-b border-border bg-surface/50 py-16 sm:py-20">
+    <div className="mx-auto grid max-w-6xl gap-10 px-5 lg:grid-cols-[0.8fr_1.2fr] lg:items-center lg:gap-16 lg:px-8">
+      <div><h2 className="font-display text-2xl font-semibold text-foreground sm:text-3xl">The form people actually answer</h2><p className="mt-4 leading-relaxed text-muted-foreground">A live, sanitised respondent experience makes the collection step tangible.</p></div>
+      <RespondentProof />
+    </div>
+  </section>
   <ContentSection title="What the workflow includes"><p>Appraisal Software gives you reusable questions, campaign dates, employee and manager assignments, anonymous 360 campaigns, structured respondent forms, completion tracking, configured reminders and review results.</p><p>The product stays focused on appraisals and multi-rater feedback rather than trying to replace payroll, absence, recruitment or a wider HR suite.</p></ContentSection>
   <RelatedLinks title="Prepare before you create a campaign" links={[{ href: "/annual-appraisal-template", label: "Annual appraisal template", copy: "Choose a useful review structure first." }, { href: "/appraisal-questions", label: "Appraisal questions", copy: "Choose prompts for employee reflection and manager discussion." }, { href: "/annual-appraisal-guide", label: "Annual appraisal guide", copy: "Plan the preparation, meeting and follow-up." }]} />
   <CtaBand title="Set up an employee and manager review" copy="Create your questions and organise the appraisal cycle in Appraisal Software." />

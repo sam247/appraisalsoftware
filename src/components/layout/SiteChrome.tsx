@@ -1,9 +1,9 @@
 import { Header } from "@/components/home/Header";
 import { Footer } from "@/components/home/Footer";
 
-export function SiteChrome({ children }: { children: React.ReactNode }) {
+export function SiteChrome({ children, commercial = false }: { children: React.ReactNode; commercial?: boolean }) {
   return (
-    <div className="min-h-screen bg-background">
+    <div className={`marketing-site min-h-screen bg-background${commercial ? " commercial-site" : ""}`}>
       <Header />
       <main>{children}</main>
       <Footer />

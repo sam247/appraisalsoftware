@@ -135,6 +135,7 @@ export default function RespondForm({
   preview = false,
   previewQuestionIndex,
 }: RespondFormProps) {
+  const Heading = preview ? "h2" : "h1";
   const accent = accentForWhiteText(orgBrandColor);
   const brandStyle = {
     ["--org-accent" as string]: accent,
@@ -313,9 +314,9 @@ export default function RespondForm({
             brandColor={orgBrandColor}
             size={40}
           />
-          <h1 className="mt-6 font-display text-2xl font-semibold text-foreground">
+          <Heading className="mt-6 font-display text-2xl font-semibold text-foreground">
             Thank you
-          </h1>
+          </Heading>
           <p className="mt-3 max-w-md text-sm leading-relaxed text-muted-foreground">
             {preview ? "This is the completion preview. No response was recorded." : "Your responses have been submitted successfully."}
             {!preview && anonymous &&
@@ -351,9 +352,9 @@ export default function RespondForm({
           />
 
           <div className="space-y-3">
-            <h1 className="font-display text-3xl font-semibold tracking-tight text-foreground sm:text-[2rem] text-balance">
+            <Heading className="font-display text-3xl font-semibold tracking-tight text-foreground sm:text-[2rem] text-balance">
               {copy.title}
-            </h1>
+            </Heading>
             <p className="max-w-md text-base leading-relaxed text-muted-foreground">
               {copy.description}
             </p>
