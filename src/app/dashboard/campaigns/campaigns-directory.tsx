@@ -64,6 +64,8 @@ function buildRow(
   campaign: Campaign,
   assignments: CampaignAssignment[],
   subjectCount: number,
+  questionCount: number,
+  valid360ReviewerCount: number,
 ): RowModel {
   const campAssignments = assignments.filter(
     (a) => a.campaign_id === campaign.id,
@@ -73,8 +75,8 @@ function buildRow(
   const setup = setupCompleteness({
     campaign,
     subjectCount,
-    assignmentCount: campAssignments.length,
-    questionCount: campaign.template_id ? 1 : 0,
+    assignmentCount: is360 ? (valid360ReviewerCount === campAssignments.length ? valid360ReviewerCount : 0) : campAssignments.filter((a) => a.status === "pending").length,
+    questionCount,
   });
 
   const peopleLabel = is360
@@ -179,10 +181,14 @@ export default function CampaignsDirectory({
   campaigns,
   assignments,
   subjectCounts,
+  questionCounts,
+  valid360ReviewerCounts,
 }: {
   campaigns: Campaign[];
   assignments: CampaignAssignment[];
   subjectCounts: Record<string, number>;
+  questionCounts: Record<string, number>;
+  valid360ReviewerCounts: Record<string, number>;
 }) {
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<StatusFilter>("all");
@@ -193,9 +199,9 @@ export default function CampaignsDirectory({
   const rows = useMemo(
     () =>
       campaigns.map((c) =>
-        buildRow(c, assignments, subjectCounts[c.id] ?? 0),
+        buildRow(c, assignments, subjectCounts[c.id] ?? 0, questionCounts[c.id] ?? questionCounts[c.template_id ?? ""] ?? 0, valid360ReviewerCounts[c.id] ?? 0),
       ),
-    [campaigns, assignments, subjectCounts],
+    [campaigns, assignments, subjectCounts, questionCounts, valid360ReviewerCounts],
   );
 
   const overview = useMemo(() => {

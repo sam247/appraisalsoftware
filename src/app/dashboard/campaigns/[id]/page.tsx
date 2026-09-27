@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { closeCampaign } from "../actions";
 import AnnualDraftBuilder from "./annual-draft-builder";
-import Feedback360DraftReview from "./feedback-360-draft-review";
+import Feedback360DraftBuilder from "./feedback-360-draft-builder";
 import ActivateButton from "./activate-button";
 import {
   campaignLabels,
@@ -60,6 +60,7 @@ export default async function CampaignDetailPage({
     questionResult,
     templateResult,
     deptResult,
+    templateQuestionsResult,
   ] = await Promise.all([
     supabase
       .from("campaign_subjects")
@@ -106,6 +107,7 @@ export default async function CampaignDetailPage({
       .select("id, name")
       .eq("organization_id", org.id)
       .order("name"),
+    supabase.from("template_questions").select("id, template_id, prompt, type").eq("organization_id", org.id),
   ]);
   if (
     [
@@ -115,6 +117,7 @@ export default async function CampaignDetailPage({
       questionResult,
       templateResult,
       deptResult,
+      templateQuestionsResult,
     ].some((r) => r.error)
   )
     throw new Error("Unable to load campaign details");
@@ -126,12 +129,16 @@ export default async function CampaignDetailPage({
   const templates = (templateResult.data ?? []) as Template[];
   const departments = (deptResult.data ?? []) as Department[];
   const peopleById = Object.fromEntries(people.map((p) => [p.id, p]));
+  const activePersonIds = new Set(people.filter((p) => !p.archived_at).map((p) => p.id));
+  const subjectId = subjects[0]?.person_id;
+  const valid360Reviewers = new Set(assignments.filter((a) => a.status === "pending" && activePersonIds.has(a.respondent_person_id) && a.respondent_person_id !== subjectId && a.subject_person_id === subjectId && ["manager", "peer", "direct_report", "other"].includes(a.relationship ?? "")).map((a) => a.respondent_person_id)).size;
+  const valid360Questions = questions.length > 0 && questions.every((q) => q.type === "rating" || q.type === "text") && (campaign.questions_frozen_at !== null || templates.some((t) => t.id === campaign.template_id));
   const progress = responseProgress(assignments);
   const setup = setupCompleteness({
     campaign,
-    subjectCount: subjects.length,
-    assignmentCount: assignments.length,
-    questionCount: questions.length,
+    subjectCount: is360 ? subjects.filter((s) => activePersonIds.has(s.person_id)).length : subjects.length,
+    assignmentCount: is360 ? (valid360Reviewers === assignments.length ? valid360Reviewers : 0) : assignments.filter((a) => a.status === "pending").length,
+    questionCount: is360 && !valid360Questions ? 0 : questions.length,
   });
   const ready = setup.ready;
   const initialSubjects = subjects.map((s) => ({
@@ -146,10 +153,6 @@ export default async function CampaignDetailPage({
     templates.find((t) => t.id === campaign.template_id)?.name ?? null;
 
   if (campaign.status === "draft" && !is360) {
-    const step =
-      stepParam === "review" || (subjects.length > 0 && stepParam !== "people")
-        ? "review"
-        : "people";
     return (
       <>
         {error && (
@@ -161,10 +164,15 @@ export default async function CampaignDetailPage({
           </p>
         )}
         <AnnualDraftBuilder
-          key={`${JSON.stringify(initialSubjects)}-${step}`}
+          key={`${campaign.updated_at}-${JSON.stringify(initialSubjects)}-${stepParam ?? ""}`}
           campaignId={id}
           campaignName={campaign.name}
+          campaignSettings={campaign.settings}
+          reminderSettings={campaign.reminder_settings}
+          opensAt={campaign.opens_at}
           templateName={templateName}
+          templateId={campaign.template_id}
+          templates={templates.map((t) => ({ id: t.id, name: t.name, questions: (templateQuestionsResult.data ?? []).filter((q) => q.template_id === t.id).map((q) => ({ id: q.id, prompt: q.prompt, type: q.type })) }))}
           questionCount={questions.length}
           questions={questions}
           closesAt={campaign.closes_at}
@@ -180,8 +188,8 @@ export default async function CampaignDetailPage({
             }))}
           departments={departments.map((d) => ({ id: d.id, name: d.name }))}
           initialSubjects={initialSubjects}
+          pendingAssignmentCount={assignments.filter((a) => a.status === "pending").length}
           ready={ready}
-          initialStep={step}
         />
       </>
     );
@@ -198,13 +206,16 @@ export default async function CampaignDetailPage({
             {error}
           </p>
         )}
-        <Feedback360DraftReview
+        <Feedback360DraftBuilder
+          key={`${campaign.updated_at}-${JSON.stringify(assignments)}-${stepParam ?? ""}`}
           campaign={campaign}
           subject={peopleById[subjects[0]?.person_id] ?? null}
           assignments={assignments}
-          peopleById={peopleById}
+          people={people.filter((p) => !p.archived_at).map((p) => ({ id: p.id, full_name: p.full_name, email: p.email, department_id: p.department_id, manager_person_id: p.manager_person_id }))}
+          departments={departments.map((d) => ({ id: d.id, name: d.name }))}
           questions={questions}
           templateName={templateName}
+          templates={templates.map((t) => ({ id: t.id, name: t.name, questions: (templateQuestionsResult.data ?? []).filter((q) => q.template_id === t.id).map((q) => ({ id: q.id, prompt: q.prompt, type: q.type })) }))}
           ready={ready}
         />
       </>

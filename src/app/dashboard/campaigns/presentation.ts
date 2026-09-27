@@ -62,6 +62,23 @@ export function campaignDate(
   });
 }
 
+/** ISO calendar date in the campaign's named timezone, for date inputs/RPCs. */
+export function campaignLocalDate(value: string | null, timezone: string): string {
+  if (!value) return "";
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: timezone, year: "numeric", month: "2-digit", day: "2-digit",
+  }).formatToParts(new Date(value));
+  const part = (type: string) => parts.find((p) => p.type === type)?.value ?? "";
+  return `${part("year")}-${part("month")}-${part("day")}`;
+}
+
+export function reminderSummary(settings: Record<string, unknown>): string {
+  const days = Number(settings?.cadenceDays);
+  if (settings?.enabled !== true || settings?.strategy !== "cadence" || !Number.isFinite(days) || days <= 0)
+    return "Automatic reminders off";
+  return `Every ${days} ${days === 1 ? "day" : "days"} for outstanding responses`;
+}
+
 export function campaignTypeLabel(type: Campaign["campaign_type"]): string {
   return type === "feedback_360"
     ? "Anonymous 360"
@@ -85,17 +102,20 @@ export type SetupCompleteness = {
 
 /** Genuine draft setup completeness — not a cosmetic wizard. */
 export function setupCompleteness(input: {
-  campaign: Pick<Campaign, "campaign_type" | "template_id" | "name">;
+  campaign: Pick<Campaign, "campaign_type" | "template_id" | "name" | "settings" | "opens_at" | "closes_at">;
   subjectCount: number;
   assignmentCount: number;
   questionCount: number;
 }): SetupCompleteness {
   const is360 = input.campaign.campaign_type === "feedback_360";
   const hasPeople = is360
-    ? input.subjectCount > 0 && input.assignmentCount >= 5
+    ? input.subjectCount === 1 && input.assignmentCount >= 5
     : input.subjectCount > 0 && input.assignmentCount >= 1;
   const hasQuestions =
     !!input.campaign.template_id && input.questionCount > 0;
+  const mode = input.campaign.settings?.draft_delivery_mode;
+  const hasTiming = (mode === "now" || (mode === "later" && !!input.campaign.opens_at && new Date(input.campaign.opens_at).getTime() > Date.now())) &&
+    (!input.campaign.closes_at || new Date(input.campaign.closes_at).getTime() > (mode === "later" && input.campaign.opens_at ? new Date(input.campaign.opens_at).getTime() : Date.now()));
   const steps: SetupStep[] = is360
     ? [
         { key: "details", label: "Details", done: !!input.campaign.name.trim() },
@@ -105,30 +125,24 @@ export function setupCompleteness(input: {
           done: hasPeople,
         },
         { key: "questions", label: "Questions", done: hasQuestions },
-        {
-          key: "review",
-          label: "Ready to send",
-          done: hasPeople && hasQuestions,
-        },
+        { key: "timing", label: "Timing", done: hasTiming },
       ]
     : [
         { key: "details", label: "Details", done: !!input.campaign.name.trim() },
         { key: "people", label: "People", done: hasPeople },
         { key: "questions", label: "Questions", done: hasQuestions },
-        {
-          key: "review",
-          label: "Ready to send",
-          done: hasPeople && hasQuestions,
-        },
+        { key: "timing", label: "Timing", done: hasTiming },
       ];
 
   const doneCount = steps.filter((s) => s.done).length;
-  const ready = hasPeople && hasQuestions;
+  const ready = !!input.campaign.name.trim() && hasPeople && hasQuestions && hasTiming;
   let nextLabel = "Continue setup";
   if (!hasPeople) {
     nextLabel = is360 ? "Add reviewers" : "Add people";
   } else if (!hasQuestions) {
     nextLabel = "Choose questions";
+  } else if (!hasTiming) {
+    nextLabel = "Set timing";
   } else {
     nextLabel = "Review and send";
   }
@@ -165,6 +179,8 @@ export function buildAttentionItems(
   campaigns: Campaign[],
   assignments: CampaignAssignment[],
   subjectCounts: Record<string, number>,
+  questionCounts: Record<string, number> = {},
+  valid360ReviewerCounts: Record<string, number> = {},
 ): AttentionItem[] {
   const items: AttentionItem[] = [];
 
@@ -178,9 +194,8 @@ export function buildAttentionItems(
     const setup = setupCompleteness({
       campaign,
       subjectCount: subjects,
-      assignmentCount: campAssignments.length,
-      // Home does not load questions; template_id is the available signal.
-      questionCount: campaign.template_id ? 1 : 0,
+      assignmentCount: is360 ? ((valid360ReviewerCounts[campaign.id] ?? 0) === campAssignments.length ? campAssignments.length : 0) : campAssignments.filter((a) => a.status === "pending").length,
+      questionCount: questionCounts[campaign.id] ?? questionCounts[campaign.template_id ?? ""] ?? 0,
     });
 
     if (campaign.status === "draft") {

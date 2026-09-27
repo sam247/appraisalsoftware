@@ -19,6 +19,7 @@ vi.mock("next/navigation", () => ({ redirect: mocks.redirect }));
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
 import {
   createCampaign,
+  activateCampaign,
   saveSubjectsAndAssignments,
   scheduleCampaign,
   sendCampaign,
@@ -27,6 +28,12 @@ import {
   archiveCampaign,
   deleteCampaign,
   sendCampaignReminders,
+  saveAnnualTiming,
+  finalizeAnnualDraft,
+  saveFeedback360Cohort,
+  saveFeedback360Template,
+  saveFeedback360Timing,
+  finalizeFeedback360Draft,
 } from "./actions";
 import { upsertQuestion } from "../templates/actions";
 import { createPerson, updatePerson, archivePerson } from "../people/actions";
@@ -90,10 +97,12 @@ describe("annual appraisal UX safeguards", () => {
       percent: 14,
     });
   });
-  it("rejects missing or empty templates before creating a draft", async () => {
-    await expect(createCampaign(form({ name: "Annual" }))).rejects.toThrow(
-      "Choose+a+question+template",
-    );
+  it("creates a named draft without requiring questions first, but rejects an invalid deep link", async () => {
+    mocks.from.mockReturnValueOnce(query({ data: { id: "campaign" } }));
+    await expect(createCampaign(form({ name: "Annual" }))).rejects.toThrow("/dashboard/campaigns/campaign");
+    expect(mocks.from).toHaveBeenCalledTimes(1);
+    vi.clearAllMocks();
+    await expect(createCampaign(form({ name: " " }))).rejects.toThrow("Name+is+required");
     expect(mocks.from).not.toHaveBeenCalled();
     mocks.from
       .mockReturnValueOnce(query({ data: { id: "template" } }))
@@ -110,7 +119,27 @@ describe("annual appraisal UX safeguards", () => {
       .mockReturnValueOnce(query({ data: { id: "campaign" } }));
     await expect(
       createCampaign(form({ name: "Annual", template_id: "template" })),
-    ).rejects.toThrow("/dashboard/campaigns/campaign?step=people");
+    ).rejects.toThrow("/dashboard/campaigns/campaign");
+  });
+  it("persists explicit timing through the annual transaction", async () => {
+    expect(await saveAnnualTiming("campaign", "later", "2027-02-30", "")).toHaveProperty("error");
+    expect(mocks.rpc).not.toHaveBeenCalled();
+    expect(await saveAnnualTiming("campaign", "now", "", "")).toEqual({});
+    expect(mocks.rpc).toHaveBeenCalledWith("save_annual_draft_timing", {
+      p_campaign_id: "campaign", p_mode: "now", p_send_date: null, p_close_date: null,
+    });
+  });
+  it("requires saved timing at final submission", async () => {
+    mocks.from.mockReturnValueOnce(query({ data: { id: "campaign", campaign_type: "annual_appraisal", status: "draft", settings: {}, opens_at: null } }));
+    expect(await finalizeAnnualDraft("campaign")).toEqual({ error: "Save a delivery choice before sending" });
+    expect(mocks.rpc).not.toHaveBeenCalled();
+  });
+  it("keeps draft 360 sends on the acknowledged finalisation path", async () => {
+    mocks.from.mockReturnValue(query({ data: { id: "campaign", campaign_type: "feedback_360", status: "draft" } }));
+    expect(await activateCampaign("campaign")).toHaveProperty("error");
+    await expect(sendCampaign("campaign", form({ delivery: "later", opens_at: "2999-01-01" })))
+      .rejects.toThrow("Review+and+Send");
+    expect(mocks.rpc).not.toHaveBeenCalled();
   });
   it("delegates participant replacement once to the guarded database transaction", async () => {
     const rows = [
@@ -154,6 +183,7 @@ describe("annual appraisal UX safeguards", () => {
     expect(mocks.from).not.toHaveBeenCalled();
   });
   it("rejects malformed dates before the scheduling transaction and reports database boundaries", async () => {
+    mocks.from.mockReturnValue(query({ data: { campaign_type: "annual_appraisal" } }));
     for (const value of ["invalid", "2027-02-30"])
       await expect(
         scheduleCampaign("campaign", form({ opens_at: value })),
@@ -171,9 +201,10 @@ describe("annual appraisal UX safeguards", () => {
     await expect(
       scheduleCampaign("campaign", form({ opens_at: "2999-01-02" })),
     ).rejects.toThrow("after");
-    expect(mocks.from).not.toHaveBeenCalled();
+    expect(mocks.from).toHaveBeenCalledWith("campaigns");
   });
   it("schedules through one guarded RPC, retaining existing activation and closing", async () => {
+    mocks.from.mockReturnValue(query({ data: { id: "campaign", campaign_type: "annual_appraisal", status: "draft" } }));
     await expect(
       sendCampaign(
         "campaign",
@@ -184,7 +215,6 @@ describe("annual appraisal UX safeguards", () => {
       "schedule_appraisal_campaign",
       { p_campaign_id: "campaign", p_send_date: "2999-01-01" },
     );
-    mocks.from.mockReturnValue(query({ data: { id: "campaign" } }));
     await expect(
       sendCampaign("campaign", form({ delivery: "now" })),
     ).rejects.toThrow("/dashboard/campaigns/campaign");
@@ -226,38 +256,17 @@ describe("annual appraisal UX safeguards", () => {
       p_campaign_id: "campaign",
     });
   });
-  it("creates close dates in the organisation timezone and snapshots it on the campaign", async () => {
+  it("snapshots the organisation timezone without preconfiguring draft timing", async () => {
     const insert = query({ data: { id: "campaign" } });
-    mocks.from
-      .mockReturnValueOnce(query({ data: { id: "template" } }))
-      .mockReturnValueOnce(query({ count: 1 }))
-      .mockReturnValueOnce(insert);
-    mocks.rpc.mockResolvedValueOnce({
-      data: [
-        {
-          opens_at: "2999-07-01T08:00:00Z",
-          closes_at: "2999-07-01T22:59:59.999Z",
-        },
-      ],
-      error: null,
-    });
+    mocks.from.mockReturnValueOnce(insert);
     await expect(
-      createCampaign(
-        form({
-          name: "Annual",
-          template_id: "template",
-          closes_at: "2999-07-01",
-        }),
-      ),
+      createCampaign(form({ name: "Annual" })),
     ).rejects.toThrow("/dashboard/campaigns/campaign");
-    expect(mocks.rpc).toHaveBeenCalledWith("campaign_date_instants", {
-      p_date: "2999-07-01",
-      p_timezone: "Europe/London",
-    });
+    expect(mocks.rpc).not.toHaveBeenCalled();
     expect(insert.insert).toHaveBeenCalledWith(
       expect.objectContaining({
         timezone: "Europe/London",
-        closes_at: "2999-07-01T22:59:59.999Z",
+        template_id: null,
       }),
     );
   });
@@ -327,5 +336,32 @@ describe("annual appraisal UX safeguards", () => {
       department_id: null,
       created_by: "owner",
     });
+  });
+});
+
+describe("360 draft assembly actions", () => {
+  it("creates an inert named draft through the dedicated 360 RPC", async () => {
+    mocks.rpc.mockResolvedValueOnce({ data: "feedback-draft", error: null });
+    await expect(createCampaign(form({ campaign_type: "feedback_360", name: "Leadership feedback" })))
+      .rejects.toThrow("/dashboard/campaigns/feedback-draft");
+    expect(mocks.rpc).toHaveBeenCalledExactlyOnceWith("create_feedback_360_draft", {
+      p_name: "Leadership feedback", p_organization_id: "org",
+    });
+    expect(mocks.from).not.toHaveBeenCalled();
+  });
+  it("keeps 360 cohort, question and timing saves on their dedicated contracts", async () => {
+    expect(await saveFeedback360Cohort("c", "subject", [{ personId: "reviewer", relationship: "peer" }])).toEqual({});
+    expect(await saveFeedback360Template("c", "template")).toEqual({});
+    expect(await saveFeedback360Timing("c", "now", "", "")).toEqual({});
+    expect(mocks.rpc.mock.calls.map((call) => call[0])).toEqual([
+      "save_feedback_360_cohort", "save_feedback_360_template", "save_feedback_360_timing",
+    ]);
+  });
+  it("requires a fresh anonymity acknowledgement at final action", async () => {
+    expect(await finalizeFeedback360Draft("c", false)).toHaveProperty("error");
+    expect(mocks.from).not.toHaveBeenCalled();
+    mocks.from.mockReturnValueOnce(query({ data: { id: "c", campaign_type: "feedback_360", status: "draft", settings: { draft_delivery_mode: "later" } } }));
+    expect(await finalizeFeedback360Draft("c", true)).toEqual({});
+    expect(mocks.rpc).toHaveBeenCalledExactlyOnceWith("finalize_feedback_360_draft", { p_campaign_id: "c", p_acknowledged: true });
   });
 });

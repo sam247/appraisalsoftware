@@ -8,6 +8,7 @@ INSERT INTO public.template_questions(template_id,organization_id,type,prompt,re
  ('80000000-0000-0000-0000-000000000001', :'org_id','text','Helpful suggestions',true,1),
  ('80000000-0000-0000-0000-000000000001', :'org_id','text','Optional comment',false,2);
 INSERT INTO public.people(organization_id,email,full_name) SELECT :'org_id','workflow'||i||'@example.test','Reviewer '||i FROM generate_series(1,6) i;
+UPDATE private.feedback_360_release SET enabled=false;
 SET request.jwt.claim.sub='10000000-0000-0000-0000-000000000001';
 DO $$ BEGIN
  BEGIN PERFORM public.create_feedback_360('Disabled','30000000-0000-0000-0000-000000000001','[]','80000000-0000-0000-0000-000000000001'); RAISE EXCEPTION 'expected release denial'; EXCEPTION WHEN raise_exception THEN IF SQLERRM<>'360 feedback is not enabled' THEN RAISE; END IF; END;

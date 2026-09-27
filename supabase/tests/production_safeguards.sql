@@ -15,10 +15,30 @@ SELECT public.save_appraisal_participants('40000000-0000-0000-0000-000000000001'
 SELECT public.save_appraisal_participants('40000000-0000-0000-0000-000000000002','[{"person_id":"30000000-0000-0000-0000-000000000001"}]');
 SELECT public.save_appraisal_participants('40000000-0000-0000-0000-000000000003','[{"person_id":"30000000-0000-0000-0000-000000000001","manager_person_id":"30000000-0000-0000-0000-000000000002"}]');
 DO $$ BEGIN
+  BEGIN PERFORM public.activate_campaign('40000000-0000-0000-0000-000000000002'); RAISE EXCEPTION 'expected empty question denial'; EXCEPTION WHEN raise_exception THEN IF SQLERRM <> 'Choose a template containing questions' THEN RAISE; END IF; END;
+  ASSERT (SELECT status='draft' AND questions_frozen_at IS NULL FROM public.campaigns WHERE id='40000000-0000-0000-0000-000000000002');
+  PERFORM public.save_appraisal_participants('40000000-0000-0000-0000-000000000003','[]');
+  BEGIN PERFORM public.activate_campaign('40000000-0000-0000-0000-000000000003'); RAISE EXCEPTION 'expected empty recipient denial'; EXCEPTION WHEN raise_exception THEN IF SQLERRM <> 'Save participants before sending' THEN RAISE; END IF; END;
+  ASSERT (SELECT status='draft' AND questions_frozen_at IS NULL FROM public.campaigns WHERE id='40000000-0000-0000-0000-000000000003');
+  PERFORM public.save_appraisal_participants('40000000-0000-0000-0000-000000000003','[{"person_id":"30000000-0000-0000-0000-000000000001","manager_person_id":"30000000-0000-0000-0000-000000000002"}]');
+END $$;
+RESET ROLE;
+DO $$ BEGIN
+  ASSERT NOT EXISTS (SELECT 1 FROM public.access_tokens t JOIN public.campaign_assignments a ON a.id=t.assignment_id WHERE a.campaign_id IN ('40000000-0000-0000-0000-000000000002','40000000-0000-0000-0000-000000000003'));
+  ASSERT NOT EXISTS (SELECT 1 FROM public.email_outbox WHERE payload->>'campaign_id' IN ('40000000-0000-0000-0000-000000000002','40000000-0000-0000-0000-000000000003'));
+END $$;
+SET ROLE authenticated;
+DO $$ BEGIN
   BEGIN PERFORM public.save_appraisal_participants('40000000-0000-0000-0000-000000000001','[{"person_id":"30000000-0000-0000-0000-000000000003"}]'); RAISE EXCEPTION 'expected foreign-person rejection'; EXCEPTION WHEN raise_exception THEN IF SQLERRM <> 'Employee unavailable' THEN RAISE; END IF; END;
   BEGIN PERFORM public.save_appraisal_participants('40000000-0000-0000-0000-000000000001','[{"person_id":"30000000-0000-0000-0000-000000000001"},{"person_id":"30000000-0000-0000-0000-000000000001"}]'); RAISE EXCEPTION 'expected duplicate rejection'; EXCEPTION WHEN raise_exception THEN IF SQLERRM <> 'Choose each employee once' THEN RAISE; END IF; END;
   BEGIN PERFORM public.schedule_appraisal_campaign('40000000-0000-0000-0000-000000000001','2000-01-01'); RAISE EXCEPTION 'expected past-date rejection'; EXCEPTION WHEN raise_exception THEN IF SQLERRM <> 'Send time must be in the future' THEN RAISE; END IF; END;
   BEGIN PERFORM public.schedule_appraisal_campaign('40000000-0000-0000-0000-000000000002','2999-07-01'); RAISE EXCEPTION 'expected empty-template rejection'; EXCEPTION WHEN raise_exception THEN IF SQLERRM <> 'Choose a template containing questions' THEN RAISE; END IF; END;
+  BEGIN PERFORM public.save_annual_draft_timing('40000000-0000-0000-0000-000000000002','later','2000-01-01',NULL); RAISE EXCEPTION 'expected past timing rejection'; EXCEPTION WHEN raise_exception THEN IF SQLERRM <> 'Send time must be in the future' THEN RAISE; END IF; END;
+  ASSERT (SELECT settings->>'draft_delivery_mode' IS NULL FROM public.campaigns WHERE id='40000000-0000-0000-0000-000000000002');
+  PERFORM public.save_annual_draft_timing('40000000-0000-0000-0000-000000000002','later','2999-07-01','2999-07-02');
+  ASSERT (SELECT settings->>'draft_delivery_mode'='later' AND opens_at=timestamptz '2999-07-01 08:00+00' AND closes_at=timestamptz '2999-07-02 22:59:59.999+00' FROM public.campaigns WHERE id='40000000-0000-0000-0000-000000000002');
+  PERFORM public.save_annual_draft_timing('40000000-0000-0000-0000-000000000002','now',NULL,NULL);
+  ASSERT (SELECT settings->>'draft_delivery_mode'='now' AND opens_at IS NULL AND closes_at IS NULL FROM public.campaigns WHERE id='40000000-0000-0000-0000-000000000002');
   ASSERT (SELECT questions_frozen_at IS NULL AND status='draft' FROM public.campaigns WHERE id='40000000-0000-0000-0000-000000000002'), 'Failed scheduling left a frozen campaign';
   ASSERT (SELECT count(*)=2 FROM public.campaign_assignments WHERE campaign_id='40000000-0000-0000-0000-000000000001');
   ASSERT NOT has_table_privilege('authenticated','public.campaign_assignments','UPDATE');
@@ -33,6 +53,24 @@ DO $$ BEGIN
   ASSERT (SELECT closes_at = timestamptz '2026-07-01 22:59:59.999+00' FROM public.campaign_date_instants('2026-07-01','Europe/London'));
 END $$;
 RESET ROLE;
+CREATE FUNCTION private.fail_annual_outbox() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN
+  IF NEW.payload->>'campaign_name'='Race' THEN RAISE EXCEPTION 'forced annual outbox failure'; END IF;
+  RETURN NEW;
+END $$;
+CREATE TRIGGER fail_annual_outbox BEFORE INSERT ON public.email_outbox FOR EACH ROW EXECUTE FUNCTION private.fail_annual_outbox();
+SET ROLE authenticated;
+DO $$ BEGIN
+  BEGIN PERFORM public.activate_campaign('40000000-0000-0000-0000-000000000003'); RAISE EXCEPTION 'expected activation rollback';
+  EXCEPTION WHEN raise_exception THEN IF SQLERRM <> 'forced annual outbox failure' THEN RAISE; END IF; END;
+END $$;
+RESET ROLE;
+DROP TRIGGER fail_annual_outbox ON public.email_outbox;
+DO $$ BEGIN
+  ASSERT (SELECT status='draft' AND questions_frozen_at IS NULL FROM public.campaigns WHERE id='40000000-0000-0000-0000-000000000003');
+  ASSERT NOT EXISTS(SELECT 1 FROM public.campaign_questions WHERE campaign_id='40000000-0000-0000-0000-000000000003');
+  ASSERT NOT EXISTS(SELECT 1 FROM public.access_tokens t JOIN public.campaign_assignments a ON a.id=t.assignment_id WHERE a.campaign_id='40000000-0000-0000-0000-000000000003');
+  ASSERT NOT EXISTS(SELECT 1 FROM public.email_outbox WHERE payload->>'campaign_id'='40000000-0000-0000-0000-000000000003');
+END $$;
 -- Force an insertion failure AFTER replacement has deleted the original rows.
 CREATE FUNCTION private.fail_test_manager() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF NEW.relationship='manager' THEN RAISE EXCEPTION 'forced insertion failure'; END IF; RETURN NEW; END $$;
 CREATE TRIGGER fail_test_manager BEFORE INSERT ON public.campaign_assignments FOR EACH ROW EXECUTE FUNCTION private.fail_test_manager();
@@ -59,6 +97,8 @@ DO $$ BEGIN
   ASSERT (SELECT opens_at = timestamptz '2999-07-01 08:00+00' AND status='scheduled' FROM public.campaigns WHERE id='40000000-0000-0000-0000-000000000001');
   BEGIN PERFORM public.save_appraisal_participants('40000000-0000-0000-0000-000000000001','[]'); RAISE EXCEPTION 'expected scheduled-edit rejection'; EXCEPTION WHEN raise_exception THEN IF SQLERRM <> 'Only an editable annual appraisal draft can change participants' THEN RAISE; END IF; END;
 END $$;
+-- A scheduled campaign keeps its frozen questionnaire if its source template is removed.
+UPDATE public.campaigns SET template_id=NULL WHERE id='40000000-0000-0000-0000-000000000001';
 SELECT public.activate_campaign('40000000-0000-0000-0000-000000000001');
 RESET ROLE;
 -- Tokens cannot attach answers to a different campaign or bypass required fields.

@@ -55,7 +55,10 @@ try {
   ]);
   started = true;
   sql(`CREATE ROLE anon; CREATE ROLE authenticated; CREATE ROLE service_role BYPASSRLS;
-    CREATE SCHEMA auth; CREATE SCHEMA extensions;
+    CREATE SCHEMA auth; CREATE SCHEMA extensions; CREATE SCHEMA storage;
+    CREATE TABLE storage.buckets (id text PRIMARY KEY, name text, public boolean, file_size_limit bigint, allowed_mime_types text[]);
+    CREATE TABLE storage.objects (id uuid PRIMARY KEY, bucket_id text, name text);
+    CREATE FUNCTION storage.foldername(text) RETURNS text[] LANGUAGE sql IMMUTABLE AS $$ SELECT string_to_array($1, '/') $$;
     CREATE TABLE auth.users (
       id uuid PRIMARY KEY,
       email text,
@@ -82,6 +85,27 @@ try {
     join(root, "supabase/tests/360_privacy_foundation.sql"),
   ]);
   run("psql", [...args, "-f", join(root, "supabase/tests/360_workflow.sql")]);
+  run("psql", [...args, "-f", join(root, "supabase/tests/360_draft_assembly.sql")]);
+  const feedbackDraft = run("psql", [...args, "-At", "-c", "SELECT id FROM public.campaigns WHERE name='Legacy convertible'"]).trim();
+  const feedbackLockFile = join(dir, "feedback-finalise.sql");
+  writeFileSync(feedbackLockFile, `BEGIN; SET LOCAL request.jwt.claim.sub='10000000-0000-0000-0000-000000000001'; SET LOCAL ROLE authenticated; SELECT public.save_feedback_360_timing('${feedbackDraft}','now',NULL,NULL); SELECT public.finalize_feedback_360_draft('${feedbackDraft}',true); SELECT pg_sleep(1); COMMIT;`);
+  const feedbackFinalise = spawn(join(bin, "psql"), [...args, "-f", feedbackLockFile], { stdio: ["ignore", "pipe", "pipe"] });
+  const feedbackDone = new Promise((resolve, reject) => {
+    feedbackFinalise.on("error", reject);
+    feedbackFinalise.on("exit", (code) => code === 0 ? resolve() : reject(new Error("360 finalisation failed")));
+  });
+  let feedbackLocked = false;
+  for (let i = 0; i < 100; i++) {
+    if (run("psql", [...args, "-At", "-c", "SELECT count(*) FROM pg_locks WHERE locktype='transactionid' AND pid <> pg_backend_pid() AND mode='ExclusiveLock'"]).trim() === "1") {
+      feedbackLocked = true;
+      break;
+    }
+    await new Promise((resolve) => setTimeout(resolve, 10));
+  }
+  assert(feedbackLocked, "360 finalisation did not acquire its transaction lock");
+  assert.throws(() => sql(`SET request.jwt.claim.sub='10000000-0000-0000-0000-000000000001'; SET ROLE authenticated; SELECT public.save_feedback_360_cohort('${feedbackDraft}','30000000-0000-0000-0000-000000000001','[]');`), /Only a 360 draft can change reviewers/);
+  await feedbackDone;
+  assert.match(sql(`SELECT status FROM public.campaigns WHERE id='${feedbackDraft}'`), /active/);
   // A held activation lock must serialize participant editing, not allow a late replacement.
   const lockFile = join(dir, "activation.sql");
   writeFileSync(
@@ -217,7 +241,7 @@ try {
     /Invalid or closed appraisal link/,
   );
   console.log(
-    "PASS: PostgreSQL migrations, private 360 grants/RLS, immutable contracts, closed-only/cohort-safe reports, launch guards, atomic rollback, tenancy, GMT/BST scheduling, annual respondent/results/close path, activation/edit and submit/save races.",
+    "PASS: PostgreSQL migrations; Annual send guards, timing, rollback and respondent path; 360 new/legacy drafts, guarded conversion, finalisation rollback and race, anonymous respondent isolation, private grants/RLS, closed-only five-response reports.",
   );
 } finally {
   if (started) run("pg_ctl", ["-D", dir, "-m", "immediate", "-w", "stop"]);

@@ -6,6 +6,8 @@ import {
   homeWorkMeta,
   statusTone,
   dedupeAttentionByCampaign,
+  campaignLocalDate,
+  reminderSummary,
 } from "./presentation";
 import type { Campaign, CampaignAssignment } from "@/lib/types/database";
 
@@ -34,6 +36,43 @@ function campaign(
 }
 
 describe("setupCompleteness", () => {
+  it("requires five 360 reviewers and saved timing", () => {
+    const draft = campaign({ id: "360", name: "360", status: "draft", campaign_type: "feedback_360", template_id: "template", settings: { anonymity: { mode: "anonymous" }, draft_delivery_mode: "now" } });
+    expect(setupCompleteness({ campaign: draft, subjectCount: 1, assignmentCount: 4, questionCount: 2 }).ready).toBe(false);
+    expect(setupCompleteness({ campaign: draft, subjectCount: 1, assignmentCount: 5, questionCount: 2 }).ready).toBe(true);
+    const assignments = Array.from({ length: 5 }, (_, i) => ({ campaign_id: "360", respondent_person_id: `r${i}`, subject_person_id: "subject", relationship: "peer", status: "pending" })) as CampaignAssignment[];
+    expect(buildAttentionItems([draft], assignments, { "360": 1 }, { template: 2 }, { "360": 4 })[0].kind).toBe("needs_setup");
+    expect(buildAttentionItems([draft], assignments, { "360": 1 }, { template: 2 }, { "360": 5 })[0].kind).toBe("ready_to_send");
+  });
+  it("formats campaign dates across GMT and BST for saved timing", () => {
+    expect(campaignLocalDate("2026-03-29T08:00:00Z", "Europe/London")).toBe("2026-03-29");
+    expect(campaignLocalDate("2026-10-25T09:00:00Z", "Europe/London")).toBe("2026-10-25");
+  });
+  it("shows only the reminder policy the scheduler actually runs", () => {
+    expect(reminderSummary({ enabled: true, strategy: "cadence", cadenceDays: 3 })).toContain("Every 3 days");
+    expect(reminderSummary({ enabled: true, strategy: "before_close", daysBeforeClose: [3] })).toBe("Automatic reminders off");
+  });
+  it("keeps legacy drafts incomplete until timing is explicitly saved", () => {
+    const setup = setupCompleteness({
+      campaign: campaign({ id: "legacy", name: "Legacy", status: "draft", template_id: "template" }),
+      subjectCount: 1, assignmentCount: 1, questionCount: 2,
+    });
+    expect(setup.steps.map((s) => s.done)).toEqual([true, true, true, false]);
+    expect(setup.nextLabel).toBe("Set timing");
+    expect(setup.ready).toBe(false);
+  });
+  it("allows a self-only annual appraisal when every saved area is configured", () => {
+    const setup = setupCompleteness({
+      campaign: campaign({ id: "self", name: "Self only", status: "draft", template_id: "template", settings: { draft_delivery_mode: "now" } }),
+      subjectCount: 1, assignmentCount: 1, questionCount: 1,
+    });
+    expect(setup.ready).toBe(true);
+  });
+  it("rejects a past scheduled instant and an empty template", () => {
+    const draft = campaign({ id: "bad", name: "Bad", status: "draft", template_id: "template", settings: { draft_delivery_mode: "later" }, opens_at: "2000-01-01T09:00:00Z" });
+    expect(setupCompleteness({ campaign: draft, subjectCount: 1, assignmentCount: 1, questionCount: 2 }).ready).toBe(false);
+    expect(setupCompleteness({ campaign: { ...draft, settings: { draft_delivery_mode: "now" } }, subjectCount: 1, assignmentCount: 1, questionCount: 0 }).ready).toBe(false);
+  });
   it("scores annual draft from real configuration", () => {
     const incomplete = setupCompleteness({
       campaign: campaign({
@@ -56,6 +95,7 @@ describe("setupCompleteness", () => {
         name: "Q1",
         status: "draft",
         template_id: "t1",
+        settings: { draft_delivery_mode: "now" },
       }),
       subjectCount: 2,
       assignmentCount: 4,

@@ -1,6 +1,7 @@
 -- Disposable cluster only. Operator-created fixtures do not enable public 360.
 SET request.jwt.claim.sub='';
 RESET ROLE;
+UPDATE private.feedback_360_release SET enabled=false;
 SELECT organization_id AS org_id FROM public.people WHERE id='30000000-0000-0000-0000-000000000001' \gset
 INSERT INTO public.campaigns(id,organization_id,name,campaign_type,questions_frozen_at) VALUES ('70000000-0000-0000-0000-000000000001', :'org_id','Private 360 fixture','feedback_360',now());
 INSERT INTO public.campaign_questions(id,campaign_id,organization_id,prompt,type,required,sort_order) VALUES

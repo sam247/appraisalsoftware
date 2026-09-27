@@ -8,6 +8,7 @@ import {
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { campaignLocalDate } from "./presentation";
 
 // ---------------------------------------------------------------------------
 // Create campaign (draft)
@@ -18,8 +19,6 @@ export async function createCampaign(formData: FormData): Promise<void> {
 
   const name = (formData.get("name") as string | null)?.trim();
   const templateId = (formData.get("template_id") as string | null) || null;
-  const closesAt = (formData.get("closes_at") as string | null) || null;
-  const opensAt = (formData.get("opens_at") as string | null) || null;
 
   if (
     formData.has("campaign_type") &&
@@ -29,23 +28,9 @@ export async function createCampaign(formData: FormData): Promise<void> {
   )
     redirect("/dashboard/campaigns/new?error=Unsupported+campaign+type");
   if (formData.get("campaign_type") === "feedback_360") {
-    if (formData.get("privacy_ack") !== "on")
-      redirect(
-        "/dashboard/campaigns/new?type=360&error=Read+and+accept+the+anonymity+policy",
-      );
-    if (!name || !templateId || (closesAt && !validDate(closesAt)))
-      redirect(
-        "/dashboard/campaigns/new?type=360&error=Check+the+name,+template+and+date",
-      );
-    const { data, error } = await supabase.rpc("create_feedback_360", {
-      p_name: name,
-      p_subject: String(formData.get("subject_id") || ""),
-      p_template: templateId,
-      p_close_date: closesAt,
-      p_reviewers: formData.getAll("reviewer_id").map((id) => ({
-        person_id: String(id),
-        relationship: String(formData.get(`relationship_${id}`) || "peer"),
-      })),
+    if (!name) redirect("/dashboard/campaigns/new?type=360&error=Name+is+required");
+    const { data, error } = await supabase.rpc("create_feedback_360_draft", {
+      p_name: name, p_organization_id: org.id,
     });
     if (error)
       redirect(
@@ -56,29 +41,12 @@ export async function createCampaign(formData: FormData): Promise<void> {
 
   if (!name) redirect("/dashboard/campaigns/new?error=Name+is+required");
 
-  if (!templateId)
-    redirect("/dashboard/campaigns/new?error=Choose+a+question+template");
-  const templateError = await validateTemplate(supabase, org.id, templateId);
-  if (templateError)
-    redirect(`/dashboard/campaigns/new?error=${encodeURIComponent(templateError)}`);
-  if ((closesAt && !validDate(closesAt)) || (opensAt && !validDate(opensAt)))
-    redirect("/dashboard/campaigns/new?error=Choose+a+valid+date");
-  const timezone = org.timezone || "Europe/London";
-  const closeInstant = closesAt ? await resolveDate(closesAt) : null;
-  const openInstant = opensAt ? await resolveDate(opensAt) : null;
-  async function resolveDate(date: string) {
-    const { data, error } = await supabase.rpc("campaign_date_instants", {
-      p_date: date,
-      p_timezone: timezone,
-    });
-    if (error || !data?.[0])
-      redirect(
-        `/dashboard/campaigns/new?error=${encodeURIComponent(error?.message ?? "Unable to resolve campaign date")}`,
-      );
-    return data[0] as { opens_at: string; closes_at: string };
+  if (templateId) {
+    const templateError = await validateTemplate(supabase, org.id, templateId);
+    if (templateError)
+      redirect(`/dashboard/campaigns/new?error=${encodeURIComponent(templateError)}`);
   }
-  if (closeInstant && new Date(closeInstant.closes_at).getTime() <= Date.now())
-    redirect("/dashboard/campaigns/new?error=Close+date+must+be+in+the+future");
+  const timezone = org.timezone || "Europe/London";
 
   const { data: campaign, error } = await supabase
     .from("campaigns")
@@ -88,8 +56,6 @@ export async function createCampaign(formData: FormData): Promise<void> {
       campaign_type: "annual_appraisal",
       status: "draft",
       template_id: templateId,
-      closes_at: closeInstant?.closes_at ?? null,
-      opens_at: openInstant?.opens_at ?? null,
       timezone,
       reminder_settings: sanitizeReminderSettings(
         DEFAULT_REMINDER_SETTINGS,
@@ -104,7 +70,7 @@ export async function createCampaign(formData: FormData): Promise<void> {
       `/dashboard/campaigns/new?error=${encodeURIComponent(error?.message ?? "Failed to create")}`,
     );
 
-  redirect(`/dashboard/campaigns/${campaign.id}?step=people`);
+  redirect(`/dashboard/campaigns/${campaign.id}`);
 }
 
 // ---------------------------------------------------------------------------
@@ -140,6 +106,136 @@ export async function saveSubjectsAndAssignments(
   return {};
 }
 
+export async function saveAnnualName(campaignId: string, value: string): Promise<{ error?: string }> {
+  const { org } = await requireOrgAdmin();
+  const name = value.trim();
+  if (!name) return { error: "Give the appraisal a name" };
+  const supabase = await createClient();
+  const { data, error } = await supabase.from("campaigns").update({ name })
+    .eq("id", campaignId).eq("organization_id", org.id).eq("campaign_type", "annual_appraisal")
+    .eq("status", "draft").is("questions_frozen_at", null).select("id").single();
+  if (error || !data) return { error: error?.message ?? "This draft can no longer be edited" };
+  revalidatePath(`/dashboard/campaigns/${campaignId}`);
+  revalidatePath("/dashboard/campaigns");
+  return {};
+}
+
+export async function saveAnnualTemplate(campaignId: string, templateId: string): Promise<{ error?: string }> {
+  const { org } = await requireOrgAdmin();
+  const supabase = await createClient();
+  const validation = await validateTemplate(supabase, org.id, templateId);
+  if (validation) return { error: validation };
+  const { data, error } = await supabase.from("campaigns").update({ template_id: templateId })
+    .eq("id", campaignId).eq("organization_id", org.id).eq("campaign_type", "annual_appraisal")
+    .eq("status", "draft").is("questions_frozen_at", null).select("id").single();
+  if (error || !data) return { error: error?.message ?? "This draft can no longer be edited" };
+  revalidatePath(`/dashboard/campaigns/${campaignId}`);
+  revalidatePath("/dashboard/campaigns");
+  return {};
+}
+
+export async function saveAnnualTiming(campaignId: string, mode: "now" | "later", sendDate: string, closeDate: string): Promise<{ error?: string }> {
+  await requireOrgAdmin();
+  if (mode !== "now" && mode !== "later") return { error: "Choose when to send" };
+  if ((mode === "later" && !validDate(sendDate)) || (mode === "now" && !!sendDate) || (closeDate && !validDate(closeDate)))
+    return { error: "Choose valid delivery dates" };
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("save_annual_draft_timing", {
+    p_campaign_id: campaignId, p_mode: mode, p_send_date: mode === "later" ? sendDate : null, p_close_date: closeDate || null,
+  });
+  if (error) return { error: error.message };
+  revalidatePath(`/dashboard/campaigns/${campaignId}`);
+  revalidatePath("/dashboard/campaigns");
+  return {};
+}
+
+export async function finalizeAnnualDraft(campaignId: string): Promise<{ error?: string }> {
+  const { org } = await requireOrgAdmin();
+  const supabase = await createClient();
+  const { data: campaign, error: readError } = await supabase.from("campaigns")
+    .select("id, campaign_type, status, settings, opens_at, timezone")
+    .eq("id", campaignId).eq("organization_id", org.id).single();
+  if (readError || !campaign || campaign.campaign_type !== "annual_appraisal" || campaign.status !== "draft")
+    return { error: "This annual draft is no longer available" };
+  const mode = (campaign.settings as Record<string, unknown>)?.draft_delivery_mode;
+  if (mode !== "now" && mode !== "later") return { error: "Save a delivery choice before sending" };
+  let result;
+  if (mode === "later") {
+    if (!campaign.opens_at) return { error: "Save a send date before scheduling" };
+    const sendDate = campaignLocalDate(campaign.opens_at, campaign.timezone);
+    result = await supabase.rpc("schedule_appraisal_campaign", { p_campaign_id: campaignId, p_send_date: sendDate });
+  } else {
+    result = await supabase.rpc("activate_campaign", { p_campaign_id: campaignId });
+    if (!result.error) void nudgeOutboxDrain();
+  }
+  if (result.error) return { error: result.error.message };
+  revalidatePath(`/dashboard/campaigns/${campaignId}`);
+  revalidatePath("/dashboard/campaigns");
+  revalidatePath("/dashboard");
+  return {};
+}
+
+export async function saveFeedback360Name(campaignId: string, value: string): Promise<{ error?: string }> {
+  const { org } = await requireOrgAdmin();
+  const name = value.trim();
+  if (!name) return { error: "Give the feedback campaign a name" };
+  const supabase = await createClient();
+  const { data, error } = await supabase.from("campaigns").update({ name })
+    .eq("id", campaignId).eq("organization_id", org.id).eq("campaign_type", "feedback_360")
+    .eq("status", "draft").select("id").single();
+  if (error || !data) return { error: error?.message ?? "This draft can no longer be edited" };
+  revalidatePath(`/dashboard/campaigns/${campaignId}`);
+  return {};
+}
+
+export async function saveFeedback360Cohort(campaignId: string, subjectId: string, reviewers: { personId: string; relationship: string }[]): Promise<{ error?: string }> {
+  await requireOrgAdmin();
+  if (!subjectId || !Array.isArray(reviewers)) return { error: "Choose a subject and reviewers" };
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("save_feedback_360_cohort", { p_campaign_id: campaignId, p_subject: subjectId,
+    p_reviewers: reviewers.map((r) => ({ person_id: r.personId, relationship: r.relationship })) });
+  if (error) return { error: error.message };
+  revalidatePath(`/dashboard/campaigns/${campaignId}`);
+  return {};
+}
+
+export async function saveFeedback360Template(campaignId: string, templateId: string): Promise<{ error?: string }> {
+  await requireOrgAdmin();
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("save_feedback_360_template", { p_campaign_id: campaignId, p_template: templateId });
+  if (error) return { error: error.message };
+  revalidatePath(`/dashboard/campaigns/${campaignId}`);
+  return {};
+}
+
+export async function saveFeedback360Timing(campaignId: string, mode: "now" | "later", sendDate: string, closeDate: string): Promise<{ error?: string }> {
+  await requireOrgAdmin();
+  if ((mode !== "now" && mode !== "later") || (mode === "later" && !validDate(sendDate)) || (mode === "now" && !!sendDate) || (closeDate && !validDate(closeDate)))
+    return { error: "Choose valid delivery dates" };
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("save_feedback_360_timing", { p_campaign_id: campaignId, p_mode: mode,
+    p_send_date: mode === "later" ? sendDate : null, p_close_date: closeDate || null });
+  if (error) return { error: error.message };
+  revalidatePath(`/dashboard/campaigns/${campaignId}`);
+  return {};
+}
+
+export async function finalizeFeedback360Draft(campaignId: string, acknowledged: boolean): Promise<{ error?: string }> {
+  const { org } = await requireOrgAdmin();
+  if (!acknowledged) return { error: "Acknowledge the anonymity policy before sending" };
+  const supabase = await createClient();
+  const { data: campaign } = await supabase.from("campaigns").select("id, campaign_type, status, settings")
+    .eq("id", campaignId).eq("organization_id", org.id).single();
+  if (!campaign || campaign.campaign_type !== "feedback_360" || campaign.status !== "draft") return { error: "This 360 draft is no longer available" };
+  const { error } = await supabase.rpc("finalize_feedback_360_draft", { p_campaign_id: campaignId, p_acknowledged: true });
+  if (error) return { error: error.message };
+  if ((campaign.settings as Record<string, unknown>)?.draft_delivery_mode === "now") void nudgeOutboxDrain();
+  revalidatePath(`/dashboard/campaigns/${campaignId}`);
+  revalidatePath("/dashboard/campaigns");
+  revalidatePath("/dashboard");
+  return {};
+}
+
 // ---------------------------------------------------------------------------
 // Activate campaign (calls DB RPC)
 // ---------------------------------------------------------------------------
@@ -152,12 +248,14 @@ export async function activateCampaign(
   // Verify ownership before calling RPC
   const { data: campaign } = await supabase
     .from("campaigns")
-    .select("id, organization_id")
+    .select("id, organization_id, campaign_type, status")
     .eq("id", campaignId)
     .eq("organization_id", org.id)
     .single();
 
   if (!campaign) return { error: "Campaign not found" };
+  if (campaign.campaign_type === "feedback_360" && campaign.status === "draft")
+    return { error: "Review the anonymous feedback setup and acknowledge the privacy policy before sending" };
 
   const { error } = await supabase.rpc("activate_campaign", {
     p_campaign_id: campaignId,
@@ -225,6 +323,10 @@ export async function scheduleCampaign(
 ): Promise<void> {
   await requireOrgAdmin();
   const supabase = await createClient();
+  const { data: campaign } = await supabase.from("campaigns").select("campaign_type")
+    .eq("id", campaignId).single();
+  if (!campaign || campaign.campaign_type !== "annual_appraisal")
+    redirect(`/dashboard/campaigns/${campaignId}?error=Use+Review+and+Send+to+schedule+feedback`);
 
   const opensAt = (formData.get("opens_at") as string | null)?.trim();
   if (!opensAt) {
