@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { AssignmentStatus } from "@/lib/types/database";
 import { responseProgress } from "./presentation";
+import { draftPrimaryAction } from "./draft-action";
 
 const mocks = vi.hoisted(() => ({
   from: vi.fn(),
@@ -78,6 +79,31 @@ beforeEach(() => {
 });
 
 describe("annual appraisal UX safeguards", () => {
+  it("derives the final action from saved timing and readiness", () => {
+    expect(draftPrimaryAction("", false)).toMatchObject({
+      label: "Send",
+      enabled: false,
+    });
+    expect(draftPrimaryAction("now", false)).toMatchObject({
+      label: "Send now",
+      enabled: false,
+    });
+    expect(draftPrimaryAction("now", true)).toMatchObject({
+      label: "Send now",
+      enabled: true,
+      confirmLabel: "Send appraisal",
+    });
+    expect(draftPrimaryAction("later", false)).toMatchObject({
+      label: "Schedule",
+      enabled: false,
+    });
+    expect(draftPrimaryAction("later", true)).toMatchObject({
+      label: "Schedule",
+      enabled: true,
+      confirmLabel: "Schedule appraisal",
+    });
+  });
+
   it("counts responses without treating bounced or revoked invitations as not started", () => {
     expect(
       responseProgress(

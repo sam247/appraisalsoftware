@@ -5,6 +5,8 @@ import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { campaignDate, campaignLocalDate, reminderSummary, setupCompleteness } from "../presentation";
+import { draftPrimaryAction, type DraftDeliveryMode } from "../draft-action";
+import DraftConfirmationDialog from "../draft-confirmation-dialog";
 import {
   finalizeFeedback360Draft, saveFeedback360Name,
   saveFeedback360Template, saveFeedback360Timing,
@@ -33,12 +35,14 @@ export default function Feedback360DraftBuilder({
   const localDate = (value: string | null) => campaignLocalDate(value, campaign.timezone);
   const [sendDate, setSendDate] = useState(localDate(campaign.opens_at));
   const [closeDate, setCloseDate] = useState(localDate(campaign.closes_at));
-  const [acknowledged, setAcknowledged] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [pending, startTransition] = useTransition();
   const selectedTemplate = templates.find((t) => t.id === templateId);
   const allowedTemplates = templates.filter((t) => t.questions.length > 0 && t.questions.every((q) => q.type === "rating" || q.type === "text"));
   const savedMode = campaign.settings?.draft_delivery_mode;
+  const deliveryMode: DraftDeliveryMode =
+    savedMode === "now" || savedMode === "later" ? savedMode : "";
   const dirty = expanded === "details" ? name !== campaign.name
     : expanded === "questions" ? templateId !== (campaign.template_id ?? "")
     : expanded === "timing" ? mode !== (savedMode ?? "") || sendDate !== localDate(campaign.opens_at) || closeDate !== localDate(campaign.closes_at)
@@ -77,11 +81,16 @@ export default function Feedback360DraftBuilder({
       router.refresh();
     });
   };
-  const final = () => {
+  const confirmFinal = (acknowledged: boolean) => {
     setError(null);
     startTransition(async () => {
       const result = await finalizeFeedback360Draft(campaign.id, acknowledged);
-      if (result.error) { setError(result.error); router.refresh(); return; }
+      if (result.error) {
+        setError(result.error);
+        router.refresh();
+        return;
+      }
+      setConfirmationOpen(false);
       router.refresh();
     });
   };
@@ -90,6 +99,7 @@ export default function Feedback360DraftBuilder({
     assignmentCount: validReviewerCount === assignments.length ? validReviewerCount : 0, questionCount: questions.every((q) => q.type === "rating" || q.type === "text") && (campaign.questions_frozen_at !== null || templates.some((t) => t.id === campaign.template_id)) ? questions.length : 0,
   });
   const canFinish = ready && setup.ready && validReviewerCount >= 5;
+  const primaryAction = draftPrimaryAction(deliveryMode, canFinish);
   const sections: { key: Section; label: string; summary: string; done: boolean }[] = [
     { key: "details", label: "Details", summary: campaign.name + " · Anonymous 360 feedback", done: !!campaign.name.trim() },
     { key: "people", label: "Subject & Reviewers", summary: subject ? `${subject.full_name || subject.email} · ${assignments.length} ${assignments.length === 1 ? "reviewer" : "reviewers"}` : "Choose a subject and reviewers", done: setup.steps[1].done },
@@ -104,7 +114,18 @@ export default function Feedback360DraftBuilder({
           <p className="mt-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">Anonymous 360 · Draft</p>
           <h1 className="mt-1 font-display text-2xl font-semibold tracking-tight">{campaign.name}</h1>
         </div>
-        <Button type="button" variant="outline" size="sm" onClick={finishLater}>Finish later</Button>
+        <div className="flex w-full flex-wrap gap-2 sm:w-auto">
+          <Button type="button" variant="outline" size="sm" onClick={finishLater}>Finish later</Button>
+          <Button
+            type="button"
+            size="sm"
+            disabled={!primaryAction.enabled || pending || !!expanded}
+            title={!primaryAction.enabled ? "Complete the saved campaign setup first" : undefined}
+            onClick={() => setConfirmationOpen(true)}
+          >
+            {pending && confirmationOpen ? primaryAction.pendingLabel : primaryAction.label}
+          </Button>
+        </div>
       </header>
       <div>
         <div className="flex items-center justify-between gap-3 text-xs text-muted-foreground"><span>{setup.doneCount} of 4 configured</span><span>Saved draft</span></div>
@@ -115,23 +136,21 @@ export default function Feedback360DraftBuilder({
       <div className="border-t border-border">
         {sections.map((section) => (
           <section key={section.key} className="border-b border-border last:border-b-0">
-            <button type="button" onClick={() => section.key === "people"
-              ? router.push(`/dashboard/campaigns/${campaign.id}/reviewers`)
-              : changeSection(expanded === section.key ? null : section.key)}
+            {section.key === "people" ? (
+              <div className="flex w-full items-start justify-between gap-4 py-4 text-left sm:py-5">
+                <span className="min-w-0"><span className="flex items-center gap-2 text-sm font-medium"><span className={`h-1.5 w-1.5 shrink-0 rounded-full ${section.done ? "bg-primary" : "bg-border-strong"}`} />{section.label}</span>
+                  <span className="mt-1 block text-sm text-muted-foreground">{section.summary}</span></span>
+                <Button asChild type="button" size="sm" variant="outline" className="shrink-0">
+                  <Link href={`/dashboard/campaigns/${campaign.id}/reviewers`}>Edit subject &amp; reviewers</Link>
+                </Button>
+              </div>
+            ) : <button type="button" onClick={() => changeSection(expanded === section.key ? null : section.key)}
               aria-expanded={expanded === section.key} aria-controls={`editor-${section.key}`}
               className="flex w-full items-start justify-between gap-4 py-4 text-left sm:py-5">
               <span className="min-w-0"><span className="flex items-center gap-2 text-sm font-medium"><span className={`h-1.5 w-1.5 shrink-0 rounded-full ${section.done ? "bg-primary" : "bg-border-strong"}`} />{section.label}</span>
                 <span className="mt-1 block text-sm text-muted-foreground">{section.summary}</span></span>
-              <span className="shrink-0 text-xs font-medium text-primary">
-                {section.key === "people"
-                  ? "Edit subject & reviewers →"
-                  : expanded === section.key
-                    ? "Close"
-                    : section.done
-                      ? "Edit"
-                      : "Set up"}
-              </span>
-            </button>
+              <span className="shrink-0 text-xs font-medium text-primary">{expanded === section.key ? "Close" : section.done ? "Edit" : "Set up"}</span>
+            </button>}
             {expanded === section.key && <div id={`editor-${section.key}`} className="space-y-5 pb-6">
               {section.key === "details" && <div className="max-w-xl space-y-3">
                 <label className="block text-sm font-medium">Campaign name<input autoFocus className={field} value={name} onChange={(e) => setName(e.target.value)} maxLength={160} /></label>
@@ -159,22 +178,50 @@ export default function Feedback360DraftBuilder({
           </section>
         ))}
       </div>
-      <section className="space-y-5 border-t border-border pt-8">
-        <div><h2 className="font-display text-lg font-semibold">Review &amp; Send</h2><p className="mt-1 text-sm text-muted-foreground">Review the saved anonymous feedback setup.</p></div>
-        <dl className="grid gap-5 text-sm sm:grid-cols-2 xl:grid-cols-3">
-          <div><dt className="text-xs text-muted-foreground">Subject</dt><dd>{subject?.full_name || subject?.email || "Not selected"}</dd></div>
-          <div><dt className="text-xs text-muted-foreground">Reviewers</dt><dd>{validReviewerCount} saved · {validReviewerCount >= 5 ? "Five-reviewer minimum met" : "At least five required"}</dd></div>
-          <div><dt className="text-xs text-muted-foreground">Questions</dt><dd>{templateName ?? "No template"} · {questions.length} {questions.length === 1 ? "question" : "questions"}</dd></div>
-          <div><dt className="text-xs text-muted-foreground">Delivery</dt><dd>{sections[3].summary}</dd></div>
-          <div><dt className="text-xs text-muted-foreground">Reminders</dt><dd>{reminderSummary(campaign.reminder_settings)}</dd></div>
-          <div><dt className="text-xs text-muted-foreground">Privacy</dt><dd>Anonymous results after closure and five submitted reviewers; each question needs five answers.</dd></div>
-        </dl>
-        {questions.length > 0 && <details className="max-w-3xl text-sm"><summary className="cursor-pointer font-medium text-primary">Preview saved questions</summary><ol className="mt-2 list-decimal space-y-1 pl-5 text-muted-foreground">{questions.map((q) => <li key={q.id}>{q.prompt}</li>)}</ol></details>}
-        {!canFinish && <div className="text-sm"><p className="font-medium">Complete before sending</p><ul className="mt-1 list-disc pl-5 text-muted-foreground">{sections.filter((s) => !s.done).map((s) => <li key={s.key}>{s.label}</li>)}</ul></div>}
-        <label className="flex items-start gap-2 text-sm"><input type="checkbox" checked={acknowledged} onChange={(e) => setAcknowledged(e.target.checked)} className="mt-0.5" /><span>I understand that feedback is anonymous, reports require five submitted reviewers after closure, and individual answers cannot be tied to a reviewer.</span></label>
-        {error && !expanded && <p role="alert" className="text-sm text-destructive">{error}</p>}
-        <Button type="button" disabled={!canFinish || !acknowledged || pending || !!expanded} onClick={final}>{pending ? "Checking…" : savedMode === "later" ? "Schedule feedback" : "Send feedback now"}</Button>
-      </section>
+      <DraftConfirmationDialog
+        open={confirmationOpen}
+        onOpenChange={setConfirmationOpen}
+        title={`${deliveryMode === "later" ? "Schedule" : "Send"} "${campaign.name}"?`}
+        description={
+          deliveryMode === "later"
+            ? "The saved anonymous feedback configuration will be scheduled."
+            : "The saved anonymous feedback configuration will be sent immediately."
+        }
+        details={[
+          {
+            label: "Subject",
+            value: subject?.full_name || subject?.email || "Not selected",
+          },
+          { label: "Reviewers", value: `${validReviewerCount}` },
+          {
+            label: "Questions",
+            value: `${questions.length} ${questions.length === 1 ? "question" : "questions"}`,
+          },
+          {
+            label: deliveryMode === "later" ? "Sends" : "Delivery",
+            value:
+              deliveryMode === "later" && campaign.opens_at
+                ? campaignDate(campaign.opens_at, campaign.timezone, true)
+                : "Send now",
+          },
+          {
+            label: "Closes",
+            value: campaign.closes_at
+              ? campaignDate(campaign.closes_at, campaign.timezone)
+              : "No close date",
+          },
+          {
+            label: "Privacy",
+            value: "Anonymous results after closure and five submitted reviewers",
+          },
+        ]}
+        privacyAcknowledgement="I understand that reviewer feedback is anonymous, reports require five submitted reviewers after closure, and individual answers cannot be tied to a reviewer."
+        actionLabel={deliveryMode === "later" ? "Schedule 360" : "Send 360"}
+        pendingLabel={primaryAction.pendingLabel}
+        pending={pending}
+        error={error}
+        onConfirm={confirmFinal}
+      />
     </div>
   );
 }

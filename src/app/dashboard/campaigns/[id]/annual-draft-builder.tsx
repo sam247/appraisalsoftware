@@ -5,6 +5,8 @@ import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { campaignDate, campaignLocalDate, reminderSummary, setupCompleteness } from "../presentation";
+import { draftPrimaryAction, type DraftDeliveryMode } from "../draft-action";
+import DraftConfirmationDialog from "../draft-confirmation-dialog";
 import {
   finalizeAnnualDraft,
   saveAnnualName,
@@ -20,7 +22,7 @@ const field = "mt-1.5 w-full field";
 
 export default function AnnualDraftBuilder({
   campaignId, campaignName, campaignSettings, reminderSettings, opensAt, templateId, templateName, templates,
-  questionCount, questions, closesAt, timezone, initialSubjects, pendingAssignmentCount, ready,
+  questionCount, closesAt, timezone, initialSubjects, pendingAssignmentCount, ready,
 }: {
   campaignId: string; campaignName: string; campaignSettings: Campaign["settings"]; reminderSettings: Campaign["reminder_settings"]; opensAt: string | null;
   templateId: string | null; templateName: string | null; templates: TemplateOption[];
@@ -39,10 +41,13 @@ export default function AnnualDraftBuilder({
   const [sendDate, setSendDate] = useState(localDate(opensAt));
   const [closeDate, setCloseDate] = useState(localDate(closesAt));
   const [error, setError] = useState<string | null>(null);
+  const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [pending, startTransition] = useTransition();
   const managerCount = Math.max(0, pendingAssignmentCount - initialSubjects.length);
   const selfOnlyCount = Math.max(0, initialSubjects.length - managerCount);
   const savedMode = campaignSettings?.draft_delivery_mode;
+  const deliveryMode: DraftDeliveryMode =
+    savedMode === "now" || savedMode === "later" ? savedMode : "";
   const selected = templates.find((t) => t.id === selectedTemplate);
   const dirty = expanded === "details" ? name !== campaignName
     : expanded === "questions" ? selectedTemplate !== (templateId ?? "")
@@ -82,11 +87,17 @@ export default function AnnualDraftBuilder({
       router.refresh();
     });
   };
-  const final = () => {
+  const primaryAction = draftPrimaryAction(deliveryMode, ready);
+  const confirmFinal = () => {
     setError(null);
     startTransition(async () => {
       const result = await finalizeAnnualDraft(campaignId);
-      if (result.error) { setError(result.error); router.refresh(); return; }
+      if (result.error) {
+        setError(result.error);
+        router.refresh();
+        return;
+      }
+      setConfirmationOpen(false);
       router.refresh();
     });
   };
@@ -108,7 +119,18 @@ export default function AnnualDraftBuilder({
           <p className="mt-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">Annual appraisal · Draft</p>
           <h1 className="mt-1 font-display text-2xl font-semibold tracking-tight">{campaignName}</h1>
         </div>
-        <Button type="button" variant="outline" size="sm" onClick={finishLater}>Finish later</Button>
+        <div className="flex w-full flex-wrap gap-2 sm:w-auto">
+          <Button type="button" variant="outline" size="sm" onClick={finishLater}>Finish later</Button>
+          <Button
+            type="button"
+            size="sm"
+            disabled={!primaryAction.enabled || pending || !!expanded}
+            title={!primaryAction.enabled ? "Complete the saved campaign setup first" : undefined}
+            onClick={() => setConfirmationOpen(true)}
+          >
+            {pending && confirmationOpen ? primaryAction.pendingLabel : primaryAction.label}
+          </Button>
+        </div>
       </header>
       <div>
         <div className="flex items-center justify-between gap-3 text-xs text-muted-foreground">
@@ -121,9 +143,17 @@ export default function AnnualDraftBuilder({
       <div className="border-t border-border">
             {sections.map((section) => (
           <section key={section.key} className="border-b border-border last:border-b-0">
-            <button type="button" onClick={() => section.key === "people"
-              ? router.push(`/dashboard/campaigns/${campaignId}/people`)
-              : changeSection(expanded === section.key ? null : section.key)}
+            {section.key === "people" ? (
+              <div className="flex w-full items-start justify-between gap-4 py-4 text-left sm:py-5">
+                <span className="min-w-0">
+                  <span className="flex items-center gap-2 text-sm font-medium"><span className={`h-1.5 w-1.5 shrink-0 rounded-full ${section.done ? "bg-primary" : "bg-border-strong"}`} />{section.label}</span>
+                  <span className="mt-1 block text-sm text-muted-foreground">{section.summary}</span>
+                </span>
+                <Button asChild type="button" size="sm" variant="outline" className="shrink-0">
+                  <Link href={`/dashboard/campaigns/${campaignId}/people`}>Edit people</Link>
+                </Button>
+              </div>
+            ) : <button type="button" onClick={() => changeSection(expanded === section.key ? null : section.key)}
               aria-expanded={expanded === section.key} aria-controls={`editor-${section.key}`}
               className="flex w-full items-start justify-between gap-4 py-4 text-left sm:py-5">
               <span className="min-w-0">
@@ -131,15 +161,9 @@ export default function AnnualDraftBuilder({
                 <span className="mt-1 block text-sm text-muted-foreground">{section.summary}</span>
               </span>
               <span className="shrink-0 text-xs font-medium text-primary">
-                {section.key === "people"
-                  ? "Edit people →"
-                  : expanded === section.key
-                    ? "Close"
-                    : section.done
-                      ? "Edit"
-                      : "Set up"}
+                {expanded === section.key ? "Close" : section.done ? "Edit" : "Set up"}
               </span>
-            </button>
+            </button>}
             {expanded === section.key && (
               <div id={`editor-${section.key}`} className="space-y-5 pb-6">
                 {section.key === "details" && <div className="max-w-xl space-y-3">
@@ -172,20 +196,48 @@ export default function AnnualDraftBuilder({
           </section>
         ))}
       </div>
-      <section className="space-y-5 border-t border-border pt-8">
-        <div><h2 className="font-display text-lg font-semibold">Review &amp; Send</h2><p className="mt-1 text-sm text-muted-foreground">Review the saved configuration before the final action.</p></div>
-        <dl className="grid gap-5 text-sm sm:grid-cols-2 xl:grid-cols-4">
-          <div><dt className="text-xs text-muted-foreground">People</dt><dd>{initialSubjects.length} {initialSubjects.length === 1 ? "employee" : "employees"} · {initialSubjects.length} self · {managerCount} manager reviews</dd></div>
-          <div><dt className="text-xs text-muted-foreground">Questions</dt><dd>{templateName ?? "No template"} · {questionCount} {questionCount === 1 ? "question" : "questions"}</dd></div>
-          <div><dt className="text-xs text-muted-foreground">Delivery</dt><dd>{sections[3].summary}</dd></div>
-          <div><dt className="text-xs text-muted-foreground">Reminders</dt><dd>{reminderSummary(reminderSettings)}</dd></div>
-        </dl>
-        {questions.length > 0 && <details className="max-w-3xl text-sm"><summary className="cursor-pointer font-medium text-primary">Preview saved questions</summary><ol className="mt-2 list-decimal space-y-1 pl-5 text-muted-foreground">{questions.map((q) => <li key={q.id}>{q.prompt}</li>)}</ol></details>}
-        {selfOnlyCount > 0 && <p className="rounded-md bg-warning px-3 py-2.5 text-sm text-warning-foreground">Self-only warning: {selfOnlyCount} {selfOnlyCount === 1 ? "employee has" : "employees have"} no manager assigned.</p>}
-        {!ready && <div className="text-sm"><p className="font-medium">Complete before sending</p><ul className="mt-1 list-disc pl-5 text-muted-foreground">{sections.filter((s) => !s.done).map((s) => <li key={s.key}>{s.label}</li>)}</ul></div>}
-        {error && !expanded && <p role="alert" className="text-sm text-destructive">{error}</p>}
-        <Button type="button" disabled={!ready || pending || !!expanded} onClick={final}>{pending ? "Checking…" : savedMode === "later" ? "Schedule appraisal" : "Send appraisal now"}</Button>
-      </section>
+      <DraftConfirmationDialog
+        open={confirmationOpen}
+        onOpenChange={setConfirmationOpen}
+        title={`${deliveryMode === "later" ? "Schedule" : "Send"} "${campaignName}"?`}
+        description={
+          deliveryMode === "later"
+            ? "The saved campaign configuration will be scheduled."
+            : "The saved campaign configuration will be sent immediately."
+        }
+        details={[
+          {
+            label: "People",
+            value: `${initialSubjects.length} employees · ${managerCount} manager reviews`,
+          },
+          {
+            label: "Questions",
+            value: `${questionCount} ${questionCount === 1 ? "question" : "questions"}`,
+          },
+          {
+            label: deliveryMode === "later" ? "Sends" : "Delivery",
+            value:
+              deliveryMode === "later" && opensAt
+                ? campaignDate(opensAt, timezone, true)
+                : "Send now",
+          },
+          {
+            label: "Closes",
+            value: closesAt ? campaignDate(closesAt, timezone) : "No close date",
+          },
+          { label: "Reminders", value: reminderSummary(reminderSettings) },
+        ]}
+        warning={
+          selfOnlyCount > 0
+            ? `${selfOnlyCount} ${selfOnlyCount === 1 ? "employee has" : "employees have"} no manager and will receive a self-appraisal only.`
+            : undefined
+        }
+        actionLabel={primaryAction.confirmLabel}
+        pendingLabel={primaryAction.pendingLabel}
+        pending={pending}
+        error={error}
+        onConfirm={confirmFinal}
+      />
     </div>
   );
 }
