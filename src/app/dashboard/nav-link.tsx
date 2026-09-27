@@ -27,16 +27,16 @@ export default function NavLink({
       onClick={onNavigate}
       aria-current={isActive ? "page" : undefined}
       className={cn(
-        "relative flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-[13px] transition-colors",
+        "relative flex items-center gap-2.5 rounded-md px-2.5 py-1.5 text-[13px] transition-colors",
         isActive
-          ? "bg-surface font-semibold text-foreground"
-          : "font-medium text-muted-foreground hover:bg-surface hover:text-foreground",
+          ? "bg-foreground/[0.04] font-medium text-foreground"
+          : "text-muted-foreground hover:bg-foreground/[0.03] hover:text-foreground",
       )}
     >
       {isActive && (
         <span
           aria-hidden
-          className="absolute left-0 top-1.5 bottom-1.5 w-0.5 rounded-full bg-foreground"
+          className="absolute left-0 top-1.5 bottom-1.5 w-0.5 rounded-full bg-primary"
         />
       )}
       {Icon && (
@@ -81,7 +81,7 @@ export function SettingsNavGroup({
         icon={Settings}
         onNavigate={onNavigate}
       />
-      <div className="ml-[1.15rem] mt-0.5 space-y-0.5 border-l border-border/80 pl-2.5">
+      <div className="ml-[1.35rem] mt-0.5 space-y-0.5 pl-2">
         {SETTINGS_SUBS.map((sub) => {
           const href = `/dashboard/settings?tab=${sub.tab}`;
           const isActive = activeTab === sub.tab;
@@ -94,8 +94,8 @@ export function SettingsNavGroup({
               className={cn(
                 "block rounded-md px-2 py-1 text-[12px] transition-colors",
                 isActive
-                  ? "bg-primary/10 font-medium text-foreground"
-                  : "font-normal text-muted-foreground/85 hover:bg-surface hover:text-foreground",
+                  ? "font-medium text-foreground"
+                  : "text-muted-foreground hover:text-foreground",
               )}
             >
               {sub.label}

@@ -35,7 +35,7 @@ export default async function AccountPage({
   const initial = (fullName[0] ?? email[0] ?? "A").toUpperCase();
 
   return (
-    <div className="mx-auto w-full max-w-7xl space-y-8">
+    <div className="mx-auto w-full space-y-8">
       <div>
         <h1 className="text-xl font-medium tracking-tight text-foreground">
           My account
@@ -125,7 +125,7 @@ export default async function AccountPage({
               required
               defaultValue={fullName}
               autoComplete="name"
-              className="w-full rounded-lg border border-input bg-surface px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              className="w-full field bg-surface"
             />
           </div>
           <div className="space-y-1.5">
@@ -174,7 +174,7 @@ export default async function AccountPage({
               required
               minLength={8}
               autoComplete="new-password"
-              className="w-full rounded-lg border border-input bg-surface px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              className="w-full field bg-surface"
             />
           </div>
           <div className="space-y-1.5">
@@ -191,7 +191,7 @@ export default async function AccountPage({
               required
               minLength={8}
               autoComplete="new-password"
-              className="w-full rounded-lg border border-input bg-surface px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              className="w-full field bg-surface"
             />
           </div>
           <FormSubmit size="sm" pendingLabel="Updating…">

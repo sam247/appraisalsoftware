@@ -18,7 +18,7 @@ export default async function UpgradePage() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-7xl">
+    <div className="mx-auto w-full">
       <div className="max-w-xl">
       <h1 className="text-xl font-medium tracking-tight">
         Upgrade
@@ -28,7 +28,7 @@ export default async function UpgradePage() {
         people, campaigns and team admins.
       </p>
 
-      <section className="mt-6 rounded-xl border border-border bg-card p-5">
+      <section className="mt-6 max-w-xl">
         <h2 className="text-sm font-semibold">Paid workspace</h2>
         <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
           <li>Larger people directories and CSV imports</li>

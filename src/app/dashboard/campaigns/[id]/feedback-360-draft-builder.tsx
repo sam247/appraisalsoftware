@@ -14,7 +14,7 @@ import type { Campaign, CampaignAssignment, Person, TemplateQuestion } from "@/l
 
 type Section = "details" | "people" | "questions" | "timing";
 type TemplateOption = { id: string; name: string; questions: { id: string; prompt: string; type: string }[] };
-const field = "mt-1.5 w-full rounded-lg border border-input bg-card px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring";
+const field = "mt-1.5 w-full field";
 
 export default function Feedback360DraftBuilder({
   campaign, subject, assignments, people, departments, questions, templateName, templates, ready,
@@ -119,23 +119,23 @@ export default function Feedback360DraftBuilder({
         </div>
         <Button type="button" variant="outline" size="sm" onClick={finishLater}>Finish later</Button>
       </header>
-      <div className="rounded-xl border border-border bg-card p-4 sm:p-5">
+      <div>
         <div className="flex items-center justify-between gap-3 text-xs text-muted-foreground"><span>{setup.doneCount} of 4 configured</span><span>Saved draft</span></div>
         <div className="mt-3 grid grid-cols-4 gap-1.5" aria-label={`${setup.doneCount} of 4 configured`}>
           {sections.map((s) => <div key={s.key} className={`h-1 rounded-full ${s.done ? "bg-primary/60" : "bg-border"}`} />)}
         </div>
       </div>
-      <div className="overflow-hidden rounded-xl border border-border bg-card">
+      <div className="border-t border-border">
         {sections.map((section) => (
           <section key={section.key} className="border-b border-border last:border-b-0">
             <button type="button" onClick={() => changeSection(expanded === section.key ? null : section.key)}
               aria-expanded={expanded === section.key} aria-controls={`editor-${section.key}`}
-              className="flex w-full items-start justify-between gap-4 p-4 text-left hover:bg-surface/40 sm:p-5">
-              <span className="min-w-0"><span className="flex items-center gap-2 text-sm font-semibold"><span className={`h-2 w-2 shrink-0 rounded-full ${section.done ? "bg-primary" : "bg-border"}`} />{section.label}</span>
+              className="flex w-full items-start justify-between gap-4 py-4 text-left sm:py-5">
+              <span className="min-w-0"><span className="flex items-center gap-2 text-sm font-medium"><span className={`h-1.5 w-1.5 shrink-0 rounded-full ${section.done ? "bg-primary" : "bg-border-strong"}`} />{section.label}</span>
                 <span className="mt-1 block text-sm text-muted-foreground">{section.summary}</span></span>
               <span className="shrink-0 text-xs font-medium text-primary">{expanded === section.key ? "Close" : section.done ? "Edit" : "Set up"}</span>
             </button>
-            {expanded === section.key && <div id={`editor-${section.key}`} className="space-y-5 border-t border-border bg-surface/20 p-4 sm:p-5">
+            {expanded === section.key && <div id={`editor-${section.key}`} className="space-y-5 pb-6">
               {section.key === "details" && <div className="max-w-xl space-y-3">
                 <label className="block text-sm font-medium">Campaign name<input autoFocus className={field} value={name} onChange={(e) => setName(e.target.value)} maxLength={160} /></label>
                 <p className="text-xs text-muted-foreground">Anonymous 360 feedback. Reviewer identity and answer content remain separate.</p>
@@ -147,7 +147,7 @@ export default function Feedback360DraftBuilder({
                   </select>
                 </label>
                 <p className="text-sm text-muted-foreground">Choose at least five distinct reviewers. Saved partial cohorts remain drafts. Reviewer names support delivery tracking, but no normal admin view links a reviewer to anonymous answers.</p>
-                {reviewerIds.some((id) => !peopleById[id]) && <p className="rounded-lg border border-amber-300/40 bg-amber-50/50 p-3 text-sm text-amber-900">Some saved reviewers are no longer available. <button type="button" className="font-medium underline" onClick={() => setReviewerIds((ids) => ids.filter((id) => !!peopleById[id]))}>Remove unavailable reviewers</button> and save a valid cohort.</p>}
+                {reviewerIds.some((id) => !peopleById[id]) && <p className="rounded-md bg-warning px-3 py-2.5 text-sm text-warning-foreground">Some saved reviewers are no longer available. <button type="button" className="font-medium underline" onClick={() => setReviewerIds((ids) => ids.filter((id) => !!peopleById[id]))}>Remove unavailable reviewers</button> and save a valid cohort.</p>}
                 {subjectId ? <PeoplePicker people={people} departments={departments} mode="360" excludeIds={[subjectId]} selectedIds={reviewerIds} onChange={setReviewerIds} relationships={relationships} onRelationshipChange={(id, value) => setRelationships((prev) => ({ ...prev, [id]: value }))} /> : <p className="text-sm text-muted-foreground">Choose a subject first.</p>}
                 <p className="text-xs text-muted-foreground">{reviewerIds.length} reviewers selected · At least five are required before send.</p>
               </div>}
@@ -155,7 +155,7 @@ export default function Feedback360DraftBuilder({
                 <label className="block max-w-xl text-sm font-medium">360 question template<select className={field} value={templateId} onChange={(e) => setTemplateId(e.target.value)}>
                   <option value="">Choose a template</option>{allowedTemplates.map((t) => <option key={t.id} value={t.id}>{t.name} · {t.questions.length} {t.questions.length === 1 ? "question" : "questions"}</option>)}
                 </select></label>
-                {selectedTemplate && <div className="rounded-lg border border-border p-4 text-sm"><p className="font-medium">{selectedTemplate.questions.length} {selectedTemplate.questions.length === 1 ? "question" : "questions"}</p><ol className="mt-2 list-decimal space-y-1 pl-5 text-muted-foreground">{selectedTemplate.questions.map((q) => <li key={q.id}>{q.prompt}</li>)}</ol></div>}
+                {selectedTemplate && <div className="text-sm"><p className="font-medium">{selectedTemplate.questions.length} {selectedTemplate.questions.length === 1 ? "question" : "questions"}</p><ol className="mt-2 list-decimal space-y-1 pl-5 text-muted-foreground">{selectedTemplate.questions.map((q) => <li key={q.id}>{q.prompt}</li>)}</ol></div>}
                 <p className="text-xs text-muted-foreground">360 feedback supports rating and text questions. Edit questions in <Link href="/dashboard/templates" className="text-primary underline">Templates</Link>.</p>
               </div>}
               {section.key === "timing" && <div className="max-w-xl space-y-4">
@@ -173,7 +173,7 @@ export default function Feedback360DraftBuilder({
           </section>
         ))}
       </div>
-      <section className="space-y-4 rounded-xl border border-border bg-card p-4 sm:p-6 lg:p-8">
+      <section className="space-y-5 border-t border-border pt-8">
         <div><h2 className="font-display text-lg font-semibold">Review &amp; Send</h2><p className="mt-1 text-sm text-muted-foreground">Review the saved anonymous feedback setup.</p></div>
         <dl className="grid gap-5 text-sm sm:grid-cols-2 xl:grid-cols-3">
           <div><dt className="text-xs text-muted-foreground">Subject</dt><dd>{subject?.full_name || subject?.email || "Not selected"}</dd></div>
@@ -184,7 +184,7 @@ export default function Feedback360DraftBuilder({
           <div><dt className="text-xs text-muted-foreground">Privacy</dt><dd>Anonymous results after closure and five submitted reviewers; each question needs five answers.</dd></div>
         </dl>
         {questions.length > 0 && <details className="max-w-3xl text-sm"><summary className="cursor-pointer font-medium text-primary">Preview saved questions</summary><ol className="mt-2 list-decimal space-y-1 pl-5 text-muted-foreground">{questions.map((q) => <li key={q.id}>{q.prompt}</li>)}</ol></details>}
-        {!canFinish && <div className="rounded-lg border border-border bg-surface/40 p-3 text-sm"><p className="font-medium">Complete before sending</p><ul className="mt-1 list-disc pl-5 text-muted-foreground">{sections.filter((s) => !s.done).map((s) => <li key={s.key}>{s.label}</li>)}</ul></div>}
+        {!canFinish && <div className="text-sm"><p className="font-medium">Complete before sending</p><ul className="mt-1 list-disc pl-5 text-muted-foreground">{sections.filter((s) => !s.done).map((s) => <li key={s.key}>{s.label}</li>)}</ul></div>}
         <label className="flex items-start gap-2 text-sm"><input type="checkbox" checked={acknowledged} onChange={(e) => setAcknowledged(e.target.checked)} className="mt-0.5" /><span>I understand that feedback is anonymous, reports require five submitted reviewers after closure, and individual answers cannot be tied to a reviewer.</span></label>
         {error && !expanded && <p role="alert" className="text-sm text-destructive">{error}</p>}
         <Button type="button" disabled={!canFinish || !acknowledged || pending || !!expanded} onClick={final}>{pending ? "Checking…" : savedMode === "later" ? "Schedule feedback" : "Send feedback now"}</Button>

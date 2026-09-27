@@ -34,7 +34,7 @@ export function Header() {
       className={
         "no-print sticky top-0 z-50 transition-all duration-300 " +
         (scrolled
-          ? "border-b border-border bg-background/92 shadow-[0_1px_3px_rgba(0,0,0,0.04)] backdrop-blur-lg"
+          ? "border-b border-border/80 bg-background/90 backdrop-blur-md"
           : "border-b border-transparent bg-transparent")
       }
     >

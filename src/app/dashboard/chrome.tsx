@@ -15,7 +15,7 @@ export function StatusBadge({
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium",
+        "inline-flex items-center rounded-md px-1.5 py-0.5 text-[11px] font-medium",
         tone === "accent" && "bg-accent text-accent-foreground",
         tone === "ready" && "bg-warm/25 text-warm-foreground",
         tone === "warn" && "bg-destructive/10 text-destructive",
@@ -201,17 +201,17 @@ export function NextAction({
     return (
       <div
         className={cn(
-          "flex flex-wrap items-center justify-between gap-3 rounded-lg border-l-[3px] py-2.5 pl-3.5 pr-3",
+          "flex flex-wrap items-center justify-between gap-3 py-2.5 pl-3 pr-1",
           tone === "warn"
-            ? "border-l-destructive bg-destructive/5"
-            : "border-l-primary bg-accent/40",
+            ? "border-l-2 border-l-destructive"
+            : "border-l-2 border-l-primary",
         )}
       >
         <div className="min-w-0">
-          <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+          <p className="text-[11px] text-muted-foreground">
             Next
           </p>
-          <p className="text-sm font-semibold text-foreground">{label}</p>
+          <p className="text-sm font-medium text-foreground">{label}</p>
           {detail && (
             <p className="mt-0.5 text-xs text-muted-foreground">{detail}</p>
           )}
@@ -221,7 +221,7 @@ export function NextAction({
             {href && (
               <Link
                 href={href}
-                className="inline-flex h-8 items-center rounded-lg bg-primary px-3 text-xs font-semibold text-primary-foreground hover:bg-primary-hover"
+                className="inline-flex h-8 items-center rounded-md bg-primary px-3 text-xs font-medium text-primary-foreground hover:bg-primary-hover"
               >
                 {label}
               </Link>
@@ -234,11 +234,11 @@ export function NextAction({
   }
 
   return (
-    <div className="rounded-xl border border-border bg-card px-4 py-3.5 sm:px-5">
-      <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+    <div className="py-1">
+      <p className="text-[11px] text-muted-foreground">
         Next
       </p>
-      <p className="mt-0.5 text-base font-semibold text-foreground">{label}</p>
+          <p className="mt-1 text-base font-medium text-foreground">{label}</p>
       {detail && (
         <p className="mt-0.5 text-sm text-muted-foreground">{detail}</p>
       )}
@@ -247,7 +247,7 @@ export function NextAction({
           {href && (
             <Link
               href={href}
-              className="inline-flex h-9 items-center rounded-lg bg-primary px-3.5 text-sm font-semibold text-primary-foreground hover:bg-primary-hover"
+              className="inline-flex h-9 items-center rounded-md bg-primary px-3.5 text-sm font-medium text-primary-foreground hover:bg-primary-hover"
             >
               {label}
             </Link>
@@ -271,11 +271,11 @@ export function PageHeader({
   return (
     <div className="flex flex-wrap items-start justify-between gap-3">
       <div className="min-w-0">
-        <h1 className="text-xl font-medium tracking-tight text-foreground">
+        <h1 className="font-display text-2xl font-medium tracking-tight text-foreground">
           {title}
         </h1>
         {subtitle && (
-          <p className="mt-0.5 max-w-2xl text-xs text-muted-foreground">
+          <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
             {subtitle}
           </p>
         )}

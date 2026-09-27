@@ -71,7 +71,7 @@ export default function SendControls({
             name="opens_at"
             type="date"
             required
-            className="rounded-lg border border-input bg-surface px-3 py-2 text-sm"
+            className="field bg-surface"
           />
           <p className="mt-1.5 text-xs text-muted-foreground">
             Invitations are scheduled from 09:00 in {timezone}.

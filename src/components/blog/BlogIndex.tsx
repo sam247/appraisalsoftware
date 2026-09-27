@@ -17,7 +17,7 @@ function PostCard({ post }: { post: BlogPost }) {
     <li className="h-full">
       <Link
         href={blogPath(post.slug)}
-        className="flex h-full flex-col rounded-xl border border-border bg-card p-5 transition-all hover:border-primary/30 hover:shadow-sm"
+        className="flex h-full flex-col rounded-lg border border-border/80 bg-card p-5 transition-colors hover:border-border-strong"
       >
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
           <span className="font-medium text-primary">{post.category}</span>

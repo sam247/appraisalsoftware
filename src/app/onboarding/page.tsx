@@ -91,7 +91,7 @@ export default function OnboardingPage() {
               required
               value={orgName}
               onChange={(e) => setOrgName(e.target.value)}
-              className="w-full rounded-lg border border-input bg-card px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              className="w-full field"
               placeholder="Acme Ltd"
             />
           </div>

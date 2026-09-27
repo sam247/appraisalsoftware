@@ -68,7 +68,7 @@ function managerLabel(
 }
 
 function fieldClassName() {
-  return "mt-1.5 w-full rounded-lg border border-input bg-surface px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring";
+  return "mt-1.5 w-full field bg-surface";
 }
 
 export default function PeopleDirectory({
@@ -227,10 +227,10 @@ export default function PeopleDirectory({
     <div>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
-          <h1 className="text-xl font-medium tracking-tight text-foreground">
+          <h1 className="font-display text-2xl font-medium tracking-tight text-foreground">
             People
           </h1>
-          <p className="mt-0.5 text-xs text-muted-foreground">
+          <p className="mt-1 text-sm text-muted-foreground">
             Employees and reviewers for appraisal campaigns.
           </p>
         </div>
@@ -319,7 +319,7 @@ export default function PeopleDirectory({
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Search people…"
-                  className="min-w-[12rem] flex-1 rounded-lg border border-input bg-card px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                  className="field min-w-[12rem] flex-1"
                 />
                 <label className="sr-only" htmlFor="people-department">
                   Department filter
@@ -328,7 +328,7 @@ export default function PeopleDirectory({
                   id="people-department"
                   value={departmentFilter}
                   onChange={(e) => setDepartmentFilter(e.target.value)}
-                  className="rounded-lg border border-input bg-card px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                  className="field"
                 >
                   <option value="all">All departments</option>
                   <option value="none">No department</option>
@@ -345,7 +345,7 @@ export default function PeopleDirectory({
                   id="people-status"
                   value={status}
                   onChange={(e) => setStatus(e.target.value as StatusFilter)}
-                  className="rounded-lg border border-input bg-card px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                  className="field"
                 >
                   <option value="active">Active</option>
                   <option value="archived">Archived</option>
@@ -359,7 +359,7 @@ export default function PeopleDirectory({
             )}
           </div>
 
-          <div className="mt-2">
+          <div className="mt-4 overflow-x-auto">
             <table className="w-full min-w-[36rem] border-collapse text-left text-sm">
               <thead>
                 <tr className="border-b border-border text-xs text-muted-foreground">
@@ -411,7 +411,10 @@ export default function PeopleDirectory({
                     return (
                       <tr
                         key={person.id}
-                        className="group border-b border-border/70 last:border-b-0 hover:bg-card/70"
+                        className={cn(
+                          "group border-b border-border/70 last:border-b-0 hover:bg-foreground/[0.025]",
+                          selected.has(person.id) && "bg-foreground/[0.03]",
+                        )}
                       >
                         <td className="py-2 pr-2 align-middle">
                           <input
@@ -560,7 +563,7 @@ export default function PeopleDirectory({
             )}
 
             {importPreview && (
-              <div className="rounded-xl border border-border bg-surface/60 px-4 py-3 text-sm">
+              <div className="bg-surface px-1 py-2 text-sm">
                 <p className="font-medium text-foreground">
                   {importPreview.ready.length} ready to import
                 </p>
@@ -687,7 +690,7 @@ function RowActionsMenu({
           <div
             ref={menuRef}
             role="menu"
-            className="fixed z-50 w-40 rounded-lg border border-border bg-card py-1 shadow-md"
+            className="menu-surface fixed z-50 w-40 py-1"
             style={{
               top: coords.openUp ? undefined : coords.top,
               bottom: coords.openUp
@@ -931,7 +934,7 @@ function PersonFields({
               value={newDeptName}
               onChange={(e) => setNewDeptName(e.target.value)}
               placeholder="e.g. Procurement"
-              className="min-w-0 flex-1 rounded-lg border border-input bg-surface px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              className="field min-w-0 flex-1 bg-surface"
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   e.preventDefault();

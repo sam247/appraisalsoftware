@@ -44,7 +44,7 @@ export default function TemplateEditor({
   const closeEditor = useCallback(() => setOpenId(null), []);
 
   return (
-    <div className="w-full max-w-7xl">
+    <div>
       <p className="mb-3 text-xs">
         <Link
           href="/dashboard/templates"
@@ -205,7 +205,7 @@ function TemplateDetailsForm({
           required
           defaultValue={template.name}
           autoFocus
-          className="w-full rounded-lg border border-input bg-card px-3 py-2 text-lg font-medium tracking-tight text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+          className="w-full field text-lg font-medium tracking-tight"
         />
       </div>
       <div>
@@ -218,7 +218,7 @@ function TemplateDetailsForm({
           type="text"
           defaultValue={template.description ?? ""}
           placeholder="Description (optional)"
-          className="w-full rounded-lg border border-input bg-card px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+          className="w-full field"
         />
       </div>
       <div className="flex flex-wrap items-center gap-2">
@@ -303,7 +303,7 @@ function QuestionEditor({
                 autoFocus
                 defaultValue={question?.prompt ?? ""}
                 placeholder="What should people answer?"
-                className="mt-1.5 w-full rounded-lg border border-input bg-card px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                className="mt-1.5 w-full field"
               />
             </div>
 
@@ -319,7 +319,7 @@ function QuestionEditor({
                   id={typeId}
                   name="type"
                   defaultValue={question?.type ?? "text"}
-                  className="mt-1.5 w-full rounded-lg border border-input bg-card px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring sm:max-w-xs"
+                  className="mt-1.5 w-full field sm:max-w-xs"
                 >
                   <option value="text">Open text</option>
                   <option value="rating">Rating</option>
@@ -355,7 +355,7 @@ function QuestionEditor({
                 type="text"
                 defaultValue={question?.help_text ?? ""}
                 placeholder="Optional guidance for the reviewer…"
-                className="mt-1.5 w-full rounded-lg border border-input bg-card px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                className="mt-1.5 w-full field"
               />
             </div>
 
@@ -498,7 +498,7 @@ function QuietMenu({
           <div
             ref={menuRef}
             role="menu"
-            className="fixed z-50 w-44 rounded-lg border border-border bg-card py-1 shadow-md"
+            className="menu-surface fixed z-50 w-44 py-1"
             style={{
               top: coords.openUp ? undefined : coords.top,
               bottom: coords.openUp

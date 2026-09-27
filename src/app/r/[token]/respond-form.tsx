@@ -350,7 +350,7 @@ export default function RespondForm({
             </p>
           </div>
 
-          <div className="rounded-2xl bg-card/80 px-4 py-3.5 ring-1 ring-border/80">
+          <div className="space-y-2">
             <p className="text-sm font-medium text-foreground">What this is for</p>
             <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
               {copy.purpose}
@@ -365,7 +365,7 @@ export default function RespondForm({
           <div className="space-y-3 pt-1">
             <Button
               type="button"
-              className="h-12 w-full rounded-xl text-base"
+              className="h-10 w-full"
               onClick={() => {
                 setPhase("questions");
                 setQuestionIndex(firstUnansweredIndex(questions, answers));
@@ -443,7 +443,7 @@ export default function RespondForm({
             <Button
               type="button"
               variant="ghost"
-              className="h-11 rounded-xl px-4"
+              className="h-10 px-3"
               onClick={goBack}
               disabled={isPending}
             >
@@ -454,7 +454,7 @@ export default function RespondForm({
                 <Button
                   type="button"
                   variant="ghost"
-                  className="h-11 rounded-xl"
+                  className="h-10"
                   onClick={goSkip}
                   disabled={isPending}
                 >
@@ -463,7 +463,7 @@ export default function RespondForm({
               ) : null}
               <Button
                 type="button"
-                className="h-11 min-w-[8.5rem] rounded-xl"
+                className="h-10 min-w-[8.5rem]"
                 disabled={isPending}
                 onClick={goNext}
               >
@@ -568,7 +568,7 @@ function QuestionStep({
   return (
     <div className="flex flex-1 flex-col gap-6 animate-[fade-in_200ms_ease-out] motion-reduce:animate-none">
       <div className="space-y-3">
-        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+        <p className="text-xs text-muted-foreground">
           {question.required ? "Required" : "Optional"}
         </p>
         <h2
@@ -601,10 +601,10 @@ function QuestionStep({
                   onBlur();
                 }}
                 aria-pressed={answer?.numeric_value === val}
-                className={`min-h-12 min-w-0 rounded-xl border text-base font-medium transition-colors touch-manipulation sm:h-12 sm:w-12 sm:min-h-0 sm:text-sm ${
+                className={`min-h-11 min-w-0 rounded-md border text-sm font-medium transition-colors touch-manipulation sm:size-11 sm:min-h-0 ${
                   answer?.numeric_value === val
                     ? "border-primary bg-primary text-primary-foreground"
-                    : "border-border bg-card text-foreground hover:border-foreground/20 active:bg-muted"
+                    : "border-input bg-card text-foreground hover:border-border-strong"
                 }`}
               >
                 {val}
@@ -633,7 +633,7 @@ function QuestionStep({
           placeholder="Type your answer here…"
           aria-labelledby={headingId}
           aria-describedby={error ? errorId : undefined}
-          className="w-full max-w-full rounded-xl border border-input bg-card px-4 py-3 text-base sm:text-sm leading-relaxed focus:outline-none focus:ring-2 focus:ring-ring resize-y min-h-[8rem]"
+          className="field w-full max-w-full text-base leading-relaxed sm:text-sm"
         />
       )}
 
@@ -649,10 +649,10 @@ function QuestionStep({
             return (
               <label
                 key={opt}
-                className={`flex cursor-pointer items-start gap-3 rounded-xl border px-4 py-3.5 touch-manipulation transition-colors ${
+                className={`flex cursor-pointer items-start gap-3 rounded-md border px-3.5 py-3 touch-manipulation transition-colors ${
                   selected
-                    ? "border-primary/40 bg-primary/5 ring-1 ring-primary/30"
-                    : "border-border bg-card hover:border-foreground/15"
+                    ? "border-primary/50 bg-accent"
+                    : "border-input bg-card hover:border-border-strong"
                 }`}
               >
                 <input

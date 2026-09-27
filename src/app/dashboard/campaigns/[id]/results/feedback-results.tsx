@@ -53,7 +53,7 @@ export default async function FeedbackResults({
       </p>
 
       {report.state !== "available" ? (
-        <section className="mt-8 rounded-xl border border-border/70 bg-card/50 px-5 py-6">
+        <section className="mt-8 max-w-2xl">
           <h2 className="text-base font-medium text-foreground">
             {report.state === "not_closed"
               ? "Results available after closure"
@@ -96,7 +96,7 @@ function AvailableReport({ report }: { report: Report }) {
       </p>
 
       {(overall !== null || ratings.length > 0) && (
-        <section className="rounded-xl border border-border/70 bg-card/40 px-4 py-5 sm:px-5">
+        <section>
           <div className="grid gap-8 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
             <div>
               <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">

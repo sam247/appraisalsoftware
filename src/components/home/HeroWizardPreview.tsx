@@ -45,7 +45,6 @@ export default function HeroWizardPreview() {
     <ProductFrame
       eyebrow="Campaign builder"
       title="New 360 feedback"
-      className="shadow-[0_28px_70px_-30px_oklch(0.46_0.12_158/0.5)]"
     >
       <div className="p-5 sm:p-6">
         {/* Progress header */}

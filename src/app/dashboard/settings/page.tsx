@@ -81,15 +81,15 @@ function BrandingPreview({
   const accent = accentForWhiteText(brandColor);
 
   return (
-    <aside className="rounded-2xl border border-border/80 bg-surface/50 p-5 lg:sticky lg:top-20">
-      <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+    <aside className="lg:sticky lg:top-20">
+      <p className="text-[11px] text-muted-foreground">
         Preview
       </p>
       <p className="mt-0.5 text-xs text-muted-foreground">
         How identity appears on respondent forms
       </p>
 
-      <div className="mt-4 rounded-xl border border-border bg-card p-5 shadow-[0_12px_32px_-28px_oklch(0.46_0.12_158/0.45)]">
+      <div className="mt-4 rounded-lg bg-card p-5">
         <div className="space-y-3.5">
           {logoUrl?.trim() ? (
             // eslint-disable-next-line @next/next/no-img-element
@@ -180,12 +180,12 @@ export default async function SettingsPage({
   const free = isFreePlan(org);
 
   return (
-    <div className="mx-auto w-full max-w-7xl space-y-8">
+    <div className="mx-auto w-full space-y-8">
       <header className="space-y-1">
         <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
           Settings
         </p>
-        <h1 className="text-xl font-medium tracking-tight text-foreground">
+        <h1 className="font-display text-2xl font-medium tracking-tight text-foreground">
           {copy.title}
         </h1>
         <p className="max-w-2xl text-sm text-muted-foreground">
@@ -234,7 +234,7 @@ export default async function SettingsPage({
                 type="text"
                 required
                 defaultValue={org.name}
-                className="w-full rounded-lg border border-input bg-surface px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                className="w-full field bg-surface"
               />
               <p className="text-xs text-muted-foreground">
                 Shown on invitations, respondent forms and results.
@@ -472,7 +472,7 @@ export default async function SettingsPage({
                 type="email"
                 required
                 placeholder="colleague@company.com"
-                className="min-w-0 flex-1 rounded-lg border border-input bg-surface px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                className="min-w-0 flex-1 field bg-surface"
               />
               <FormSubmit size="sm" pendingLabel="Inviting…">
                 Invite

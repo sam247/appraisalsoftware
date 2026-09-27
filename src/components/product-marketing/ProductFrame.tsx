@@ -17,13 +17,13 @@ export function ProductFrame({
   return (
     <div
       className={cn(
-        "overflow-hidden rounded-2xl border border-border bg-card shadow-[0_18px_50px_-30px_oklch(0.46_0.12_158/0.45)]",
+        "overflow-hidden rounded-xl border border-border bg-card",
         className,
       )}
     >
       <div className="flex items-center justify-between gap-4 border-b border-border bg-surface/70 px-4 py-3 sm:px-5">
         <div className="min-w-0">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-primary">
+          <p className="text-[11px] text-primary">
             {eyebrow}
           </p>
           <p className="mt-1 truncate text-sm font-semibold text-foreground">

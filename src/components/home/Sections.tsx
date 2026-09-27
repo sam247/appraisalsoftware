@@ -104,7 +104,7 @@ export function WorkflowTypesSection() {
           </div>
 
           {/* Right: content card */}
-          <div className="rounded-2xl border border-border bg-card p-6 sm:p-8">
+          <div className="rounded-xl border border-border/80 bg-card p-6 sm:p-8">
             <p className="text-[15px] leading-relaxed text-foreground">
               {current.description}
             </p>
@@ -340,7 +340,7 @@ export function PositioningSection() {
 
         <div className="mt-14 grid gap-6 sm:grid-cols-2">
           {/* Traditional HR suite */}
-          <div className="rounded-2xl border border-border bg-card p-6">
+          <div className="rounded-xl border border-border/80 bg-card p-6">
             <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
               Traditional HR suite
             </p>
@@ -549,7 +549,7 @@ export function TemplatesSection() {
             <Link
               key={t.name}
               href={t.href}
-              className="group flex flex-col rounded-xl border border-border bg-card p-5 transition-all hover:border-primary/30 hover:shadow-sm"
+              className="group flex flex-col rounded-lg border border-border/80 bg-card p-5 transition-colors hover:border-border-strong"
             >
               <div className="flex items-center justify-between gap-2">
                 <span className="text-[10px] font-semibold uppercase tracking-wide text-primary">
@@ -695,9 +695,9 @@ export function HomeFaqSection() {
               Common questions about running appraisals and 360° feedback with Appraisal Software.
             </p>
           </div>
-          <dl className="space-y-4">
+          <dl className="divide-y divide-border border-t border-border">
             {homeFaqs.map((item) => (
-              <div key={item.question} className="rounded-xl border border-border bg-card p-5">
+              <div key={item.question} className="py-5">
                 <dt className="text-[15px] font-semibold text-foreground">{item.question}</dt>
                 <dd className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.answer}</dd>
               </div>
@@ -716,7 +716,7 @@ export function HomeFaqSection() {
 export function FinalCtaSection() {
   return (
     <section className="px-5 pb-20 lg:px-8">
-      <div className="mx-auto max-w-6xl rounded-2xl border border-border bg-card px-6 py-16 text-center sm:px-12">
+      <div className="mx-auto max-w-6xl bg-surface px-6 py-16 text-center sm:px-12">
         <h2 className="font-display text-[1.75rem] font-semibold leading-[1.12] tracking-[-0.03em] text-foreground sm:text-[2rem]">
           Your next appraisal cycle
           <br />

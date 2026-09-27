@@ -66,10 +66,10 @@ export default async function SearchPage({
 
   return (
     <div>
-      <h1 className="text-xl font-medium tracking-tight">
+      <h1 className="font-display text-2xl font-medium tracking-tight">
         Search
       </h1>
-      <p className="mt-0.5 text-xs text-muted-foreground">
+      <p className="mt-1 text-sm text-muted-foreground">
         Results for &ldquo;{q}&rdquo;
         {total === 0 ? " — nothing matched." : ` · ${total} found`}
       </p>
@@ -77,12 +77,12 @@ export default async function SearchPage({
       {campaigns.length > 0 && (
         <section className="mt-6">
           <h2 className="mb-2 text-sm font-semibold">Campaigns</h2>
-          <div className="divide-y divide-border rounded-xl border border-border bg-card">
+          <div className="divide-y divide-border border-t border-border">
             {campaigns.map((c) => (
               <Link
                 key={c.id}
                 href={`/dashboard/campaigns/${c.id}`}
-                className="flex items-center justify-between px-4 py-2.5 text-sm hover:bg-surface"
+                className="flex items-center justify-between py-2.5 text-sm hover:text-primary"
               >
                 <span className="font-medium">{c.name}</span>
                 <span className="text-xs capitalize text-muted-foreground">
@@ -97,12 +97,12 @@ export default async function SearchPage({
       {people.length > 0 && (
         <section className="mt-6">
           <h2 className="mb-2 text-sm font-semibold">People</h2>
-          <div className="divide-y divide-border rounded-xl border border-border bg-card">
+          <div className="divide-y divide-border border-t border-border">
             {people.map((p) => (
               <Link
                 key={p.id}
                 href="/dashboard/people"
-                className="block px-4 py-2.5 text-sm hover:bg-surface"
+                className="block py-2.5 text-sm hover:text-primary"
               >
                 <p className="font-medium">{p.full_name ?? p.email}</p>
                 <p className="text-xs text-muted-foreground">
@@ -118,12 +118,12 @@ export default async function SearchPage({
       {templates.length > 0 && (
         <section className="mt-6">
           <h2 className="mb-2 text-sm font-semibold">Templates</h2>
-          <div className="divide-y divide-border rounded-xl border border-border bg-card">
+          <div className="divide-y divide-border border-t border-border">
             {templates.map((t) => (
               <Link
                 key={t.id}
                 href={`/dashboard/templates/${t.id}`}
-                className="block px-4 py-2.5 text-sm hover:bg-surface"
+                className="block py-2.5 text-sm hover:text-primary"
               >
                 <p className="font-medium">{t.name}</p>
                 {t.description && (

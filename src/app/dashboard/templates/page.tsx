@@ -32,10 +32,10 @@ export default async function TemplatesPage({
 
   return (
     <div>
-      <h1 className="text-xl font-medium tracking-tight text-foreground">
+      <h1 className="font-display text-2xl font-medium tracking-tight text-foreground">
         Templates
       </h1>
-      <p className="mt-0.5 text-xs text-muted-foreground">
+      <p className="mt-1 text-sm text-muted-foreground">
         Reusable question sets for appraisal campaigns.
       </p>
 
@@ -45,8 +45,8 @@ export default async function TemplatesPage({
         </div>
       )}
 
-      <div className="mt-5 rounded-lg border border-border bg-card p-4">
-        <h2 className="text-sm font-semibold text-foreground mb-3">
+      <div className="mt-6 max-w-3xl border-t border-border pt-5">
+        <h2 className="mb-3 text-sm font-medium text-foreground">
           New template
         </h2>
         <form action={createTemplate} className="flex flex-wrap gap-2">
@@ -56,14 +56,14 @@ export default async function TemplatesPage({
             type="text"
             required
             placeholder="Template name"
-            className="flex-1 min-w-36 rounded-md border border-input bg-surface px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+            className="flex-1 min-w-36 field bg-surface"
           />
           <input
             aria-label="Template description"
             name="description"
             type="text"
             placeholder="Description (optional)"
-            className="flex-1 min-w-36 rounded-md border border-input bg-surface px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+            className="flex-1 min-w-36 field bg-surface"
           />
           <FormSubmit size="sm">Create</FormSubmit>
         </form>
@@ -75,7 +75,7 @@ export default async function TemplatesPage({
             No templates yet — create one above.
           </p>
         ) : (
-          <div className="divide-y divide-border rounded-lg border border-border bg-card overflow-hidden">
+          <div className="divide-y divide-border border-t border-border">
             {templates.map((t: Template) => (
               <Link
                 key={t.id}

@@ -22,6 +22,7 @@
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
+  --shadow-overlay: 0 16px 40px -28px rgb(28 24 18 / 0.45);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -39,7 +40,10 @@
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
   --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
   --color-input: var(--input);
   --color-ring: var(--ring);
   --color-ring-offset-background: var(--background);
@@ -51,7 +55,7 @@
 }
 
 :root {
-  --radius: 0.625rem;
+  --radius: 0.5rem;
 
   /* Warm neutral foundation */
   --background: oklch(0.985 0.005 85);
@@ -84,12 +88,15 @@
   --positive: oklch(0.635 0.185 158);
   --positive-foreground: oklch(0.25 0.07 158);
 
-  --destructive: oklch(0.577 0.245 27.325);
+  --destructive: oklch(0.52 0.18 27);
   --destructive-foreground: oklch(0.99 0 0);
+  --warning: oklch(0.965 0.025 85);
+  --warning-foreground: oklch(0.38 0.07 55);
 
-  --border: oklch(0.92 0.006 85);
-  --input: oklch(0.92 0.006 85);
-  --ring: oklch(0.635 0.185 158);
+  --border: oklch(0.925 0.004 85);
+  --border-strong: oklch(0.84 0.008 75);
+  --input: oklch(0.86 0.006 75);
+  --ring: oklch(0.48 0.08 158);
 
   --chart-1: oklch(0.635 0.185 158);
   --chart-2: oklch(0.78 0.14 62);
@@ -113,6 +120,11 @@
     color: var(--color-foreground);
   }
 
+  :focus-visible {
+    outline: 2px solid color-mix(in oklab, var(--ring) 72%, var(--foreground));
+    outline-offset: 2px;
+  }
+
   h1,
   h2,
   h3,
@@ -127,6 +139,39 @@
     width: 100%;
     max-width: 108rem;
     margin-inline: auto;
+  }
+
+  .field {
+    border-radius: var(--radius-md);
+    border: 1px solid var(--input);
+    background-color: var(--card);
+    padding: 0.4375rem 0.75rem;
+    font-size: 0.875rem;
+    line-height: 1.4;
+    color: var(--foreground);
+    min-height: 2.25rem;
+    transition: border-color 150ms ease, background-color 150ms ease;
+  }
+
+  .field::placeholder {
+    color: color-mix(in oklab, var(--muted-foreground) 78%, transparent);
+  }
+
+  .field:focus-visible {
+    border-color: color-mix(in oklab, var(--primary) 42%, var(--input));
+    outline-offset: 1px;
+  }
+
+  textarea.field {
+    min-height: 7rem;
+    padding-block: 0.625rem;
+  }
+
+  .menu-surface {
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    background-color: var(--card);
+    box-shadow: var(--shadow-overlay);
   }
 }
 
@@ -189,7 +234,6 @@
 
 /* Resource anchors stay visible beneath the sticky navigation. */
 main section[id] { scroll-margin-top: 6rem; }
-:focus-visible { outline: 2px solid var(--foreground); outline-offset: 4px; }
 
 @media print {
   @page { margin: 16mm; }

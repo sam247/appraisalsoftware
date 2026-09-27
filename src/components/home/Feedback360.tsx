@@ -44,7 +44,7 @@ export function UnderstandResultsSection() {
             [ROUTES.feedback360Examples, "See example feedback", "Use fictional comments and themes to prepare the review conversation."],
             [ROUTES.feedback360Template, "Start with a template", "Copy or print a practical 360 feedback form for your own process."],
           ].map(([href, title, copy]) => (
-            <Link key={href} href={href} className="group rounded-xl border border-border bg-card p-5 transition-all hover:border-primary/30 hover:shadow-sm">
+            <Link key={href} href={href} className="group rounded-lg border border-border/80 bg-card p-5 transition-colors hover:border-border-strong">
               <p className="text-sm font-semibold text-foreground">{title}</p>
               <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{copy}</p>
               <span className="mt-4 inline-flex items-center gap-1 text-xs font-medium text-primary">

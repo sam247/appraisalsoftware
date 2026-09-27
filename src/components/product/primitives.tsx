@@ -17,7 +17,7 @@ export function Panel({
   return (
     <div
       className={cn(
-        "overflow-hidden rounded-2xl border border-border bg-card shadow-[0_24px_64px_-16px_rgba(0,0,0,0.08)]",
+        "overflow-hidden rounded-xl border border-border bg-card",
         className,
       )}
     >

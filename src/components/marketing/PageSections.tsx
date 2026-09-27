@@ -123,9 +123,9 @@ export function FaqSection({
         <h2 className="font-display text-[1.5rem] font-semibold leading-[1.15] tracking-[-0.025em] text-foreground sm:text-[1.75rem]">
           FAQs
         </h2>
-        <dl className="mt-8 space-y-4">
+        <dl className="mt-8 divide-y divide-border border-t border-border">
           {items.map((item) => (
-            <div key={item.question} className="rounded-xl border border-border bg-card p-5">
+            <div key={item.question} className="py-5">
               <dt className="text-[15px] font-semibold text-foreground">{item.question}</dt>
               <dd className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.answer}</dd>
             </div>
@@ -151,7 +151,7 @@ export function CtaBand({
 }) {
   return (
     <section className="no-print px-5 py-16 lg:px-8">
-      <div className="mx-auto max-w-6xl rounded-2xl border border-border bg-card px-6 py-12 text-center sm:px-10">
+      <div className="mx-auto max-w-6xl bg-surface px-6 py-12 text-center sm:px-10 sm:py-14">
         <h2 className="font-display text-[1.5rem] font-semibold leading-[1.15] tracking-[-0.025em] text-foreground sm:text-[1.75rem]">
           {title}
         </h2>
@@ -194,12 +194,12 @@ export function RelatedLinks({
         <h2 className="font-display text-[1.5rem] font-semibold leading-[1.15] tracking-[-0.025em] text-foreground sm:text-[1.75rem]">
           {title}
         </h2>
-        <ul className="mt-6 grid gap-3">
+        <ul className="mt-6 divide-y divide-border border-t border-border">
           {links.map((link) => (
             <li key={link.href}>
               <Link
                 href={link.href}
-                className="block rounded-xl border border-border bg-card p-5 transition-all hover:border-primary/30 hover:shadow-sm"
+                className="block py-4 transition-colors hover:text-primary"
               >
                 <p className="text-sm font-semibold text-foreground">{link.label}</p>
                 <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{link.copy}</p>

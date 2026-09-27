@@ -127,9 +127,9 @@ export default function PeoplePicker({
       : 0;
 
   return (
-    <div className="grid gap-4 xl:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] xl:gap-6">
-      <div className="min-w-0 rounded-xl border border-border/80 bg-card/40">
-        <div className="space-y-3 border-b border-border/70 p-3 sm:p-4">
+    <div className="grid gap-8 xl:grid-cols-[minmax(0,1.4fr)_minmax(18rem,0.8fr)]">
+      <div className="min-w-0">
+        <div className="space-y-3 pb-3">
           <div className="flex flex-wrap items-end gap-2">
             <label className="min-w-[10rem] flex-1 text-sm">
               <span className="sr-only">Search people</span>
@@ -138,7 +138,7 @@ export default function PeoplePicker({
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search people…"
-                className="w-full rounded-lg border border-input bg-card px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                className="w-full field"
               />
             </label>
             <label className="text-sm">
@@ -146,7 +146,7 @@ export default function PeoplePicker({
               <select
                 value={departmentId}
                 onChange={(e) => setDepartmentId(e.target.value)}
-                className="rounded-lg border border-input bg-card px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                className="field"
               >
                 <option value="">All departments</option>
                 {departments.map((d) => (
@@ -190,7 +190,7 @@ export default function PeoplePicker({
           </p>
         </div>
 
-        <ul className="max-h-[28rem] divide-y divide-border/60 overflow-y-auto">
+        <ul className="max-h-[28rem] divide-y divide-border/70 overflow-y-auto border-t border-border">
           {filtered.length === 0 ? (
             <li className="px-4 py-6 text-sm text-muted-foreground">
               No people match these filters.
@@ -203,7 +203,7 @@ export default function PeoplePicker({
                   <label
                     className={cn(
                       "flex cursor-pointer items-center gap-3 px-3 py-2.5 sm:px-4",
-                      checked && "bg-accent/40",
+                      checked && "bg-foreground/[0.03]",
                     )}
                   >
                     <input
@@ -231,7 +231,7 @@ export default function PeoplePicker({
         </ul>
       </div>
 
-      <aside className="min-w-0 rounded-xl border border-border/80 bg-surface/50 p-3 sm:p-4">
+      <aside className="min-w-0 lg:sticky lg:top-20">
         <div className="flex items-center justify-between gap-2">
           <h3 className="text-sm font-semibold text-foreground">
             {mode === "360" ? "Selected reviewers" : "Selected people"}
@@ -255,7 +255,7 @@ export default function PeoplePicker({
           </p>
         )}
         {mode === "annual" && noManagerCount > 0 && (
-          <p className="mt-2 text-xs text-amber-800 dark:text-amber-200">
+          <p className="mt-2 text-xs text-warning-foreground">
             {noManagerCount} selected{" "}
             {noManagerCount === 1 ? "person has" : "people have"} no manager
             assigned.
@@ -279,7 +279,7 @@ export default function PeoplePicker({
               : "Select people from the list."}
           </p>
         ) : (
-          <ul className="mt-3 max-h-[24rem] space-y-2 overflow-y-auto">
+          <ul className="mt-3 max-h-[24rem] overflow-y-auto">
             {selectedPeople.map((p) => {
               const manager = resolvedManager(p);
               const managerValue =
@@ -289,7 +289,7 @@ export default function PeoplePicker({
               return (
                 <li
                   key={p.id}
-                  className="rounded-lg border border-border/60 bg-card/60 px-3 py-2"
+                  className="border-b border-border/70 py-3 last:border-b-0"
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
@@ -322,7 +322,7 @@ export default function PeoplePicker({
                           onManagerChange(p.id, e.target.value || null)
                         }
                         aria-label={`Manager for ${personLabel(p)}`}
-                        className="mt-1 w-full rounded-md border border-input bg-card px-2 py-1.5 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                        className="mt-1 w-full field text-xs"
                       >
                         <option value="">Not assigned</option>
                         {people
@@ -344,7 +344,7 @@ export default function PeoplePicker({
                           onRelationshipChange(p.id, e.target.value)
                         }
                         aria-label={`Relationship for ${personLabel(p)}`}
-                        className="mt-1 w-full rounded-md border border-input bg-card px-2 py-1.5 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                        className="mt-1 w-full field text-xs"
                       >
                         {RELATIONSHIPS.map((r) => (
                           <option key={r.value} value={r.value}>

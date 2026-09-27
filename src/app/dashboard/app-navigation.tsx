@@ -38,7 +38,7 @@ function CreateButton({ onNavigate }: { onNavigate?: () => void }) {
     <Link
       href="/dashboard/campaigns/new"
       onClick={onNavigate}
-      className="flex items-center justify-center gap-1.5 rounded-full border border-primary/35 bg-card px-3 py-2 text-[13px] font-semibold text-foreground transition-colors hover:bg-accent hover:border-primary/55"
+      className="flex h-8 items-center justify-center gap-1.5 rounded-md border border-input bg-card px-3 text-[13px] font-medium text-foreground transition-colors hover:bg-surface"
     >
       <Plus className="size-3.5" aria-hidden />
       Create
@@ -72,7 +72,7 @@ function SearchField() {
         onChange={(e) => setQ(e.target.value)}
         placeholder="Search people, campaigns, templates…"
         aria-label="Search workspace"
-        className="h-9 w-full rounded-full border border-border bg-surface pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+        className="field h-8 w-full rounded-md bg-surface pl-9"
       />
     </form>
   );
@@ -100,7 +100,7 @@ function AccountMenu({
         aria-expanded={open}
         aria-haspopup="menu"
         onClick={() => setOpen((v) => !v)}
-        className="flex size-8 items-center justify-center overflow-hidden rounded-full bg-primary text-xs font-semibold text-primary-foreground hover:opacity-90"
+        className="flex size-8 items-center justify-center overflow-hidden rounded-full bg-foreground text-xs font-medium text-background transition-opacity hover:opacity-90"
       >
         <span className="sr-only">Account menu</span>
         {avatarUrl ? (
@@ -120,9 +120,9 @@ function AccountMenu({
           />
           <div
             role="menu"
-            className="absolute right-0 z-50 mt-2 w-64 rounded-xl border border-border bg-card p-2 shadow-lg"
+            className="menu-surface absolute right-0 z-50 mt-2 w-64 p-1.5"
           >
-            <div className="border-b border-border px-2.5 pb-2.5 pt-1.5">
+            <div className="px-2.5 pb-2.5 pt-1.5">
               <div className="flex items-center gap-2.5">
                 {avatarUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -132,12 +132,12 @@ function AccountMenu({
                     className="size-8 shrink-0 rounded-full object-cover"
                   />
                 ) : (
-                  <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">
+                  <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-foreground text-xs font-medium text-background">
                     {initial}
                   </span>
                 )}
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold text-foreground">
+                  <p className="truncate text-sm font-medium text-foreground">
                     {displayName}
                   </p>
                   <p className="truncate text-xs text-muted-foreground">{email}</p>
@@ -181,12 +181,12 @@ function SidebarFooter({
   onNavigate?: () => void;
 }) {
   return (
-    <div className="mt-auto space-y-2 border-t border-border pt-3">
+    <div className="mt-auto space-y-1 pt-3">
       {showUpgrade && (
         <Link
           href="/dashboard/upgrade"
           onClick={onNavigate}
-          className="flex items-center justify-center rounded-full bg-primary px-3 py-2 text-[13px] font-semibold text-primary-foreground transition-colors hover:bg-primary-hover"
+          className="flex h-8 items-center justify-center rounded-md bg-primary px-3 text-[13px] font-medium text-primary-foreground transition-colors hover:bg-primary-hover"
         >
           Upgrade
         </Link>
@@ -256,7 +256,7 @@ export default function AppNavigation({
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-40 flex h-14 items-center gap-3 border-b border-border bg-card px-3 sm:px-4 md:px-5">
+      <header className="sticky top-0 z-40 flex h-14 items-center gap-3 border-b border-border/80 bg-background/90 px-3 backdrop-blur-md sm:px-4 md:px-5">
         <div className="flex shrink-0 items-center gap-1">
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
@@ -323,7 +323,7 @@ export default function AppNavigation({
       </header>
 
       <div className="md:flex">
-        <aside className="hidden md:flex sticky top-14 h-[calc(100vh-3.5rem)] w-[13.5rem] shrink-0 flex-col border-r border-border bg-card px-3 py-4">
+        <aside className="sticky top-14 hidden h-[calc(100vh-3.5rem)] w-[13.5rem] shrink-0 flex-col bg-background px-3 py-4 md:flex">
           <CreateButton />
           <div className="mt-4 flex-1 overflow-y-auto">
             <AppLinks />

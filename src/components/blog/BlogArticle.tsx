@@ -106,7 +106,7 @@ export function BlogArticle({ post }: { post: BlogPost }) {
                     <li key={item.slug}>
                       <Link
                         href={blogPath(item.slug)}
-                        className="block rounded-xl border border-border bg-card p-5 transition-all hover:border-primary/30 hover:shadow-sm"
+                        className="block rounded-lg border border-border/80 bg-card p-5 transition-colors hover:border-border-strong"
                       >
                         <p className="text-xs font-medium text-primary">
                           {item.category}

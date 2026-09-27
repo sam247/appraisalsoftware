@@ -18,7 +18,7 @@ import type { Campaign, TemplateQuestion } from "@/lib/types/database";
 export type SubjectRow = { personId: string; managerPersonId: string | null };
 type Section = "details" | "people" | "questions" | "timing";
 type TemplateOption = { id: string; name: string; questions: { id: string; prompt: string; type: string }[] };
-const field = "mt-1.5 w-full rounded-lg border border-input bg-card px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring";
+const field = "mt-1.5 w-full field";
 
 export default function AnnualDraftBuilder({
   campaignId, campaignName, campaignSettings, reminderSettings, opensAt, templateId, templateName, templates,
@@ -129,7 +129,7 @@ export default function AnnualDraftBuilder({
         </div>
         <Button type="button" variant="outline" size="sm" onClick={finishLater}>Finish later</Button>
       </header>
-      <div className="rounded-xl border border-border bg-card p-4 sm:p-5">
+      <div>
         <div className="flex items-center justify-between gap-3 text-xs text-muted-foreground">
           <span>{setup.doneCount} of 4 configured</span><span>Saved draft</span>
         </div>
@@ -137,20 +137,20 @@ export default function AnnualDraftBuilder({
           {sections.map((s) => <div key={s.key} className={`h-1 rounded-full ${s.done ? "bg-primary/60" : "bg-border"}`} />)}
         </div>
       </div>
-      <div className="overflow-hidden rounded-xl border border-border bg-card">
+      <div className="border-t border-border">
         {sections.map((section) => (
           <section key={section.key} className="border-b border-border last:border-b-0">
             <button type="button" onClick={() => changeSection(expanded === section.key ? null : section.key)}
               aria-expanded={expanded === section.key} aria-controls={`editor-${section.key}`}
-              className="flex w-full items-start justify-between gap-4 p-4 text-left hover:bg-surface/40 sm:p-5">
+              className="flex w-full items-start justify-between gap-4 py-4 text-left sm:py-5">
               <span className="min-w-0">
-                <span className="flex items-center gap-2 text-sm font-semibold"><span className={`h-2 w-2 shrink-0 rounded-full ${section.done ? "bg-primary" : "bg-border"}`} />{section.label}</span>
+                <span className="flex items-center gap-2 text-sm font-medium"><span className={`h-1.5 w-1.5 shrink-0 rounded-full ${section.done ? "bg-primary" : "bg-border-strong"}`} />{section.label}</span>
                 <span className="mt-1 block text-sm text-muted-foreground">{section.summary}</span>
               </span>
               <span className="shrink-0 text-xs font-medium text-primary">{expanded === section.key ? "Close" : section.done ? "Edit" : "Set up"}</span>
             </button>
             {expanded === section.key && (
-              <div id={`editor-${section.key}`} className="space-y-5 border-t border-border bg-surface/20 p-4 sm:p-5">
+              <div id={`editor-${section.key}`} className="space-y-5 pb-6">
                 {section.key === "details" && <div className="max-w-xl space-y-3">
                   <label className="block text-sm font-medium">Campaign name<input autoFocus className={field} value={name} onChange={(e) => setName(e.target.value)} maxLength={160} /></label>
                   <p className="text-xs text-muted-foreground">Annual appraisal · Each employee receives a self appraisal. Assigned managers receive a manager appraisal.</p>
@@ -168,7 +168,7 @@ export default function AnnualDraftBuilder({
                       {templates.map((t) => <option key={t.id} value={t.id}>{t.name} · {t.questions.length} {t.questions.length === 1 ? "question" : "questions"}</option>)}
                     </select>
                   </label>
-                  {selected && <div className="rounded-lg border border-border p-4 text-sm"><p className="font-medium">{selected.questions.length} {selected.questions.length === 1 ? "question" : "questions"}</p><ol className="mt-2 list-decimal space-y-1 pl-5 text-muted-foreground">{selected.questions.map((q) => <li key={q.id}>{q.prompt}</li>)}</ol></div>}
+                  {selected && <div className="text-sm"><p className="font-medium">{selected.questions.length} {selected.questions.length === 1 ? "question" : "questions"}</p><ol className="mt-2 list-decimal space-y-1 pl-5 text-muted-foreground">{selected.questions.map((q) => <li key={q.id}>{q.prompt}</li>)}</ol></div>}
                   <p className="text-xs text-muted-foreground">Questions are frozen when you send or schedule. Edit the template in <Link href="/dashboard/templates" className="text-primary underline">Templates</Link>.</p>
                 </div>}
                 {section.key === "timing" && <div className="max-w-xl space-y-4">
@@ -187,7 +187,7 @@ export default function AnnualDraftBuilder({
           </section>
         ))}
       </div>
-      <section className="space-y-4 rounded-xl border border-border bg-card p-4 sm:p-6 lg:p-8">
+      <section className="space-y-5 border-t border-border pt-8">
         <div><h2 className="font-display text-lg font-semibold">Review &amp; Send</h2><p className="mt-1 text-sm text-muted-foreground">Review the saved configuration before the final action.</p></div>
         <dl className="grid gap-5 text-sm sm:grid-cols-2 xl:grid-cols-4">
           <div><dt className="text-xs text-muted-foreground">People</dt><dd>{savedPeople.length} {savedPeople.length === 1 ? "employee" : "employees"} · {savedPeople.length} self · {savedPeople.length - missingManagers.length} manager assignments</dd></div>
@@ -196,8 +196,8 @@ export default function AnnualDraftBuilder({
           <div><dt className="text-xs text-muted-foreground">Reminders</dt><dd>{reminderSummary(reminderSettings)}</dd></div>
         </dl>
         {questions.length > 0 && <details className="max-w-3xl text-sm"><summary className="cursor-pointer font-medium text-primary">Preview saved questions</summary><ol className="mt-2 list-decimal space-y-1 pl-5 text-muted-foreground">{questions.map((q) => <li key={q.id}>{q.prompt}</li>)}</ol></details>}
-        {missingManagers.length > 0 && <p className="rounded-lg border border-amber-300/40 bg-amber-50/50 p-3 text-sm text-amber-900">Self-only warning: {missingManagers.join(", ")} {missingManagers.length === 1 ? "has" : "have"} no manager assigned.</p>}
-        {!ready && <div className="rounded-lg border border-border bg-surface/40 p-3 text-sm"><p className="font-medium">Complete before sending</p><ul className="mt-1 list-disc pl-5 text-muted-foreground">{sections.filter((s) => !s.done).map((s) => <li key={s.key}>{s.label}</li>)}</ul></div>}
+        {missingManagers.length > 0 && <p className="rounded-md bg-warning px-3 py-2.5 text-sm text-warning-foreground">Self-only warning: {missingManagers.join(", ")} {missingManagers.length === 1 ? "has" : "have"} no manager assigned.</p>}
+        {!ready && <div className="text-sm"><p className="font-medium">Complete before sending</p><ul className="mt-1 list-disc pl-5 text-muted-foreground">{sections.filter((s) => !s.done).map((s) => <li key={s.key}>{s.label}</li>)}</ul></div>}
         {error && !expanded && <p role="alert" className="text-sm text-destructive">{error}</p>}
         <Button type="button" disabled={!ready || pending || !!expanded} onClick={final}>{pending ? "Checking…" : savedMode === "later" ? "Schedule appraisal" : "Send appraisal now"}</Button>
       </section>

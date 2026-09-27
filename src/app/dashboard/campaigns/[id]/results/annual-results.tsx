@@ -357,7 +357,7 @@ function HeadlineStat({
   empty: string;
 }) {
   return (
-    <div className="rounded-xl bg-card/60 px-4 py-3">
+    <div>
       <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
         {label}
       </p>

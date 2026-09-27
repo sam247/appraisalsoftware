@@ -292,13 +292,13 @@ export default function CampaignsDirectory({
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search campaigns…"
                 aria-label="Search campaigns"
-                className="h-9 w-full rounded-lg border border-input bg-card px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring sm:max-w-xs"
+                className="field h-9 w-full sm:max-w-xs"
               />
               <select
                 aria-label="Filter by status"
                 value={status}
                 onChange={(e) => setStatus(e.target.value as StatusFilter)}
-                className="h-9 rounded-lg border border-input bg-card px-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                className="field h-9"
               >
                 <option value="all">All statuses</option>
                 <option value="draft">Draft</option>
@@ -310,7 +310,7 @@ export default function CampaignsDirectory({
                 aria-label="Filter by type"
                 value={type}
                 onChange={(e) => setType(e.target.value as TypeFilter)}
-                className="h-9 rounded-lg border border-input bg-card px-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                className="field h-9"
               >
                 <option value="all">All types</option>
                 <option value="annual_appraisal">Annual appraisal</option>
@@ -470,7 +470,7 @@ export default function CampaignsDirectory({
                   required
                   defaultValue={renaming.name}
                   autoFocus
-                  className="mt-1.5 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                  className="mt-1.5 w-full field bg-background"
                 />
               </label>
               <SheetFooter className="mt-auto gap-2 sm:justify-start">
@@ -698,7 +698,7 @@ function QuietMenu({
           <div
             ref={menuRef}
             role="menu"
-            className="fixed z-50 w-52 rounded-lg border border-border bg-card py-1 shadow-md"
+            className="fixed z-50 w-52 menu-surface py-1"
             style={{
               top: coords.openUp ? undefined : coords.top,
               bottom: coords.openUp

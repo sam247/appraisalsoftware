@@ -34,7 +34,7 @@ export function ResourceHub({ templates = false }: { templates?: boolean }) {
               : "Use a guide to plan the process, a template to structure the form, or an example to improve the wording before you begin."}
           </p>
         </div>
-        <div className="rounded-2xl border border-border bg-card p-5 sm:p-6">
+        <div className="rounded-xl border border-border/80 bg-card p-5 sm:p-6">
           <p className="text-sm font-semibold text-foreground">How to use the library</p>
           <ol className="mt-4 grid gap-3 sm:grid-cols-3">
             {[
@@ -70,7 +70,7 @@ export function ResourceHub({ templates = false }: { templates?: boolean }) {
                 <li key={slug}>
                   <Link
                     href={`/${slug}`}
-                    className="group block h-full rounded-2xl border border-border bg-card p-5 transition-all hover:border-primary/30 hover:shadow-sm sm:p-6"
+                    className="group block h-full rounded-xl border border-border/80 bg-card p-5 transition-colors hover:border-border-strong sm:p-6"
                   >
                     <div className="flex items-start justify-between gap-4">
                       <p className="text-sm font-semibold text-foreground group-hover:text-primary">
@@ -96,7 +96,7 @@ export function ResourceHub({ templates = false }: { templates?: boolean }) {
     ))}
     <section className="border-b border-border py-12 sm:py-16">
       <div className="mx-auto max-w-6xl px-5 lg:px-8">
-        <div className="rounded-2xl border border-border bg-card p-6 sm:p-8">
+        <div className="rounded-xl border border-border/80 bg-card p-6 sm:p-8">
           <p className="text-[0.6875rem] font-medium uppercase tracking-[0.14em] text-primary">
             More focused prompts
           </p>

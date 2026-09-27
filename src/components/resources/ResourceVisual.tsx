@@ -145,7 +145,7 @@ function TemplateOverview({ resource }: { resource: ResourceContent }) {
               </div>
             </dl>
           </div>
-          <div className="rounded-2xl border border-border bg-card p-5 sm:p-6">
+          <div className="rounded-xl border border-border/80 bg-card p-5 sm:p-6">
             <div className="flex items-baseline justify-between gap-4">
               <p className="text-sm font-semibold text-foreground">Sections in this template</p>
               <span className="text-xs text-muted-foreground">
@@ -322,7 +322,7 @@ export function ResourceVisual({ resource }: { resource: ResourceContent }) {
               Start with the question you need to answer
             </h2>
           </div>
-          <dl className="grid gap-4 rounded-2xl border border-border bg-card p-5 sm:grid-cols-2 sm:p-6">
+          <dl className="grid gap-4 rounded-xl border border-border/80 bg-card p-5 sm:grid-cols-2 sm:p-6">
             <div>
               <dt className="text-xs font-medium uppercase tracking-[0.12em] text-muted-foreground">
                 For
