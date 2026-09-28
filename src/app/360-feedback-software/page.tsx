@@ -95,7 +95,7 @@ export default function Page() {
           purposes clear for everyone involved.
         </p>
       </ContentSection>
-      <ContentSection title="Privacy that matches the process">
+      <ContentSection id="privacy" title="Privacy that matches the process">
         <p>
           Combined feedback is shown without reviewer names or response times.
           Results require five completed reviewer responses and campaign

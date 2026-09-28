@@ -1,10 +1,13 @@
 import Image from "next/image";
+import { cn } from "@/lib/utils";
 
 /** Outlined wordmark with the signature jade dot. */
 export function Logo({
   size = "md",
+  className,
 }: {
   size?: "md" | "lg";
+  className?: string;
 }) {
   return (
     <Image
@@ -12,7 +15,7 @@ export function Logo({
       alt="appraisal.software"
       width={857}
       height={152}
-      className={size === "lg" ? "h-auto w-[210px]" : "h-auto w-[170px]"}
+      className={cn("h-auto", size === "lg" ? "w-[210px]" : "w-[170px]", className)}
       unoptimized
     />
   );

@@ -157,6 +157,24 @@
     color: var(--foreground);
   }
 
+  .marketing-editorial {
+    font-family: Georgia, "Times New Roman", serif;
+    font-weight: 400;
+    font-style: italic;
+    letter-spacing: -0.055em;
+  }
+
+  .marketing-card {
+    transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+  }
+
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .marketing-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 18px 34px -28px rgb(21 38 29 / 0.35);
+    }
+  }
+
   @media (min-width: 1024px) {
     .commercial-site .marketing-content-section > div {
       display: grid;

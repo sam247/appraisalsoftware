@@ -11,14 +11,14 @@ import { marketingType } from "@/lib/marketing-typography";
 
 export function Hero() {
   return (
-    <section className="relative overflow-hidden pb-20 pt-16 sm:pb-28 sm:pt-20 lg:pt-16">
+    <section className="relative overflow-hidden pb-16 pt-14 sm:pb-24 sm:pt-20 lg:pt-20">
       <div className="mx-auto max-w-6xl px-5 lg:px-8">
-        <div className="grid items-center gap-12 lg:grid-cols-[1.06fr_0.94fr] lg:gap-16">
+        <div className="grid items-center gap-10 lg:grid-cols-[0.88fr_1.12fr] lg:gap-12">
           {/* Left — copy + CTA */}
           <div className="reveal max-w-xl">
             <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">For UK teams that want a clearer review process</p>
             <h1 className={marketingType.h1Home}>
-              Appraisal software without the heavyweight HR system.
+              Appraisal software without the <span className="marketing-editorial text-primary">heavyweight HR system.</span>
             </h1>
             <p className={`mt-5 ${marketingType.lead}`}>
               Run employee appraisals and anonymous 360 feedback in one place —
@@ -44,7 +44,7 @@ export function Hero() {
             </div>
           </div>
 
-          <div className="relative aspect-[4/3] overflow-hidden sm:aspect-[3/2] lg:aspect-[4/3]">
+          <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-surface-2 shadow-[0_24px_55px_-40px_rgb(21_38_29_/_0.5)] sm:aspect-[3/2] lg:aspect-[6/5]">
             <Image
               src="/marketing/one-to-one.jpg"
               alt="Two colleagues talking through a review in a naturally lit workspace"

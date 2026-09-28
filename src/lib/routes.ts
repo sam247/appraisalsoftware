@@ -1,5 +1,6 @@
 export const ROUTES = {
   home: "/",
+  pricing: "/pricing",
   annualAppraisalSoftware: "/annual-appraisal-software",
   employeeAppraisalSoftware: "/employee-appraisal-software",
   feedback360Software: "/360-feedback-software",

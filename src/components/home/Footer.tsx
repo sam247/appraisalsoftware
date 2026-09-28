@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { BrandMark } from "@/components/home/Logo";
+import { Logo } from "@/components/home/Logo";
 import {
   CONTACT_URL,
   DISCLOSURELY_URL,
@@ -14,6 +14,7 @@ const footerLinks = {
     { label: "Annual appraisal software", href: ROUTES.annualAppraisalSoftware },
     { label: "Employee appraisal software", href: ROUTES.employeeAppraisalSoftware },
     { label: "360 feedback software", href: ROUTES.feedback360Software },
+    { label: "Pricing", href: ROUTES.pricing },
     { label: "How it works", href: ROUTES.howItWorks },
   ],
   resources: [
@@ -27,8 +28,8 @@ const footerLinks = {
     { label: "360 feedback template", href: ROUTES.feedback360Template },
   ],
   company: [
-    { label: "Privacy", href: PRIVACY_URL },
-    { label: "Terms", href: TERMS_URL },
+    { label: "Disclosurely privacy policy", href: PRIVACY_URL },
+    { label: "Disclosurely terms", href: TERMS_URL },
     { label: "Contact", href: CONTACT_URL },
   ],
 };
@@ -46,7 +47,7 @@ export function Footer() {
         <div className="grid gap-10 md:grid-cols-[1.2fr_2fr]">
           <div>
             <Link href={ROUTES.home} aria-label="appraisal.software home">
-              <BrandMark size={40} />
+              <Logo />
             </Link>
             <p className="mt-4 max-w-xs text-xs leading-relaxed text-muted-foreground">
               Appraisal software for UK teams, with free review templates and practical

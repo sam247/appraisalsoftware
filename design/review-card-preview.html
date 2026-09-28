@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>Review card layout preview — Appraisal Software</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #f7f7f3; color: #171815; font: 16px/1.55 Arial, sans-serif; }
+    main { max-width: 1100px; padding: 80px 24px; margin: auto; }
+    .notice { display: inline-block; padding: 7px 12px; border-radius: 999px; background: #e5f1e9; color: #176b43; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+    h1 { max-width: 650px; margin: 24px 0 12px; font-size: clamp(2.2rem, 5vw, 4rem); line-height: 1.08; letter-spacing: -.05em; }
+    h1 em { color: #176b43; font-family: Georgia, serif; font-weight: 400; }
+    .intro { max-width: 640px; color: #59605b; }
+    .cards { display: grid; gap: 20px; margin-top: 48px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    article { min-height: 330px; display: flex; flex-direction: column; padding: 30px; border: 1px solid #dfe3dc; border-radius: 22px; background: white; }
+    .tag { color: #176b43; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; }
+    .quote { margin: 32px 0; color: #333a34; font-family: Georgia, serif; font-size: clamp(1.5rem, 2.5vw, 2.1rem); line-height: 1.2; }
+    .person { display: flex; align-items: center; gap: 12px; margin-top: auto; color: #687069; font-size: 14px; }
+    .avatar { width: 42px; height: 42px; flex: none; border-radius: 50%; background: #e9eee9; }
+    .person strong { display: block; color: #171815; }
+    .footnote { margin-top: 22px; color: #687069; font-size: 13px; }
+    @media (max-width: 700px) { main { padding: 48px 20px; } .cards { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <main>
+    <span class="notice">Private design preview · not a customer review</span>
+    <h1>What teams might say <em>when we have their words.</em></h1>
+    <p class="intro">These cards show the proposed layout only. They are not included on the public website. Real quotes, names, roles, and publication permission are required before this section can go live.</p>
+    <div class="cards">
+      <article>
+        <span class="tag">Illustrative placeholder</span>
+        <p class="quote">“Approved customer quote will appear here.”</p>
+        <div class="person"><span class="avatar" aria-hidden="true"></span><span><strong>Customer name</strong>Role and organisation</span></div>
+      </article>
+      <article>
+        <span class="tag">Illustrative placeholder</span>
+        <p class="quote">“A second verified experience can sit here.”</p>
+        <div class="person"><span class="avatar" aria-hidden="true"></span><span><strong>Customer name</strong>Role and organisation</span></div>
+      </article>
+    </div>
+    <p class="footnote">No ratings, logos, or outcome figures are shown without a source and approval.</p>
+  </main>
+</body>
+</html>

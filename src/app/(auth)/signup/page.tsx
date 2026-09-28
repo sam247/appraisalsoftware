@@ -184,14 +184,14 @@ export default function SignupPage() {
           </Button>
 
           <p className="text-center text-xs text-muted-foreground">
-            By signing up you agree to our{" "}
+            Before signing up, review the current{" "}
             <a
               href="https://disclosurely.com/terms"
               className="underline hover:text-foreground"
               target="_blank"
               rel="noreferrer"
             >
-              Terms
+              Disclosurely terms
             </a>{" "}
             and{" "}
             <a
@@ -200,7 +200,7 @@ export default function SignupPage() {
               target="_blank"
               rel="noreferrer"
             >
-              Privacy Policy
+              Disclosurely privacy policy
             </a>
             .
           </p>
