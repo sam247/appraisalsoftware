@@ -1,5 +1,4 @@
 import { ComparisonTrack } from "@/app/dashboard/campaigns/[id]/results/visuals";
-import { SectionHeading } from "@/components/product/primitives";
 import { ProductFrame } from "./ProductFrame";
 
 const comparisons = [
@@ -68,22 +67,5 @@ export function ResultsProof() {
         </section>
       </div>
     </ProductFrame>
-  );
-}
-
-export function AnnualResultsSection() {
-  return (
-    <section className="border-t border-border bg-surface/50 py-20 sm:py-24">
-      <div className="mx-auto grid max-w-6xl gap-10 px-5 lg:grid-cols-[0.8fr_1.2fr] lg:items-center lg:gap-16 lg:px-8">
-        <div>
-          <SectionHeading
-            eyebrow="Annual appraisal results"
-            title="See both perspectives in one appraisal."
-            copy="Ratings and written responses stay together in a retained review record. Compare employee and manager answers, use differences as prompts, and carry useful context into the conversation."
-          />
-        </div>
-        <ResultsProof />
-      </div>
-    </section>
   );
 }

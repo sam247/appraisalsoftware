@@ -1,4 +1,5 @@
 import { ArrowRight } from "lucide-react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import {
   PRIMARY_CTA_LABEL,
@@ -7,7 +8,6 @@ import {
   SEE_HOW_IT_WORKS_LABEL,
 } from "@/lib/links";
 import { marketingType } from "@/lib/marketing-typography";
-import HeroWizardPreview from "@/components/home/HeroWizardPreview";
 
 export function Hero() {
   return (
@@ -44,12 +44,15 @@ export function Hero() {
             </div>
           </div>
 
-          {/* The existing campaign flow is an illustrative, sanitised product preview. */}
-          <div
-            className="reveal relative lg:pl-4"
-            style={{ animationDelay: "0.15s" }}
-          >
-            <HeroWizardPreview />
+          <div className="relative aspect-[4/3] overflow-hidden sm:aspect-[3/2] lg:aspect-[4/3]">
+            <Image
+              src="/marketing/one-to-one.jpg"
+              alt="Two colleagues talking through a review in a naturally lit workspace"
+              fill
+              priority
+              sizes="(min-width: 1024px) 42vw, (min-width: 640px) 90vw, 100vw"
+              className="object-cover object-center"
+            />
           </div>
         </div>
       </div>

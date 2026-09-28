@@ -2,19 +2,11 @@ import { Header } from "@/components/home/Header";
 import { Hero } from "@/components/home/Hero";
 import {
   WorkflowTypesSection,
-  WorkflowStepsSection,
-  PositioningSection,
-  CampaignSection,
-  TemplatesSection,
-  PricingSection,
   HomeFaqSection,
   FinalCtaSection,
 } from "@/components/home/Sections";
-import { CompleteAppraisalSection } from "@/components/home/AppraisalSection";
 import { HumanStory } from "@/components/home/HumanStory";
-import { UnderstandResultsSection } from "@/components/home/Feedback360";
-import { AnnualResultsSection } from "@/components/product-marketing/ResultsProof";
-import { RelatedLinks } from "@/components/marketing/PageSections";
+import { GdprCommitment, MidPageCta } from "@/components/home/HomeBands";
 import { Footer } from "@/components/home/Footer";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { pageMetadata } from "@/lib/metadata";
@@ -41,25 +33,9 @@ export default function HomePage() {
       <main>
         <Hero />
         <WorkflowTypesSection />
-        <WorkflowStepsSection />
-        <CompleteAppraisalSection />
-        <AnnualResultsSection />
+        <MidPageCta />
         <HumanStory />
-        <UnderstandResultsSection />
-        <PositioningSection />
-        <CampaignSection />
-        <TemplatesSection />
-        <PricingSection />
-        <RelatedLinks title="Prepare for a useful review" links={[
-          { href: "/annual-appraisal-guide", label: "Annual appraisal guide", copy: "Plan the preparation, meeting and follow-up." },
-          { href: "/annual-appraisal-template", label: "Annual appraisal template", copy: "Start with objectives, reflection, manager comments and next steps." },
-          { href: "/appraisal-objectives", label: "Appraisal objectives", copy: "Find practical examples for the next review period." },
-          { href: "/appraisal-questions", label: "Appraisal questions", copy: "Choose focused prompts for employee and manager discussion." },
-          { href: "/appraisal-answers", label: "Employee appraisal answers", copy: "Use evidence to explain achievements and development needs." },
-          { href: "/appraisal-comments", label: "Manager appraisal comments", copy: "Write observations that help the next conversation." },
-          { href: "/360-feedback-software", label: "360 feedback software", copy: "Run anonymous multi-rater campaigns with combined results after closure." },
-          { href: "/resources", label: "All appraisal resources", copy: "Find practical guides, original examples and free forms." },
-        ]} />
+        <GdprCommitment />
         <HomeFaqSection />
         <FinalCtaSection />
       </main>
