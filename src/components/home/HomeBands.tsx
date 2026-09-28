@@ -5,6 +5,36 @@ import { PRIMARY_CTA_LABEL, PRIMARY_CTA_URL } from "@/lib/links";
 import { paidPlans } from "@/lib/pricing";
 import { ROUTES } from "@/lib/routes";
 
+const reviewSteps = [
+  { title: "Build your form", copy: "Choose the questions employees and managers will answer." },
+  { title: "Assign people", copy: "Set up each employee's self-assessment and manager response." },
+  { title: "Collect responses", copy: "Send invitations and see who has completed their part." },
+  { title: "Have the conversation", copy: "Compare both perspectives and agree the next steps together." },
+];
+
+export function ProcessOverview() {
+  return (
+    <section className="border-t border-border px-5 py-20 sm:py-24 lg:px-8">
+      <div className="mx-auto max-w-6xl">
+        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">How it works</p>
+        <h2 className="mt-4 max-w-2xl font-display text-[2rem] font-semibold leading-[1.1] tracking-[-0.035em] sm:text-[2.5rem]">From questions to a useful conversation.</h2>
+        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {reviewSteps.map((step, index) => (
+            <div key={step.title} className="border-t border-border pt-5">
+              <span className="text-sm font-semibold text-primary">0{index + 1}</span>
+              <h3 className="mt-4 text-base font-semibold text-foreground">{step.title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{step.copy}</p>
+            </div>
+          ))}
+        </div>
+        <Link href={ROUTES.howItWorks} className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">
+          See the full process <ArrowRight className="size-4" aria-hidden />
+        </Link>
+      </div>
+    </section>
+  );
+}
+
 export function MidPageCta() {
   return (
     <section className="marketing-contrast px-5 py-20 sm:py-28 lg:px-8">
@@ -50,7 +80,7 @@ export function PricingPreview() {
             <p className="text-sm font-semibold">Free workspace</p>
             <p className="mt-5 text-3xl font-semibold tracking-tight">£0</p>
             <p className="mt-2 text-sm text-muted-foreground">A place to get started.</p>
-            <a href={PRIMARY_CTA_URL} className="mt-7 inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">Create your workspace <ArrowRight className="size-4" aria-hidden /></a>
+            <a href={PRIMARY_CTA_URL} className="mt-7 inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">{PRIMARY_CTA_LABEL} <ArrowRight className="size-4" aria-hidden /></a>
           </div>
           {paidPlans.map((plan) => (
             <div key={plan.name} className="marketing-card rounded-2xl border border-border bg-card p-6">
@@ -63,6 +93,25 @@ export function PricingPreview() {
           ))}
         </div>
         <p className="mt-5 text-xs text-muted-foreground">Paid plans are activated with our team. We confirm the details before you commit.</p>
+      </div>
+    </section>
+  );
+}
+
+export function ReviewsPlaceholder() {
+  return (
+    <section className="border-t border-border bg-surface/50 px-5 py-20 sm:py-24 lg:px-8">
+      <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:items-center lg:gap-20">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">Customer reviews</p>
+          <h2 className="mt-4 font-display text-[2rem] font-semibold leading-[1.1] tracking-[-0.035em] sm:text-[2.5rem]">What teams are saying.</h2>
+        </div>
+        <div className="rounded-2xl border border-dashed border-border-strong bg-card p-7 sm:p-9">
+          <p className="text-base font-semibold text-foreground">Reviews coming soon</p>
+          <p className="mt-3 max-w-lg text-sm leading-relaxed text-muted-foreground">
+            We&apos;ll add verified customer feedback here when we have permission to share it.
+          </p>
+        </div>
       </div>
     </section>
   );

@@ -276,6 +276,20 @@
   }
 }
 
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  a:hover > .brand-mark {
+    animation: brand-mark-hover 1.05s both;
+  }
+}
+
+@keyframes brand-mark-hover {
+  0%, 22% { transform: translateX(0) rotate(0); }
+  7% { transform: translateX(-1px) rotate(-4deg); }
+  14% { transform: translateX(1px) rotate(4deg); }
+  28% { transform: rotate(0); animation-timing-function: cubic-bezier(0.32, 0, 0.16, 1); }
+  90%, 100% { transform: rotate(360deg); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

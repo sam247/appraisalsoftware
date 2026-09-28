@@ -22,5 +22,5 @@ export function Logo({
 }
 
 export function BrandMark({ size = 40 }: { size?: number }) {
-  return <Image src="/brand/app-icon.svg" alt="appraisal.software" width={size} height={size} unoptimized />;
+  return <Image src="/brand/app-icon.svg" alt="appraisal.software" width={size} height={size} className="brand-mark" unoptimized />;
 }

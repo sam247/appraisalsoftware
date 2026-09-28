@@ -6,17 +6,13 @@ import { ArrowRight, Menu } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from "@/components/ui/sheet";
-import { Logo } from "@/components/home/Logo";
+import { BrandMark } from "@/components/home/Logo";
 import { PRIMARY_CTA_LABEL, PRIMARY_CTA_URL, SIGN_IN_URL } from "@/lib/links";
 import { ROUTES } from "@/lib/routes";
 
 const nav = [
-  { label: "Appraisals", href: ROUTES.annualAppraisalSoftware },
-  { label: "360 Feedback", href: ROUTES.feedback360Software },
   { label: "Pricing", href: ROUTES.pricing },
-  { label: "Templates", href: ROUTES.templates },
   { label: "Resources", href: ROUTES.resources },
-  { label: "Blog", href: ROUTES.blog },
 ];
 
 export function Header() {
@@ -35,7 +31,7 @@ export function Header() {
       <div className="no-print bg-[#171815] px-4 py-2 text-center text-xs text-white sm:text-[13px]">
         A clearer review cycle starts here.{" "}
         <a href={PRIMARY_CTA_URL} className="inline-flex items-center gap-1 font-semibold text-[#a9e8c2] underline-offset-4 hover:underline">
-          Create a free workspace <ArrowRight className="size-3.5" aria-hidden />
+          {PRIMARY_CTA_LABEL} <ArrowRight className="size-3.5" aria-hidden />
         </a>
       </div>
       <header
@@ -48,21 +44,21 @@ export function Header() {
       >
         <div className="mx-auto flex max-w-6xl items-center gap-6 px-5 py-3.5 lg:px-8">
           <Link href={ROUTES.home} className="shrink-0" aria-label="appraisal.software home">
-            <Logo className="w-[132px] sm:w-[165px]" />
+            <BrandMark size={30} />
           </Link>
-          <nav aria-label="Main navigation" className="hidden flex-1 items-center justify-start gap-7 lg:flex">
-            {nav.map((item) => (
-              <Link
-                key={item.label}
-                href={item.href}
-                className="text-[13px] font-medium text-muted-foreground transition-colors hover:text-foreground"
-              >
-                {item.label}
-              </Link>
-            ))}
-          </nav>
-          <noscript><nav aria-label="Navigation without JavaScript" className="flex flex-wrap gap-3 text-xs lg:hidden">{nav.map((item) => <a key={item.label} href={item.href} className="underline">{item.label}</a>)}</nav></noscript>
-          <div className="ml-auto flex items-center gap-3 lg:ml-0">
+          <noscript><nav aria-label="Navigation without JavaScript" className="flex flex-wrap gap-3 text-xs sm:hidden">{nav.map((item) => <a key={item.label} href={item.href} className="underline">{item.label}</a>)}</nav></noscript>
+          <div className="ml-auto flex items-center gap-3 sm:gap-5">
+            <nav aria-label="Main navigation" className="hidden items-center gap-5 sm:flex">
+              {nav.map((item) => (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  className="text-[13px] font-medium text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
             <a
               href={SIGN_IN_URL}
               className="hidden text-[13px] font-medium text-muted-foreground transition-colors hover:text-foreground sm:block"
@@ -70,11 +66,11 @@ export function Header() {
               Sign in
             </a>
             <Button size="sm" className="px-3 sm:px-4" asChild>
-              <a href={PRIMARY_CTA_URL}><span className="sm:hidden">Start free</span><span className="hidden sm:inline">{PRIMARY_CTA_LABEL}</span></a>
+              <a href={PRIMARY_CTA_URL}>{PRIMARY_CTA_LABEL}</a>
             </Button>
             <Sheet open={open} onOpenChange={setOpen}>
               <SheetTrigger asChild>
-                <Button size="icon" variant="ghost" className="lg:hidden" aria-label="Open menu">
+                <Button size="icon" variant="ghost" className="sm:hidden" aria-label="Open menu">
                   <Menu className="size-5" />
                 </Button>
               </SheetTrigger>
