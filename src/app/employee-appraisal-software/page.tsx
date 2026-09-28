@@ -16,13 +16,18 @@ import { RespondentProof } from "@/components/product-marketing/RespondentProof"
 
 const TITLE = "Employee Appraisal Software for UK Teams | Appraisal Software";
 const DESCRIPTION =
-  "Employee appraisal software for UK teams. Run employee reviews with structured question forms, manager and employee feedback, completion tracking and a clear record of each appraisal.";
+  "Employee appraisal software for UK SMEs. Run employee and performance appraisals with structured forms, manager and employee feedback, completion tracking and a clear record — without buying a full HR suite.";
 
 const faqs = [
   {
     question: "What does employee appraisal software do?",
     answer:
       "It gives you a consistent form, a way to collect manager and employee comments, and a record of each review. You can see which appraisals are done and which are still open.",
+  },
+  {
+    question: "Is employee appraisal software the same as performance appraisal software?",
+    answer:
+      "For most UK teams, yes — the same product. This page covers employee and performance appraisals: structured forms, both perspectives, completion tracking and a findable record. It is not a wider performance management suite.",
   },
   {
     question: "Is this a performance management suite?",
@@ -42,7 +47,7 @@ const faqs = [
   {
     question: "How is this different from annual appraisal software?",
     answer:
-      "The annual appraisal page is the dedicated route for the yearly cycle. This page explains the employee and manager workflow more generally, including how people prepare, respond and review the finished record.",
+      "The annual appraisal page is the dedicated route for the yearly cycle. This page is for employee and performance appraisals more generally — including mid-year or other review periods — and explains how people prepare, respond and keep the finished record.",
   },
 ];
 
@@ -71,38 +76,73 @@ export default function EmployeeAppraisalSoftwarePage() {
       />
       <PageHero
         showCta
-        eyebrow="Employee reviews"
+        eyebrow="Employee & performance reviews"
         title="Employee Appraisal Software"
-        description="Run employee appraisals with structured question forms, manager and employee feedback, completion tracking and a record of each review."
+        description="Run employee and performance appraisals for UK teams with structured question forms, manager and employee feedback, completion tracking and a clear record of each review — without buying a full HR suite."
         breadcrumbs={[
           homeCrumb(),
           { label: "Employee Appraisal Software", href: ROUTES.employeeAppraisalSoftware },
         ]}
       />
 
-      <ContentSection title="Run employee appraisals without manual admin">
+      <ContentSection title="What is employee appraisal software?">
         <p>
-          Employee appraisals stall when the process lives in Word, email and a tracker nobody
-          trusts. The review meeting is not the hard part. Finding the form, chasing the manager and
-          storing the result is.
+          Employee appraisal software is the process layer for reviewing people at work: a reusable
+          form, employee self-assessment, manager response, a way to see who is still outstanding,
+          and one record you can find again. Many UK teams also call this performance appraisal
+          software — same job, same page.
         </p>
         <p>
-          Appraisal Software is{" "}
-          <TextLink href={ROUTES.home}>simple annual appraisal software for UK teams</TextLink> that
-          also covers employee reviews more generally. Create a campaign, send a structured form, collect
-          both sides of the conversation, and keep the finished appraisal.
+          Appraisal Software is built for that job for UK SMEs. It is not payroll, absence or
+          recruitment software, and it is not a wide performance platform. For the overall product
+          overview, see the <TextLink href={ROUTES.home}>Appraisal Software homepage</TextLink>.
+          For the dedicated yearly cycle, use{" "}
+          <TextLink href={ROUTES.annualAppraisalSoftware}>annual appraisal software</TextLink>.
+        </p>
+      </ContentSection>
+
+      <ContentSection title="Why employee appraisals stall">
+        <p>
+          The review conversation is rarely the hard part. The admin around it is. Forms live in
+          Word and email. Completion lives in a spreadsheet someone last updated months ago. Last
+          period’s comments are hard to find — or they are gone.
+        </p>
+        <ul className="list-disc space-y-2 pl-5">
+          <li>Each manager writes slightly different questions, so reviews are hard to compare.</li>
+          <li>Nobody can see, in one place, who still owes a response.</li>
+          <li>Reminders become personal chase emails from the owner or sole HR person.</li>
+          <li>When someone asks for the last appraisal, finding it takes a hunt.</li>
+        </ul>
+        <p>
+          If you want a starting form first, use the{" "}
+          <TextLink href={ROUTES.annualAppraisalTemplate}>annual appraisal template</TextLink> or the{" "}
+          <TextLink href={ROUTES.appraisalQuestions}>appraisal questions</TextLink> list, then run
+          the same structure as a campaign.
+        </p>
+      </ContentSection>
+
+      <ContentSection title="Employee appraisal software without a full HR suite">
+        <p>
+          Many UK teams already know how their appraisals should work. They need a proportionate
+          process for employee and manager input, not another heavyweight system around payroll and
+          recruitment.
+        </p>
+        <p>
+          Appraisal Software focuses on the review cycle: reusable questions, employee
+          self-assessment, manager response, completion tracking, reminders and one organised record
+          per person. That is enough for most 20–150 person teams that need employee appraisal
+          software they will actually finish.
         </p>
       </ContentSection>
 
       <ContentSection title="A respondent experience people finish">
         <p>
-          Employees and managers open a structured question form instead of a long Word document or a form buried in email. Keep prompts focused so people can prepare clear, useful answers.
+          Employees and managers open a structured question form instead of a long Word document or
+          a form buried in email. Keep prompts focused so people can prepare clear, useful answers.
         </p>
         <p>
           Write the questions once. Use the same form across the team so reviews are comparable, and
-          reuse it next time with only the changes you actually need. Start from the{" "}
-          <TextLink href={ROUTES.appraisalQuestions}>appraisal questions</TextLink> list or the{" "}
-          <TextLink href={ROUTES.annualAppraisalTemplate}>annual appraisal template</TextLink>.
+          reuse it next time with only the changes you actually need.
         </p>
       </ContentSection>
 
@@ -136,14 +176,24 @@ export default function EmployeeAppraisalSoftwarePage() {
       </ContentSection>
 
       <ContentSection title="Help both people prepare">
-        <p>Employees need prompts that help them explain achievements, difficulties and support needs. Managers need space for observed results and concrete examples. Keep those voices distinct before discussing the review together.</p>
-        <p>Use <TextLink href="/appraisal-answers">employee self-appraisal examples</TextLink> to help employees prepare, and <TextLink href="/appraisal-comments">manager comment examples</TextLink> for observations grounded in evidence.</p>
+        <p>
+          Employees need prompts that help them explain achievements, difficulties and support
+          needs. Managers need space for observed results and concrete examples. Keep those voices
+          distinct before discussing the review together.
+        </p>
+        <p>
+          Use <TextLink href="/appraisal-answers">employee self-appraisal examples</TextLink> to
+          help employees prepare, and{" "}
+          <TextLink href="/appraisal-comments">manager comment examples</TextLink> for observations
+          grounded in evidence.
+        </p>
       </ContentSection>
 
       <ContentSection title="Track completion">
         <p>
           Open a campaign and you should be able to answer a simple question: who is still
-          outstanding? Completion tracking shows completed and outstanding responses. Reminders go from there, rather than from a personal email thread.
+          outstanding? Completion tracking shows completed and outstanding responses. Reminders go
+          from there, rather than from a personal email thread.
         </p>
       </ContentSection>
 
@@ -189,7 +239,7 @@ export default function EmployeeAppraisalSoftwarePage() {
 
       <CtaBand
         title="Run employee appraisals without the spreadsheet"
-        copy="Prepare your questions and collect employee and manager responses in Appraisal Software."
+        copy="Prepare your questions and collect employee and manager responses in Appraisal Software — without buying a full HR suite."
         secondaryHref={ROUTES.annualAppraisalSoftware}
         secondaryLabel="See annual appraisals"
       />
