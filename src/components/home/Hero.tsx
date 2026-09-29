@@ -13,7 +13,7 @@ export function Hero() {
   return (
     <section className="relative overflow-hidden pb-16 pt-14 sm:pb-24 sm:pt-20 lg:pt-20">
       <div className="mx-auto max-w-6xl px-5 lg:px-8">
-        <div className="grid items-center gap-10 lg:grid-cols-[0.88fr_1.12fr] lg:gap-12">
+        <div className="grid items-center gap-10 lg:grid-cols-[3fr_2fr] lg:gap-12">
           {/* Left — copy + CTA */}
           <div className="reveal max-w-xl">
             <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">For UK teams that want a clearer review process</p>
