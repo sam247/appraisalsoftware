@@ -45,7 +45,7 @@ export function Hero() {
           </div>
 
           <div className="flex items-center justify-center">
-            <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-surface-2 shadow-[0_24px_55px_-40px_rgb(21_38_29_/_0.5)] sm:aspect-[3/2] lg:aspect-[6/5] lg:w-4/5">
+            <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-surface-2 shadow-[0_24px_55px_-40px_rgb(21_38_29_/_0.5)] sm:aspect-[3/2] lg:aspect-[6/5] lg:w-[96%]">
               <Image
                 src="/marketing/one-to-one.jpg"
                 alt="Two colleagues talking through a review in a naturally lit workspace"
