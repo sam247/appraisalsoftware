@@ -52,6 +52,11 @@ export default function RootLayout({
       <body className="min-h-full bg-background text-foreground">
         <JsonLd data={websiteAndOrganizationGraph()} />
         <ConsentManager>{children}</ConsentManager>
+        <script
+          defer
+          src="https://betterranking.co.uk/embed/bros-chat.js"
+          data-site-key="appraisal_software_L5AZHS0-Y6Zaaz0uiQTvpW7E"
+        />
       </body>
     </html>
   );
