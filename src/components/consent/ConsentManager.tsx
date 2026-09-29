@@ -71,11 +71,11 @@ export function ConsentManager({ children }: { children: ReactNode }) {
           },
           slots: {
             consentBannerCard:
-              "max-w-[15.5rem] rounded-lg border p-3 shadow-lg sm:max-w-[17rem]",
-            consentBannerHeader: "gap-0.5",
+              "max-w-[15rem] rounded-lg border shadow-lg",
+            consentBannerHeader: "gap-0.5 p-3",
             consentBannerTitle: "text-xs font-semibold tracking-tight",
             consentBannerDescription: "text-[11px] leading-snug",
-            consentBannerFooter: "gap-1.5 pt-0.5",
+            consentBannerFooter: "gap-1.5 p-2.5",
             consentDialogCard: "rounded-2xl border shadow-lg",
             consentDialogHeader: "gap-2",
             consentDialogTitle: "font-semibold tracking-tight",
@@ -90,6 +90,7 @@ export function ConsentManager({ children }: { children: ReactNode }) {
         title="Cookies"
         description="Essential cookies to run the site, plus optional ones to measure usage."
         layout={["customize", ["reject", "accept"]]}
+        direction="column"
         primaryButton="accept"
       />
       <ConsentDialog hideBranding showTrigger />
