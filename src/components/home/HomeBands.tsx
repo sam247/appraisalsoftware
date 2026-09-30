@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import Image from "next/image";
+import { ArrowRight, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PRIMARY_CTA_LABEL, PRIMARY_CTA_URL } from "@/lib/links";
 import { paidPlans } from "@/lib/pricing";
@@ -10,6 +11,27 @@ const reviewSteps = [
   { title: "Assign people", copy: "Set up each employee's self-assessment and manager response." },
   { title: "Collect responses", copy: "Send invitations and see who has completed their part." },
   { title: "Have the conversation", copy: "Compare both perspectives and agree the next steps together." },
+];
+
+const sampleReviews = [
+  {
+    quote: "The forms made our check-ins easier to prepare for, and the conversations felt more focused.",
+    name: "Amelia Price",
+    role: "People Manager",
+    image: "/marketing/review-amelia.jpg",
+  },
+  {
+    quote: "We finally had one clear place for self-assessments and manager feedback.",
+    name: "Daniel Brooks",
+    role: "Operations Lead",
+    image: "/marketing/review-daniel.jpg",
+  },
+  {
+    quote: "Setting up a review cycle felt straightforward, even with several teams involved.",
+    name: "Priya Shah",
+    role: "HR Director",
+    image: "/marketing/review-priya.jpg",
+  },
 ];
 
 export function ProcessOverview() {
@@ -105,12 +127,28 @@ export function ReviewsPlaceholder() {
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">Customer reviews</p>
           <h2 className="mt-4 font-display text-[2rem] font-semibold leading-[1.1] tracking-[-0.035em] sm:text-[2.5rem]">What teams are saying.</h2>
+          <p className="mt-4 max-w-sm text-sm leading-relaxed text-muted-foreground">Design preview: the names, portraits and quotes shown here are fictional.</p>
         </div>
-        <div className="rounded-2xl border border-dashed border-border-strong bg-card p-7 sm:p-9">
-          <p className="text-base font-semibold text-foreground">Reviews coming soon</p>
-          <p className="mt-3 max-w-lg text-sm leading-relaxed text-muted-foreground">
-            We&apos;ll add verified customer feedback here when we have permission to share it.
-          </p>
+        <div className="review-window min-w-0 overflow-hidden" aria-label="Illustrative customer review cards">
+          <div className="review-track">
+            {[0, 1].map((copy) => (
+              <div key={copy} className="review-group" aria-hidden={copy === 1}>
+                {sampleReviews.map((review) => (
+                  <article key={review.name} className="review-card flex min-h-72 flex-col rounded-2xl border border-border bg-card p-6 shadow-sm">
+                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">Sample review</p>
+                    <blockquote className="mt-6 font-display text-xl font-medium leading-snug tracking-tight text-foreground">“{review.quote}”</blockquote>
+                    <div className="mt-auto flex items-center gap-3 pt-7">
+                      <Image src={review.image} alt="" width={48} height={48} className="size-12 rounded-full object-cover" />
+                      <div>
+                        <p className="text-sm font-semibold text-foreground">{review.name}</p>
+                        <p className="text-xs text-muted-foreground">{review.role}</p>
+                      </div>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>
@@ -126,6 +164,10 @@ export function GdprCommitment() {
           <h2 className="mt-4 max-w-md font-display text-[2rem] font-semibold leading-[1.1] tracking-[-0.035em] text-foreground sm:text-[2.5rem]">
             Privacy belongs in the review process.
           </h2>
+          <div className="mt-8 inline-flex items-center gap-4 rounded-2xl border border-primary/20 bg-card px-6 py-5 shadow-sm" aria-label="UK GDPR privacy commitment">
+            <ShieldCheck className="size-16 text-primary" strokeWidth={1.5} aria-hidden="true" />
+            <span className="font-display text-2xl font-semibold tracking-tight text-foreground">UK GDPR</span>
+          </div>
         </div>
         <div className="lg:pt-8">
           <p className="max-w-xl text-base leading-relaxed text-muted-foreground">
