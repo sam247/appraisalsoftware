@@ -1,5 +1,7 @@
 # Reviewable release runbook — 4 October 2026
 
+Analytics update: production GA4 now runs after measurement consent without an environment enable flag. Sam confirmed Enhanced measurement is disabled. `NEXT_PUBLIC_GA4_ENABLED` only enables local-development testing; the trial gate remains separate. Prior gated-release notes below record the original implementation.
+
 Implementation is local. No production migration, deployment, trial enablement or article publication has occurred. The checkout also contains the separate dashboard overhaul; isolate its changes with its owner before assembling release commits. Preserve existing migrations and public URLs.
 
 ## A — ownership and audit

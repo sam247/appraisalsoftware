@@ -43,11 +43,27 @@ describe("consent-aware analytics", () => {
     expect(safeReferrer("invalid")).toBe("");
     expect(JSON.stringify(window.dataLayer)).not.toContain("email=");
   });
-  it("keeps the release gate authoritative even with consent", async () => {
+  it("keeps local measurement off without an explicit opt-in", async () => {
     vi.stubEnv("NEXT_PUBLIC_GA4_ENABLED", "false");
     state.consent = true;
     const { GoogleAnalytics } = await import("@/components/analytics/GoogleAnalytics");
     GoogleAnalytics();
     expect(document.head.appendChild).not.toHaveBeenCalled();
   });
+  it.each([undefined, "false"])("loads in production with consent when the old enable flag is %s", async (flag) => {
+    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("NEXT_PUBLIC_GA4_ENABLED", flag);
+    state.consent = true;
+    const { GoogleAnalytics } = await import("@/components/analytics/GoogleAnalytics");
+    GoogleAnalytics(); GoogleAnalytics();
+    expect(document.head.appendChild).toHaveBeenCalledTimes(1);
+  });
+  it("still blocks production loading when consent is rejected", async () => {
+    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("NEXT_PUBLIC_GA4_ENABLED", undefined);
+    const { GoogleAnalytics } = await import("@/components/analytics/GoogleAnalytics");
+    GoogleAnalytics();
+    expect(document.head.appendChild).not.toHaveBeenCalled();
+  });
+
 });

@@ -1,8 +1,9 @@
 import { INDEXABLE_PATHS } from "@/lib/routes";
 
 export const GA_ID = "G-3LFNBQEPDF";
-// Enable only after GA4 enhanced measurement is disabled in this web stream.
-export const analyticsReleased = process.env.NEXT_PUBLIC_GA4_ENABLED === "true";
+// Production measurement is released; the consent manager controls tag loading.
+// The environment flag only opts local development into measurement.
+export const analyticsReleased = process.env.NODE_ENV === "production" || process.env.NEXT_PUBLIC_GA4_ENABLED === "true";
 export type AnalyticsEvent = "signup_start" | "sign_up" | "trial_activation" | "generate_lead" | "support_enquiry";
 declare global {
   interface Window { dataLayer?: unknown[]; gtag?: (...args: unknown[]) => void; appraisalMeasurementConsent?: boolean; }
