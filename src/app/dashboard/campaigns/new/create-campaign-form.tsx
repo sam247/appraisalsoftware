@@ -28,15 +28,16 @@ export default function CreateCampaignForm({
 }) {
   const kind = is360 ? "360 feedback" : "Annual appraisal";
   return (
-    <div className="dashboard-workspace space-y-6">
-      <div className="max-w-3xl">
+    <div data-focused-workspace className="dashboard-workspace space-y-6">
+      <header className="task-header"><div className="max-w-3xl">
         <Link href="/dashboard/campaigns" className="text-xs text-muted-foreground hover:text-foreground">← Campaigns</Link>
         <p className="mt-5 text-xs text-muted-foreground">{kind}</p>
-        <h1 className="mt-1 font-display text-2xl font-semibold tracking-tight">Create {is360 ? "feedback" : "an appraisal"}</h1>
+        <h1 className="mt-1 font-display text-[22px] md:text-[24px] font-semibold tracking-tight">Create {is360 ? "feedback" : "an appraisal"}</h1>
         <p className="mt-2 text-sm text-muted-foreground">
           Name the draft now. You can configure {is360 ? "the subject, reviewers, questions and delivery" : "people, questions and delivery"} after it is saved.
         </p>
       </div>
+      </header>
       {error && <p role="alert" className="max-w-3xl rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">{error}</p>}
       <form action={createCampaign} className="max-w-xl space-y-5">
         <input type="hidden" name="campaign_type" value={is360 ? "feedback_360" : "annual_appraisal"} />

@@ -1,8 +1,11 @@
+import { WorkspaceTrial } from "@/components/analytics/WorkspaceTrial";
+import { trialReleased, type WorkspaceEntitlement } from "@/lib/billing/trial";
 import type { Metadata } from "next";
 import { requireOrgAdmin } from "@/lib/auth/session";
 import { isFreePlan } from "@/lib/billing/plan";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import { hasLaunchedCampaign } from "./workspace-state";
 import AppNavigation from "./app-navigation";
 
 export const metadata: Metadata = { robots: { index: false, follow: false } };
@@ -27,11 +30,15 @@ export default async function DashboardLayout({
 
   const { org, email, membership, userId } = orgAdmin;
   const supabase = await createClient();
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("full_name, avatar_url")
-    .eq("id", userId)
-    .maybeSingle();
+  const [profileResult, campaignResult] = await Promise.all([
+    supabase.from("profiles").select("full_name, avatar_url").eq("id", userId).maybeSingle(),
+    supabase.from("campaigns").select("status,questions_frozen_at,send_claimed_at").eq("organization_id", org.id),
+  ]);
+  if (campaignResult.error) throw new Error("Unable to load workspace navigation");
+  const entitlementResult = await supabase.rpc("get_workspace_entitlement", { p_organization_id: org.id });
+  if (entitlementResult.error && trialReleased) throw new Error("Unable to load workspace access");
+  const entitlement = entitlementResult.data as unknown as WorkspaceEntitlement | null;
+  const profile = profileResult.data;
 
   const displayName =
     profile?.full_name?.trim() || email.split("@")[0] || "Account";
@@ -43,9 +50,11 @@ export default async function DashboardLayout({
       email={email}
       role={membership.role}
       avatarUrl={profile?.avatar_url ?? null}
-      showUpgrade={isFreePlan(org)}
+      showUpgrade={entitlement ? entitlement.plan === "trial" || entitlement.plan === "legacy" : isFreePlan(org)}
+      showGettingStarted={!(campaignResult.data ?? []).some(hasLaunchedCampaign)}
     >
-      <div className="w-full px-4 py-5 sm:px-6 md:px-8 md:py-6">
+      <div className="dashboard-content">
+        <WorkspaceTrial orgId={org.id} entitlement={entitlement} />
         {children}
       </div>
     </AppNavigation>

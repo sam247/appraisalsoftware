@@ -137,12 +137,12 @@ export default function FormBuilder({ campaign, initialQuestions, templates, org
   };
 
   return (
-    <main className="dashboard-workspace space-y-5 pb-12">
-      <header className="flex flex-wrap items-start justify-between gap-4 border-b border-border pb-5">
+    <div data-focused-workspace className="dashboard-workspace space-y-4 pb-12">
+      <header className="task-header">
         <div className="min-w-0">
-          <button type="button" onClick={leave} className="text-xs text-muted-foreground hover:text-foreground">← {campaign.name}</button>
-          <p className="mt-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">{is360 ? "Anonymous 360" : "Annual appraisal"} · Form builder</p>
-          <h1 className="mt-1 font-display text-2xl font-semibold tracking-tight">{campaign.name}</h1>
+          <button type="button" onClick={leave} className="text-xs text-muted-foreground hover:text-foreground">← Back to campaign</button>
+          <p className="mt-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">{is360 ? "Anonymous 360" : "Annual appraisal"} · Form builder</p>
+          <h1 className="mt-1 font-display text-[22px] md:text-[24px] font-semibold tracking-tight">{campaign.name}</h1>
         </div>
         <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
           <span className="mr-2 text-xs text-muted-foreground" aria-live="polite">{pending ? "Saving…" : dirty ? "Unsaved changes" : "Changes saved"}</span>
@@ -179,22 +179,22 @@ export default function FormBuilder({ campaign, initialQuestions, templates, org
           <button type="button" onClick={leave} className="mt-6 text-sm text-muted-foreground hover:text-foreground">Return to campaign</button>
         </div>
       ) : (
-        <div className={`grid min-w-0 gap-6 ${previewOnly ? "grid-cols-1" : "lg:grid-cols-[minmax(18rem,0.85fr)_minmax(0,1.35fr)]"}`}>
-          {!previewOnly && <aside className="min-w-0 space-y-4">
+        <div className={`builder-layout grid min-w-0 gap-6 ${previewOnly ? "preview-only grid-cols-1" : "lg:grid-cols-[minmax(18rem,0.85fr)_minmax(0,1.35fr)]"}`}>
+          {!previewOnly && <aside className="builder-editor min-w-0 space-y-4">
             <div className="flex items-center justify-between gap-2">
               <div><h2 className="font-display text-lg font-semibold">Questions</h2><p className="text-xs text-muted-foreground">{questions.length} in this campaign form</p></div>
               {!locked && <Button type="button" size="sm" variant="outline" onClick={() => add()}>+ Add question</Button>}
             </div>
             <ol className="divide-y divide-border border-y border-border" aria-label="Form questions">
               {questions.map((q, index) => <li key={q.id}>
-                <button type="button" onClick={() => setSelectedId(q.id)} className={`flex w-full items-start gap-3 px-2 py-3 text-left text-sm hover:bg-muted/40 ${selectedId === q.id ? "bg-primary/5" : ""}`} aria-current={selectedId === q.id ? "true" : undefined}>
+                <button type="button" onClick={() => setSelectedId(q.id)} className={`flex w-full items-start gap-3 px-2 py-2.5 text-left text-sm hover:bg-muted/40 ${selectedId === q.id ? "bg-primary/5" : ""}`} aria-current={selectedId === q.id ? "true" : undefined}>
                   <span className="w-5 shrink-0 text-muted-foreground">{index + 1}.</span>
                   <span className="min-w-0 flex-1 break-words font-medium">{q.prompt || "Untitled question"}<span className="mt-1 block text-xs font-normal text-muted-foreground">{questionTypes.find((type) => type.value === q.type)?.label ?? q.type} · {q.required ? "Required" : "Optional"}</span></span>
                 </button>
               </li>)}
             </ol>
             {questions.length === 0 && <p className="text-sm text-muted-foreground">This form is empty. Add the first question to begin.</p>}
-            {selected && <section className="space-y-4 border-t border-border pt-4" aria-label="Edit selected question">
+            {selected && <section className="space-y-4" aria-label="Edit selected question">
               <div className="flex items-center justify-between gap-2"><h3 className="font-display text-base font-semibold">Edit question</h3><span className="text-xs text-muted-foreground">{questions.findIndex((q) => q.id === selected.id) + 1} of {questions.length}</span></div>
               <label className="block text-sm font-medium">Question<input className={field} value={selected.prompt} maxLength={500} disabled={locked} onChange={(event) => patchQuestion(selected.id, { prompt: event.target.value })} /></label>
               <label className="block text-sm font-medium">Help text <span className="font-normal text-muted-foreground">Optional</span><textarea className={field} rows={2} maxLength={1000} value={selected.help_text ?? ""} disabled={locked} onChange={(event) => patchQuestion(selected.id, { help_text: event.target.value })} /></label>
@@ -218,11 +218,12 @@ export default function FormBuilder({ campaign, initialQuestions, templates, org
             </section>}
             {!locked && <Button type="button" disabled={pending || !dirty} onClick={() => save(false)}>{pending ? "Saving…" : "Save form"}</Button>}
           </aside>}
-          <section className="min-w-0">
+          <section className="builder-canvas min-w-0">
             <div className="mb-3 flex flex-wrap items-center justify-between gap-2"><div><h2 className="font-display text-lg font-semibold">Respondent preview</h2><p className="text-xs text-muted-foreground">Interactive preview · nothing is saved or submitted</p></div>
+              {is360 && <span className="text-xs text-muted-foreground">Anonymous reviewer</span>}
               {!is360 && <label className="text-xs text-muted-foreground">View as <select className="field ml-2" value={previewRole} onChange={(event) => setPreviewRole(event.target.value as "self" | "manager")}><option value="self">Employee</option><option value="manager">Manager</option></select></label>}
             </div>
-            <div className="overflow-hidden rounded-lg border border-border bg-surface">
+            <div className="respondent-preview overflow-hidden rounded-md border border-border bg-card">
               {!previewOnly && selected && !selected.prompt.trim()
                 ? <div className="flex min-h-96 items-center justify-center px-6 text-center text-sm text-muted-foreground">Give this question a prompt to preview it.</div>
                 : validForPreview.length > 0 ? <RespondForm key={`${previewRole}-${previewOnly ? "cover" : selectedId}-${validForPreview.map((q) => q.id).join("|")}`} preview previewQuestionIndex={previewOnly ? undefined : Math.max(0, validForPreview.findIndex((q) => q.id === selectedId))} token="" campaignName={campaign.name} questions={validForPreview} relationship={is360 ? "peer" : previewRole} alreadySubmitted={false} orgName={org.name} orgLogoUrl={org.logoUrl} orgBrandColor={org.brandColor} initialAnswers={[]} anonymous={is360} subjectName={subjectName} />
@@ -233,6 +234,6 @@ export default function FormBuilder({ campaign, initialQuestions, templates, org
       )}
       {locked && <p className="text-sm text-muted-foreground">This campaign form is frozen for delivery. Its questions can be viewed but not changed.</p>}
       <div className="border-t border-border pt-5"><Link href={campaignUrl} onClick={(event) => { if (dirty && !window.confirm("Discard unsaved form changes?")) event.preventDefault(); }} className="text-sm text-primary hover:underline">← Return to campaign</Link></div>
-    </main>
+    </div>
   );
 }

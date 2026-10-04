@@ -17,7 +17,7 @@ export function StatusBadge({
       className={cn(
         "inline-flex items-center rounded-md px-1.5 py-0.5 text-[11px] font-medium",
         tone === "accent" && "bg-accent text-accent-foreground",
-        tone === "ready" && "bg-warm/25 text-warm-foreground",
+        tone === "ready" && "bg-surface text-foreground",
         tone === "warn" && "bg-destructive/10 text-destructive",
         tone === "muted" && "bg-surface text-muted-foreground",
         tone === "neutral" && "bg-surface text-foreground",
@@ -269,9 +269,9 @@ export function PageHeader({
   action?: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-wrap items-start justify-between gap-3">
+    <div className="page-header flex flex-wrap items-center justify-between gap-4">
       <div className="min-w-0">
-        <h1 className="font-display text-2xl font-medium tracking-tight text-foreground">
+        <h1 className="font-display text-[26px] md:text-[28px] font-semibold tracking-tight text-foreground">
           {title}
         </h1>
         {subtitle && (

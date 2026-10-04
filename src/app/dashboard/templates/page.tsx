@@ -2,6 +2,7 @@ import { requireOrgAdmin } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { createTemplate } from "./actions";
+import { PageHeader } from "../chrome";
 import FormSubmit from "@/app/dashboard/form-submit";
 import Link from "next/link";
 import type { Template } from "@/lib/types/database";
@@ -32,12 +33,7 @@ export default async function TemplatesPage({
 
   return (
     <div>
-      <h1 className="font-display text-2xl font-medium tracking-tight text-foreground">
-        Templates
-      </h1>
-      <p className="mt-1 text-sm text-muted-foreground">
-        Reusable question sets for appraisal campaigns.
-      </p>
+      <PageHeader title="Templates" subtitle="Reusable question sets for appraisal campaigns." />
 
       {params.error && (
         <div className="mt-3 rounded-md border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive">
@@ -45,7 +41,7 @@ export default async function TemplatesPage({
         </div>
       )}
 
-      <div className="mt-6 max-w-3xl border-t border-border pt-5">
+      <div className="mt-5 max-w-3xl">
         <h2 className="mb-3 text-sm font-medium text-foreground">
           New template
         </h2>
@@ -75,12 +71,12 @@ export default async function TemplatesPage({
             No templates yet — create one above.
           </p>
         ) : (
-          <div className="divide-y divide-border border-t border-border">
+          <div className="directory-table divide-y divide-border">
             {templates.map((t: Template) => (
               <Link
                 key={t.id}
                 href={`/dashboard/templates/${t.id}`}
-                className="flex items-center justify-between px-3.5 py-2.5 hover:bg-surface transition-colors"
+                className="flex items-center justify-between px-4 py-3 hover:bg-surface transition-colors"
               >
                 <div className="min-w-0">
                   <p className="text-sm font-medium text-foreground">

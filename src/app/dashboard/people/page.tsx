@@ -24,7 +24,7 @@ export default async function PeoplePage({
     supabase
       .from("people")
       .select(
-        "id, email, full_name, job_title, manager_person_id, department_id, archived_at",
+        "id, email, full_name, job_title, manager_person_id, department_id, reviewer_only, archived_at",
       )
       .eq("organization_id", orgAdmin.org.id)
       .order("full_name"),

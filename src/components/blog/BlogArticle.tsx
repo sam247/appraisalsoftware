@@ -5,11 +5,7 @@ import { SiteChrome } from "@/components/layout/SiteChrome";
 import { homeCrumb } from "@/components/marketing/PageSections";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { renderBlogMarkdown } from "@/lib/blog/markdown";
-import {
-  blogPath,
-  formatBlogDate,
-  getRelatedPosts,
-} from "@/lib/blog/posts";
+import { blogPath, formatBlogDate, getRelatedPosts } from "@/lib/blog/posts";
 import type { BlogPost } from "@/lib/blog/types";
 import { articleSchema, breadcrumbSchema } from "@/lib/schema";
 import { ROUTES } from "@/lib/routes";
@@ -43,7 +39,7 @@ export function BlogArticle({ post }: { post: BlogPost }) {
         />
 
         <header className="border-b border-border">
-          <div className="mx-auto max-w-6xl px-5 py-10 lg:px-8 lg:py-14">
+          <div className="mx-auto max-w-6xl px-5 py-14 lg:px-8 lg:py-20">
             <nav aria-label="Breadcrumb" className="mb-6">
               <ol className="flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
                 {crumbs.map((crumb, index) => (
@@ -64,7 +60,7 @@ export function BlogArticle({ post }: { post: BlogPost }) {
             <p className="text-[0.6875rem] font-medium uppercase tracking-[0.14em] text-primary">
               {post.category}
             </p>
-            <h1 className="mt-3 max-w-3xl font-display text-[2rem] font-semibold leading-[1.12] tracking-[-0.035em] text-foreground sm:text-[2.5rem] lg:text-[2.75rem]">
+            <h1 className="mt-3 max-w-3xl font-display text-[2.5rem] font-semibold leading-[1.1] tracking-[-0.035em] text-foreground lg:text-[3rem]">
               {post.title}
             </h1>
             <p className="mt-5 max-w-2xl text-[1.025rem] leading-relaxed text-muted-foreground">
@@ -83,11 +79,12 @@ export function BlogArticle({ post }: { post: BlogPost }) {
                 </span>
               ) : null}
               <span>{post.readingMinutes} min read</span>
+              <Link href={ROUTES.contact}>Appraisal Software team</Link>
             </p>
           </div>
         </header>
 
-        <div className="mx-auto max-w-6xl px-5 py-10 lg:px-8 lg:py-14">
+        <div className="mx-auto max-w-6xl px-5 py-14 lg:px-8 lg:py-20">
           <div className="mx-auto max-w-[42rem]">
             {renderBlogMarkdown(post.body)}
           </div>

@@ -40,9 +40,17 @@ export default function Page() {
         })}
       />
       <PageHero
+        visual={
+          <>
+            <HeroWizardPreview />
+            <p className="mt-3 text-xs text-muted-foreground">
+              Illustrative product preview · fictional data
+            </p>
+          </>
+        }
         showCta
         eyebrow="360 feedback software"
-        title="Anonymous multi-rater feedback, without a heavyweight HR suite"
+        title="A wider perspective, with a clear review process"
         description={description}
         breadcrumbs={[
           homeCrumb(),
@@ -75,14 +83,24 @@ export default function Page() {
       <section className="border-b border-border py-16 sm:py-20">
         <div className="mx-auto grid max-w-6xl gap-10 px-5 lg:grid-cols-[0.8fr_1.2fr] lg:items-center lg:gap-16 lg:px-8">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-primary">Inside the product</p>
-            <h2 className="mt-3 font-display text-2xl font-semibold text-foreground sm:text-3xl">Build a campaign around one person.</h2>
-            <p className="mt-4 max-w-xl leading-relaxed text-muted-foreground">This illustrative campaign setup shows the subject, questions and reviewer cohort together before invitations are sent.</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-primary">
+              Inside the product
+            </p>
+            <h2 className="mt-3 font-display text-2xl font-semibold text-foreground sm:text-3xl">
+              Build a campaign around one person.
+            </h2>
+            <p className="mt-4 max-w-xl leading-relaxed text-muted-foreground">
+              This illustrative campaign setup shows the subject, questions and
+              reviewer cohort together before invitations are sent.
+            </p>
           </div>
           <HeroWizardPreview />
         </div>
       </section>
-      <ContentSection title="Built for anonymous multi-rater reviews">
+      <ContentSection
+        layout="split"
+        title="Built for anonymous multi-rater reviews"
+      >
         <p>
           Appraisal Software’s 360 workflow is designed for development-focused
           feedback from several relationships. Choose the subject, invite a
@@ -100,7 +118,13 @@ export default function Page() {
           Combined feedback is shown without reviewer names or response times.
           Results require five completed reviewer responses and campaign
           closure. Written comments may still identify their author, so explain
-          that before anyone starts.
+          that before anyone starts. Each displayed question also needs at least five valid answers; questions below that threshold are suppressed.
+        </p>
+        <p>
+          Ordinary workspace administrators cannot query the private reviewer-to-answer mapping.
+          Trusted platform and database operators can access operational records.
+          This access boundary does not prevent identification through distinctive written comments,
+          shared invitation links or outside knowledge. The report does not provide reviewer-group comparisons.
         </p>
         <p>
           Free planning material remains available:{" "}

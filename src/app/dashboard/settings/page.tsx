@@ -1,3 +1,4 @@
+import { PageHeader } from "../chrome";
 import FormSubmit from "@/app/dashboard/form-submit";
 import { BrandMark } from "@/components/home/Logo";
 import { requireOrgAdmin } from "@/lib/auth/session";
@@ -48,7 +49,7 @@ const SECTION_COPY: Record<
   branding: {
     title: "Branding",
     description:
-      "Add your organisation&apos;s identity to appraisal emails and respondent forms.",
+      "Add your organisation's identity to appraisal emails and respondent forms.",
   },
   team: {
     title: "Team",
@@ -180,18 +181,12 @@ export default async function SettingsPage({
   const free = isFreePlan(org);
 
   return (
-    <div className="mx-auto w-full space-y-8">
-      <header className="space-y-1">
-        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-          Settings
-        </p>
-        <h1 className="font-display text-2xl font-medium tracking-tight text-foreground">
-          {copy.title}
-        </h1>
-        <p className="max-w-2xl text-sm text-muted-foreground">
-          {copy.description}
-        </p>
-      </header>
+    <div className="mx-auto w-full space-y-6">
+      <PageHeader title="Settings" subtitle="Manage your organisation and workspace." />
+      <nav aria-label="Settings sections" className="settings-tabs">
+        {SECTIONS.map((section) => <Link key={section.id} href={`/dashboard/settings?tab=${section.id}`} aria-current={tab === section.id ? "page" : undefined}>{section.label}</Link>)}
+      </nav>
+      <div><h2 className="text-xl font-semibold">{copy.title}</h2><p className="mt-2 text-sm text-muted-foreground">{copy.description}</p></div>
 
       {params.error ? (
         <p
@@ -246,8 +241,8 @@ export default async function SettingsPage({
       ) : null}
 
       {tab === "branding" ? (
-        <section className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(17rem,22rem)] lg:items-start lg:gap-10">
-          <div className="max-w-xl space-y-8">
+        <section className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(17rem,22rem)] lg:items-start lg:gap-8">
+          <div className="max-w-xl space-y-6">
             <div className="space-y-3">
               <h2 className="text-sm font-semibold text-foreground">Logo</h2>
               {org.logo_url ? (

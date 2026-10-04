@@ -52,20 +52,19 @@ export default function ImportWorkspace({
 
   return (
     <div className="dashboard-workspace max-w-3xl space-y-6 pb-10">
-      <header>
+      <header className="page-header">
         <Link href={returnTo} className="text-xs text-muted-foreground hover:text-foreground">
-          ← Back to campaign people
+          ← {returnTo === "/dashboard/people" ? "People" : "Campaign participants"}
         </Link>
         <p className="mt-4 text-xs font-medium uppercase tracking-wide text-muted-foreground">
           Workspace people
         </p>
-        <h1 className="mt-1 font-display text-2xl font-semibold tracking-tight">
+        <h1 className="mt-1 font-display text-[26px] md:text-[28px] font-semibold tracking-tight">
           Import people
         </h1>
         <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-          Add people to the organisation from a CSV, then return to the
-          campaign to choose the saved appraisal cohort. Imported people are
-          not added to the campaign automatically.
+          Add people to the organisation from a CSV. Departments and default managers belong to People.
+          {returnTo !== "/dashboard/people" && " Return to the campaign to select participants; importing does not add them automatically."}
         </p>
       </header>
 

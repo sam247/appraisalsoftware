@@ -6,7 +6,7 @@ import {
   FinalCtaSection,
 } from "@/components/home/Sections";
 import { HumanStory } from "@/components/home/HumanStory";
-import { GdprCommitment, MidPageCta, PricingPreview, ProcessOverview, ReviewsPlaceholder } from "@/components/home/HomeBands";
+import { GdprCommitment, MidPageCta, PricingPreview, ProcessOverview, ProductBenefits } from "@/components/home/HomeBands";
 import { Footer } from "@/components/home/Footer";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { pageMetadata } from "@/lib/metadata";
@@ -37,7 +37,7 @@ export default function HomePage() {
         <MidPageCta />
         <HumanStory />
         <PricingPreview />
-        <ReviewsPlaceholder />
+        <ProductBenefits />
         <GdprCommitment />
         <HomeFaqSection />
         <FinalCtaSection />

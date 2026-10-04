@@ -21,6 +21,9 @@ export async function POST(req: NextRequest) {
   const result: Record<string, unknown> = { ok: true };
 
   try {
+    const { data: expired, error: expiryError } = await supabase.rpc("expire_trial_campaigns", {});
+    if (expiryError) throw new Error(`expiry: ${expiryError.message}`);
+    result.trialsExpired = expired ?? 0;
     const { data: activated, error: actErr } = await supabase.rpc(
       "claim_and_activate_due_campaigns",
       { p_limit: 20 },

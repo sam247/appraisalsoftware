@@ -1,3 +1,5 @@
+import { trialCta } from "@/lib/billing/trial";
+
 /** Parent team — subtle footer reference only. */
 export const DISCLOSURELY_URL = "https://disclosurely.com";
 
@@ -19,7 +21,7 @@ export const APP_ORIGIN = (
  * Primary commercial CTA — standalone product on the app host.
  */
 export const PRIMARY_CTA_URL = `${APP_ORIGIN}/signup`;
-export const PRIMARY_CTA_LABEL = "Start For Free";
+export const PRIMARY_CTA_LABEL = trialCta;
 
 /** Kept empty — no transition copy needed for a standalone product. */
 export const PRIMARY_CTA_TRANSITION = "";

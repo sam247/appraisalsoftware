@@ -1,3 +1,4 @@
+import DraftPreview from "./draft-preview";
 import { requireOrgAdmin } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
@@ -157,6 +158,15 @@ export default async function CampaignDetailPage({
   const templateName =
     templates.find((t) => t.id === campaign.template_id)?.name ?? null;
 
+  const preview = campaign.status === "draft" ? (
+    <DraftPreview
+      campaign={campaign}
+      questions={questions.map((question) => ({ ...question, campaign_id: id, source_template_question_id: campaign.form_started_at || campaign.questions_frozen_at ? null : question.id }))}
+      org={{ name: org.name, logoUrl: org.logo_url, brandColor: org.brand_color }}
+      subjectName={peopleById[subjects[0]?.person_id]?.full_name || "your colleague"}
+    />
+  ) : null;
+
   if (campaign.status === "draft" && !is360) {
     return (
       <>
@@ -184,6 +194,7 @@ export default async function CampaignDetailPage({
           initialSubjects={initialSubjects}
           pendingAssignmentCount={assignments.filter((a) => a.status === "pending").length}
           ready={ready}
+          preview={preview}
         />
       </>
     );
@@ -209,6 +220,7 @@ export default async function CampaignDetailPage({
           questions={questions}
           templateName={templateName}
           ready={ready}
+          preview={preview}
         />
       </>
     );
@@ -258,7 +270,7 @@ export default async function CampaignDetailPage({
               <StatusBadge tone={statusTone(campaign.status)}>
                 {campaignLabels[campaign.status]}
               </StatusBadge>
-              <h1 className="text-xl font-medium tracking-tight text-foreground">
+              <h1 className="text-[26px] md:text-[28px] font-semibold tracking-tight text-foreground">
                 {campaign.name}
               </h1>
             </div>

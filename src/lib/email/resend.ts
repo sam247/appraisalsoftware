@@ -16,6 +16,7 @@ export async function sendViaResend(params: {
   html: string;
   text: string;
   idempotencyKey?: string;
+  replyTo?: string;
 }): Promise<ResendSendResult> {
   const apiKey = process.env.RESEND_API_KEY?.trim();
   if (!apiKey) {
@@ -32,6 +33,7 @@ export async function sendViaResend(params: {
         subject: params.subject,
         html: params.html,
         text: params.text,
+        ...(params.replyTo ? { replyTo: params.replyTo } : {}),
       },
       params.idempotencyKey
         ? { idempotencyKey: params.idempotencyKey }

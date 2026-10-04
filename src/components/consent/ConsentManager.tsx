@@ -8,6 +8,7 @@ import {
   policyPackPresets,
 } from "@c15t/nextjs";
 
+import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import { PRIVACY_URL } from "@/lib/links";
 
 const c15tBackendURL = process.env.NEXT_PUBLIC_C15T_BACKEND_URL;
@@ -94,6 +95,7 @@ export function ConsentManager({ children }: { children: ReactNode }) {
         primaryButton="accept"
       />
       <ConsentDialog hideBranding showTrigger />
+      <GoogleAnalytics />
       {children}
     </ConsentManagerProvider>
   );

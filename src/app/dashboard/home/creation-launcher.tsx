@@ -39,14 +39,14 @@ export default function CreationLauncher({
       <div
         role="list"
         aria-label="Create"
-        className="grid sm:grid-cols-2"
+        className="grid overflow-hidden rounded-md border border-border sm:grid-cols-2"
       >
           {actions.map((action, index) => {
             const Icon = ICONS[action.icon];
             const rightEdge = index % 2 === 0;
             const topRow = index < 2;
             const className = cn(
-              "group relative flex gap-3.5 border-b border-border/80 py-4 sm:py-5",
+              "group relative flex gap-3.5 border-b border-border/80 px-4 py-4",
               interactive &&
                 "transition-colors duration-150 hover:bg-foreground/[0.025]",
               rightEdge && "sm:border-r sm:border-border/80",

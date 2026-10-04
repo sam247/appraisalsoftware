@@ -24,12 +24,12 @@ export function ResultsShell({
 }) {
   return (
     <div className="w-full">
-      <Link
+      <div className="flex flex-wrap items-center gap-5"><Link href="/dashboard/reports" className="text-sm text-primary hover:underline">← Reports</Link><Link
         href={`/dashboard/campaigns/${campaign.id}`}
         className="text-xs text-muted-foreground hover:text-foreground"
       >
         ← Campaign
-      </Link>
+      </Link></div>
 
       {orgName ? (
         <div className="mt-3">
@@ -37,10 +37,10 @@ export function ResultsShell({
         </div>
       ) : null}
 
-      <header className="mt-2 flex flex-wrap items-start justify-between gap-3">
+      <header className="page-header mt-5 flex flex-wrap items-center justify-between gap-4">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <h1 className="text-xl font-medium tracking-tight text-foreground">
+            <h1 className="text-[26px] md:text-[28px] font-semibold tracking-tight text-foreground">
               {campaign.name}
             </h1>
             <StatusBadge tone={statusTone(campaign.status)}>
@@ -51,7 +51,7 @@ export function ResultsShell({
         </div>
       </header>
 
-      <div className="mt-6">{children}</div>
+      <div className="report-content mt-8">{children}</div>
     </div>
   );
 }
@@ -66,7 +66,7 @@ export function resultsMetaLine(
   ];
   if (campaign.closes_at) {
     parts.push(
-      `Closed ${campaignDate(campaign.closes_at, campaign.timezone)}`,
+      `${["closed", "archived"].includes(campaign.status) ? "Close date" : "Closes"} ${campaignDate(campaign.closes_at, campaign.timezone)}`,
     );
   }
   return parts.join(" · ");

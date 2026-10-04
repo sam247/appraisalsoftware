@@ -8,7 +8,7 @@ export const marketingType = {
   h1: "font-display text-[2.5rem] font-semibold leading-[1.06] tracking-[-0.04em] text-ink sm:text-[2.75rem] lg:text-[3rem]",
   h1Home:
     "font-display text-[2.5rem] font-semibold leading-[1.06] tracking-[-0.045em] text-ink sm:text-[3.25rem] lg:text-[3.5rem]",
-  h2: "font-display text-[1.75rem] font-semibold leading-[1.1] tracking-[-0.035em] text-ink sm:text-[2rem] lg:text-[2.25rem]",
+  h2: "font-display text-[2rem] font-semibold leading-[1.1] tracking-[-0.035em] text-ink sm:text-[2.25rem] lg:text-[2.5rem]",
   h3: "font-display text-lg font-semibold tracking-[-0.025em] text-foreground",
   h3Card: "font-display text-xl font-semibold tracking-[-0.025em] text-foreground",
   eyebrow:

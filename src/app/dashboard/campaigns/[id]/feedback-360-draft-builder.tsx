@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useState, useTransition, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { campaignDate, campaignLocalDate, reminderSummary, setupCompleteness } from "../presentation";
@@ -17,11 +17,11 @@ type Section = "details" | "people" | "questions" | "timing";
 const field = "mt-1.5 w-full field";
 
 export default function Feedback360DraftBuilder({
-  campaign, subject, assignments, validReviewerCount, questions, templateName, ready,
+  campaign, subject, assignments, validReviewerCount, questions, templateName, ready, preview,
 }: {
   campaign: Campaign; subject: Person | null; assignments: CampaignAssignment[];
   validReviewerCount: number; questions: TemplateQuestion[];
-  templateName: string | null; ready: boolean;
+  templateName: string | null; ready: boolean; preview: ReactNode;
 }) {
   const router = useRouter();
   const [expanded, setExpanded] = useState<Section | null>(null);
@@ -101,12 +101,12 @@ export default function Feedback360DraftBuilder({
     { key: "timing", label: "Timing", summary: savedMode === "now" ? `Send now${campaign.closes_at ? ` · Closes ${campaignDate(campaign.closes_at, campaign.timezone)}` : ""}` : savedMode === "later" && campaign.opens_at ? `Send ${campaignDate(campaign.opens_at, campaign.timezone, true)}${campaign.closes_at ? ` · Closes ${campaignDate(campaign.closes_at, campaign.timezone)}` : ""}` : "Choose when to send", done: setup.steps[3].done },
   ];
   return (
-    <div className="dashboard-workspace space-y-5 pb-10">
-      <header className="flex flex-wrap items-start justify-between gap-3">
+    <div data-focused-workspace className="dashboard-workspace draft-workspace space-y-4">
+      <header className="task-header">
         <div className="min-w-0">
-          <Link href="/dashboard/campaigns" onClick={(e) => { if (dirty && !window.confirm("Discard unsaved changes?")) e.preventDefault(); }} className="text-xs text-muted-foreground hover:text-foreground">← Campaigns</Link>
-          <p className="mt-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">Anonymous 360 · Draft</p>
-          <h1 className="mt-1 font-display text-2xl font-semibold tracking-tight">{campaign.name}</h1>
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1"><Link href="/dashboard/campaigns" onClick={(e) => { if (dirty && !window.confirm("Discard unsaved changes?")) e.preventDefault(); }} className="text-xs text-muted-foreground hover:text-foreground">← Campaigns</Link>
+          <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Anonymous 360 · Draft</p></div>
+          <h1 className="mt-1 font-display text-[22px] md:text-[24px] font-semibold tracking-tight">{campaign.name}</h1>
         </div>
         <div className="flex w-full flex-wrap gap-2 sm:w-auto">
           <Button type="button" variant="outline" size="sm" onClick={finishLater}>Finish later</Button>
@@ -121,6 +121,7 @@ export default function Feedback360DraftBuilder({
           </Button>
         </div>
       </header>
+      <div className="draft-layout"><div className="draft-checklist">
       <div>
         <div className="flex items-center justify-between gap-3 text-xs text-muted-foreground"><span>{setup.doneCount} of 4 configured</span><span>Saved draft</span></div>
         <div className="mt-3 grid grid-cols-4 gap-1.5" aria-label={`${setup.doneCount} of 4 configured`}>
@@ -131,16 +132,16 @@ export default function Feedback360DraftBuilder({
         {sections.map((section) => (
           <section key={section.key} className="border-b border-border last:border-b-0">
             {section.key === "people" || section.key === "questions" ? (
-              <div className="flex w-full items-start justify-between gap-4 py-4 text-left sm:py-5">
+              <div className="flex w-full items-start justify-between gap-4 py-3 text-left">
                 <span className="min-w-0"><span className="flex items-center gap-2 text-sm font-medium"><span className={`h-1.5 w-1.5 shrink-0 rounded-full ${section.done ? "bg-primary" : "bg-border-strong"}`} />{section.label}</span>
                   <span className="mt-1 block text-sm text-muted-foreground">{section.summary}</span></span>
                 <Button asChild type="button" size="sm" variant="outline" className="shrink-0">
-                  <Link href={`/dashboard/campaigns/${campaign.id}/${section.key === "people" ? "reviewers" : "form"}`}>{section.key === "people" ? "Edit subject & reviewers" : questions.length ? "Edit form" : "Build form"}</Link>
+                  <Link onClick={(event) => { if (dirty && !window.confirm("Discard unsaved changes in this section?")) event.preventDefault(); }} href={`/dashboard/campaigns/${campaign.id}/${section.key === "people" ? "reviewers" : "form"}`}>{section.key === "people" ? "Edit subject & reviewers" : questions.length ? "Edit form" : "Build form"}</Link>
                 </Button>
               </div>
             ) : <button type="button" onClick={() => changeSection(expanded === section.key ? null : section.key)}
               aria-expanded={expanded === section.key} aria-controls={`editor-${section.key}`}
-              className="flex w-full items-start justify-between gap-4 py-4 text-left sm:py-5">
+              className="flex w-full items-start justify-between gap-4 py-3 text-left">
               <span className="min-w-0"><span className="flex items-center gap-2 text-sm font-medium"><span className={`h-1.5 w-1.5 shrink-0 rounded-full ${section.done ? "bg-primary" : "bg-border-strong"}`} />{section.label}</span>
                 <span className="mt-1 block text-sm text-muted-foreground">{section.summary}</span></span>
               <span className="shrink-0 text-xs font-medium text-primary">{expanded === section.key ? "Close" : section.done ? "Edit" : "Set up"}</span>
@@ -165,6 +166,7 @@ export default function Feedback360DraftBuilder({
           </section>
         ))}
       </div>
+      </div>{preview}</div>
       <DraftConfirmationDialog
         open={confirmationOpen}
         onOpenChange={setConfirmationOpen}

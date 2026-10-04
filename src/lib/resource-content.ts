@@ -949,6 +949,13 @@ export const resources: ResourceContent[] = [
           "Share only what your explained process allows. Small groups and distinctive incidents can reveal identities even in a summary without names."
         ]
       }
+      ,{
+        "title": "Giving feedback to your manager",
+        "paragraphs": [
+          "Describe an observable decision or behaviour and its effect on the work. A fictional example: ‘When project priorities changed in May, the update named the new deadline but not which tasks could wait. I spent time on the original task before learning it was no longer urgent. It would help if future updates listed the immediate priority and what to pause.’",
+          "The example describes a situation and a practical request. It does not label the manager’s character or claim to know their motives. Use your own evidence, include a strength where relevant, and avoid private details that unnecessarily identify another person. Written comments may still reveal their author even when the report omits names."
+        ]
+      }
     ],
     "related": [
       "360-feedback-questions",
@@ -973,3 +980,14 @@ export function resourceBySlug(slug: string): ResourceContent {
   if (!resource) throw new Error(`Unknown resource: ${slug}`);
   return resource;
 }
+/** The question guide has a dedicated page; include its metadata in library discovery. */
+export const resourceListings: Pick<ResourceContent, "slug" | "title" | "description" | "audience" | "kind">[] = [
+  ...resources,
+  {
+    slug: "appraisal-questions",
+    title: "Appraisal Questions",
+    description: "Practical questions grouped by performance, objectives, strengths, development, manager support and the next review period.",
+    audience: "Employees and managers choosing questions for a UK team review",
+    kind: "guide",
+  },
+];

@@ -112,6 +112,7 @@ export async function createPerson(formData: FormData): Promise<void> {
     email,
     full_name: fullName,
     job_title: jobTitle,
+    ...(formData.get("reviewer_only") === "on" ? { reviewer_only: true } : {}),
     manager_person_id: managerId,
     department_id: departmentId,
     created_by: userId,
@@ -165,6 +166,7 @@ export async function updatePerson(
     .update({
       full_name: (formData.get("full_name") as string | null)?.trim() || null,
       job_title: (formData.get("job_title") as string | null)?.trim() || null,
+      reviewer_only: formData.get("reviewer_only") === "on",
       manager_person_id: managerId,
       department_id: departmentId,
     })

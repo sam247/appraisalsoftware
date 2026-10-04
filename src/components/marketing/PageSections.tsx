@@ -1,11 +1,9 @@
 import Link from "next/link";
+import { marketingType } from "@/lib/marketing-typography";
 import { ArrowRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import {
-  PRIMARY_CTA_LABEL,
-  PRIMARY_CTA_URL,
-} from "@/lib/links";
+import { PRIMARY_CTA_LABEL, PRIMARY_CTA_URL } from "@/lib/links";
 import { ROUTES } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 
@@ -46,17 +44,24 @@ export function PageHero({
   breadcrumbs,
   compact = false,
   showCta = false,
+  visual,
 }: {
   eyebrow?: string;
-  title: string;
+  title: React.ReactNode;
   description: string;
   breadcrumbs?: { label: string; href: string }[];
   compact?: boolean;
   showCta?: boolean;
+  visual?: React.ReactNode;
 }) {
   return (
     <section className="border-b border-border bg-background">
-      <div className={cn("mx-auto max-w-6xl px-5 lg:px-8", compact ? "py-8 sm:py-10" : "py-16 sm:py-20 lg:py-28")}>
+      <div
+        className={cn(
+          "mx-auto max-w-6xl px-5 lg:px-8",
+          compact ? "py-10 sm:py-14" : "py-16 lg:py-20",
+        )}
+      >
         {breadcrumbs && breadcrumbs.length > 0 ? (
           <nav aria-label="Breadcrumb" className="mb-6">
             <ol className="flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
@@ -75,22 +80,42 @@ export function PageHero({
             </ol>
           </nav>
         ) : null}
-        {eyebrow ? (
-          <p className="text-[0.6875rem] font-medium uppercase tracking-[0.14em] text-primary">
-            {eyebrow}
-          </p>
-        ) : null}
-        <h1 className={cn("mt-3 max-w-4xl font-display font-semibold leading-[1.06] text-foreground", compact ? "text-[2rem] tracking-[-0.035em] sm:text-[2.5rem]" : "text-[2.25rem] tracking-[-0.045em] sm:text-[3.25rem] lg:text-[4rem]")}>
-          {title}
-        </h1>
-        <p className="mt-6 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-          {description}
-        </p>
-        {showCta ? (
-          <Button size="lg" className="mt-8 px-7" asChild>
-            <a href={PRIMARY_CTA_URL}>{PRIMARY_CTA_LABEL}<ArrowRight className="size-4" /></a>
-          </Button>
-        ) : null}
+        <div
+          className={cn(
+            visual &&
+              "grid items-center gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16",
+          )}
+        >
+          <div className="min-w-0">
+            {eyebrow ? (
+              <p className="text-[0.6875rem] font-medium uppercase tracking-[0.14em] text-primary">
+                {eyebrow}
+              </p>
+            ) : null}
+            <h1
+              className={cn(
+                "mt-4 max-w-3xl",
+                compact
+                  ? "font-display text-[2rem] font-semibold leading-[1.1] tracking-[-0.035em] sm:text-[2.5rem]"
+                  : marketingType.h1Home,
+              )}
+            >
+              {title}
+            </h1>
+            <p className="mt-6 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
+              {description}
+            </p>
+            {showCta ? (
+              <Button size="lg" className="mt-8 px-7" asChild>
+                <a href={PRIMARY_CTA_URL}>
+                  {PRIMARY_CTA_LABEL}
+                  <ArrowRight className="size-4" />
+                </a>
+              </Button>
+            ) : null}
+          </div>
+          {visual ? <div className="min-w-0">{visual}</div> : null}
+        </div>
       </div>
     </section>
   );
@@ -100,18 +125,32 @@ export function ContentSection({
   id,
   title,
   children,
+  layout = "reading",
 }: {
   id?: string;
   title: string;
   children: React.ReactNode;
+  layout?: "reading" | "split";
 }) {
   return (
-    <section id={id} className="marketing-content-section border-b border-border py-12 sm:py-16">
-      <div className="mx-auto max-w-6xl px-5 lg:px-8">
-        <h2 className="max-w-3xl font-display text-[1.5rem] font-semibold leading-[1.15] tracking-[-0.025em] text-foreground sm:text-[1.75rem]">
-          {title}
-        </h2>
-        <div className="mt-5 max-w-3xl space-y-4 text-[0.9375rem] leading-relaxed text-muted-foreground sm:text-base">
+    <section
+      id={id}
+      className="marketing-content-section border-b border-border py-16 lg:py-20"
+    >
+      <div
+        className={cn(
+          "mx-auto max-w-6xl px-5 lg:px-8",
+          layout === "split" &&
+            "grid gap-6 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16",
+        )}
+      >
+        <h2 className={cn("max-w-3xl", marketingType.h2)}>{title}</h2>
+        <div
+          className={cn(
+            "max-w-3xl space-y-4 text-base leading-[1.75] text-muted-foreground",
+            layout === "reading" && "mt-6",
+          )}
+        >
           {children}
         </div>
       </div>
@@ -125,16 +164,18 @@ export function FaqSection({
   items: { question: string; answer: React.ReactNode }[];
 }) {
   return (
-    <section className="border-b border-border py-12 sm:py-16">
+    <section className="border-b border-border py-16 lg:py-20">
       <div className="mx-auto max-w-6xl px-5 lg:px-8">
-        <h2 className="font-display text-[1.5rem] font-semibold leading-[1.15] tracking-[-0.025em] text-foreground sm:text-[1.75rem]">
-          FAQs
-        </h2>
+        <h2 className={marketingType.h2}>FAQs</h2>
         <dl className="mt-8 divide-y divide-border border-t border-border">
           {items.map((item) => (
             <div key={item.question} className="py-5">
-              <dt className="text-[15px] font-semibold text-foreground">{item.question}</dt>
-              <dd className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.answer}</dd>
+              <dt className="text-[15px] font-semibold text-foreground">
+                {item.question}
+              </dt>
+              <dd className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                {item.answer}
+              </dd>
             </div>
           ))}
         </dl>
@@ -147,27 +188,27 @@ export function CtaBand({
   title,
   copy,
   primaryLabel = PRIMARY_CTA_LABEL,
+  primaryHref = PRIMARY_CTA_URL,
   secondaryHref,
   secondaryLabel,
 }: {
   title: string;
   copy: string;
   primaryLabel?: string;
+  primaryHref?: string;
   secondaryHref?: string;
   secondaryLabel?: string;
 }) {
   return (
     <section className="marketing-contrast no-print px-5 py-20 lg:px-8">
       <div className="mx-auto max-w-6xl py-2 text-center sm:py-5">
-        <h2 className="font-display text-[1.5rem] font-semibold leading-[1.15] tracking-[-0.025em] text-foreground sm:text-[1.75rem]">
-          {title}
-        </h2>
+        <h2 className={marketingType.h2}>{title}</h2>
         <p className="mx-auto mt-4 max-w-xl text-[15px] leading-relaxed text-muted-foreground">
           {copy}
         </p>
         <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Button size="lg" className="w-full px-7 sm:w-auto" asChild>
-            <a href={PRIMARY_CTA_URL}>
+            <a href={primaryHref}>
               {primaryLabel}
               <ArrowRight className="size-4" />
             </a>
@@ -196,20 +237,22 @@ export function RelatedLinks({
   links: { href: string; label: string; copy: string }[];
 }) {
   return (
-    <section className="border-b border-border py-12 sm:py-16">
+    <section className="border-b border-border py-16 lg:py-20">
       <div className="mx-auto max-w-6xl px-5 lg:px-8">
-        <h2 className="font-display text-[1.5rem] font-semibold leading-[1.15] tracking-[-0.025em] text-foreground sm:text-[1.75rem]">
-          {title}
-        </h2>
-        <ul className="mt-6 divide-y divide-border border-t border-border">
+        <h2 className={marketingType.h2}>{title}</h2>
+        <ul className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {links.map((link) => (
             <li key={link.href}>
               <Link
                 href={link.href}
-                className="block py-4 transition-colors hover:text-primary"
+                className="marketing-card block h-full rounded-2xl border border-border bg-card p-6 transition-colors hover:border-primary/40"
               >
-                <p className="text-sm font-semibold text-foreground">{link.label}</p>
-                <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{link.copy}</p>
+                <p className="text-sm font-semibold text-foreground">
+                  {link.label}
+                </p>
+                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                  {link.copy}
+                </p>
               </Link>
             </li>
           ))}

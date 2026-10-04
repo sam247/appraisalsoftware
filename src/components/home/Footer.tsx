@@ -2,7 +2,6 @@ import Link from "next/link";
 
 import { Logo } from "@/components/home/Logo";
 import {
-  CONTACT_URL,
   DISCLOSURELY_URL,
   PRIVACY_URL,
   TERMS_URL,
@@ -30,7 +29,7 @@ const footerLinks = {
   company: [
     { label: "Disclosurely privacy policy", href: PRIVACY_URL },
     { label: "Disclosurely terms", href: TERMS_URL },
-    { label: "Contact", href: CONTACT_URL },
+    { label: "Contact", href: ROUTES.contact },
   ],
 };
 

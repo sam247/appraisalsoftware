@@ -38,6 +38,17 @@ function campaign(
 }
 
 describe("setupCompleteness", () => {
+  it("keeps a campaign-specific invalid template override separate from a shared Annual template", () => {
+    const annual = campaign({ id: "annual", name: "Annual", status: "draft", template_id: "shared", settings: { draft_delivery_mode: "now" } });
+    const feedback = campaign({ ...annual, id: "feedback", name: "Feedback", campaign_type: "feedback_360" });
+    const assignments = [
+      { campaign_id: "annual", status: "pending" },
+      ...Array.from({ length: 5 }, () => ({ campaign_id: "feedback", status: "pending" })),
+    ] as CampaignAssignment[];
+    const items = buildAttentionItems([annual, feedback], assignments, { annual: 1, feedback: 1 }, { shared: 2, feedback: 0 }, { feedback: 5 });
+    expect(items.find((item) => item.campaign.id === "annual")?.kind).toBe("ready_to_send");
+    expect(items.find((item) => item.campaign.id === "feedback")?.kind).toBe("needs_setup");
+  });
   it("uses saved campaign questions for a scratch form without a template", () => {
     const draft = campaign({ id: "scratch", name: "Scratch", status: "draft", form_started_at: "2026-01-01", settings: { draft_delivery_mode: "now" } });
     expect(setupCompleteness({ campaign: draft, subjectCount: 1, assignmentCount: 1, questionCount: 1 }).ready).toBe(true);

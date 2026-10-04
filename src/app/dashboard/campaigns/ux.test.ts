@@ -332,6 +332,7 @@ describe("annual appraisal UX safeguards", () => {
     expect(edit.update).toHaveBeenCalledWith({
       full_name: "Alex",
       job_title: "Designer",
+      reviewer_only: false,
       manager_person_id: null,
       department_id: null,
     });

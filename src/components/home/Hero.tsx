@@ -23,8 +23,7 @@ export function Hero() {
             <p className={`mt-5 ${marketingType.lead}`}>
               Run employee appraisals and anonymous 360 feedback in one place —
               with free templates and practical guidance when you need them.
-              Built for UK small teams that need a repeatable process, not a
-              wider HR platform.
+              Built for UK organisations that need a focused, repeatable review process.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Button size="lg" className="w-full px-7 sm:w-auto" asChild>

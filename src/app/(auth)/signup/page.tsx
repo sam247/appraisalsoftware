@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { trialReleased } from "@/lib/billing/trial";
+import { trackEvent } from "@/lib/analytics/events";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -15,6 +17,7 @@ export default function SignupPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const signupStarted = useRef(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -76,6 +79,7 @@ export default function SignupPage() {
       return;
     }
 
+    trackEvent("sign_up");
     router.push("/dashboard");
     router.refresh();
   }
@@ -92,11 +96,11 @@ export default function SignupPage() {
             Create your account
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Set up your appraisal workspace in seconds
+            {trialReleased ? "Start your 14-day trial with annual appraisals and anonymous 360 feedback. No payment card required." : "Set up a workspace for annual appraisals and anonymous 360 feedback."}
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onChange={() => { if (!signupStarted.current && trackEvent("signup_start")) signupStarted.current = true; }} onSubmit={handleSubmit} className="space-y-4">
           {error && (
             <div className="rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">
               {error}
@@ -180,7 +184,7 @@ export default function SignupPage() {
           </div>
 
           <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "Setting up…" : "Create account"}
+            {loading ? "Setting up…" : trialReleased ? "Start your 14-day free trial" : "Create account"}
           </Button>
 
           <p className="text-center text-xs text-muted-foreground">

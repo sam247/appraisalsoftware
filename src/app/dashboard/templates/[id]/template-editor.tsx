@@ -54,7 +54,7 @@ export default function TemplateEditor({
         </Link>
       </p>
 
-      <header className="flex items-start justify-between gap-3">
+      <header className="page-header flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0 flex-1">
           {editingDetails ? (
             <TemplateDetailsForm
@@ -64,7 +64,7 @@ export default function TemplateEditor({
             />
           ) : (
             <>
-              <h1 className="text-xl font-medium tracking-tight text-foreground">
+              <h1 className="text-[26px] md:text-[28px] font-semibold tracking-tight text-foreground">
                 {template.name}
               </h1>
               {template.description && (
@@ -100,7 +100,7 @@ export default function TemplateEditor({
         Changes apply to new drafts; sent campaigns keep locked questions.
       </p>
 
-      <div className="mt-4 border-y border-border">
+      <div className="directory-table mt-4 overflow-hidden">
         {questions.length === 0 && openId !== "new" && (
           <p className="py-6 text-sm text-muted-foreground">
             No questions yet. Add the first one below.
@@ -120,7 +120,7 @@ export default function TemplateEditor({
               {!expanded ? (
                 <button
                   type="button"
-                  className="flex w-full items-start gap-3 px-1 py-3.5 text-left transition-colors hover:bg-surface/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+                  className="flex w-full items-start gap-3 px-4 py-4 text-left transition-colors hover:bg-surface/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
                   onClick={() => setOpenId(q.id)}
                   aria-expanded={false}
                 >

@@ -172,7 +172,7 @@ export default function AnnualResults({
               {(selfAvg !== null || managerAvg !== null) && (
                 <section
                   aria-label="Average ratings"
-                  className="grid gap-4 sm:grid-cols-2"
+                  className="report-summary grid gap-4 sm:grid-cols-2"
                 >
                   <HeadlineStat
                     label="Self"
@@ -194,7 +194,7 @@ export default function AnnualResults({
               )}
 
               {ratingPairs.length > 0 && (
-                <section>
+                <section className="report-panel">
                   <h3 className="text-sm font-semibold text-foreground">
                     Self vs manager
                   </h3>
@@ -238,7 +238,7 @@ export default function AnnualResults({
               )}
 
               {discuss.length > 0 && (
-                <section>
+                <section className="report-panel">
                   <h3 className="text-sm font-semibold text-foreground">
                     Areas to discuss
                   </h3>
@@ -264,7 +264,7 @@ export default function AnnualResults({
               )}
 
               {writtenPairs.length > 0 && (
-                <section>
+                <section className="report-panel">
                   <h3 className="text-sm font-semibold text-foreground">
                     Written responses
                   </h3>

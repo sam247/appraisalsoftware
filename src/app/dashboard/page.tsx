@@ -4,7 +4,7 @@ import CreationLauncher, {
 import { requireOrgAdmin } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
-import { StatusBadge } from "./chrome";
+import { PageHeader, StatusBadge } from "./chrome";
 import {
   buildAttentionItems,
   dedupeAttentionByCampaign,
@@ -133,13 +133,8 @@ export default async function OverviewPage() {
   ];
 
   return (
-    <div className="mx-auto w-full space-y-10 pb-4">
-      <header className="space-y-2">
-        <p className="text-sm text-muted-foreground">{greeting}</p>
-        <h1 className="font-display text-2xl font-semibold tracking-tight text-foreground sm:text-[1.75rem]">
-          What would you like to do?
-        </h1>
-      </header>
+    <div className="mx-auto w-full space-y-6 pb-4">
+      <PageHeader title="What would you like to do?" subtitle={greeting} action={<Link href="/dashboard/reports" className="inline-flex h-10 items-center rounded-md border border-input px-4 text-sm font-medium hover:bg-surface">View reports</Link>} />
 
       <CreationLauncher actions={launcherActions} />
 

@@ -39,6 +39,7 @@ export type PeopleDirectoryPerson = Pick<
   | "email"
   | "full_name"
   | "job_title"
+  | "reviewer_only"
   | "manager_person_id"
   | "department_id"
   | "archived_at"
@@ -225,9 +226,9 @@ export default function PeopleDirectory({
 
   return (
     <div>
-      <div className="flex flex-wrap items-start justify-between gap-3">
+      <div className="page-header flex flex-wrap items-center justify-between gap-4">
         <div className="min-w-0">
-          <h1 className="font-display text-2xl font-medium tracking-tight text-foreground">
+          <h1 className="font-display text-[26px] md:text-[28px] font-semibold tracking-tight text-foreground">
             People
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
@@ -288,7 +289,7 @@ export default function PeopleDirectory({
       ) : (
         <>
           {/* Stable-height control strip — selection reuses this row */}
-          <div className="mt-5 flex min-h-10 flex-wrap items-center gap-2">
+          <div className="directory-toolbar mt-5">
             {hasSelection ? (
               <>
                 <p className="text-sm font-medium text-foreground tabular-nums">
@@ -319,7 +320,7 @@ export default function PeopleDirectory({
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Search people…"
-                  className="field min-w-[12rem] flex-1"
+                  className="field min-w-0 w-full sm:max-w-xs"
                 />
                 <label className="sr-only" htmlFor="people-department">
                   Department filter
@@ -351,7 +352,7 @@ export default function PeopleDirectory({
                   <option value="archived">Archived</option>
                   <option value="all">All people</option>
                 </select>
-                <p className="text-xs text-muted-foreground tabular-nums">
+                <p className="text-xs text-muted-foreground tabular-nums sm:ml-auto">
                   {filtered.length}{" "}
                   {filtered.length === 1 ? "person" : "people"}
                 </p>
@@ -359,7 +360,7 @@ export default function PeopleDirectory({
             )}
           </div>
 
-          <div className="mt-4 overflow-x-auto">
+          <div className="directory-table mt-4 overflow-x-auto">
             <table className="w-full min-w-[36rem] border-collapse text-left text-sm">
               <thead>
                 <tr className="border-b border-border text-xs text-muted-foreground">
@@ -535,7 +536,7 @@ export default function PeopleDirectory({
       <Sheet open={importOpen} onOpenChange={setImportOpen}>
         <SheetContent
           side="right"
-          className="flex w-full flex-col gap-0 overflow-y-auto bg-card sm:max-w-md"
+          className="admin-overlay flex w-full flex-col gap-0 overflow-y-auto bg-card sm:max-w-md"
         >
           <SheetHeader className="text-left">
             <SheetTitle>Import people</SheetTitle>
@@ -724,7 +725,7 @@ function AddPersonSheet({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="right"
-        className="flex w-full flex-col overflow-y-auto bg-card sm:max-w-md"
+        className="admin-overlay flex w-full flex-col overflow-y-auto bg-card sm:max-w-md"
       >
         <SheetHeader className="text-left">
           <SheetTitle>Add person</SheetTitle>
@@ -732,7 +733,7 @@ function AddPersonSheet({
             Add someone who can take part in appraisals or 360 feedback.
           </SheetDescription>
         </SheetHeader>
-        <form action={createPerson} className="mt-6 flex flex-1 flex-col gap-4">
+        <form action={createPerson} className="mt-2 flex flex-1 flex-col gap-4">
           <PersonFields
             key={open ? "add-open" : "add-closed"}
             managers={managers}
@@ -775,7 +776,7 @@ function EditPersonSheet({
     <Sheet open={Boolean(person)} onOpenChange={onOpenChange}>
       <SheetContent
         side="right"
-        className="flex w-full flex-col overflow-y-auto bg-card sm:max-w-md"
+        className="admin-overlay flex w-full flex-col overflow-y-auto bg-card sm:max-w-md"
       >
         <SheetHeader className="text-left">
           <SheetTitle>{displayName(person)}</SheetTitle>
@@ -784,7 +785,7 @@ function EditPersonSheet({
 
         <form
           action={updatePerson.bind(null, person.id)}
-          className="mt-6 flex flex-1 flex-col gap-4"
+          className="mt-2 flex flex-1 flex-col gap-4"
         >
           <PersonFields
             key={person.id}
@@ -794,6 +795,7 @@ function EditPersonSheet({
             defaults={{
               full_name: person.full_name ?? "",
               job_title: person.job_title ?? "",
+              reviewer_only: person.reviewer_only ?? false,
               manager_person_id: person.manager_person_id ?? "",
               department_id: person.department_id ?? "",
             }}
@@ -840,6 +842,7 @@ function PersonFields({
   departments: PeopleDirectoryDepartment[];
   onDepartmentCreated: (dept: PeopleDirectoryDepartment) => void;
   defaults?: {
+    reviewer_only?: boolean;
     full_name?: string;
     job_title?: string;
     manager_person_id?: string;
@@ -894,6 +897,10 @@ function PersonFields({
           />
         </label>
       )}
+      <label className="flex items-start gap-2 text-sm">
+        <input type="checkbox" name="reviewer_only" defaultChecked={defaults?.reviewer_only ?? false} className="mt-1" />
+        <span>External 360 reviewer only<span className="block text-xs text-muted-foreground">Does not use employee capacity. Cannot be an appraisal subject or annual participant.</span></span>
+      </label>
       <label className="block text-sm">
         <span className="font-medium text-foreground">Job title</span>
         <input

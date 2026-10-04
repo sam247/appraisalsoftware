@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -13,6 +13,8 @@ import {
   Settings,
   LogOut,
   Search,
+  FileBarChart,
+  CircleCheck,
 } from "lucide-react";
 import { BrandMark } from "@/components/home/Logo";
 import { Button } from "@/components/ui/button";
@@ -24,13 +26,15 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { CONTACT_URL } from "@/lib/links";
-import NavLink, { SettingsNavGroup } from "./nav-link";
+import NavLink from "./nav-link";
 
 const NAV = [
   { href: "/dashboard", label: "Home", exact: true, icon: LayoutDashboard },
   { href: "/dashboard/campaigns", label: "Campaigns", icon: Megaphone },
   { href: "/dashboard/people", label: "People", icon: Users },
   { href: "/dashboard/templates", label: "Templates", icon: FileText },
+  { href: "/dashboard/reports", label: "Reports", icon: FileBarChart },
+  { href: "/dashboard/settings", label: "Settings", icon: Settings },
 ];
 
 function CreateButton({ onNavigate }: { onNavigate?: () => void }) {
@@ -38,9 +42,9 @@ function CreateButton({ onNavigate }: { onNavigate?: () => void }) {
     <Link
       href="/dashboard/campaigns/new"
       onClick={onNavigate}
-      className="flex h-8 items-center justify-center gap-1.5 rounded-md border border-input bg-card px-3 text-[13px] font-medium text-foreground transition-colors hover:bg-surface"
+      className="flex h-10 items-center justify-center gap-2 rounded-md border border-input bg-card px-3 text-[13px] font-medium text-foreground transition-colors hover:bg-surface"
     >
-      <Plus className="size-3.5" aria-hidden />
+      <Plus className="size-4" aria-hidden />
       Create
     </Link>
   );
@@ -72,7 +76,7 @@ function SearchField() {
         onChange={(e) => setQ(e.target.value)}
         placeholder="Search people, campaigns, templates…"
         aria-label="Search workspace"
-        className="field h-8 w-full rounded-md bg-surface pl-9"
+        className="field h-10 w-full rounded-md bg-card pl-9"
       />
     </form>
   );
@@ -153,7 +157,7 @@ function AccountMenu({
               onClick={() => setOpen(false)}
               className="mt-1 flex items-center gap-2 rounded-lg px-2.5 py-2 text-sm text-foreground hover:bg-surface"
             >
-              <Settings className="size-3.5 text-muted-foreground" aria-hidden />
+              <Settings className="size-4 text-muted-foreground" aria-hidden />
               My account
             </Link>
             <form action="/logout" method="POST">
@@ -162,7 +166,7 @@ function AccountMenu({
                 role="menuitem"
                 className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-sm text-foreground hover:bg-surface"
               >
-                <LogOut className="size-3.5 text-muted-foreground" aria-hidden />
+                <LogOut className="size-4 text-muted-foreground" aria-hidden />
                 Log out
               </button>
             </form>
@@ -196,7 +200,7 @@ function SidebarFooter({
           type="submit"
           className="flex w-full items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-[13px] font-medium text-muted-foreground transition-colors hover:bg-surface hover:text-foreground"
         >
-          <LogOut className="size-3.5" aria-hidden />
+          <LogOut className="size-4" aria-hidden />
           Log out
         </button>
       </form>
@@ -206,9 +210,11 @@ function SidebarFooter({
 
 function AppLinks({
   mobile,
+  showGettingStarted,
   onNavigate,
 }: {
   mobile?: boolean;
+  showGettingStarted: boolean;
   onNavigate?: () => void;
 }) {
   return (
@@ -216,21 +222,11 @@ function AppLinks({
       aria-label={mobile ? "Mobile application" : "Application"}
       className="space-y-0.5"
     >
+      {showGettingStarted && <NavLink href="/dashboard/getting-started" label="Getting Started" icon={CircleCheck} onNavigate={onNavigate} />}
       {NAV.map((item) => (
         <NavLink key={item.href} {...item} onNavigate={onNavigate} />
       ))}
-      <Suspense
-        fallback={
-          <NavLink
-            href="/dashboard/settings"
-            label="Settings"
-            icon={Settings}
-            onNavigate={onNavigate}
-          />
-        }
-      >
-        <SettingsNavGroup onNavigate={onNavigate} />
-      </Suspense>
+
     </nav>
   );
 }
@@ -242,6 +238,7 @@ export default function AppNavigation({
   role,
   avatarUrl,
   showUpgrade,
+  showGettingStarted,
   children,
 }: {
   organization: string;
@@ -250,16 +247,17 @@ export default function AppNavigation({
   role: string;
   avatarUrl?: string | null;
   showUpgrade: boolean;
+  showGettingStarted: boolean;
   children: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
-  const focusedForm = /^\/dashboard\/campaigns\/[^/]+\/form$/.test(usePathname());
+  const focusedForm = /^\/dashboard\/campaigns\/(new|[^/]+\/(form|people|reviewers))$/.test(usePathname());
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-40 flex h-14 items-center gap-3 border-b border-border/80 bg-background/90 px-3 backdrop-blur-md sm:px-4 md:px-5">
+    <div className="admin-shell min-h-screen bg-background">
+      {!focusedForm && <header className="app-header sticky top-0 z-40 flex h-16 items-center gap-3 border-b border-border/80 bg-background/90 px-3 backdrop-blur-md sm:px-4 md:px-5">
         <div className="flex shrink-0 items-center gap-1">
-          {!focusedForm && <Sheet open={open} onOpenChange={setOpen}>
+          <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
               <Button
                 variant="ghost"
@@ -272,7 +270,7 @@ export default function AppNavigation({
             </SheetTrigger>
             <SheetContent
               side="left"
-              className="bg-card flex w-[min(90vw,300px)] flex-col"
+              className="admin-overlay bg-card flex w-[min(90vw,300px)] flex-col"
             >
               <SheetTitle className="mt-4 text-base font-semibold">
                 {organization}
@@ -284,26 +282,20 @@ export default function AppNavigation({
                 <CreateButton onNavigate={() => setOpen(false)} />
               </div>
               <div className="flex-1 overflow-y-auto">
-                <AppLinks mobile onNavigate={() => setOpen(false)} />
+                <AppLinks mobile showGettingStarted={showGettingStarted} onNavigate={() => setOpen(false)} />
               </div>
               <SidebarFooter
                 showUpgrade={showUpgrade}
                 onNavigate={() => setOpen(false)}
               />
             </SheetContent>
-          </Sheet>}
-          {focusedForm ? <span aria-label="Appraisal Software" className="shrink-0"><BrandMark size={28} /></span> : <Link
-            href="/dashboard"
-            aria-label="Appraisal Software home"
-            className="shrink-0"
-          >
-            <BrandMark size={28} />
-          </Link>}
+          </Sheet>
+          <Link href="/dashboard" aria-label="Appraisal Software home" className="shrink-0"><BrandMark size={32} /></Link>
         </div>
 
-        {focusedForm ? <div className="min-w-0 flex-1 px-2 text-xs font-medium text-muted-foreground">Form builder</div> : <div className="mx-auto flex min-w-0 flex-1 justify-center px-1 sm:px-4"><SearchField /></div>}
+        <div className="mx-auto flex min-w-0 flex-1 justify-center px-1 sm:px-4"><SearchField /></div>
 
-        {!focusedForm && <div className="flex shrink-0 items-center gap-3">
+        <div className="flex shrink-0 items-center gap-3">
           <a
             href={CONTACT_URL}
             target="_blank"
@@ -318,19 +310,19 @@ export default function AppNavigation({
             role={role}
             avatarUrl={avatarUrl}
           />
-        </div>}
-      </header>
+        </div>
+      </header>}
 
       <div className="md:flex">
-        {!focusedForm && <aside className="sticky top-14 hidden h-[calc(100vh-3.5rem)] w-[13.5rem] shrink-0 flex-col bg-background px-3 py-4 md:flex">
+        {!focusedForm && <aside className="app-sidebar sticky top-16 hidden h-[calc(100vh-4rem)] w-60 shrink-0 flex-col border-r border-border bg-card px-3 py-5 md:flex">
           <CreateButton />
           <div className="mt-4 flex-1 overflow-y-auto">
-            <AppLinks />
+            <AppLinks showGettingStarted={showGettingStarted} />
           </div>
           <SidebarFooter showUpgrade={showUpgrade} />
         </aside>}
 
-        <main id="main-content" className="min-w-0 flex-1">
+        <main id="main-content" className="dashboard-main min-w-0 flex-1">
           {children}
         </main>
       </div>

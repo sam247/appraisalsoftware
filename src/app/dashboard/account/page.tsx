@@ -1,6 +1,7 @@
 import { requireOrgAdmin } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import { PageHeader } from "../chrome";
 import FormSubmit from "@/app/dashboard/form-submit";
 import {
   removeAvatar,
@@ -36,14 +37,7 @@ export default async function AccountPage({
 
   return (
     <div className="mx-auto w-full space-y-8">
-      <div>
-        <h1 className="text-xl font-medium tracking-tight text-foreground">
-          My account
-        </h1>
-        <p className="mt-0.5 text-xs text-muted-foreground">
-          Your personal details for this workspace.
-        </p>
-      </div>
+      <PageHeader title="My account" subtitle="Your personal details for this workspace." />
 
       {params.error ? (
         <p

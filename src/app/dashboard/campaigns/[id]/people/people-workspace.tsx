@@ -141,7 +141,7 @@ export default function PeopleWorkspace({
   );
   const filtered = useMemo(() => {
     const needle = query.trim().toLowerCase();
-    return available.filter((person) => {
+    return people.filter((person) => !person.archived_at || selectedSet.has(person.id)).filter((person) => {
       if (departmentId && person.department_id !== departmentId) return false;
       if (!needle) return true;
       return [person.full_name ?? "", person.email, label(person)]
@@ -149,7 +149,7 @@ export default function PeopleWorkspace({
         .toLowerCase()
         .includes(needle);
     });
-  }, [available, departmentId, query]);
+  }, [people, selectedSet, departmentId, query]);
   const selectedPeople = selectedIds
     .map((id) => byId[id])
     .filter(Boolean) as PersonRow[];
@@ -234,10 +234,10 @@ export default function PeopleWorkspace({
   }
 
   return (
-    <div className="dashboard-workspace space-y-6 pb-10">
-      <header className="flex flex-wrap items-start justify-between gap-3">
+    <div data-focused-workspace className="dashboard-workspace people-workspace space-y-4 pb-4">
+      <header className="task-header">
         <div>
-          <Link
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1"><Link
             href={`/dashboard/campaigns/${campaignId}`}
             onClick={(event) => {
               event.preventDefault();
@@ -247,29 +247,28 @@ export default function PeopleWorkspace({
           >
             ← {campaignName}
           </Link>
-          <p className="mt-4 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            Annual appraisal
-          </p>
-          <h1 className="mt-1 font-display text-2xl font-semibold tracking-tight">
+          <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            Annual appraisal · Participants
+          </p></div>
+          <h1 className="mt-1 font-display text-[22px] md:text-[24px] font-semibold tracking-tight">
             Choose people
           </h1>
           <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-            Select the employees who should take part in this appraisal. Their
-            saved campaign pairing remains separate from their default manager.
+            Select employees and set campaign managers here. Default managers in People stay unchanged.
           </p>
         </div>
         <Button type="button" variant="outline" size="sm" onClick={confirmCancel}>
-          Cancel
+          Finish later
         </Button>
       </header>
 
       {flash?.error && <p role="alert" className="text-sm text-destructive">{flash.error}</p>}
       {flash?.ok && <p role="status" className="text-sm text-foreground">{flash.ok}</p>}
 
-      <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_18rem]">
+      <div className="space-y-3">
         <section className="min-w-0">
-          <div className="flex flex-wrap items-end gap-2 border-b border-border pb-4">
-            <label className="min-w-[14rem] flex-1 text-sm">
+          <div className="directory-toolbar">
+            <label className="min-w-0 w-full text-sm sm:max-w-sm">
               <span className="sr-only">Search people</span>
               <input
                 type="search"
@@ -343,173 +342,46 @@ export default function PeopleWorkspace({
             </span>
           </div>
 
-          <div className="hidden max-h-[42rem] overflow-auto border-t border-border md:block">
-            <table className="w-full min-w-[40rem] border-collapse text-left text-sm">
-              <thead>
-                <tr className="border-b border-border text-xs text-muted-foreground">
-                  <th className="w-10 py-2 pr-2 font-medium">Select</th>
-                  <th className="py-2 pr-3 font-medium">Employee</th>
-                  <th className="py-2 pr-3 font-medium">Department</th>
-                  <th className="py-2 pr-3 font-medium">Manager</th>
-                  <th className="py-2 font-medium">Participation</th>
+          <div className="directory-table participant-table overflow-auto">
+            <table className="w-full min-w-[900px] table-fixed text-left text-sm" aria-label="Campaign participants">
+              <thead className="sticky top-0 z-10">
+                <tr>
+                  <th scope="col" className="w-12"><input type="checkbox" aria-label="Select all shown employees" checked={allFilteredSelected} disabled={!filtered.length} onChange={() => select(allFilteredSelected ? selectedIds.filter((id) => !filtered.some((person) => person.id === id)) : [...new Set([...selectedIds, ...filtered.map((person) => person.id)])])} className="size-4" /></th>
+                  <th scope="col" className="w-[20%]">Employee</th>
+                  <th scope="col" className="w-[25%]">Email</th>
+                  <th scope="col" className="w-[15%]">Department</th>
+                  <th scope="col" className="w-[25%]">Campaign manager</th>
+                  <th scope="col">Review</th>
                 </tr>
               </thead>
               <tbody>
                 {filtered.map((person) => {
                   const selected = selectedSet.has(person.id);
                   const manager = resolveManager(person.id);
-                  return (
-                    <tr
-                      key={person.id}
-                      className={`border-b border-border/70 last:border-b-0 hover:bg-foreground/[0.025] ${selected ? "bg-foreground/[0.03]" : ""}`}
-                    >
-                      <td className="py-3 pr-2 align-middle">
-                        <input
-                          type="checkbox"
-                          checked={selected}
-                          onChange={() => toggle(person.id)}
-                          aria-label={`Select ${label(person)}`}
-                          className="h-4 w-4 rounded border-input"
-                        />
-                      </td>
-                      <td className="py-3 pr-3 align-middle">
-                        <p className="font-medium text-foreground">{label(person)}</p>
-                        <p className="mt-0.5 text-xs text-muted-foreground">{person.email}</p>
-                      </td>
-                      <td className="py-3 pr-3 align-middle text-xs text-muted-foreground">
-                        {person.department_id ? departmentById[person.department_id] ?? "—" : "—"}
-                      </td>
-                      <td className="py-3 pr-3 align-middle text-xs text-muted-foreground">
-                        {manager ? label(manager) : "Not assigned"}
-                      </td>
-                      <td className="py-3 align-middle text-xs text-muted-foreground">
-                        {selected ? "Selected" : "Not selected"}
-                      </td>
-                    </tr>
-                  );
+                  return <tr key={person.id} className={selected ? "bg-primary/5" : ""}>
+                    <td><input type="checkbox" checked={selected} onChange={() => toggle(person.id)} aria-label={`Select ${label(person)}`} className="size-4" /></td>
+                    <td className="truncate font-medium" title={label(person)}>{label(person)}{person.archived_at && <span className="ml-2 text-xs font-normal text-muted-foreground">Archived</span>}</td>
+                    <td className="truncate text-muted-foreground" title={person.email}>{person.email}</td>
+                    <td className="truncate text-muted-foreground">{person.department_id ? departmentById[person.department_id] ?? "—" : "—"}</td>
+                    <td><select aria-label={`Campaign manager for ${label(person)}`} value={manager?.id ?? ""} disabled={!selected || !!person.archived_at || pending} onChange={(event) => setManagers((current) => ({ ...current, [person.id]: event.target.value || null }))} className="field w-full text-sm disabled:opacity-50">
+                      <option value="">No manager · self-only</option>
+                      {available.filter((candidate) => candidate.id !== person.id).map((candidate) => <option key={candidate.id} value={candidate.id}>{label(candidate)}</option>)}
+                    </select></td>
+                    <td className="text-xs text-muted-foreground">{selected ? manager ? "Self + manager" : "Self-only" : "—"}</td>
+                  </tr>;
                 })}
-                {!filtered.length && (
-                  <tr>
-                    <td colSpan={5} className="py-8 text-center text-sm text-muted-foreground">
-                      No people match these filters.
-                    </td>
-                  </tr>
-                )}
+                {!filtered.length && <tr><td colSpan={6} className="py-8 text-center text-muted-foreground">No people match these filters.</td></tr>}
               </tbody>
             </table>
           </div>
-          <ul className="divide-y divide-border border-t border-border md:hidden">
-            {filtered.map((person) => {
-              const selected = selectedSet.has(person.id);
-              const manager = resolveManager(person.id);
-              return (
-                <li key={person.id} className={`space-y-3 py-3 ${selected ? "bg-foreground/[0.03]" : ""}`}>
-                  <label className="flex items-start gap-3">
-                    <input
-                      type="checkbox"
-                      checked={selected}
-                      onChange={() => toggle(person.id)}
-                      aria-label={`Select ${label(person)}`}
-                      className="mt-0.5 h-4 w-4 rounded border-input"
-                    />
-                    <span className="min-w-0 flex-1">
-                      <span className="block truncate text-sm font-medium text-foreground">{label(person)}</span>
-                      <span className="mt-0.5 block truncate text-xs text-muted-foreground">{person.email}</span>
-                      <span className="mt-1 block text-xs text-muted-foreground">
-                        {person.department_id ? departmentById[person.department_id] ?? "—" : "No department"}
-                        {" · "}
-                        {manager ? `Manager: ${label(manager)}` : "Self-only"}
-                      </span>
-                    </span>
-                  </label>
-                  {selected && (
-                    <label className="ml-7 block text-xs text-muted-foreground">
-                      Campaign manager
-                      <select
-                        value={managers[person.id] ?? ""}
-                        onChange={(event) => setManagers((current) => ({ ...current, [person.id]: event.target.value || null }))}
-                        className="field mt-1 w-full text-xs"
-                      >
-                        <option value="">Not assigned</option>
-                        {available.filter((managerPerson) => managerPerson.id !== person.id).map((managerPerson) => (
-                          <option key={managerPerson.id} value={managerPerson.id}>{label(managerPerson)}</option>
-                        ))}
-                      </select>
-                    </label>
-                  )}
-                </li>
-              );
-            })}
-            {!filtered.length && <li className="py-8 text-center text-sm text-muted-foreground">No people match these filters.</li>}
-          </ul>
         </section>
-
-        <aside className="min-w-0 xl:sticky xl:top-20 xl:self-start">
-          <div className="border-t border-border pt-4 xl:border-t-0 xl:border-l xl:pl-6">
-            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-              Selection summary
-            </p>
-            <p className="mt-2 text-2xl font-medium tabular-nums tracking-tight text-foreground">
-              {selectedPeople.length} employees
-            </p>
-            <dl className="mt-4 divide-y divide-border border-y border-border text-sm">
-              <div className="flex justify-between gap-3 py-2.5">
-                <dt className="text-muted-foreground">Self appraisals</dt>
-                <dd className="font-medium tabular-nums">{selectedPeople.length}</dd>
-              </div>
-              <div className="flex justify-between gap-3 py-2.5">
-                <dt className="text-muted-foreground">Manager reviews</dt>
-                <dd className="font-medium tabular-nums">{managerCount}</dd>
-              </div>
-              <div className="flex justify-between gap-3 py-2.5">
-                <dt className="text-muted-foreground">Self-only</dt>
-                <dd className="font-medium tabular-nums">{selfOnlyCount}</dd>
-              </div>
-            </dl>
-            {selfOnlyCount > 0 && (
-              <p className="mt-4 rounded-md bg-warning px-3 py-2.5 text-xs leading-relaxed text-warning-foreground">
-                {selfOnlyCount} selected{" "}
-                {selfOnlyCount === 1 ? "employee has" : "employees have"} no
-                manager. They will receive a self-appraisal only.
-              </p>
-            )}
-            <div className="mt-4 max-h-[28rem] space-y-2 overflow-y-auto">
-              {selectedPeople.map((person) => (
-                <div key={person.id} className="border-b border-border/70 pb-3 last:border-0">
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-medium text-foreground">{label(person)}</p>
-                      <p className="mt-0.5 text-xs text-muted-foreground">
-                        {person.archived_at ? "Archived" : resolveManager(person.id) ? `Manager: ${label(resolveManager(person.id)!)}` : "Self-only"}
-                      </p>
-                    </div>
-                    <button type="button" className="text-xs text-muted-foreground hover:text-destructive" onClick={() => toggle(person.id)}>
-                      Remove
-                    </button>
-                  </div>
-                  <label className="mt-2 block text-xs text-muted-foreground">
-                    Campaign manager
-                    <select
-                      value={managers[person.id] ?? ""}
-                      onChange={(event) => setManagers((current) => ({ ...current, [person.id]: event.target.value || null }))}
-                      disabled={Boolean(person.archived_at)}
-                      className="field mt-1 w-full text-xs"
-                    >
-                      <option value="">Not assigned</option>
-                      {available
-                        .filter((manager) => manager.id !== person.id)
-                        .map((manager) => (
-                          <option key={manager.id} value={manager.id}>
-                            {label(manager)}
-                          </option>
-                        ))}
-                    </select>
-                  </label>
-                </div>
-              ))}
-            </div>
-          </div>
-        </aside>
+        <div className="participant-summary flex flex-wrap items-center gap-x-5 gap-y-1 text-xs text-muted-foreground" aria-live="polite">
+          <span className="font-medium text-foreground">{selectedPeople.length} selected</span>
+          <span>{selectedPeople.length} self appraisals</span>
+          <span>{managerCount} manager reviews</span>
+          <span>{selfOnlyCount} self-only</span>
+          <span>Employees without a manager receive a self-appraisal only.</span>
+        </div>
       </div>
 
       {error && <p role="alert" className="text-sm text-destructive">{error}</p>}

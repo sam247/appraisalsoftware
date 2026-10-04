@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useState, useTransition, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { campaignDate, campaignLocalDate, reminderSummary, setupCompleteness } from "../presentation";
@@ -20,12 +20,12 @@ const field = "mt-1.5 w-full field";
 
 export default function AnnualDraftBuilder({
   campaignId, campaignName, campaignSettings, reminderSettings, opensAt, templateId, templateName, formStartedAt,
-  questionCount, closesAt, timezone, initialSubjects, pendingAssignmentCount, ready,
+  questionCount, closesAt, timezone, initialSubjects, pendingAssignmentCount, ready, preview,
 }: {
   campaignId: string; campaignName: string; campaignSettings: Campaign["settings"]; reminderSettings: Campaign["reminder_settings"]; opensAt: string | null;
   templateId: string | null; templateName: string | null; formStartedAt: string | null;
   questionCount: number; closesAt: string | null; timezone: string;
-  initialSubjects: SubjectRow[]; pendingAssignmentCount: number; ready: boolean;
+  initialSubjects: SubjectRow[]; pendingAssignmentCount: number; ready: boolean; preview: ReactNode;
 }) {
   const router = useRouter();
   const [expanded, setExpanded] = useState<Section | null>(null);
@@ -106,12 +106,12 @@ export default function AnnualDraftBuilder({
     { key: "timing", label: "Timing", summary: savedMode === "now" ? `Send now${closesAt ? ` · Closes ${campaignDate(closesAt, timezone)}` : ""}` : savedMode === "later" && opensAt ? `Send ${campaignDate(opensAt, timezone, true)}${closesAt ? ` · Closes ${campaignDate(closesAt, timezone)}` : ""}` : "Choose when to send", done: setup.steps[3].done },
   ];
   return (
-    <div className="dashboard-workspace space-y-5 pb-10">
-      <header className="flex flex-wrap items-start justify-between gap-3">
+    <div data-focused-workspace className="dashboard-workspace draft-workspace space-y-4">
+      <header className="task-header">
         <div className="min-w-0">
-          <Link href="/dashboard/campaigns" onClick={(e) => { if (dirty && !window.confirm("Discard unsaved changes?")) e.preventDefault(); }} className="text-xs text-muted-foreground hover:text-foreground">← Campaigns</Link>
-          <p className="mt-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">Annual appraisal · Draft</p>
-          <h1 className="mt-1 font-display text-2xl font-semibold tracking-tight">{campaignName}</h1>
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1"><Link href="/dashboard/campaigns" onClick={(e) => { if (dirty && !window.confirm("Discard unsaved changes?")) e.preventDefault(); }} className="text-xs text-muted-foreground hover:text-foreground">← Campaigns</Link>
+          <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Annual appraisal · Draft</p></div>
+          <h1 className="mt-1 font-display text-[22px] md:text-[24px] font-semibold tracking-tight">{campaignName}</h1>
         </div>
         <div className="flex w-full flex-wrap gap-2 sm:w-auto">
           <Button type="button" variant="outline" size="sm" onClick={finishLater}>Finish later</Button>
@@ -126,6 +126,7 @@ export default function AnnualDraftBuilder({
           </Button>
         </div>
       </header>
+      <div className="draft-layout"><div className="draft-checklist">
       <div>
         <div className="flex items-center justify-between gap-3 text-xs text-muted-foreground">
           <span>{setup.doneCount} of 4 configured</span><span>Saved draft</span>
@@ -138,18 +139,18 @@ export default function AnnualDraftBuilder({
             {sections.map((section) => (
           <section key={section.key} className="border-b border-border last:border-b-0">
             {section.key === "people" || section.key === "questions" ? (
-              <div className="flex w-full items-start justify-between gap-4 py-4 text-left sm:py-5">
+              <div className="flex w-full items-start justify-between gap-4 py-3 text-left">
                 <span className="min-w-0">
                   <span className="flex items-center gap-2 text-sm font-medium"><span className={`h-1.5 w-1.5 shrink-0 rounded-full ${section.done ? "bg-primary" : "bg-border-strong"}`} />{section.label}</span>
                   <span className="mt-1 block text-sm text-muted-foreground">{section.summary}</span>
                 </span>
                 <Button asChild type="button" size="sm" variant="outline" className="shrink-0">
-                  <Link href={`/dashboard/campaigns/${campaignId}/${section.key === "people" ? "people" : "form"}`}>{section.key === "people" ? "Edit people" : questionCount ? "Edit form" : "Build form"}</Link>
+                  <Link onClick={(event) => { if (dirty && !window.confirm("Discard unsaved changes in this section?")) event.preventDefault(); }} href={`/dashboard/campaigns/${campaignId}/${section.key === "people" ? "people" : "form"}`}>{section.key === "people" ? "Edit people" : questionCount ? "Edit form" : "Build form"}</Link>
                 </Button>
               </div>
             ) : <button type="button" onClick={() => changeSection(expanded === section.key ? null : section.key)}
               aria-expanded={expanded === section.key} aria-controls={`editor-${section.key}`}
-              className="flex w-full items-start justify-between gap-4 py-4 text-left sm:py-5">
+              className="flex w-full items-start justify-between gap-4 py-3 text-left">
               <span className="min-w-0">
                 <span className="flex items-center gap-2 text-sm font-medium"><span className={`h-1.5 w-1.5 shrink-0 rounded-full ${section.done ? "bg-primary" : "bg-border-strong"}`} />{section.label}</span>
                 <span className="mt-1 block text-sm text-muted-foreground">{section.summary}</span>
@@ -180,6 +181,7 @@ export default function AnnualDraftBuilder({
           </section>
         ))}
       </div>
+      </div>{preview}</div>
       <DraftConfirmationDialog
         open={confirmationOpen}
         onOpenChange={setConfirmationOpen}

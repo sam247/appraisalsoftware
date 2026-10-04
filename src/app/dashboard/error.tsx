@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 export default function AppError({ reset }: { reset: () => void }) {
   return (
     <div role="alert" className="py-12 max-w-lg">
-      <h1 className="font-display text-2xl font-semibold">
+      <h1 className="font-display text-[26px] md:text-[28px] font-semibold">
         We couldn’t load this screen.
       </h1>
       <p className="mt-4 text-muted-foreground leading-relaxed">

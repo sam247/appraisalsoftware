@@ -96,7 +96,7 @@ function AvailableReport({ report }: { report: Report }) {
       </p>
 
       {(overall !== null || ratings.length > 0) && (
-        <section>
+        <section className="report-panel">
           <div className="grid gap-8 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
             <div>
               <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
@@ -144,7 +144,7 @@ function AvailableReport({ report }: { report: Report }) {
               )}
             </div>
 
-            <div className="min-w-0">
+            <div className="report-chart min-w-0">
               <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                 Feedback profile
               </p>
@@ -187,7 +187,7 @@ function AvailableReport({ report }: { report: Report }) {
       )}
 
       {texts.length > 0 && (
-        <section>
+        <section className="report-panel">
           <h2 className="text-sm font-semibold text-foreground">
             Written feedback
           </h2>

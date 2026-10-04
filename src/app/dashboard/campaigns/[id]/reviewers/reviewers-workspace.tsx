@@ -175,8 +175,8 @@ export default function ReviewersWorkspace({
   }
 
   return (
-    <div className="dashboard-workspace space-y-6 pb-10">
-      <header className="flex flex-wrap items-start justify-between gap-3">
+    <div data-focused-workspace className="dashboard-workspace space-y-4 pb-10">
+      <header className="task-header">
         <div>
           <Link
             href={`/dashboard/campaigns/${campaignId}`}
@@ -188,10 +188,10 @@ export default function ReviewersWorkspace({
           >
             ← {campaignName}
           </Link>
-          <p className="mt-4 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+          <p className="mt-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
             Anonymous 360 feedback
           </p>
-          <h1 className="mt-1 font-display text-2xl font-semibold tracking-tight">
+          <h1 className="mt-1 font-display text-[22px] md:text-[24px] font-semibold tracking-tight">
             Choose subject &amp; reviewers
           </h1>
           <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
@@ -201,7 +201,7 @@ export default function ReviewersWorkspace({
           </p>
         </div>
         <Button type="button" variant="outline" size="sm" onClick={confirmCancel}>
-          Cancel
+          Finish later
         </Button>
       </header>
 
@@ -238,7 +238,7 @@ export default function ReviewersWorkspace({
         )}
       </section>
 
-      <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_18rem]">
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_18rem]">
         <section className="min-w-0">
           <h2 className="text-sm font-semibold text-foreground">Choose reviewers</h2>
           <div className="mt-3 flex flex-wrap items-end gap-2 border-b border-border pb-4">

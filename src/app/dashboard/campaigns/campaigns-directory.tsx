@@ -12,7 +12,6 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import type { Campaign, CampaignAssignment } from "@/lib/types/database";
-import { cn } from "@/lib/utils";
 import Link from "next/link";
 import {
   useEffect,
@@ -55,10 +54,6 @@ type RowModel = {
   canRemind: boolean;
   outstanding: number;
 };
-
-const TABLE_COLS =
-  "grid-cols-[minmax(0,1.5fr)_minmax(0,0.95fr)_minmax(0,0.7fr)_minmax(0,0.85fr)_minmax(0,0.75fr)_minmax(0,0.85fr)_minmax(4.5rem,auto)]";
-
 
 function buildRow(
   campaign: Campaign,
@@ -199,7 +194,7 @@ export default function CampaignsDirectory({
   const rows = useMemo(
     () =>
       campaigns.map((c) =>
-        buildRow(c, assignments, subjectCounts[c.id] ?? 0, c.form_started_at || c.questions_frozen_at ? (questionCounts[c.id] ?? 0) : (questionCounts[c.template_id ?? ""] ?? 0), valid360ReviewerCounts[c.id] ?? 0),
+        buildRow(c, assignments, subjectCounts[c.id] ?? 0, questionCounts[c.id] ?? (c.form_started_at || c.questions_frozen_at ? 0 : (questionCounts[c.template_id ?? ""] ?? 0)), valid360ReviewerCounts[c.id] ?? 0),
       ),
     [campaigns, assignments, subjectCounts, questionCounts, valid360ReviewerCounts],
   );
@@ -229,48 +224,12 @@ export default function CampaignsDirectory({
   const empty = campaigns.length === 0;
 
   return (
-    <div className="space-y-8">
-      {!empty && (
-        <section
-          aria-label="Campaign overview"
-          className="rounded-xl border border-border/70 bg-card/50 px-4 py-4 sm:px-5"
-        >
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-0">
-            <OverviewStat
-              label="Active"
-              value={overview.active}
-              hint="Collecting or scheduled"
-            />
-            <OverviewStat
-              label="Drafts"
-              value={overview.drafts}
-              hint="Being prepared"
-              divided
-            />
-            <OverviewStat
-              label="Completed"
-              value={overview.completed}
-              hint="Closed campaigns"
-              divided
-            />
-          </div>
-        </section>
-      )}
+    <div className="space-y-4">
+      {!empty && <nav aria-label="Campaign status" className="settings-tabs campaign-tabs">
+        {([['all', 'All campaigns', campaigns.length], ['active', 'Collecting', campaigns.filter((c) => c.status === 'active').length], ['scheduled', 'Scheduled', campaigns.filter((c) => c.status === 'scheduled').length], ['draft', 'Drafts', overview.drafts], ['closed', 'Closed', overview.completed]] as const).map(([value, label, count]) => <button key={value} type="button" aria-pressed={status === value} onClick={() => setStatus(value)}>{label}<span className="ml-2 text-xs text-muted-foreground">{count}</span></button>)}
+      </nav>}
 
       <section>
-        <div className="flex flex-wrap items-baseline justify-between gap-2">
-          <h2 className="text-sm font-semibold text-foreground">
-            All campaigns
-          </h2>
-          {!empty && (
-            <span className="text-xs tabular-nums text-muted-foreground">
-              {filtered.length === rows.length
-                ? `${rows.length}`
-                : `${filtered.length} of ${rows.length}`}
-            </span>
-          )}
-        </div>
-
         {empty ? (
           <div className="mt-3 border-t border-border py-8">
             <p className="text-sm text-muted-foreground">
@@ -285,7 +244,7 @@ export default function CampaignsDirectory({
           </div>
         ) : (
           <>
-            <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center">
+            <div className="directory-toolbar">
               <input
                 type="search"
                 value={query}
@@ -294,18 +253,6 @@ export default function CampaignsDirectory({
                 aria-label="Search campaigns"
                 className="field h-9 w-full sm:max-w-xs"
               />
-              <select
-                aria-label="Filter by status"
-                value={status}
-                onChange={(e) => setStatus(e.target.value as StatusFilter)}
-                className="field h-9"
-              >
-                <option value="all">All statuses</option>
-                <option value="draft">Draft</option>
-                <option value="scheduled">Scheduled</option>
-                <option value="active">Collecting</option>
-                <option value="closed">Closed</option>
-              </select>
               <select
                 aria-label="Filter by type"
                 value={type}
@@ -316,6 +263,7 @@ export default function CampaignsDirectory({
                 <option value="annual_appraisal">Annual appraisal</option>
                 <option value="feedback_360">Anonymous 360</option>
               </select>
+              <span className="text-xs tabular-nums text-muted-foreground sm:ml-auto" aria-live="polite">{filtered.length === rows.length ? `${rows.length} campaigns` : `${filtered.length} of ${rows.length} campaigns`}</span>
             </div>
 
             {filtered.length === 0 ? (
@@ -325,50 +273,34 @@ export default function CampaignsDirectory({
             ) : (
               <>
                 {/* Desktop table */}
-                <div className="mt-4 hidden md:block">
-                  <div
-                    className={cn(
-                      "grid justify-items-start gap-x-3 border-b border-border pb-2 text-[11px] font-medium uppercase tracking-wide text-muted-foreground",
-                      TABLE_COLS,
-                    )}
-                  >
-                    <span>Campaign</span>
-                    <span>Type</span>
-                    <span>People</span>
-                    <span>Progress</span>
-                    <span>Closes</span>
-                    <span>Status</span>
-                    <span>Actions</span>
-                  </div>
-                  <ul className="divide-y divide-border">
+                <div className="directory-table mt-4 hidden overflow-x-auto md:block">
+                  <table className="w-full min-w-[900px] text-left text-sm" aria-label="Campaigns">
+                    <thead><tr>{["Campaign", "Type", "People", "Progress", "Closes", "Status", "Actions"].map((label) => <th scope="col" key={label}>{label}</th>)}</tr></thead>
+                    <tbody>
                     {filtered.map((row) => (
-                      <li key={row.campaign.id}>
-                        <div
-                          className={cn(
-                            "grid items-center justify-items-start gap-x-3 py-2.5",
-                            TABLE_COLS,
-                          )}
-                        >
+                      <tr key={row.campaign.id}>
+                        <td className="max-w-64">
                           <Link
                             href={row.href}
-                            className="min-w-0 max-w-full truncate text-sm font-medium text-foreground hover:text-primary"
+                            className="block break-words font-medium text-foreground hover:text-primary"
                           >
                             {row.campaign.name}
                           </Link>
-                          <span className="min-w-0 max-w-full truncate text-xs text-muted-foreground">
+                        </td>
+                          <td className="text-muted-foreground">
                             {campaignTypeLabel(row.campaign.campaign_type)}
-                          </span>
-                          <span className="min-w-0 max-w-full truncate text-xs text-muted-foreground">
+                          </td>
+                          <td className="text-muted-foreground">
                             {row.peopleLabel}
-                          </span>
-                          <ProgressCell row={row} />
-                          <span className="min-w-0 max-w-full truncate text-xs text-muted-foreground">
+                          </td>
+                          <td><ProgressCell row={row} /></td>
+                          <td className="text-muted-foreground">
                             {row.closesLabel}
-                          </span>
-                          <StatusBadge tone={statusTone(row.statusKind)}>
+                          </td>
+                          <td><StatusBadge tone={statusTone(row.statusKind)}>
                             {row.statusLabel}
-                          </StatusBadge>
-                          <QuietMenu
+                          </StatusBadge></td>
+                          <td><div className="flex items-center gap-1"><Button asChild variant="outline" size="sm"><Link href={row.menuHref}>{row.campaign.status === "draft" ? "Edit" : row.menuHref.endsWith("/results") ? "View report" : "Open"}</Link></Button><QuietMenu
                             open={menuFor === row.campaign.id}
                             onOpenChange={(open) =>
                               setMenuFor(open ? row.campaign.id : null)
@@ -383,11 +315,11 @@ export default function CampaignsDirectory({
                                 setRenaming(row.campaign);
                               }}
                             />
-                          </QuietMenu>
-                        </div>
-                      </li>
+                          </QuietMenu></div></td>
+                      </tr>
                     ))}
-                  </ul>
+                    </tbody>
+                  </table>
                 </div>
 
                 {/* Mobile / tablet compact rows */}
@@ -449,7 +381,7 @@ export default function CampaignsDirectory({
       >
         <SheetContent
           side="right"
-          className="flex w-full flex-col bg-card sm:max-w-md"
+          className="admin-overlay flex w-full flex-col bg-card sm:max-w-md"
         >
           <SheetHeader className="text-left">
             <SheetTitle>Rename campaign</SheetTitle>
@@ -571,33 +503,6 @@ function RowMenuItems({
         </form>
       )}
     </>
-  );
-}
-
-function OverviewStat({
-  label,
-  value,
-  hint,
-  divided,
-}: {
-  label: string;
-  value: number;
-  hint: string;
-  divided?: boolean;
-}) {
-  return (
-    <div
-      className={cn(
-        "sm:px-4 first:sm:pl-0 last:sm:pr-0",
-        divided && "sm:border-l sm:border-border/80",
-      )}
-    >
-      <p className="text-xs font-medium text-muted-foreground">{label}</p>
-      <p className="mt-0.5 text-2xl font-medium tabular-nums tracking-tight text-foreground">
-        {value}
-      </p>
-      <p className="mt-0.5 text-xs text-muted-foreground">{hint}</p>
-    </div>
   );
 }
 

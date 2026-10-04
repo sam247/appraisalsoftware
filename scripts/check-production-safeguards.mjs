@@ -87,6 +87,26 @@ try {
   run("psql", [...args, "-f", join(root, "supabase/tests/360_workflow.sql")]);
   run("psql", [...args, "-f", join(root, "supabase/tests/360_draft_assembly.sql")]);
   run("psql", [...args, "-f", join(root, "supabase/tests/campaign_local_forms.sql")]);
+  run("psql", [...args, "-f", join(root, "supabase/tests/workspace_trial.sql")]);
+  // Two sessions competing for the final employee seat cannot both succeed.
+  const trialOrg = run("psql", [...args, "-At", "-c", "SELECT id FROM public.organizations WHERE name='Trial test'"]).trim();
+  sql(`DELETE FROM public.people WHERE organization_id='${trialOrg}' AND email='trial-75@example.test'`);
+  const seatFile = join(dir, "trial-seat.sql");
+  writeFileSync(seatFile, `BEGIN; INSERT INTO public.people(organization_id,email) VALUES('${trialOrg}','last-seat@example.test'); SELECT pg_sleep(1); COMMIT;`);
+  const seat = spawn(join(bin, "psql"), [...args, "-f", seatFile], { stdio: ["ignore", "pipe", "pipe"] });
+  const seatDone = new Promise((resolve, reject) => {
+    seat.on("error", reject);
+    seat.on("exit", code => code === 0 ? resolve() : reject(new Error("Trial seat insert failed")));
+  });
+  let seatLocked = false;
+  for (let i = 0; i < 100; i++) {
+    if (run("psql", [...args, "-At", "-c", "SELECT count(*) FROM pg_locks WHERE locktype='transactionid' AND pid<>pg_backend_pid() AND mode='ExclusiveLock'"]).trim() === "1") { seatLocked=true; break; }
+    await new Promise(resolve => setTimeout(resolve, 10));
+  }
+  assert(seatLocked, "Trial seat transaction did not acquire its lock");
+  assert.throws(() => sql(`INSERT INTO public.people(organization_id,email) VALUES('${trialOrg}','racing-seat@example.test')`), /Employee capacity reached/);
+  await seatDone;
+  assert.equal(run("psql", [...args,"-At","-c",`SELECT count(*) FROM public.people WHERE organization_id='${trialOrg}' AND NOT reviewer_only`]).trim(), "75");
   const feedbackDraft = run("psql", [...args, "-At", "-c", "SELECT id FROM public.campaigns WHERE name='Legacy convertible'"]).trim();
   const feedbackLockFile = join(dir, "feedback-finalise.sql");
   writeFileSync(feedbackLockFile, `BEGIN; SET LOCAL request.jwt.claim.sub='10000000-0000-0000-0000-000000000001'; SET LOCAL ROLE authenticated; SELECT public.save_feedback_360_timing('${feedbackDraft}','now',NULL,NULL); SELECT public.finalize_feedback_360_draft('${feedbackDraft}',true); SELECT pg_sleep(1); COMMIT;`);
@@ -244,7 +264,7 @@ try {
     /Invalid or closed appraisal link/,
   );
   console.log(
-    "PASS: PostgreSQL migrations; Annual send guards, timing, rollback and respondent path; 360 new/legacy drafts, guarded conversion, finalisation rollback and race, anonymous respondent isolation, private grants/RLS, closed-only five-response reports.",
+    "PASS: PostgreSQL migrations; Annual send guards, timing, rollback and respondent path; 360 new/legacy drafts, guarded conversion, finalisation rollback and race, anonymous respondent isolation, private grants/RLS, closed-only five-response reports; durable trial capacity, expiry, retained annual/360 answers, background delivery and manual restoration.",
   );
 } finally {
   if (started) run("pg_ctl", ["-D", dir, "-m", "immediate", "-w", "stop"]);

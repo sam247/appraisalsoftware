@@ -78,6 +78,7 @@ export interface OrganizationInvitation {
 }
 
 export interface Person {
+  reviewer_only?: boolean;
   id: string;
   organization_id: string;
   email: string;
@@ -351,6 +352,7 @@ export type Database = {
           job_title?: string | null;
           manager_person_id?: string | null;
           department_id?: string | null;
+          reviewer_only?: boolean;
           external_id?: string | null;
           user_id?: string | null;
           archived_at?: string | null;
@@ -364,6 +366,7 @@ export type Database = {
           job_title?: string | null;
           manager_person_id?: string | null;
           department_id?: string | null;
+          reviewer_only?: boolean;
           external_id?: string | null;
           user_id?: string | null;
           archived_at?: string | null;
@@ -647,6 +650,11 @@ export type Database = {
         Returns: Record<string, unknown>;
       };
 
+      get_workspace_entitlement: { Args: { p_organization_id: string }; Returns: Record<string, unknown> };
+      claim_first_activation_measurement: { Args: { p_organization_id: string }; Returns: boolean };
+      workspace_delivery_allowed: { Args: { p_organization_id: string }; Returns: boolean };
+      expire_trial_campaigns: { Args: Record<string, never>; Returns: number };
+      activate_workspace_plan: { Args: { p_organization_id: string; p_plan: string }; Returns: void };
       bootstrap_organization: {
         Args: { p_name: string; p_slug?: string | null };
         Returns: Database["public"]["Tables"]["organizations"]["Row"];

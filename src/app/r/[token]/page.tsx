@@ -40,6 +40,7 @@ export default async function RespondPage({
     const { data: feedback, error } = await supabase.rpc("feedback_360_open", {
       p_raw_token: token,
     });
+    if (error?.message.startsWith("Your workspace trial has ended")) return <ErrorPage message="This collection has ended. Your saved responses have been retained. Contact the organiser for next steps." />;
     if (error || !feedback)
       return (
         <ErrorPage message="This feedback request is unavailable, closed or expired." />

@@ -1,6 +1,7 @@
 import { requireOrgAdmin } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import { PageHeader } from "../chrome";
 import Link from "next/link";
 import type { Campaign, Person, Template } from "@/lib/types/database";
 
@@ -66,18 +67,12 @@ export default async function SearchPage({
 
   return (
     <div>
-      <h1 className="font-display text-2xl font-medium tracking-tight">
-        Search
-      </h1>
-      <p className="mt-1 text-sm text-muted-foreground">
-        Results for &ldquo;{q}&rdquo;
-        {total === 0 ? " — nothing matched." : ` · ${total} found`}
-      </p>
+      <PageHeader title="Search" subtitle={`Results for “${q}” · ${total} found`} />
 
       {campaigns.length > 0 && (
         <section className="mt-6">
           <h2 className="mb-2 text-sm font-semibold">Campaigns</h2>
-          <div className="divide-y divide-border border-t border-border">
+          <div className="directory-table divide-y divide-border px-4">
             {campaigns.map((c) => (
               <Link
                 key={c.id}
@@ -97,7 +92,7 @@ export default async function SearchPage({
       {people.length > 0 && (
         <section className="mt-6">
           <h2 className="mb-2 text-sm font-semibold">People</h2>
-          <div className="divide-y divide-border border-t border-border">
+          <div className="directory-table divide-y divide-border px-4">
             {people.map((p) => (
               <Link
                 key={p.id}
@@ -118,7 +113,7 @@ export default async function SearchPage({
       {templates.length > 0 && (
         <section className="mt-6">
           <h2 className="mb-2 text-sm font-semibold">Templates</h2>
-          <div className="divide-y divide-border border-t border-border">
+          <div className="directory-table divide-y divide-border px-4">
             {templates.map((t) => (
               <Link
                 key={t.id}

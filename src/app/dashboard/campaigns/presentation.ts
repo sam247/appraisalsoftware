@@ -194,7 +194,7 @@ export function buildAttentionItems(
       campaign,
       subjectCount: subjects,
       assignmentCount: is360 ? ((valid360ReviewerCounts[campaign.id] ?? 0) === campAssignments.length ? campAssignments.length : 0) : campAssignments.filter((a) => a.status === "pending").length,
-      questionCount: campaign.form_started_at || campaign.questions_frozen_at ? (questionCounts[campaign.id] ?? 0) : (questionCounts[campaign.template_id ?? ""] ?? 0),
+      questionCount: questionCounts[campaign.id] ?? (campaign.form_started_at || campaign.questions_frozen_at ? 0 : (questionCounts[campaign.template_id ?? ""] ?? 0)),
     });
 
     if (campaign.status === "draft") {
@@ -380,7 +380,7 @@ export function homeWorkMeta(item: AttentionItem): string {
 /**
  * Status colour semantics:
  * - accent (green): live / collecting / scheduled
- * - ready (amber): waiting for the user to send / close
+ * - ready (neutral): waiting for the user to send / close
  * - neutral (grey): draft / unfinished setup
  * - warn (red): delivery / genuine error
  * - muted: completed / archived

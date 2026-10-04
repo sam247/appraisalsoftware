@@ -11,8 +11,10 @@ import { PRIMARY_CTA_LABEL, PRIMARY_CTA_URL, SIGN_IN_URL } from "@/lib/links";
 import { ROUTES } from "@/lib/routes";
 
 const nav = [
+  { label: "How it works", href: ROUTES.howItWorks },
   { label: "Pricing", href: ROUTES.pricing },
   { label: "Resources", href: ROUTES.resources },
+  { label: "Contact", href: ROUTES.contact },
 ];
 
 export function Header() {
@@ -46,9 +48,9 @@ export function Header() {
           <Link href={ROUTES.home} className="shrink-0" aria-label="appraisal.software home">
             <BrandMark size={30} />
           </Link>
-          <noscript><nav aria-label="Navigation without JavaScript" className="flex flex-wrap gap-3 text-xs sm:hidden">{nav.map((item) => <a key={item.label} href={item.href} className="underline">{item.label}</a>)}</nav></noscript>
+          <noscript><nav aria-label="Navigation without JavaScript" className="flex flex-wrap gap-3 text-xs lg:hidden">{nav.map((item) => <a key={item.label} href={item.href} className="underline">{item.label}</a>)}</nav></noscript>
           <div className="ml-auto flex items-center gap-3 sm:gap-5">
-            <nav aria-label="Main navigation" className="hidden items-center gap-5 sm:flex">
+            <nav aria-label="Main navigation" className="hidden items-center gap-5 lg:flex">
               {nav.map((item) => (
                 <Link
                   key={item.label}
@@ -61,7 +63,7 @@ export function Header() {
             </nav>
             <a
               href={SIGN_IN_URL}
-              className="hidden text-[13px] font-medium text-muted-foreground transition-colors hover:text-foreground sm:block"
+              className="hidden text-[13px] font-medium text-muted-foreground transition-colors hover:text-foreground lg:block"
             >
               Sign in
             </a>
@@ -70,7 +72,7 @@ export function Header() {
             </Button>
             <Sheet open={open} onOpenChange={setOpen}>
               <SheetTrigger asChild>
-                <Button size="icon" variant="ghost" className="sm:hidden" aria-label="Open menu">
+                <Button size="icon" variant="ghost" className="lg:hidden" aria-label="Open menu">
                   <Menu className="size-5" />
                 </Button>
               </SheetTrigger>

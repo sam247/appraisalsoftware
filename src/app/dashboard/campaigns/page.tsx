@@ -92,7 +92,7 @@ export default async function CampaignsPage({
           {params.ok}
         </div>
       )}
-      <div className="mt-6">
+      <div className="mt-4">
         <CampaignsDirectory
           campaigns={campaigns}
           assignments={assignments}
