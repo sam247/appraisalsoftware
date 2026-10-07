@@ -5,12 +5,13 @@ import { TemplateActions } from "@/components/resources/TemplateActions";
 import { ResourceVisual } from "@/components/resources/ResourceVisual";
 import { RESOURCE_REVIEW_DATE, resources, type ResourceContent } from "@/lib/resource-content";
 import { articleSchema, breadcrumbSchema } from "@/lib/schema";
+import Link from "next/link";
+import { PRIMARY_CTA_URL } from "@/lib/links";
 
 const commercialLinks: Record<string, { label: string; copy: string }> = {
   "appraisal-questions": { label: "Appraisal questions", copy: "Choose focused prompts for employee reflection and manager discussion." },
-  "annual-appraisal-software": { label: "Annual appraisal software", copy: "Coordinate the yearly employee and manager review cycle." },
   "employee-appraisal-software": { label: "Employee appraisal software", copy: "Prepare employee and manager responses in one place." },
-  "360-feedback-software": { label: "360 feedback software", copy: "Run anonymous multi-rater campaigns with combined results after closure." },
+  "360-appraisals": { label: "360 appraisals", copy: "Run anonymous multi-rater campaigns with combined results after closure." },
 };
 
 export function ResourcePage({ resource }: { resource: ResourceContent }) {
@@ -37,6 +38,11 @@ export function ResourcePage({ resource }: { resource: ResourceContent }) {
                   <dd className="mt-3 min-h-6 border-b border-border"><span className="sr-only">Space for your response</span></dd>
                 </div>)}</dl>
               </section>)}
+            </div>
+            <div className="no-print mt-8 space-y-3 border-t border-border pt-6">
+              <p className="text-sm leading-relaxed text-muted-foreground">To use these prompts in Appraisal Software, create a workspace and copy the relevant questions into a reusable template. This public form is not automatically imported.</p>
+              <a href={PRIMARY_CTA_URL} className="inline-block text-sm font-semibold text-primary underline underline-offset-4">Use these questions in Appraisal Software</a>
+              {resource.slug === "360-feedback-template" ? <p className="text-sm"><Link href="/360-degree-feedback" className="underline underline-offset-4">Understand the 360 process</Link>{" · "}<Link href="/360-appraisals#privacy" className="underline underline-offset-4">Check the anonymity safeguards</Link></p> : null}
             </div>
           </div>
         </div>
@@ -67,15 +73,12 @@ export function ResourcePage({ resource }: { resource: ResourceContent }) {
             copy={resource.bridge.copy}
             secondaryHref={
               resource.slug.startsWith("360")
-                ? "/360-feedback-software"
-                : resource.slug === "annual-appraisal-template" ||
-                    resource.slug === "annual-appraisal-guide"
-                  ? "/annual-appraisal-software"
-                  : "/employee-appraisal-software"
+                ? "/360-appraisals"
+                : "/employee-appraisal-software"
             }
             secondaryLabel={
               resource.slug.startsWith("360")
-                ? "See 360 feedback software"
+                ? "See 360 appraisals"
                 : "See the appraisal workflow"
             }
           />

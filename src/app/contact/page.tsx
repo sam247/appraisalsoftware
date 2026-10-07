@@ -117,7 +117,7 @@ export default async function ContactPage({
             copy: "See employee, active-campaign and admin capacity.",
           },
           {
-            href: "/360-feedback-software#privacy",
+            href: "/360-appraisals#privacy",
             label: "Read the 360 safeguards",
             copy: "Understand closure, minimum responses and written-comment limitations.",
           },

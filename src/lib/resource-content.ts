@@ -54,7 +54,7 @@ export const resources: ResourceContent[] = [
         "paragraphs": [
           "Record what both people agreed, what remains unresolved and who owns each next step. Keep the finished review in your organisation’s agreed location and share it only with people who need it.",
           "Arrange a shorter progress check before the next annual review. A useful appraisal creates a working plan, rather than a document that is reopened a year later.",
-          "If you are running many reviews at once, a blank form alone will not show who has finished. Use the annual appraisal guide to plan the cycle, or run the same structure as a campaign in annual appraisal software so employee and manager answers stay on one record."
+          "If you are running many reviews at once, a blank form alone will not show who has finished. Use the annual appraisal guide to plan the cycle, or run the same structure as an annual campaign in employee appraisal software so employee and manager answers stay on one record."
         ]
       }
     ],
@@ -62,7 +62,7 @@ export const resources: ResourceContent[] = [
       "appraisal-questions",
       "annual-appraisal-guide",
       "self-appraisal-template",
-      "annual-appraisal-software"
+      "employee-appraisal-software"
     ],
     "template": [
       {
@@ -118,7 +118,7 @@ export const resources: ResourceContent[] = [
     ],
     "bridge": {
       "title": "Want to run this as a structured annual cycle instead?",
-      "copy": "Use the same questions in annual appraisal software: create a campaign, collect employee and manager responses on one record, and see who is still outstanding without chasing by spreadsheet."
+      "copy": "Use the same questions in employee appraisal software: create a campaign, collect employee and manager responses on one record, and see who is still outstanding without chasing by spreadsheet."
     }
   },
   {
@@ -433,7 +433,7 @@ export const resources: ResourceContent[] = [
     "related": [
       "360-feedback-questions",
       "360-feedback-examples",
-      "360-feedback-software"
+      "360-appraisals"
     ],
     "bridge": {
       "title": "Run this as an anonymous 360 campaign",
@@ -533,7 +533,7 @@ export const resources: ResourceContent[] = [
     "related": [
       "annual-appraisal-template",
       "appraisal-objectives",
-      "annual-appraisal-software"
+      "employee-appraisal-software"
     ],
     "bridge": {
       "title": "Make preparation easier to coordinate",
@@ -797,7 +797,7 @@ export const resources: ResourceContent[] = [
     "related": [
       "360-feedback-template",
       "360-feedback-examples",
-      "360-feedback-software"
+      "360-appraisals"
     ],
     "bridge": {
       "title": "Collect the feedback in Appraisal Software",
@@ -891,7 +891,7 @@ export const resources: ResourceContent[] = [
     "related": [
       "360-feedback-template",
       "360-degree-feedback",
-      "360-feedback-software"
+      "360-appraisals"
     ],
     "bridge": {
       "title": "Turn these prompts into a 360 campaign",

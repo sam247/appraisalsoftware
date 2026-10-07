@@ -140,7 +140,7 @@ export default function AppraisalQuestionsPage() {
           Put the chosen questions into the{" "}
           <TextLink href={ROUTES.annualAppraisalTemplate}>annual appraisal template</TextLink>, or
           run them as a reusable form with{" "}
-          <TextLink href={ROUTES.annualAppraisalSoftware}>annual appraisal software</TextLink>.
+          <TextLink href={ROUTES.employeeAppraisalSoftware}>employee appraisal software</TextLink>.
         </p>
       </ContentSection>
 
@@ -163,8 +163,8 @@ export default function AppraisalQuestionsPage() {
       <RelatedLinks
         links={[
           {
-            href: ROUTES.annualAppraisalSoftware,
-            label: "Annual appraisal software",
+            href: ROUTES.employeeAppraisalSoftware,
+            label: "Employee appraisal software",
             copy: "Turn a question set into a cycle with tracking and records.",
           },
           {
@@ -183,8 +183,8 @@ export default function AppraisalQuestionsPage() {
       <CtaBand
         title="Use these questions in your next cycle"
         copy="Give employees and managers a focused set of prompts in Appraisal Software, then collect both perspectives before the review."
-        secondaryHref={ROUTES.annualAppraisalSoftware}
-        secondaryLabel="Annual appraisal software"
+        secondaryHref={ROUTES.employeeAppraisalSoftware}
+        secondaryLabel="Employee appraisal software"
       />
     </SiteChrome>
   );

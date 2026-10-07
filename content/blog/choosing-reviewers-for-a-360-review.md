@@ -47,7 +47,7 @@ The organiser checks whether any working perspective is missing and whether cand
 
 ## Check the product's release rules separately
 
-Appraisal Software's [anonymous 360 workflow](/360-feedback-software) needs at least five available reviewers to send. Results are combined and released after campaign closure with at least five completed responses. Each displayed question also needs five valid answers. An invitation list is therefore not a promise that a report will become available.
+Appraisal Software's [anonymous 360 workflow](/360-appraisals) needs at least five available reviewers to send. Results are combined and released after campaign closure with at least five completed responses. Each displayed question also needs five valid answers. An invitation list is therefore not a promise that a report will become available.
 
 Do not add unsuitable reviewers merely to reach a threshold. If the relevant group is too small, discuss a different feedback conversation or postpone the exercise.
 

@@ -50,9 +50,9 @@ const faqs = [
       "Yes. Each finished review stays as a record for that person and that period, instead of living in email or a shared folder.",
   },
   {
-    question: "How is this different from annual appraisal software?",
+    question: "Can we run annual appraisal cycles?",
     answer:
-      "The annual appraisal page is the dedicated route for the yearly cycle. This page is for employee and performance appraisals more generally — including mid-year or other review periods — and explains how people prepare, respond and keep the finished record.",
+      "Yes. Annual appraisals are one use of the employee and manager workflow. Set the review period and campaign dates, choose reusable questions, assign employees and managers, then track responses and keep each finished review together.",
   },
 ];
 
@@ -119,12 +119,29 @@ export default function EmployeeAppraisalSoftwarePage() {
           Appraisal Software is built for that job for UK SMEs. It is not
           payroll, absence or recruitment software, and it is not a wide
           performance platform. For the overall product overview, see the{" "}
-          <TextLink href={ROUTES.home}>Appraisal Software homepage</TextLink>.
-          For the dedicated yearly cycle, use{" "}
-          <TextLink href={ROUTES.annualAppraisalSoftware}>
-            annual appraisal software
-          </TextLink>
-          .
+          <TextLink href={ROUTES.home}>Appraisal Software homepage</TextLink>.{" "}
+          Annual appraisals use this same employee and manager workflow.
+        </p>
+      </ContentSection>
+
+      <ContentSection id="annual-appraisals" layout="split" title="Run your annual appraisal cycle">
+        <p>
+          Annual appraisals are a common use of employee appraisal software.
+          Agree the review period, the people in scope and the managers who will
+          respond. Set campaign dates and choose a reusable form so next year’s
+          cycle starts from questions your team already understands.
+        </p>
+        <p>
+          Share the prompts before the meetings, collect employee and manager
+          responses, and use completion tracking and configured reminders to
+          follow up outstanding forms. Keep the finished review together so
+          it is easy to find for the next period.
+        </p>
+        <p>
+          Leave time for the conversation and book a shorter progress check
+          after it. Use the <TextLink href={ROUTES.annualAppraisalGuide}>annual appraisal guide</TextLink>
+          {" "}to plan the cycle, or the <TextLink href={ROUTES.annualAppraisalTemplate}>annual appraisal template</TextLink>
+          {" "}as a starting form.
         </p>
       </ContentSection>
 
@@ -221,7 +238,7 @@ export default function EmployeeAppraisalSoftwarePage() {
         <p>
           If you also need input from peers or direct reports, use{" "}
           <TextLink href={ROUTES.feedback360Software}>
-            360 feedback software
+            360 appraisals
           </TextLink>{" "}
           to run an anonymous multi-rater campaign alongside the appraisal
           cycle.
@@ -263,13 +280,7 @@ export default function EmployeeAppraisalSoftwarePage() {
           means one record per person, per review period: questions, comments,
           scores if you use them, and the next steps you agreed.
         </p>
-        <p>
-          For the yearly version of this process, use{" "}
-          <TextLink href={ROUTES.annualAppraisalSoftware}>
-            annual appraisal software
-          </TextLink>
-          . That page is the dedicated path for running the annual cycle.
-        </p>
+
       </ContentSection>
 
       <FaqSection
@@ -282,9 +293,9 @@ export default function EmployeeAppraisalSoftwarePage() {
       <RelatedLinks
         links={[
           {
-            href: ROUTES.annualAppraisalSoftware,
-            label: "Annual appraisal software",
-            copy: "The dedicated page for running a yearly appraisal cycle.",
+            href: ROUTES.annualAppraisalGuide,
+            label: "Annual appraisal guide",
+            copy: "Plan the yearly cycle and follow up the review conversation.",
           },
           {
             href: ROUTES.home,
@@ -302,8 +313,8 @@ export default function EmployeeAppraisalSoftwarePage() {
       <CtaBand
         title="Run employee appraisals without the spreadsheet"
         copy="Prepare your questions and collect employee and manager responses in Appraisal Software — without buying a full HR suite."
-        secondaryHref={ROUTES.annualAppraisalSoftware}
-        secondaryLabel="See annual appraisals"
+        secondaryHref={ROUTES.annualAppraisalTemplate}
+        secondaryLabel="Start from the annual template"
       />
     </SiteChrome>
   );

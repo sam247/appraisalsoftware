@@ -10,9 +10,8 @@ import { ROUTES } from "@/lib/routes";
 
 const footerLinks = {
   product: [
-    { label: "Annual appraisal software", href: ROUTES.annualAppraisalSoftware },
     { label: "Employee appraisal software", href: ROUTES.employeeAppraisalSoftware },
-    { label: "360 feedback software", href: ROUTES.feedback360Software },
+    { label: "360 appraisals", href: ROUTES.feedback360Software },
     { label: "Pricing", href: ROUTES.pricing },
     { label: "How it works", href: ROUTES.howItWorks },
   ],

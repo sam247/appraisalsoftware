@@ -44,7 +44,7 @@ This is a discussion exercise, not a script to read mechanically. The existing a
 
 ## Explain annual and 360 roles separately
 
-In [annual appraisal software](/annual-appraisal-software), identified employee and manager responses support the review conversation. In [anonymous 360 software](/360-feedback-software), a wider reviewer cohort provides combined feedback under its privacy and release rules.
+In [annual appraisal software](/employee-appraisal-software), identified employee and manager responses support the review conversation. In [anonymous 360 software](/360-appraisals), a wider reviewer cohort provides combined feedback under its privacy and release rules.
 
 Managers must not try to identify who wrote a 360 comment or treat a suppressed question as a failed score. Tell them which material they will actually receive and how it should be discussed. Do not imply that the product provides reviewer-group comparisons or assessments it does not implement.
 

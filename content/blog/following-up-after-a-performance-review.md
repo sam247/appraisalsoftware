@@ -59,7 +59,7 @@ Keep written records in the place and access arrangement agreed by your organisa
 
 An annual appraisal may suit a wider review of work and expectations. A later 360 exercise may help explore changes visible to a wider cohort. Neither should be scheduled solely to satisfy the action record. Decide what question the new exercise would answer.
 
-See the [annual workflow](/annual-appraisal-software) and [360 workflow](/360-feedback-software) to understand what the software supports, or the [360 debrief agenda](/blog/discussing-360-feedback-results) for preparing the first conversation.
+See the [annual workflow](/employee-appraisal-software) and [360 workflow](/360-appraisals) to understand what the software supports, or the [360 debrief agenda](/blog/discussing-360-feedback-results) for preparing the first conversation.
 
 ## Further reading
 

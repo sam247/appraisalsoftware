@@ -1,3 +1,5 @@
+> 7 October architecture update: historical URL-preservation guidance below is superseded by `public-url-architecture.md` and `url-ownership.md`. The approved annual/360 commercial consolidations use direct 301 redirects; distinct supporting content remains.
+
 # Reviewable release runbook — 4 October 2026
 
 Analytics update: production GA4 now runs after measurement consent without an environment enable flag. Sam confirmed Enhanced measurement is disabled. `NEXT_PUBLIC_GA4_ENABLED` only enables local-development testing; the trial gate remains separate. Prior gated-release notes below record the original implementation.

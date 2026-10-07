@@ -13,6 +13,7 @@ import { ROUTES } from "@/lib/routes";
 const nav = [
   { label: "How it works", href: ROUTES.howItWorks },
   { label: "Pricing", href: ROUTES.pricing },
+  { label: "Templates", href: ROUTES.templates },
   { label: "Resources", href: ROUTES.resources },
   { label: "Contact", href: ROUTES.contact },
 ];
@@ -32,7 +33,7 @@ export function Header() {
     <>
       <div className="no-print bg-[#171815] px-4 py-2 text-center text-xs text-white sm:text-[13px]">
         A clearer review cycle starts here.{" "}
-        <a href={PRIMARY_CTA_URL} className="inline-flex items-center gap-1 font-semibold text-[#a9e8c2] underline-offset-4 hover:underline">
+        <a href={PRIMARY_CTA_URL} className="inline-flex items-center gap-1 font-semibold text-white underline-offset-4 hover:underline">
           {PRIMARY_CTA_LABEL} <ArrowRight className="size-3.5" aria-hidden />
         </a>
       </div>

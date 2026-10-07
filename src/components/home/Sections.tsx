@@ -1,8 +1,5 @@
-"use client";
-
-import { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, CalendarClock, CheckCircle2, ClipboardCheck, MessageCircleMore, UserRoundCheck, UsersRound } from "lucide-react";
+import { ArrowRight, ClipboardCheck, UsersRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SectionHeading } from "@/components/product/primitives";
 import { PRIMARY_CTA_LABEL, PRIMARY_CTA_URL } from "@/lib/links";
@@ -10,115 +7,35 @@ import { ROUTES } from "@/lib/routes";
 
 const workflowTypes = [
   {
-    label: "Annual Appraisal",
+    label: "Employee Appraisals",
     icon: ClipboardCheck,
-    description: "A yearly review between employee and manager. Set objectives, review performance, agree development goals.",
-    outcome: "A clear record of achievements and agreed next steps.",
-    includes: ["Objectives review", "Performance feedback", "Development goals", "Manager comments"],
-    href: ROUTES.annualAppraisalSoftware,
-    linkLabel: "annual appraisal software",
+    description: "Collect identified employee and manager responses in one place. Run annual, mid-year or other review periods with reusable questions and a clear record.",
+    href: ROUTES.employeeAppraisalSoftware,
+    linkLabel: "Explore employee appraisal software",
   },
   {
-    label: "360° Feedback",
+    label: "360 Appraisals",
     icon: UsersRound,
-    description: "Invite managers, peers and direct reports into an anonymous multi-rater campaign, then release combined feedback after closure.",
-    outcome: "A combined view of strengths and development themes.",
-    includes: ["Subject and reviewers", "Anonymous collection", "Reusable questions", "Combined results after close"],
+    description: "Invite managers, peers and direct reports into an anonymous multi-rater campaign. Release combined feedback after closure to prepare a development conversation.",
     href: ROUTES.feedback360Software,
-    linkLabel: "360 feedback software",
-  },
-  {
-    label: "Self Assessment",
-    icon: UserRoundCheck,
-    description: "Employees reflect on their own performance before the review meeting. Paired with manager feedback.",
-    outcome: "A prepared employee perspective to discuss with a manager.",
-    includes: ["Employee reflection", "Objective review", "Strengths and gaps", "Paired with manager"],
-    href: ROUTES.employeeAppraisalSoftware,
-    linkLabel: "employee appraisal software",
-  },
-  {
-    label: "Employee Feedback",
-    icon: MessageCircleMore,
-    description: "Run a structured employee and manager appraisal with reusable questions and a clear record of the review.",
-    outcome: "Both perspectives together for a more useful conversation.",
-    includes: ["Employee reflection", "Manager response", "Completion tracking", "Review record"],
-    href: ROUTES.employeeAppraisalSoftware,
-    linkLabel: "employee appraisal software",
-  },
-  {
-    label: "Probation Review",
-    icon: CalendarClock,
-    description: "Use a focused probation review template to structure the conversation and agree practical next steps.",
-    outcome: "A focused discussion with expectations and next steps recorded.",
-    includes: ["Probation-specific form", "Role expectations", "Manager observations", "Next steps"],
-    href: ROUTES.probationReviewTemplate,
-    linkLabel: "the probation review template",
+    linkLabel: "Explore 360 appraisals",
   },
 ];
 
 export function WorkflowTypesSection() {
-  const [active, setActive] = useState(0);
-  const current = workflowTypes[active];
-
   return (
     <section className="border-t border-border bg-surface/40 py-20 sm:py-24">
       <div className="mx-auto max-w-6xl px-5 lg:px-8">
-        <div className="reveal">
-          <SectionHeading
-            eyebrow="Flexible"
-            title="What would you like to run?"
-            copy="Some teams still stitch appraisals together from Word documents, PDFs, spreadsheets and email. Choose a focused workflow, then keep questions, responses and completion in one place."
-            align="center"
-          />
-        </div>
-
-        <noscript><div className="mt-6 space-y-4">{workflowTypes.slice(1).map((workflow) => <p key={workflow.label}><Link className="underline" href={workflow.href}>{workflow.label}</Link>: {workflow.description}</p>)}</div></noscript>
-        <div className="mt-10 grid gap-6 lg:grid-cols-[1fr_1.5fr] lg:items-start lg:gap-12">
-          <div className="flex flex-wrap gap-2 lg:flex-col lg:gap-1">
-            {workflowTypes.map((wt, i) => (
-              <button
-                key={wt.label}
-                type="button"
-                aria-pressed={i === active}
-                aria-controls="workflow-details"
-                onClick={() => setActive(i)}
-                className={
-                  "marketing-card inline-flex items-center gap-3 rounded-xl border px-4 py-3 text-left text-[13px] font-semibold cursor-pointer lg:w-full lg:px-5 lg:py-4 " +
-                  (i === active
-                    ? "border-primary bg-primary/10 text-primary shadow-[inset_3px_0_0_var(--primary)]"
-                    : "border-border bg-card text-muted-foreground hover:border-primary/40 hover:text-foreground")
-                }
-              >
-                <wt.icon className="size-4 shrink-0" aria-hidden />
-                {wt.label}
-              </button>
-            ))}
-          </div>
-
-          <div id="workflow-details" aria-live="polite" className="rounded-2xl border border-border/80 bg-card p-6 sm:p-8">
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-primary">{current.label}</p>
-            <p className="mt-3 text-[15px] leading-relaxed text-foreground">
-              {current.description}
-            </p>
-            <div className="mt-5 grid grid-cols-2 gap-2">
-              {current.includes.map((item) => (
-                <div key={item} className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <CheckCircle2 className="size-3.5 shrink-0 text-primary" />
-                  {item}
-                </div>
-              ))}
-            </div>
-            <p className="mt-6 border-t border-border pt-5 text-sm font-medium text-foreground">{current.outcome}</p>
-            <div className="mt-6">
-              <Link
-                href={current.href}
-                className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
-              >
-                Explore {current.linkLabel}
-                <ArrowRight className="size-3.5" />
-              </Link>
-            </div>
-          </div>
+        <SectionHeading eyebrow="Two focused workflows" title="What would you like to run?" copy="Employee and manager appraisals, or anonymous feedback from a wider circle. Choose the process that fits your review." align="center" />
+        <div className="mt-10 grid gap-6 md:grid-cols-2">
+          {workflowTypes.map((workflow) => (
+            <Link key={workflow.label} href={workflow.href} className="marketing-card group rounded-2xl border border-border bg-card p-7 sm:p-9 hover:border-primary/40">
+              <workflow.icon className="size-8 text-primary" strokeWidth={1.5} aria-hidden />
+              <h3 className="mt-5 text-2xl font-semibold">{workflow.label}</h3>
+              <p className="mt-4 leading-relaxed text-muted-foreground">{workflow.description}</p>
+              <span className="mt-7 inline-flex items-center gap-2 text-sm font-semibold text-primary group-hover:underline">{workflow.linkLabel}<ArrowRight className="size-4" aria-hidden /></span>
+            </Link>
+          ))}
         </div>
       </div>
     </section>

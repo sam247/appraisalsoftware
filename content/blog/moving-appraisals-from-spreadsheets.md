@@ -36,7 +36,7 @@ Remove duplicate records and resolve uncertain assignments before sending. Do no
 
 For an employee appraisal pilot, prepare a short form and a small set of identified employee/manager assignments. Test the invitation, response and [Self vs Manager workflow](/employee-appraisal-software).
 
-For an anonymous 360 pilot, use a separate campaign with a relevant reviewer cohort. Check the [360 privacy and report rules](/360-feedback-software#privacy), including campaign closure and response thresholds. A spreadsheet that exposes individual reviewer comments is not equivalent to the product's combined reporting model.
+For an anonymous 360 pilot, use a separate campaign with a relevant reviewer cohort. Check the [360 privacy and report rules](/360-appraisals#privacy), including campaign closure and response thresholds. A spreadsheet that exposes individual reviewer comments is not equivalent to the product's combined reporting model.
 
 Do not mix the two pilots into one assessment without explaining their different purposes.
 

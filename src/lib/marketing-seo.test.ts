@@ -7,6 +7,12 @@ import { isIndexableDeployment, absoluteUrl } from "@/lib/site";
 import sitemap from "@/app/sitemap";
 import { resources, resourceListings } from "@/lib/resource-content";
 import { pageMetadata } from "@/lib/metadata";
+import nextConfig from "../../next.config";
+import { metadata as appraisalsMetadata } from "@/app/360-appraisals/page";
+import { createHash } from "node:crypto";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { ResourceHub } from "@/components/resources/ResourceHub";
 
 vi.mock("@/lib/supabase/middleware", async () => {
   const { NextResponse } = await import("next/server");
@@ -19,6 +25,49 @@ vi.mock("@/lib/supabase/middleware", async () => {
 });
 
 describe("marketing routes and indexability", () => {
+  it("consolidates both retired commercial pages directly with 301 redirects", async () => {
+    const redirects = await nextConfig.redirects!();
+    for (const [source, destination] of [
+      ["/annual-appraisal-software", "/employee-appraisal-software"],
+      ["/360-feedback-software", "/360-appraisals"],
+    ]) {
+      expect(redirects).toContainEqual({ source, destination, statusCode: 301 });
+      expect(sitemap().map((entry) => entry.url)).not.toContain(absoluteUrl(source));
+      expect(redirects.some((redirect) => redirect.source === destination)).toBe(false);
+    }
+    expect(appraisalsMetadata.alternates?.canonical).toBe(
+      absoluteUrl("/360-appraisals"),
+    );
+  });
+  it("preserves the proven answer and 360 template content and intent", () => {
+    for (const [slug, digest] of [
+      ["appraisal-answers", "5accc5d95c2ee5d24757183066e737e46011561371a4da6b0da7fe73364902aa"],
+      ["360-feedback-template", "c664974b855d20d63170970d60e23e3adda9941d1c134e07180a6bf66a6822f8"],
+    ]) {
+      const resource = resources.find((entry) => entry.slug === slug)!;
+      const content = { title: resource.title, description: resource.description, intent: resource.intent, sections: resource.sections, template: resource.template ?? null };
+      expect(createHash("sha256").update(JSON.stringify(content)).digest("hex")).toBe(digest);
+      expect(INDEXABLE_PATHS).toContain(`/${slug}`);
+    }
+  });
+  it("gives templates and resources different content and covers every page in ownership", () => {
+    const catalogue = renderToStaticMarkup(createElement(ResourceHub, { templates: true }));
+    const guidance = renderToStaticMarkup(createElement(ResourceHub));
+    const templateSlugs = resources.filter((resource) => resource.kind === "template").map((resource) => resource.slug);
+    for (const slug of templateSlugs) {
+      expect(catalogue).toContain(`href="/${slug}#template"`);
+      expect(guidance).not.toContain(`href="/${slug}#template"`);
+    }
+    expect(guidance).toContain('id="employee-appraisals"');
+    expect(guidance).toContain('id="360-appraisals"');
+    expect(guidance).toContain('href="/blog/when-self-and-manager-ratings-differ"');
+    expect(catalogue).toContain("not automatically imported");
+    const ownership = readFileSync("docs/seo/url-ownership.md", "utf8");
+    for (const entry of sitemap()) {
+      const path = new URL(entry.url).pathname;
+      expect(ownership).toContain(`| ${path} |`);
+    }
+  });
   it("allows public appraisal URLs while protecting the actual app namespace", async () => {
     for (const path of INDEXABLE_PATHS) {
       const response = await proxy(

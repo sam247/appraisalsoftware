@@ -19,7 +19,7 @@ Before the meeting, check that the results are ready to share and remind yoursel
 
 Make a short note of recurring themes, specific examples and areas that need clarification. Do not turn that preparation into guessing which reviewer wrote each comment. Different people may have observed different situations; identifying a writer is not necessary to explore the behaviour.
 
-In Appraisal Software, the [combined 360 report](/360-feedback-software#privacy) is released after closure with at least five completed responses. Questions without five valid answers are suppressed. A missing question is not a zero score or proof that a topic is unimportant.
+In Appraisal Software, the [combined 360 report](/360-appraisals#privacy) is released after closure with at least five completed responses. Questions without five valid answers are suppressed. A missing question is not a zero score or proof that a topic is unimportant.
 
 ## Use a simple meeting agenda
 

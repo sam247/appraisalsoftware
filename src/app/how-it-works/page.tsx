@@ -141,7 +141,7 @@ export default function Page() {
               ))}
             </ol>
             <Link
-              href="/annual-appraisal-software"
+              href="/employee-appraisal-software"
               className="font-semibold text-primary underline underline-offset-4"
             >
               Explore annual appraisals
@@ -197,7 +197,7 @@ export default function Page() {
                 cannot be lowered to reveal a smaller group.
               </p>
               <Link
-                href="/360-feedback-software#privacy"
+                href="/360-appraisals#privacy"
                 className="mt-4 inline-block text-sm font-semibold text-primary underline"
               >
                 Read the privacy safeguards

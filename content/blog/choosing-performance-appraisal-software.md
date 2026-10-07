@@ -35,7 +35,7 @@ If your immediate need is appraisal collection and 360 feedback, a focused tool 
 
 For example, [Cogendo's performance review page](https://www.cogendo.com/online-performance-reviews/) describes its own review offering. Use provider documentation to confirm current capabilities and then test the behaviours important to you. A vendor feature page is not evidence of our comparative testing or of a guaranteed outcome.
 
-Appraisal Software's [employee appraisal workflow](/employee-appraisal-software) and [anonymous 360 workflow](/360-feedback-software) are first-class capabilities in one lightweight product. Do not assume that this also means payroll, goals/OKR tracking, psychometric assessment or advanced analytics.
+Appraisal Software's [employee appraisal workflow](/employee-appraisal-software) and [anonymous 360 workflow](/360-appraisals) are first-class capabilities in one lightweight product. Do not assume that this also means payroll, goals/OKR tracking, psychometric assessment or advanced analytics.
 
 ## Make the trial a small evaluation project
 
