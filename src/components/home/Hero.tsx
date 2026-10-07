@@ -1,4 +1,4 @@
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Star } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,7 +23,6 @@ export function Hero() {
             <p className={`mt-5 ${marketingType.lead}`}>
               Run employee appraisals and anonymous 360 feedback in one place —
               with free templates and practical guidance when you need them.
-              Built for UK organisations that need a focused, repeatable review process.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Button size="lg" className="w-full px-7 sm:w-auto" asChild>
@@ -41,6 +40,19 @@ export function Hero() {
                 <a href={SEE_HOW_IT_WORKS_HREF}>{SEE_HOW_IT_WORKS_LABEL}</a>
               </Button>
             </div>
+            <a href="#reviews" className="mt-6 inline-flex items-center gap-4 rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary" aria-label="See illustrative review previews">
+              <span className="flex -space-x-3" aria-hidden="true">
+                {["amelia", "daniel", "priya", "amelia", "daniel"].map((portrait, index) => (
+                  <Image key={index} src={`/marketing/review-${portrait}.jpg`} alt="" width={40} height={40} sizes="40px" className="size-10 rounded-full border-2 border-background object-cover" />
+                ))}
+              </span>
+              <span>
+                <span className="flex gap-0.5 text-primary" aria-hidden="true">
+                  {Array.from({ length: 5 }, (_, index) => <Star key={index} className="size-3.5 fill-current" strokeWidth={1.5} />)}
+                </span>
+                <span className="mt-1 block text-xs text-muted-foreground">Sample reviews</span>
+              </span>
+            </a>
           </div>
 
           <div className="flex items-center justify-center">
