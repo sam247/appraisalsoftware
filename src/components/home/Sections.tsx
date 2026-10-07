@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { SectionHeading } from "@/components/product/primitives";
 import { PRIMARY_CTA_LABEL, PRIMARY_CTA_URL } from "@/lib/links";
 import { ROUTES } from "@/lib/routes";
+import { FaqItems } from "@/components/marketing/PageSections";
 
 const workflowTypes = [
   {
@@ -79,14 +80,7 @@ export function HomeFaqSection() {
               Common questions about running appraisals and 360° feedback with Appraisal Software.
             </p>
           </div>
-          <dl className="divide-y divide-border border-t border-border">
-            {homeFaqs.map((item) => (
-              <div key={item.question} className="py-5">
-                <dt className="text-[15px] font-semibold text-foreground">{item.question}</dt>
-                <dd className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.answer}</dd>
-              </div>
-            ))}
-          </dl>
+          <FaqItems items={homeFaqs} />
         </div>
       </div>
     </section>

@@ -41,6 +41,7 @@ describe("contact delivery", () => {
     expect(mail.replyTo).toBe("sam@example.com");
     expect(mail.html).toContain("Sam &lt;Test&gt;");
     expect(mail.html).toContain("Team &amp; Co");
+    expect(mail.html).toContain('src="https://appraisalsoftware.co.uk/brand/icon-192.png"');
     expect(mail.text).toContain("Plan: Pro");
     expect(mail.idempotencyKey).toBe(send.mock.calls[1][0].idempotencyKey);
   });

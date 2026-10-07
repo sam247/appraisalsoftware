@@ -402,7 +402,29 @@
   90%, 100% { transform: rotate(360deg); }
 }
 
+.review-window {
+  --review-start: 15cqw;
+  container-type: inline-size;
+  mask-image: linear-gradient(to right, rgb(0 0 0 / 0.35), black 20%, black 80%, rgb(0 0 0 / 0.35));
+}
+.review-track { display: flex; width: max-content; animation: review-scroll 18s ease-in-out infinite; }
+.review-window:hover .review-track, .review-window:focus-within .review-track { animation-play-state: paused; }
+.review-group { display: flex; }
+.review-card { width: 70cqw; margin-right: 1rem; }
+@keyframes review-scroll {
+  0%, 26% { transform: translateX(calc(var(--review-start) - 16.666667%)); }
+  33%, 59% { transform: translateX(calc(var(--review-start) - 33.333333%)); }
+  66%, 92% { transform: translateX(calc(var(--review-start) - 50%)); }
+  100% { transform: translateX(calc(var(--review-start) - 66.666667%)); }
+}
+@media (max-width: 639px) {
+  .review-window { --review-start: 8cqw; }
+  .review-card { width: 84cqw; }
+}
 @media (prefers-reduced-motion: reduce) {
+  .review-window { mask-image: none; overflow-x: auto; }
+  .review-track { animation: none !important; }
+  .review-group[aria-hidden="true"] { display: none; }
   *,
   *::before,
   *::after {

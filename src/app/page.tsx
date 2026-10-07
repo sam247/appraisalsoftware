@@ -6,6 +6,7 @@ import {
   FinalCtaSection,
 } from "@/components/home/Sections";
 import { HumanStory } from "@/components/home/HumanStory";
+import { Reviews } from "@/components/home/Reviews";
 import { GdprCommitment, MidPageCta, PricingPreview, ProcessOverview, ProductBenefits } from "@/components/home/HomeBands";
 import { Footer } from "@/components/home/Footer";
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -36,6 +37,7 @@ export default function HomePage() {
         <ProcessOverview />
         <MidPageCta />
         <HumanStory />
+        <Reviews />
         <PricingPreview />
         <ProductBenefits />
         <GdprCommitment />

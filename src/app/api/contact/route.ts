@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { sendViaResend } from "@/lib/email/resend";
 import { enquiryTypes, validateContact } from "@/lib/contact";
+import { EMAIL_LOGO_URL } from "@/lib/branding";
 
 export const runtime = "nodejs";
 const MAX_BYTES = 16_384;
@@ -103,7 +104,7 @@ export async function POST(request: Request) {
     replyTo: fields.email,
     subject: `Appraisal Software: ${enquiryTypes[fields.type as keyof typeof enquiryTypes]}${fields.plan ? ` · ${fields.plan}` : ""}`,
     text,
-    html: `<div style="white-space:pre-wrap">${escapeHtml(text)}</div>`,
+    html: `<img src="${EMAIL_LOGO_URL}" alt="Appraisal Software" width="40" height="40" style="display:block;width:40px;height:40px;border:0;margin-bottom:20px;" /><div style="white-space:pre-wrap">${escapeHtml(text)}</div>`,
     idempotencyKey: `contact-${input.submissionId}-${contentHash}`,
   });
   if (!result.ok)

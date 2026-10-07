@@ -1,5 +1,5 @@
 import { respondentUrl } from "@/lib/app-origin";
-import { accentForWhiteText } from "@/lib/branding";
+import { accentForWhiteText, EMAIL_LOGO_URL } from "@/lib/branding";
 
 export type AppraisalEmailPayload = {
   campaign_name?: string;
@@ -146,7 +146,7 @@ export function buildAppraisalInviteHtml(payload: AppraisalEmailPayload): {
     ? `<img src="${escapeHtml(logoUrl)}" alt="${escapeHtml(orgName)}" width="140" style="display:block;max-width:140px;max-height:48px;height:auto;border:0;margin:0 0 10px;" />
               <p style="margin:0;font-size:15px;font-weight:600;color:${INK};">${escapeHtml(orgName)}</p>
               <p style="margin:6px 0 0;font-size:12px;color:${MUTED};">Powered by Appraisal Software</p>`
-    : `<p style="margin:0;font-size:22px;letter-spacing:-0.8px;color:${INK};font-weight:700;">appraisal<span style="color:${JADE};">.</span>software</p>
+    : `<img src="${EMAIL_LOGO_URL}" alt="Appraisal Software" width="40" height="40" style="display:block;width:40px;height:40px;border:0;" />
               <p style="margin:8px 0 0;font-size:13px;color:${MUTED};">${escapeHtml(orgName)}</p>`;
 
   const html = `<!DOCTYPE html>

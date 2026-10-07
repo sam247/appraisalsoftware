@@ -98,7 +98,7 @@ async function enrichPayloadBranding(
   return {
     ...payload,
     org_name: org.name ?? payload.org_name,
-    org_logo_url: org.logo_url ?? payload.org_logo_url,
+    org_logo_url: org.logo_url ?? null,
     org_brand_color: org.brand_color ?? payload.org_brand_color,
   };
 }

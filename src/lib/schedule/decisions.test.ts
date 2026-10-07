@@ -171,6 +171,20 @@ describe("schedule decisions", () => {
 });
 
 describe("appraisal invite email", () => {
+  it("uses the site icon for every unbranded workflow and preserves company logos", () => {
+    for (const campaign_type of ["annual_appraisal", "feedback_360"]) {
+      for (const is_reminder of [false, true]) {
+        const payload = { raw_token: "preview-token", campaign_type, is_reminder, org_name: "Acme Ltd" };
+        const fallback = buildAppraisalInviteHtml(payload).html;
+        expect(fallback).toContain('src="https://appraisalsoftware.co.uk/brand/icon-192.png"');
+        const branded = buildAppraisalInviteHtml({ ...payload, org_logo_url: "https://example.com/company.png" }).html;
+        expect(branded).toContain('src="https://example.com/company.png"');
+        expect(branded).not.toContain("/brand/icon-192.png");
+        expect(buildAppraisalInviteHtml({ ...payload, org_logo_url: null }).html).toContain("/brand/icon-192.png");
+      }
+    }
+  });
+
   it("builds self and manager copy without exposing raw token outside URL", () => {
     process.env.NEXT_PUBLIC_APP_ORIGIN = "https://app.appraisalsoftware.co.uk";
     const token = "abc123token";

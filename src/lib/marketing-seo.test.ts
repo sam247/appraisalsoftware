@@ -16,6 +16,8 @@ import { ResourceHub } from "@/components/resources/ResourceHub";
 import { metadata as privacyMetadata } from "@/app/privacy/page";
 import { metadata as cookiesMetadata } from "@/app/cookies/page";
 import { COOKIE_POLICY_URL, PRIVACY_URL, PRIMARY_CTA_LABEL } from "@/lib/links";
+import { FaqSection } from "@/components/marketing/PageSections";
+import { HomeFaqSection } from "@/components/home/Sections";
 
 // These server-rendering checks isolate the client consent controls; browser checks exercise the real provider.
 vi.mock("@c15t/nextjs", () => ({ useConsentDialogTrigger: () => ({ openDialog: vi.fn() }) }));
@@ -31,6 +33,16 @@ vi.mock("@/lib/supabase/middleware", async () => {
 });
 
 describe("marketing routes and indexability", () => {
+  it("renders collapsed native FAQs with their full answers on home and shared sections", () => {
+    const shared = renderToStaticMarkup(createElement(FaqSection, { items: [{ question: "Example question", answer: "Complete answer" }] }));
+    expect(shared).toContain("<details");
+    expect(shared).toContain("<summary");
+    expect(shared).toContain("Complete answer");
+    expect(shared).not.toMatch(/<details[^>]*\bopen\b/);
+    const home = renderToStaticMarkup(createElement(HomeFaqSection));
+    expect(home.match(/<details/g)).toHaveLength(4);
+    expect(home).not.toMatch(/<details[^>]*\bopen\b/);
+  });
   it("keeps first-party legal destinations self-canonical and outside the SEO inventory", () => {
     for (const [path, metadata, href] of [
       [LEGAL_ROUTES.privacy, privacyMetadata, PRIVACY_URL],

@@ -16,7 +16,7 @@ export default function CookiesPage() {
     <SiteChrome>
       <JsonLd data={breadcrumbSchema([{ name: "Home", path: "/" }, { name: "Cookie policy", path: LEGAL_ROUTES.cookies }])} />
       <PageHero compact eyebrow="Your browser, your choices" title="Cookie policy" description="How Appraisal Software uses cookies and browser storage, and how you can control optional website measurement." breadcrumbs={[homeCrumb(), { label: "Cookie policy", href: LEGAL_ROUTES.cookies }]} />
-      <article className="mx-auto max-w-3xl space-y-10 px-5 py-12 text-sm leading-relaxed text-muted-foreground sm:text-base lg:px-8">
+      <article className="mx-auto max-w-6xl space-y-10 px-5 py-12 text-sm leading-relaxed text-muted-foreground sm:text-base lg:px-8">
         <p>Last updated: <time dateTime="2026-10-07">7 October 2026</time>. This policy covers appraisalsoftware.co.uk and app.appraisalsoftware.co.uk, operated by Umbrella Rank Ltd.</p>
         <section className="space-y-4">
           <h2 className="font-display text-2xl font-semibold text-foreground">Change your choices</h2>

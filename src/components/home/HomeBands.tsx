@@ -1,6 +1,6 @@
 import { trialReleased } from "@/lib/billing/trial";
 import Link from "next/link";
-import { ArrowRight, ShieldCheck } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PRIMARY_CTA_LABEL, PRIMARY_CTA_URL } from "@/lib/links";
 import { paidPlans, plans } from "@/lib/pricing";
@@ -235,19 +235,6 @@ export function GdprCommitment() {
           <h2 className="mt-4 max-w-md font-display text-[2rem] font-semibold leading-[1.1] tracking-[-0.035em] text-foreground sm:text-[2.5rem]">
             Privacy belongs in the review process.
           </h2>
-          <div
-            className="mt-8 inline-flex items-center gap-4 rounded-2xl border border-primary/20 bg-card px-6 py-5 shadow-sm"
-            aria-label="UK GDPR privacy commitment"
-          >
-            <ShieldCheck
-              className="size-16 text-primary"
-              strokeWidth={1.5}
-              aria-hidden="true"
-            />
-            <span className="font-display text-2xl font-semibold tracking-tight text-foreground">
-              UK GDPR
-            </span>
-          </div>
         </div>
         <div className="lg:pt-8">
           <p className="max-w-xl text-base leading-relaxed text-muted-foreground">

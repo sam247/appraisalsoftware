@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { Reviews } from "@/components/home/Reviews";
 import Link from "next/link";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { SiteChrome } from "@/components/layout/SiteChrome";
@@ -126,13 +127,14 @@ export default function Page() {
         </div>
       </section>
 
+      <Reviews />
       <PricingPreview />
       <RelatedLinks title="Prepare your first 360 appraisal" links={[
         { href: ROUTES.feedback360Questions, label: "360 feedback questions", copy: "Choose prompts about behaviours reviewers can observe." },
         { href: ROUTES.feedback360Examples, label: "360 feedback examples", copy: "See how to write specific comments and discuss feedback." },
         { href: ROUTES.feedback360Template, label: "360 feedback template", copy: "Copy or print a form to plan your appraisal." },
       ]} />
-      <FaqSection collapsible items={[
+      <FaqSection items={[
         { question: "What is a 360 appraisal?", answer: "A 360 appraisal collects observations from several people who work with the subject, such as managers, peers and direct reports. It gives a broader starting point for discussing strengths and development needs." },
         { question: "Is a 360 appraisal the same as 360 degree feedback?", answer: "The terms are often used for the same multi-rater process. Be clear about the purpose of your exercise: development feedback and a formal assessment of performance can have different implications for reviewers." },
         { question: "How many reviewers do we need?", answer: "At least five reviewers must complete their responses before results can be released. Invite a relevant cohort with room for non-completion. Each displayed question must also have at least five valid answers." },

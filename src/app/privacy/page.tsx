@@ -15,7 +15,7 @@ export default function PrivacyPage() {
     <SiteChrome>
       <JsonLd data={breadcrumbSchema([{ name: "Home", path: "/" }, { name: "Privacy policy", path: LEGAL_ROUTES.privacy }])} />
       <PageHero compact eyebrow="Privacy and data protection" title="Privacy policy" description="How we handle your information when you visit Appraisal Software or use its employee appraisal and 360 feedback workflows." breadcrumbs={[homeCrumb(), { label: "Privacy policy", href: LEGAL_ROUTES.privacy }]} />
-      <article className="mx-auto max-w-3xl space-y-10 px-5 py-12 text-sm leading-relaxed text-muted-foreground sm:text-base lg:px-8">
+      <article className="mx-auto max-w-6xl space-y-10 px-5 py-12 text-sm leading-relaxed text-muted-foreground sm:text-base lg:px-8">
         <p>Last updated: <time dateTime="2026-10-07">7 October 2026</time>. This notice covers appraisalsoftware.co.uk and app.appraisalsoftware.co.uk.</p>
         <section className="space-y-4">
           <h2 className="font-display text-2xl font-semibold text-foreground">Who is responsible for your information?</h2>

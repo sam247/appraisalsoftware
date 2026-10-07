@@ -1,4 +1,8 @@
 /** Organisation branding helpers — restrained V1 (logo + accent only). */
+import { absoluteUrl } from "@/lib/site";
+
+// PNG export of the site's app icon for email clients that cannot display SVG.
+export const EMAIL_LOGO_URL = absoluteUrl("/brand/icon-192.png");
 
 export const DEFAULT_BRAND_COLOR = "#0d9488";
 export const PLATFORM_JADE = "#29a46c";
