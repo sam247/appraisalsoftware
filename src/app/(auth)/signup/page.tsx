@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { trialReleased, trialCta } from "@/lib/billing/trial";
+import { PRIMARY_CTA_LABEL } from "@/lib/links";
 import { trackEvent } from "@/lib/analytics/events";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
@@ -93,10 +93,10 @@ export default function SignupPage() {
             <Logo size="lg" />
           </Link>
           <h1 className="font-display text-2xl font-semibold tracking-tight text-foreground">
-            Create your account
+            Start Free
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            {trialReleased ? "Start your 14-day trial with annual appraisals and anonymous 360 feedback. No payment card required." : "Set up a workspace for annual appraisals and anonymous 360 feedback."}
+            Free forever for up to 10 active employees, 1 active campaign and 1 admin. No card required.
           </p>
         </div>
 
@@ -184,7 +184,7 @@ export default function SignupPage() {
           </div>
 
           <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "Setting up…" : trialCta}
+            {loading ? "Setting up…" : PRIMARY_CTA_LABEL}
           </Button>
 
           <p className="text-center text-xs text-muted-foreground">

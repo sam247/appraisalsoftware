@@ -73,10 +73,12 @@ function fieldClassName() {
 }
 
 export default function PeopleDirectory({
+  employeeLimit,
   people,
   departments: initialDepartments,
   flash,
 }: {
+  employeeLimit: number | null;
   people: PeopleDirectoryPerson[];
   departments: PeopleDirectoryDepartment[];
   flash?: { error?: string; ok?: string };
@@ -213,8 +215,11 @@ export default function PeopleDirectory({
     setImportPreview({ ready, existing, attention: errors });
   };
 
+  const resultingCount = activePeople.filter((p) => !p.reviewer_only).length + (importPreview?.ready.length ?? 0);
+  const overLimit = employeeLimit !== null && resultingCount > employeeLimit;
+
   const confirmImport = () => {
-    if (!pendingFile || !importPreview?.ready.length) return;
+    if (!pendingFile || !importPreview?.ready.length || overLimit) return;
     const data = new FormData();
     data.set("file", pendingFile);
     startImport(async () => {
@@ -226,6 +231,7 @@ export default function PeopleDirectory({
 
   return (
     <div>
+      {flash?.error && /capacity|upgrade|Pro includes/.test(flash.error) && <p className="mb-4 text-sm"><Link href="/dashboard/upgrade" className="text-primary underline">See Pro capacity and upgrade options</Link></p>}
       <div className="page-header flex flex-wrap items-center justify-between gap-4">
         <div className="min-w-0">
           <h1 className="font-display text-[26px] md:text-[28px] font-semibold tracking-tight text-foreground">
@@ -574,6 +580,8 @@ export default function PeopleDirectory({
                     ? ` · ${importPreview.attention.length} need attention`
                     : ""}
                 </p>
+                <p className="mt-2" role="status">Resulting active employees: {resultingCount}{employeeLimit !== null ? ` / ${employeeLimit}` : ""}.</p>
+                {overLimit && <p role="alert">This import exceeds your allowance. Free includes 10 active employees; Pro includes 75 at £39.99/month + VAT. <Link href="/dashboard/upgrade" className="underline">Explore upgrading</Link>. No employees will be imported.</p>}
                 {importPreview.attention.length > 0 && (
                   <ul className="mt-2 max-h-28 space-y-1 overflow-y-auto text-xs text-muted-foreground">
                     {importPreview.attention.slice(0, 8).map((msg) => (
@@ -589,6 +597,7 @@ export default function PeopleDirectory({
             <Button
               type="button"
               disabled={
+                overLimit ||
                 isImporting ||
                 !importPreview ||
                 importPreview.ready.length === 0

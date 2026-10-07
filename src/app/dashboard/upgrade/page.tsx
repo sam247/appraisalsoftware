@@ -22,11 +22,12 @@ export default async function UpgradePage() {
       <PageHeader title="Upgrade" subtitle="Choose more capacity for people, campaigns and team admins." />
 
       <section className="mt-6 max-w-xl">
-        <h2 className="text-sm font-semibold">Paid workspace</h2>
+        <h2 className="text-sm font-semibold">Pro · £39.99/month + VAT</h2>
+        <p className="mt-3 text-sm">Free includes 10 active employees, 1 active campaign and 1 admin, with employee appraisals and retained results forever.</p>
         <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
-          <li>Larger people directories and CSV imports</li>
-          <li>More concurrent appraisal campaigns</li>
-          <li>Additional admin seats</li>
+          <li>Up to 75 active employees, including CSV imports</li>
+          <li>Up to 5 active campaigns</li>
+          <li>Up to 3 admins, including the owner</li>
           <li>Annual appraisals and anonymous 360 feedback</li>
         </ul>
         <p className="mt-4 text-xs text-muted-foreground">

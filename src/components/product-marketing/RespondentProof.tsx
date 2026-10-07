@@ -1,6 +1,5 @@
 import RespondForm from "@/app/r/[token]/respond-form";
 import type { CampaignQuestion } from "@/lib/types/database";
-import { ProductFrame } from "./ProductFrame";
 
 const questions: CampaignQuestion[] = [
   {
@@ -45,24 +44,20 @@ const questions: CampaignQuestion[] = [
 
 export function RespondentProof() {
   return (
-    <ProductFrame
-      title="Annual Appraisal 2026"
-      description="The same structured respondent experience supports employee self-assessments and manager reviews."
-      className="mx-auto max-w-xl"
-    >
-      <div className="max-h-[34rem] overflow-hidden bg-background">
-        <RespondForm
-          preview
-          token="marketing-preview"
-          campaignName="Annual Appraisal 2026"
-          questions={questions}
-          relationship="self"
-          alreadySubmitted={false}
-          orgName="Northstar Studio"
-          orgBrandColor="#24734a"
-          initialAnswers={[]}
-        />
-      </div>
-    </ProductFrame>
+    <div className="mx-auto max-w-xl overflow-hidden rounded-lg border border-border bg-card">
+      <RespondForm
+        preview
+        compact
+        token="marketing-preview"
+        campaignName="Annual Appraisal 2026"
+        questions={questions}
+        relationship="self"
+        alreadySubmitted={false}
+        orgName="Northstar Studio"
+        orgLogoUrl="/marketing/northstar-logo.svg"
+        orgBrandColor="#24734a"
+        initialAnswers={[]}
+      />
+    </div>
   );
 }

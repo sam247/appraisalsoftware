@@ -84,7 +84,8 @@ describe("admin composition", () => {
   });
   it("keeps organisational context and selection in People with visible error feedback", () => {
     const html = render("people", "/dashboard/people", h(PeopleDirectory, {
-      people: [{ id: "person", full_name: "Test employee with a long name", email: "test@example.invalid", job_title: "Product designer", manager_person_id: null, department_id: "product", archived_at: null }],
+      employeeLimit: 10,
+      people: [{ id: "person", full_name: "Test employee with a long name", email: "test@example.invalid", job_title: "Product designer", manager_person_id: null, department_id: "product", reviewer_only: false, archived_at: null }],
       departments: [{ id: "product", name: "Product and engineering" }], flash: { error: "Import could not be completed" },
     }));
     expect(html).toContain("Product and engineering");

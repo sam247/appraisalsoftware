@@ -1,15 +1,18 @@
 /** Capacities match the durable entitlement migration. Paid activation is manual. */
 export const plans = [
   {
-    name: "Trial",
+    name: "Free",
     price: "£0",
-    employees: 75,
-    campaigns: 5,
-    admins: 3,
+    employees: 10,
+    campaigns: 1,
+    admins: 1,
+    feedback360: false,
+    templates: "Standard first-party templates",
+    support: "Public guides",
     setup: false,
-    audience: "For organisations evaluating annual appraisals and anonymous 360 feedback.",
+    audience: "For small teams running real employee appraisals.",
     detail:
-      "14 days with Pro capacity, without a payment card. After expiry your workspace becomes read-only until paid activation.",
+      "Free forever for up to 10 active employees. No card required. Keep your results and run your next cycle when the current one closes.",
   },
   {
     name: "Pro",
@@ -17,6 +20,9 @@ export const plans = [
     employees: 75,
     campaigns: 5,
     admins: 3,
+    feedback360: true,
+    templates: "Full template access",
+    support: "Email support",
     setup: false,
     audience: "For teams running regular reviews across several managers.",
     detail:
@@ -28,6 +34,9 @@ export const plans = [
     employees: 250,
     campaigns: 20,
     admins: 10,
+    feedback360: true,
+    templates: "Full template access",
+    support: "Email support + optional setup",
     setup: true,
     audience:
       "For organisations coordinating reviews across more people and teams.",
@@ -35,7 +44,7 @@ export const plans = [
       "Greater capacity and an optional setup session to help organise your first cycle.",
   },
 ] as const;
-export const paidPlans = plans.filter((plan) => plan.name !== "Trial");
+export const paidPlans = plans.filter((plan) => plan.name !== "Free");
 export function planContactHref(name: string) {
   return `/contact?type=pricing&plan=${encodeURIComponent(name)}`;
 }

@@ -133,11 +133,11 @@ async function deliverAppraisalEmail(
       is_reminder: row.kind === "appraisal_reminder",
     });
 
-  // Recheck immediately before the external send: a batch may cross trial expiry.
+  // Recheck immediately before the external send: workspace access may change during a batch.
   const { data: allowed, error: accessError } = await supabase.rpc("workspace_delivery_allowed", { p_organization_id: row.organization_id });
   if (accessError) throw new Error("Unable to verify workspace delivery access");
   if (!allowed) {
-    await markFailed(supabase, row, "Trial ended; collection is closed", false);
+    await markFailed(supabase, row, "Workspace access is unavailable", false);
     summary.skipped++;
     return;
   }

@@ -54,7 +54,7 @@ export default function PrivacyPage() {
         </section>
         <section className="space-y-4">
           <h2 className="font-display text-2xl font-semibold text-foreground">Retention and security</h2>
-          <p>Workspace information is kept to provide the service and follow the organisation’s instructions. A completed campaign is not automatically deleted when it closes, and trial expiry does not itself delete existing records. Removing a reviewer assignment does not necessarily remove an already submitted anonymous response. Ask your organisation about its review retention and deletion process.</p>
+          <p>Workspace information is kept to provide the service and follow the organisation’s instructions. A completed campaign is not automatically deleted when it closes, and changing plan does not delete existing records. Removing a reviewer assignment does not necessarily remove an already submitted anonymous response. Ask your organisation about its review retention and deletion process.</p>
           <p>For account administration, enquiries, support and operational records, retention depends on the purpose, the customer relationship, outstanding support or disputes, and any accounting or legal requirements. Information is deleted or anonymised when it is no longer needed, subject to those requirements and backup lifecycles. Contact us for a retention or deletion request concerning your account.</p>
           <p>We use authentication, workspace access controls and restricted access to operational records to protect information. No online service can guarantee that every security incident will be prevented.</p>
         </section>

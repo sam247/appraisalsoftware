@@ -1,9 +1,13 @@
-import type { Organization } from "@/lib/types/database";
+import { plans } from "@/lib/pricing";
 
-/** Paid plans hide the sidebar Upgrade CTA. Missing/unknown → free. */
-const PAID_PLANS = new Set(["paid", "pro", "business", "ultimate"]);
+export interface WorkspaceEntitlement {
+  plan: "legacy" | "free" | "pro" | "organisation";
+  needs_review: boolean;
+  can_operate: boolean;
+  first_activated: boolean;
+}
 
-export function isFreePlan(org: Pick<Organization, "settings">): boolean {
-  const plan = org.settings?.plan;
-  return typeof plan !== "string" || !PAID_PLANS.has(plan.toLowerCase());
+export function employeeCapacity(plan: WorkspaceEntitlement["plan"]): number | null {
+  if (plan === "legacy") return null;
+  return plans.find((p) => p.name.toLowerCase() === plan)!.employees;
 }

@@ -12,15 +12,20 @@ const question: CampaignQuestion = {
   source_template_question_id: null, created_at: "2026-01-01",
 };
 
-function render(anonymous: boolean, previewQuestionIndex?: number) {
+function render(anonymous: boolean, previewQuestionIndex?: number, compact = false) {
   return renderToStaticMarkup(createElement(RespondForm, {
-    preview: true, previewQuestionIndex, token: "", campaignName: "Annual review", questions: [question],
+    preview: true, previewQuestionIndex, compact, token: "", campaignName: "Annual review", questions: [question],
     relationship: anonymous ? "peer" : "self", alreadySubmitted: false, initialAnswers: [],
     anonymous, subjectName: "Alex", orgName: "Example Ltd",
   }));
 }
 
 describe("respondent-faithful preview", () => {
+  it("omits platform attribution only in the compact marketing demo", () => {
+    expect(render(false)).toContain("Powered by Appraisal Software");
+    expect(render(false, undefined, true)).not.toContain("Powered by Appraisal Software");
+    expect(render(false, 0, true)).not.toContain("Powered by Appraisal Software");
+  });
   it("starts the full preview at the real cover and identifies it as non-submitting", () => {
     const html = render(false);
     expect(html).toContain("Your self-appraisal");

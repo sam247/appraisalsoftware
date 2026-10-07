@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
       ? NextResponse.json(
           {
             error:
-              error.message.startsWith("Your workspace trial has ended") || error.message === "Please answer every required question"
+              error.message === "Please answer every required question"
                 ? error.message
                 : "Feedback could not be saved. This request may have closed or been submitted; reopen your personal link to check.",
           },

@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -89,6 +91,7 @@ export default function DraftConfirmationDialog({
         {error && (
           <p role="alert" className="text-sm text-destructive">
             {error}
+            {error.includes("/dashboard/upgrade") && <> <Link href="/dashboard/upgrade" className="underline">Explore upgrading</Link></>}
           </p>
         )}
 

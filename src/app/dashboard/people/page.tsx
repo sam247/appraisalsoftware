@@ -1,3 +1,4 @@
+import { employeeCapacity, type WorkspaceEntitlement } from "@/lib/billing/plan";
 import { requireOrgAdmin } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
@@ -38,8 +39,13 @@ export default async function PeoplePage({
   if (peopleResult.error) throw new Error("Unable to load people");
   if (departmentsResult.error) throw new Error("Unable to load departments");
 
+  const entitlementResult = await supabase.rpc("get_workspace_entitlement", { p_organization_id: orgAdmin.org.id });
+  if (entitlementResult.error || !entitlementResult.data) throw new Error("Unable to load workspace plan");
+  const limit = employeeCapacity((entitlementResult.data as unknown as WorkspaceEntitlement).plan);
+
   return (
     <PeopleDirectory
+      employeeLimit={limit}
       people={(peopleResult.data ?? []) as PeopleDirectoryPerson[]}
       departments={
         (departmentsResult.data ?? []) as PeopleDirectoryDepartment[]

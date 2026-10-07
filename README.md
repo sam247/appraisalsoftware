@@ -22,10 +22,10 @@ Connect this repo to Vercel, set the production domain to `appraisalsoftware.co.
 
 ## Frontend content and CTAs
 
-Primary product CTA: **Start free → `/signup`**. Sign in links to `/login`.
+Primary product CTA: **Start Free → `/signup`**. Sign in links to `/login`.
 
 Templates provide ungated HTML forms with copy and browser print/save-as-PDF controls. Resource pages lead with useful content and have at most one contextual product bridge. 360 guides and templates bridge into live anonymous multi-rater campaigns in Appraisal Software.
 
-The marketing sitemap contains 20 distinct pages, maintained through the existing route list. Preview deployments and auth/app/invitation/respondent surfaces are noindex. No backend or app behaviour was changed for this release.
+The marketing sitemap contains 20 distinct pages, maintained through the existing route list. Preview deployments and auth/app/invitation/respondent surfaces are noindex. New workspaces receive permanent Free access (10 active employees, 1 active/scheduled campaign, 1 admin; employee appraisals). Paid activation remains manual. Existing paid entitlements are preserved; legacy/old trial workspaces retain access and are flagged for explicit review. See `docs/seo/release.md` for migration and staging verification.
 
 See [SEO frontend handoff](docs/SEO_FRONTEND.md) for the GSC baseline, intent map, adjacent keyword research and post-publication measurement schedule.

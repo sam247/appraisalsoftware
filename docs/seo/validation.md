@@ -1,4 +1,14 @@
-# Local verification — 4 October 2026
+# Permanent Free verification — 7 October 2026
+
+The commercial model below supersedes the historical trial release. New workspaces receive Free forever: 10 active employees, 1 scheduled/active campaign, 1 administrator including owner. Archived employees and closed campaigns do not consume capacity. Employee appraisal collection, templates, reminders, results and history remain useful. Anonymous 360 is a Pro capability.
+
+`20261007120000_permanent_free_plan.sql` preserves Pro/Organisation and flags unclassified legacy/old trial workspaces for review while retaining access. Historical trial columns are audit data; the old service-only expiry RPC is a no-op for rolling deployment. Billing UI uses durable entitlements, not editable settings.
+
+Local checks passed: 128 tests in 19 files, typecheck, production build, disposable PostgreSQL workflow/privacy/capacity/migration checks (including Free and Pro final-seat races), and public architecture checks across 23 indexable pages, 2 legal pages and 557 links. Lint has no errors and one existing unused login parameter warning. Supabase retains its existing Node 20 deprecation warning. The PostgreSQL harness intentionally verifies historical migration behaviour before applying the additive Free migration; the current model has no trial expiry. No production database or deployment was changed. Hosted PostgREST, provider and GA4 network verification remains a staging release requirement.
+
+The plan comparison remains compact and shares its plan source with the homepage. Public acquisition CTAs use “Start Free”; paid CTAs follow the existing manual enquiry path. Pricing, signup and employee commercial copy explain permanent Free; the 360 page states Pro availability. Logo/accent capability is preserved on every plan, with platform branding retained.
+
+# Historical local verification — 4 October 2026 (superseded commercial model)
 
 ## Implementation evidence
 

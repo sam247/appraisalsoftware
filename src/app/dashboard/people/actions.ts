@@ -1,5 +1,7 @@
 "use server";
 
+import { employeeCapacity, type WorkspaceEntitlement } from "@/lib/billing/plan";
+
 import { requireOrgAdmin } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
@@ -284,17 +286,26 @@ export async function importPeopleCsv(formData: FormData): Promise<void> {
   }
 
   const supabase = await createClient();
-  const { data: existing } = await supabase
+  const { data: existing, error: existingError } = await supabase
     .from("people")
-    .select("email")
+    .select("email, reviewer_only")
     .eq("organization_id", org.id)
     .is("archived_at", null);
+  if (existingError) redirect(`${returnTo}?error=Unable+to+check+employee+capacity`);
+  const entitlementResult = await supabase.rpc("get_workspace_entitlement", { p_organization_id: org.id });
+  if (entitlementResult.error || !entitlementResult.data) redirect(`${returnTo}?error=Unable+to+check+workspace+plan`);
+  const limit = employeeCapacity((entitlementResult.data as unknown as WorkspaceEntitlement).plan);
   const existingEmails = new Set(
     (existing ?? []).map((p) => p.email.trim().toLowerCase()),
   );
 
   const toInsert = rows.filter((r) => !existingEmails.has(r.email));
   const skipped = rows.length - toInsert.length;
+
+  const resultingCount = (existing ?? []).filter((p) => !p.reviewer_only).length + toInsert.length;
+  if (limit !== null && resultingCount > limit) {
+    redirect(`${returnTo}?error=${encodeURIComponent(`Import would result in ${resultingCount} active employees; your plan allows ${limit}. Free includes 10; Pro includes 75 at £39.99/month + VAT. No employees imported. Visit /dashboard/upgrade.`)}`);
+  }
 
   let deptByLower = new Map<string, string>();
   try {

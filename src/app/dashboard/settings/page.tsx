@@ -1,8 +1,8 @@
+import { type WorkspaceEntitlement } from "@/lib/billing/plan";
 import { PageHeader } from "../chrome";
 import FormSubmit from "@/app/dashboard/form-submit";
 import { BrandMark } from "@/components/home/Logo";
 import { requireOrgAdmin } from "@/lib/auth/session";
-import { isFreePlan } from "@/lib/billing/plan";
 import {
   accentForWhiteText,
   DEFAULT_BRAND_COLOR,
@@ -178,7 +178,10 @@ export default async function SettingsPage({
   const ownerCount = members.filter((m) => m.role === "owner").length;
   const brandColor =
     normalizeBrandColor(org.brand_color) ?? DEFAULT_BRAND_COLOR;
-  const free = isFreePlan(org);
+  const entitlementResult = await supabase.rpc("get_workspace_entitlement", { p_organization_id: org.id });
+  if (entitlementResult.error || !entitlementResult.data) throw new Error("Unable to load workspace plan");
+  const entitlement = entitlementResult.data as unknown as WorkspaceEntitlement;
+  const free = entitlement.plan === "free";
 
   return (
     <div className="mx-auto w-full space-y-6">
@@ -194,6 +197,7 @@ export default async function SettingsPage({
           className="max-w-2xl rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive"
         >
           {params.error}
+          {params.error.includes("/dashboard/upgrade") && <> <Link href="/dashboard/upgrade" className="underline">Explore upgrading</Link></>}
         </p>
       ) : null}
       {params.saved ? (
@@ -483,16 +487,15 @@ export default async function SettingsPage({
             <div className="flex items-baseline justify-between gap-3">
               <p className="text-sm text-muted-foreground">Current plan</p>
               <p className="text-sm font-semibold text-foreground">
-                {free ? "Free" : "Paid"}
+                {entitlement.plan === "legacy" ? "Existing workspace (access preserved)" : entitlement.plan === "organisation" ? "Organisation" : free ? "Free" : "Pro"}
               </p>
             </div>
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-              Self-serve billing is coming soon. You&apos;ll be able to choose a
-              plan and manage your subscription here.
+              Free is permanent within its limits. Pro is £39.99/month + VAT; Organisation is £89.99/month + VAT. Contact our team for paid activation.
             </p>
             {free ? (
               <p className="mt-4 text-xs text-muted-foreground">
-                Prefer an early upgrade path?{" "}
+                Need more capacity or anonymous 360?{" "}
                 <Link
                   href="/dashboard/upgrade"
                   className="font-medium text-primary hover:underline"

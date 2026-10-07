@@ -38,6 +38,7 @@ interface RespondFormProps {
   anonymous?: boolean;
   subjectName?: string;
   preview?: boolean;
+  compact?: boolean;
   previewQuestionIndex?: number;
 }
 
@@ -133,6 +134,7 @@ export default function RespondForm({
   anonymous = false,
   subjectName,
   preview = false,
+  compact = false,
   previewQuestionIndex,
 }: RespondFormProps) {
   const Heading = preview ? "h2" : "h1";
@@ -299,7 +301,7 @@ export default function RespondForm({
 
   if (submitted || phase === "complete") {
     return (
-      <Shell style={brandStyle} embedded={preview}>
+      <Shell style={brandStyle} embedded={preview} compact={compact}>
         <div className="flex flex-1 flex-col items-center justify-center text-center py-10">
           <div
             className="mb-5 flex h-14 w-14 items-center justify-center rounded-full text-2xl text-white"
@@ -326,7 +328,7 @@ export default function RespondForm({
               : ""}
           </p>
         </div>
-        <TrustFooter />
+        {!compact && <TrustFooter />}
       </Shell>
     );
   }
@@ -342,8 +344,8 @@ export default function RespondForm({
     const minutes = estimateMinutes(questions.length);
 
     return (
-      <Shell style={brandStyle} embedded={preview}>
-        <div className="flex flex-1 flex-col justify-center gap-8 py-6">
+      <Shell style={brandStyle} embedded={preview} compact={compact}>
+        <div className={`flex flex-1 flex-col justify-center gap-8 ${compact ? "" : "py-6"}`}>
           <OrgIdentityHeader
             orgName={orgName}
             logoUrl={orgLogoUrl}
@@ -388,7 +390,7 @@ export default function RespondForm({
             </p>
           </div>
         </div>
-        <TrustFooter />
+        {!compact && <TrustFooter />}
       </Shell>
     );
   }
@@ -396,14 +398,14 @@ export default function RespondForm({
   const current = questions[questionIndex];
   if (!current) {
     return (
-      <Shell style={brandStyle} embedded={preview}>
+      <Shell style={brandStyle} embedded={preview} compact={compact}>
         <p className="text-sm text-muted-foreground">No questions available.</p>
       </Shell>
     );
   }
 
   return (
-    <Shell style={brandStyle} embedded={preview}>
+    <Shell style={brandStyle} embedded={preview} compact={compact}>
       <div className="flex flex-1 flex-col">
         <div className="space-y-3 pb-6">
           <div
@@ -488,9 +490,9 @@ export default function RespondForm({
           </div>
         </div>
 
-        <div className="pt-4">
+        {!compact && <div className="pt-4">
           <TrustFooter />
-        </div>
+        </div>}
       </div>
     </Shell>
   );
@@ -500,14 +502,16 @@ function Shell({
   children,
   style,
   embedded = false,
+  compact = false,
 }: {
   children: ReactNode;
   style?: CSSProperties;
   embedded?: boolean;
+  compact?: boolean;
 }) {
   return (
-    <div className={`${embedded ? "min-h-[38rem]" : "min-h-dvh"} bg-surface text-foreground`} style={style}>
-      <div className={`mx-auto flex ${embedded ? "min-h-[38rem]" : "min-h-dvh"} w-full max-w-xl flex-col px-5 py-8 sm:px-8 sm:py-12`}>
+    <div className={`${compact ? "" : embedded ? "min-h-[38rem]" : "min-h-dvh"} bg-surface text-foreground`} style={style}>
+      <div className={`mx-auto flex ${compact ? "py-6" : embedded ? "min-h-[38rem] py-8 sm:py-12" : "min-h-dvh py-8 sm:py-12"} w-full max-w-xl flex-col px-5 sm:px-8`}>
         {children}
       </div>
     </div>

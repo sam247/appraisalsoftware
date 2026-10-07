@@ -71,7 +71,7 @@ try {
     GRANT USAGE ON SCHEMA public, auth, extensions TO anon, authenticated, service_role;
     ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO anon, authenticated, service_role;`);
   for (const migration of readdirSync(join(root, "supabase/migrations"))
-    .filter((f) => f.endsWith(".sql"))
+    .filter((f) => f.endsWith(".sql") && f !== "20261007120000_permanent_free_plan.sql")
     .sort())
     run("psql", [...args, "-f", join(root, "supabase/migrations", migration)]);
   run("psql", [
@@ -88,9 +88,20 @@ try {
   run("psql", [...args, "-f", join(root, "supabase/tests/360_draft_assembly.sql")]);
   run("psql", [...args, "-f", join(root, "supabase/tests/campaign_local_forms.sql")]);
   run("psql", [...args, "-f", join(root, "supabase/tests/workspace_trial.sql")]);
+  // Exercise the additive migration against real legacy, paid and expired trial data.
+  sql(`UPDATE private.trial_release SET enabled=true;
+    INSERT INTO public.organizations(name,slug) VALUES('Existing expiring','existing-expiring');
+    UPDATE private.workspace_entitlements SET trial_started_at=now()-interval '15 days',trial_ends_at=now()-interval '1 day' WHERE organization_id=(SELECT id FROM public.organizations WHERE name='Existing expiring');`);
+  const before = run("psql", [...args, "-At", "-c", "SELECT md5(string_agg(row_to_json(c)::text,',' ORDER BY id)) FROM public.campaigns c"]).trim();
+  run("psql", [...args, "-f", join(root, "supabase/migrations/20261007120000_permanent_free_plan.sql")]);
+  assert.equal(run("psql", [...args, "-At", "-c", "SELECT md5(string_agg(row_to_json(c)::text,',' ORDER BY id)) FROM public.campaigns c"]).trim(), before, "Migration changed campaigns");
+  run("psql", [...args, "-f", join(root, "supabase/tests/workspace_free.sql")]);
   // Two sessions competing for the final employee seat cannot both succeed.
-  const trialOrg = run("psql", [...args, "-At", "-c", "SELECT id FROM public.organizations WHERE name='Trial test'"]).trim();
-  sql(`DELETE FROM public.people WHERE organization_id='${trialOrg}' AND email='trial-75@example.test'`);
+  sql(`INSERT INTO public.organizations(name,slug) VALUES('Free race','free-race');
+    INSERT INTO public.people(organization_id,email) SELECT (SELECT id FROM public.organizations WHERE name='Free race'),'race-'||i||'@example.test' FROM generate_series(1,9) i;`);
+  for (const [workspaceName, maximum] of [["Trial test", 75], ["Free race", 10]]) {
+  const trialOrg = run("psql", [...args, "-At", "-c", `SELECT id FROM public.organizations WHERE name='${workspaceName}'`]).trim();
+  if (maximum === 75) sql(`DELETE FROM public.people WHERE organization_id='${trialOrg}' AND email='trial-75@example.test'`);
   const seatFile = join(dir, "trial-seat.sql");
   writeFileSync(seatFile, `BEGIN; INSERT INTO public.people(organization_id,email) VALUES('${trialOrg}','last-seat@example.test'); SELECT pg_sleep(1); COMMIT;`);
   const seat = spawn(join(bin, "psql"), [...args, "-f", seatFile], { stdio: ["ignore", "pipe", "pipe"] });
@@ -106,7 +117,8 @@ try {
   assert(seatLocked, "Trial seat transaction did not acquire its lock");
   assert.throws(() => sql(`INSERT INTO public.people(organization_id,email) VALUES('${trialOrg}','racing-seat@example.test')`), /Employee capacity reached/);
   await seatDone;
-  assert.equal(run("psql", [...args,"-At","-c",`SELECT count(*) FROM public.people WHERE organization_id='${trialOrg}' AND NOT reviewer_only`]).trim(), "75");
+  assert.equal(run("psql", [...args,"-At","-c",`SELECT count(*) FROM public.people WHERE organization_id='${trialOrg}' AND NOT reviewer_only AND archived_at IS NULL`]).trim(), String(maximum));
+  }
   const feedbackDraft = run("psql", [...args, "-At", "-c", "SELECT id FROM public.campaigns WHERE name='Legacy convertible'"]).trim();
   const feedbackLockFile = join(dir, "feedback-finalise.sql");
   writeFileSync(feedbackLockFile, `BEGIN; SET LOCAL request.jwt.claim.sub='10000000-0000-0000-0000-000000000001'; SET LOCAL ROLE authenticated; SELECT public.save_feedback_360_timing('${feedbackDraft}','now',NULL,NULL); SELECT public.finalize_feedback_360_draft('${feedbackDraft}',true); SELECT pg_sleep(1); COMMIT;`);
@@ -264,7 +276,7 @@ try {
     /Invalid or closed appraisal link/,
   );
   console.log(
-    "PASS: PostgreSQL migrations; Annual send guards, timing, rollback and respondent path; 360 new/legacy drafts, guarded conversion, finalisation rollback and race, anonymous respondent isolation, private grants/RLS, closed-only five-response reports; durable trial capacity, expiry, retained annual/360 answers, background delivery and manual restoration.",
+    "PASS: PostgreSQL migrations; Annual send guards, timing, rollback and respondent path; 360 new/legacy drafts, guarded conversion, finalisation rollback and race, anonymous respondent isolation, private grants/RLS, closed-only five-response reports; permanent Free signup, employee/import/archive/campaign/admin/360 boundaries, retained results, existing workspace preservation and manual paid activation.",
   );
 } finally {
   if (started) run("pg_ctl", ["-D", dir, "-m", "immediate", "-w", "stop"]);

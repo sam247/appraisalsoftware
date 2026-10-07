@@ -13,28 +13,17 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbSchema } from "@/lib/schema";
 import { PRIMARY_CTA_URL } from "@/lib/links";
 import { pageMetadata } from "@/lib/metadata";
-import { trialReleased, trialCta } from "@/lib/billing/trial";
-import { plans, paidPlans } from "@/lib/pricing";
+import { PRIMARY_CTA_LABEL } from "@/lib/links";
+import { plans, planContactHref } from "@/lib/pricing";
 
-const availablePlans = trialReleased ? plans : paidPlans;
+const availablePlans = plans;
 
 export const metadata = pageMetadata({
   title: "Pricing | Appraisal Software",
   description:
-    trialReleased ? "Compare a 14-day trial, Pro at £39.99 and Organisation at £89.99 per workspace per month plus VAT. Annual appraisals and anonymous 360 feedback included." : "Compare Pro at £39.99 and Organisation at £89.99 per workspace per month plus VAT. Annual appraisals and anonymous 360 feedback included.",
+    "Free appraisal software for up to 10 employees. Compare Free forever, Pro at £39.99 and Organisation at £89.99 per month + VAT.",
   path: "/pricing",
 });
-const capabilities = [
-  "Annual employee and manager appraisals",
-  "Anonymous 360 feedback",
-  "Reusable question templates",
-  "Personal email invitations",
-  "Scheduled invitations and reminders",
-  "Completion tracking",
-  "Self vs Manager appraisal results",
-  "Closed, combined 360 results",
-  "Email support",
-];
 export default function PricingPage() {
   return (
     <SiteChrome>
@@ -54,12 +43,12 @@ export default function PricingPage() {
             </span>
           </>
         }
-        description={trialReleased ? "Evaluate annual appraisals and anonymous 360 feedback for 14 days with Pro capacity. No payment card is required. Choose a paid workspace with our team when you are ready." : "Choose the capacity that fits your organisation. Both annual appraisals and anonymous 360 feedback are included. Paid plans are activated with our team."}
+        description="Start Free with a complete employee appraisal workflow for up to 10 people. No card required. Upgrade for more capacity or anonymous 360 feedback. Paid plans are activated with our team."
         breadcrumbs={[homeCrumb(), { label: "Pricing", href: "/pricing" }]}
       />
       <section className="px-5 pb-16 pt-12 lg:px-0 lg:pb-24">
         <div className="mx-auto max-w-6xl lg:px-8">
-          <div className={`grid gap-5 ${trialReleased ? "lg:grid-cols-3" : "lg:grid-cols-2"}`}>
+          <div className="grid gap-5 lg:grid-cols-3">
             {availablePlans.map((plan) => (
               <article
                 key={plan.name}
@@ -76,24 +65,27 @@ export default function PricingPage() {
                 <p className="mt-6 text-4xl font-semibold tracking-tight">
                   {plan.price}
                   <span className="text-sm font-normal text-muted-foreground">
-                    {plan.name === "Trial" ? "" : " /month"}
+                    {plan.name === "Free" ? "" : " /month"}
                   </span>
                 </p>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  {plan.name === "Trial"
-                    ? "14 days. No payment card. Pro capacity."
-                    : "Per workspace, excluding VAT."}
+                  {plan.name === "Free"
+                    ? "Forever. No card required."
+                    : "Per workspace per month + VAT."}
                 </p>
                 <p className="mt-6 min-h-12 text-sm leading-relaxed text-muted-foreground">
                   {plan.audience}
                 </p>
                 <ul className="my-7 space-y-3 text-sm">
                   {[
-                    `${plan.employees} employees`,
-                    `${plan.campaigns} active campaigns`,
-                    `${plan.admins} admins, including the owner`,
-                    "Annual and 360 workflows",
-                    "Email support",
+                    `${plan.employees} active employees`,
+                    `${plan.campaigns} active campaign${plan.campaigns === 1 ? "" : "s"}`,
+                    `${plan.admins} admin${plan.admins === 1 ? "" : "s"}, including the owner`,
+                    "Employee / annual appraisals",
+                    ...(plan.feedback360 ? ["Anonymous 360 appraisals"] : []),
+                    plan.templates,
+                    "Results and history retained",
+                    plan.support,
                     ...(plan.setup ? ["Optional setup session"] : []),
                   ].map((item) => (
                     <li key={item} className="flex gap-2">
@@ -112,9 +104,9 @@ export default function PricingPage() {
                   asChild
                 >
                   <a
-                    href={PRIMARY_CTA_URL}
+                    href={plan.name === "Free" ? PRIMARY_CTA_URL : planContactHref(plan.name)}
                   >
-                    {trialCta}
+                    {plan.name === "Free" ? PRIMARY_CTA_LABEL : `Contact us about ${plan.name}`}
                     <ArrowRight className="size-4" aria-hidden />
                   </a>
                 </Button>
@@ -175,14 +167,12 @@ export default function PricingPage() {
                     label: "Admins (including owner)",
                     values: availablePlans.map((p) => p.admins),
                   },
-                  ...capabilities.map((label) => ({
-                    label,
-                    values: availablePlans.map(() => "Included"),
-                  })),
-                  {
-                    label: "Optional setup session",
-                    values: availablePlans.map((p) => (p.setup ? "Included" : "—")),
-                  },
+                  { label: "Employee appraisals", values: availablePlans.map(() => "Included") },
+                  { label: "Anonymous 360 appraisals", values: availablePlans.map((p) => p.feedback360 ? "Included" : "Available on Pro") },
+                  { label: "Templates", values: availablePlans.map((p) => p.templates) },
+                  { label: "Results / history", values: availablePlans.map(() => "Retained") },
+                  { label: "Branding", values: availablePlans.map(() => "Logo / accent; platform branding retained") },
+                  { label: "Support", values: availablePlans.map((p) => p.support) },
                 ].map((row) => (
                   <tr
                     key={row.label}
@@ -207,7 +197,7 @@ export default function PricingPage() {
           <div className="mt-7 grid gap-6 text-sm leading-relaxed text-muted-foreground md:grid-cols-3">
             <p>
               <strong className="text-foreground">Employees</strong> are the
-              people held in your workspace. External 360 reviewers do not use
+              active people held in your workspace. Archived employees do not count. External 360 reviewers do not use
               employee capacity.
             </p>
             <p>
@@ -265,8 +255,8 @@ export default function PricingPage() {
       <FaqSection
         items={[
           {
-            question: trialReleased ? "What happens after the 14-day trial?" : "How do paid plans work?",
-            answer: trialReleased ? "Your workspace becomes read-only. Existing data and completed results remain available; collection, edits, scheduling and reminders stop. Contact us for manual paid activation. There is no automatic charge." : "Both workflows are included. Our team confirms the capacity, monthly price and VAT before activating your paid workspace.",
+            question: "Is Free really permanent?",
+            answer: "Yes. Free includes up to 10 active employees, 1 scheduled or active employee appraisal campaign and 1 admin. No card is required. Close a campaign, keep its results and run the next one. Upgrade to Pro when you need more capacity or anonymous 360 feedback.",
           },
           {
             question: "Are prices per employee?",
@@ -304,8 +294,8 @@ export default function PricingPage() {
         ]}
       />
       <CtaBand
-        title="Let’s find the right starting point."
-        copy="Tell us how many people you review and how your cycles work. We will help you choose the capacity you need."
+        title="Start with a real employee appraisal."
+        copy="Free forever for up to 10 active employees. No card required. Keep your results and upgrade when your team needs more."
         secondaryLabel="See how it works"
         secondaryHref="/how-it-works"
       />

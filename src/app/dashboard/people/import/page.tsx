@@ -1,3 +1,4 @@
+import { employeeCapacity, type WorkspaceEntitlement } from "@/lib/billing/plan";
 import { requireOrgAdmin } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
@@ -27,14 +28,20 @@ export default async function PeopleImportPage({
   const supabase = await createClient();
   const { data: people, error } = await supabase
     .from("people")
-    .select("email")
+    .select("email, reviewer_only")
     .eq("organization_id", orgAdmin.org.id)
     .is("archived_at", null);
 
   if (error) throw new Error("Unable to load people");
 
+  const entitlementResult = await supabase.rpc("get_workspace_entitlement", { p_organization_id: orgAdmin.org.id });
+  if (entitlementResult.error || !entitlementResult.data) throw new Error("Unable to load workspace plan");
+  const limit = employeeCapacity((entitlementResult.data as unknown as WorkspaceEntitlement).plan);
+
   return (
     <ImportWorkspace
+      employeeLimit={limit}
+      activeEmployeeCount={(people ?? []).filter((p) => !p.reviewer_only).length}
       returnTo={returnTo}
       existingEmails={(people ?? []).map((person) => person.email)}
       error={params.error}

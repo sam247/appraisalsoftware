@@ -47,7 +47,7 @@ Resource copy and template blocks are maintained in `src/lib/resource-content.ts
 
 ## Conversion and product accuracy
 
-Start free links to the existing `/signup`; no account was created during verification. Shared navigation has the product CTA; the footer has no signup promotion. Templates open with the usable form and copy/print actions. Most appraisal and 360 resources have one contextual product bridge after the useful material. Hubs have no body signup CTA.
+Start Free links to the existing `/signup`; no account was created during verification. Shared navigation has the product CTA; the footer has no signup promotion. Templates open with the usable form and copy/print actions. Most appraisal and 360 resources have one contextual product bridge after the useful material. Hubs have no body signup CTA.
 
 Current product evidence was read from the phase records and results/respondent code: annual campaigns, anonymous 360 campaigns, reusable questions, identified self/manager assignments, multi-rater invitations, reminders, completion, Self vs Manager answers and closed 360 combined results. Advanced analytics and app PDF/CSV exports remain planned. Browser printing of resource forms is independent of those app exports. Marketing form/report panels are labelled as illustrations or product previews. No plan prices, unlimited allowances or guaranteed anonymity are asserted.
 
@@ -81,4 +81,4 @@ The final HTTP audit discovered that the existing proxy used `pathname.startsWit
 - HTTP audit confirms 20 successful public routes, unique titles, self-canonicals, valid sharing-image URLs, sitemap alignment, internal links, contents anchors and no 360 collection signup bridge.
 - All 20 pages were checked at a 390px viewport: no horizontal overflow or error overlay, and one H1 per page. Desktop template layout and mobile navigation were also checked.
 - Browser checks confirm copy success, blocked-clipboard manual fallback and print-button invocation. A browser-generated template PDF was rendered and inspected for readability and absence of navigation/promotion.
-- Start free reaches the existing signup form; signup and login return noindex metadata. No account was created, no backend data was changed and nothing was deployed.
+- Start Free reaches the existing signup form; signup and login return noindex metadata. No account was created, no backend data was changed and nothing was deployed.

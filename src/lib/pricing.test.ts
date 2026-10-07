@@ -12,7 +12,7 @@ describe("public commercial plans", () => {
         p.setup,
       ]),
     ).toEqual([
-      ["Trial", "£0", 75, 5, 3, false],
+      ["Free", "£0", 10, 1, 1, false],
       ["Pro", "£39.99", 75, 5, 3, false],
       ["Organisation", "£89.99", 250, 20, 10, true],
     ]);

@@ -273,10 +273,10 @@ export default function Page() {
               "No. This is a focused review workflow for reusable questions, assignments, invitations, reminders, completion and results.",
           },
           {
-            question: "Can we prepare with free templates first?",
+            question: "Can we start with Free?",
             answer: (
               <>
-                Yes.{" "}
+                Yes. Run employee appraisals for up to 10 people on Free, with no card required. Anonymous 360 is available on Pro.{" "}
                 <Link href="/templates" className="text-primary underline">
                   Copy or print a free template
                 </Link>{" "}

@@ -1,4 +1,3 @@
-import { trialCta } from "@/lib/billing/trial";
 import { absoluteUrl } from "@/lib/site";
 import { LEGAL_ROUTES } from "@/lib/routes";
 
@@ -23,7 +22,7 @@ export const APP_ORIGIN = (
  * Primary commercial CTA — standalone product on the app host.
  */
 export const PRIMARY_CTA_URL = `${APP_ORIGIN}/signup`;
-export const PRIMARY_CTA_LABEL = trialCta;
+export const PRIMARY_CTA_LABEL = "Start Free";
 
 /** Kept empty — no transition copy needed for a standalone product. */
 export const PRIMARY_CTA_TRANSITION = "";
@@ -33,7 +32,7 @@ export const SEE_HOW_IT_WORKS_HREF = "/how-it-works";
 export const SEE_HOW_IT_WORKS_LABEL = "See how it works";
 
 /**
- * Reserved for when genuine self-serve onboarding/trial exists.
+ * Reserved for when genuine self-serve onboarding exists.
  * Do NOT use in UI while PRIMARY_CTA_URL is still a placeholder.
  */
 export const TRY_APPRAISAL_URL = "";

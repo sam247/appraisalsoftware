@@ -21,8 +21,7 @@ export function Hero() {
               Appraisal software without the <span className="marketing-editorial text-primary">heavyweight HR system.</span>
             </h1>
             <p className={`mt-5 ${marketingType.lead}`}>
-              Run employee appraisals and anonymous 360 feedback in one place —
-              with free templates and practical guidance when you need them.
+              Run employee appraisals for up to 10 people free, with templates and retained results. No card required. Upgrade when you need more capacity or anonymous 360 feedback.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Button size="lg" className="w-full px-7 sm:w-auto" asChild>

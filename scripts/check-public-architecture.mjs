@@ -21,6 +21,7 @@ const pages = await Promise.all(publicUrls.map(async (url) => {
   const response = await fetch(`${origin}${url.pathname}`, { redirect: "manual" });
   assert.equal(response.status, 200, url.pathname);
   const html = await response.text();
+  assert(!/14.day trial|trial expiry|start free trial|trial ends|trial has ended/i.test(html), `${url.pathname}: obsolete trial proposition`);
   assert.equal([...html.matchAll(/<h1(?:\s|>)/g)].length, 1, `${url.pathname}: one H1`);
   const links = [...html.matchAll(/<link\b[^>]*>/g)].map((match) => attributes(match[0]));
   assert.equal(links.find((link) => link.rel === "canonical")?.href.replace(/\/$/, ""), url.href.replace(/\/$/, ""), `${url.pathname}: self canonical`);
@@ -35,12 +36,12 @@ const pages = await Promise.all(publicUrls.map(async (url) => {
   const header = html.match(/<header\b[^>]*>(.*?)<\/header>/s)?.[1];
   assert(header, `${url.pathname}: public header`);
   const headerHrefs = [...header.matchAll(/<a\b[^>]*>/g)].map((match) => attributes(match[0]).href);
-  assert.equal(headerHrefs.length, 4, "Brand, pricing, sign in and trial only");
+  assert.equal(headerHrefs.length, 4, "Brand, pricing, sign in and Start Free only");
   for (const anchor of html.matchAll(/<a\b([^>]*)>(.*?)<\/a>/gs)) {
     const href = attributes(anchor[1]).href;
     if (!href || !/^https?:|^\//.test(href)) continue;
     if (new URL(href, url).pathname !== "/signup") continue;
-    assert.equal(anchor[2].replace(/<[^>]*>/g, "").trim(), "Start free trial", `${url.pathname}: signup CTA`);
+    assert.equal(anchor[2].replace(/<[^>]*>/g, "").trim(), "Start Free", `${url.pathname}: signup CTA`);
   }
   return { path: url.pathname, url, html, anchors: new Set([...html.matchAll(/\bid="([^"]+)"/g)].map((match) => match[1])) };
 }));

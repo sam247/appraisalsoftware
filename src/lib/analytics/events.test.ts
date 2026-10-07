@@ -36,7 +36,7 @@ describe("consent-aware analytics", () => {
     const { GoogleAnalytics } = await import("@/components/analytics/GoogleAnalytics");
     state.consent = true; GoogleAnalytics();
     const { trackEvent, publicAnalyticsPath, safeReferrer } = await import("./events");
-    for (const event of ["signup_start", "sign_up", "trial_activation", "generate_lead", "support_enquiry"] as const) expect(trackEvent(event)).toBe(true);
+    for (const event of ["signup_start", "sign_up", "campaign_activation", "generate_lead", "support_enquiry"] as const) expect(trackEvent(event)).toBe(true);
     expect(publicAnalyticsPath("/signup?token=secret")).toBeNull();
     expect(publicAnalyticsPath("/dashboard")).toBeNull();
     expect(safeReferrer("https://example.com/a?email=x@y.com")).toBe("https://example.com");

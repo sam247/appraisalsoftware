@@ -370,7 +370,33 @@ describe("annual appraisal UX safeguards", () => {
     });
   });
 
+  it("rejects an over-limit CSV before creating departments or inserting any employees", async () => {
+    mocks.from.mockReset();
+    mocks.rpc.mockResolvedValueOnce({ data: { plan: "free" }, error: null });
+    const existing = query({ data: Array.from({ length: 9 }, (_, i) => ({ email: `person${i}@example.test`, reviewer_only: false })) });
+    mocks.from.mockReturnValueOnce(existing);
+    const data = new FormData();
+    data.set("file", new File(["email,department\nnew1@example.test,New department\nnew2@example.test,New department"], "people.csv"));
+    await expect(importPeopleCsv(data)).rejects.toThrow("Import%20would%20result%20in%2011%20active%20employees");
+    expect(mocks.from).toHaveBeenCalledTimes(1);
+    expect(existing.insert).not.toHaveBeenCalled();
+  });
+
+  it("counts reviewer-only people as existing emails but not employee capacity", async () => {
+    mocks.from.mockReset();
+    mocks.rpc.mockResolvedValueOnce({ data: { plan: "free" }, error: null });
+    const existing = query({ data: [{ email: "reviewer@example.test", reviewer_only: true }, ...Array.from({ length: 9 }, (_, i) => ({ email: `person${i}@example.test`, reviewer_only: false }))] });
+    const departments = query({ data: [] });
+    const insert = query({ error: null });
+    mocks.from.mockReturnValueOnce(existing).mockReturnValueOnce(departments).mockReturnValueOnce(insert);
+    const data = new FormData();
+    data.set("file", new File(["email\nreviewer@example.test\nnew@example.test"], "people.csv"));
+    await expect(importPeopleCsv(data)).rejects.toThrow("ok=1%20ready%20imported");
+    expect(insert.insert).toHaveBeenCalledWith([expect.objectContaining({ email: "new@example.test" })]);
+  });
+
   it("returns contextual people imports to the campaign participant workspace", async () => {
+    mocks.rpc.mockResolvedValueOnce({ data: { plan: "free" }, error: null });
     const existing = query({ data: [{ email: "existing@example.test" }] });
     const departments = query({ data: [] });
     const insert = query({ error: null });

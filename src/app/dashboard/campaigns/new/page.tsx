@@ -1,3 +1,4 @@
+import { type WorkspaceEntitlement } from "@/lib/billing/plan";
 import { requireOrgAdmin } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
@@ -22,6 +23,18 @@ export default async function NewCampaignPage({
   const params = await searchParams;
   const supabase = await createClient();
   const is360 = params.type === "360";
+  const entitlementResult = await supabase.rpc("get_workspace_entitlement", { p_organization_id: orgAdmin.org.id });
+  if (entitlementResult.error || !entitlementResult.data) throw new Error("Unable to load workspace plan");
+  const entitlement = entitlementResult.data as unknown as WorkspaceEntitlement;
+  if (is360 && entitlement.plan === "free") return (
+    <section className="max-w-xl space-y-4">
+      <h1 className="text-2xl font-semibold">Anonymous 360 appraisals</h1>
+      <p>Collect anonymous feedback from managers, peers and direct reports. This workflow is available on Pro at £39.99/month + VAT.</p>
+      <p>Free includes employee appraisals for 10 active employees, 1 active campaign and 1 admin. Your results stay available.</p>
+      <p><a className="text-primary underline" href="/dashboard/upgrade">Explore upgrading to Pro</a></p>
+      <p><a className="text-primary underline" href="/360-appraisals">See how 360 works</a> · <a className="text-primary underline" href="/templates">Browse templates</a></p>
+    </section>
+  );
   const initialTemplateId = params.template?.trim() || "";
 
   const { data: rawTemplates, error: templateError } = await supabase

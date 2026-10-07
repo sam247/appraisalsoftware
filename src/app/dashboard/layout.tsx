@@ -1,8 +1,7 @@
-import { WorkspaceTrial } from "@/components/analytics/WorkspaceTrial";
-import { trialReleased, type WorkspaceEntitlement } from "@/lib/billing/trial";
+import { WorkspaceActivation } from "@/components/analytics/WorkspaceActivation";
+import { type WorkspaceEntitlement } from "@/lib/billing/plan";
 import type { Metadata } from "next";
 import { requireOrgAdmin } from "@/lib/auth/session";
-import { isFreePlan } from "@/lib/billing/plan";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { hasLaunchedCampaign } from "./workspace-state";
@@ -36,7 +35,7 @@ export default async function DashboardLayout({
   ]);
   if (campaignResult.error) throw new Error("Unable to load workspace navigation");
   const entitlementResult = await supabase.rpc("get_workspace_entitlement", { p_organization_id: org.id });
-  if (entitlementResult.error && trialReleased) throw new Error("Unable to load workspace access");
+  if (entitlementResult.error || !entitlementResult.data) throw new Error("Unable to load workspace access");
   const entitlement = entitlementResult.data as unknown as WorkspaceEntitlement | null;
   const profile = profileResult.data;
 
@@ -50,11 +49,11 @@ export default async function DashboardLayout({
       email={email}
       role={membership.role}
       avatarUrl={profile?.avatar_url ?? null}
-      showUpgrade={entitlement ? entitlement.plan === "trial" || entitlement.plan === "legacy" : isFreePlan(org)}
+      showUpgrade={entitlement?.plan === "free"}
       showGettingStarted={!(campaignResult.data ?? []).some(hasLaunchedCampaign)}
     >
       <div className="dashboard-content">
-        <WorkspaceTrial orgId={org.id} entitlement={entitlement} />
+        <WorkspaceActivation orgId={org.id} entitlement={entitlement} />
         {children}
       </div>
     </AppNavigation>

@@ -8,7 +8,7 @@ export const SITE_TITLE =
   "Appraisal Software for UK Teams | Employee Appraisals";
 
 export const SITE_DESCRIPTION =
-  "Appraisal software for UK teams. Run employee and manager reviews, anonymous 360 feedback campaigns, reusable forms and completion tracking — without a heavyweight HR system.";
+  "Free appraisal software for small UK teams. Run employee appraisals for up to 10 people with retained results. Upgrade for more capacity or anonymous 360 feedback.";
 
 export function isIndexableDeployment(environment: string | undefined, nodeEnvironment: string | undefined): boolean {
   return environment ? environment === "production" : nodeEnvironment === "production";

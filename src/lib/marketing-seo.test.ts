@@ -1,3 +1,5 @@
+import PricingPage from "@/app/pricing/page";
+import { PricingPreview } from "@/components/home/HomeBands";
 import { describe, expect, it, vi } from "vitest";
 import { NextRequest } from "next/server";
 import { proxy } from "@/proxy";
@@ -33,6 +35,25 @@ vi.mock("@/lib/supabase/middleware", async () => {
 });
 
 describe("marketing routes and indexability", () => {
+  it("renders permanent Free with manual paid CTAs and a compact accurate comparison", () => {
+    const pricing = renderToStaticMarkup(createElement(PricingPage));
+    const preview = renderToStaticMarkup(createElement(PricingPreview));
+    for (const html of [pricing, preview]) {
+      expect(html).toContain("Start Free");
+      expect(html).toContain("£0");
+      expect(html).toContain("£39.99");
+      expect(html).toContain("£89.99");
+      expect(html).toContain("Forever");
+      expect(html).not.toMatch(/trial|14.day|read.only/i);
+    }
+    expect(pricing).toContain("10 active employees");
+    expect(pricing).toContain("1 active campaign");
+    expect(pricing).toContain("1 admin, including the owner");
+    expect(pricing).toContain("Available on Pro");
+    expect(pricing).toContain("/contact?type=pricing&amp;plan=Pro");
+    expect(pricing).toContain("/contact?type=pricing&amp;plan=Organisation");
+    expect(pricing.match(/<tr/g)).toHaveLength(10);
+  });
   it("renders collapsed native FAQs with their full answers on home and shared sections", () => {
     const shared = renderToStaticMarkup(createElement(FaqSection, { items: [{ question: "Example question", answer: "Complete answer" }] }));
     expect(shared).toContain("<details");
@@ -53,7 +74,7 @@ describe("marketing routes and indexability", () => {
       expect(metadata.robots).toEqual({ index: false, follow: true });
       expect(sitemap().map((entry) => entry.url)).not.toContain(href);
     }
-    expect(PRIMARY_CTA_LABEL).toBe("Start free trial");
+    expect(PRIMARY_CTA_LABEL).toBe("Start Free");
   });
   it("consolidates both retired commercial pages directly with 301 redirects", async () => {
     const redirects = await nextConfig.redirects!();

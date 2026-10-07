@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import { useTransition, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { activateCampaign } from "../actions";
@@ -34,7 +36,7 @@ export default function ActivateButton({
         {isPending ? "Sending…" : label}
       </Button>
       {error && (
-        <p className="mt-2 text-sm text-destructive">{error}</p>
+        <p role="alert" className="mt-2 text-sm text-destructive">{error}{error.includes("/dashboard/upgrade") && <> <Link href="/dashboard/upgrade" className="underline">Explore upgrading</Link></>}</p>
       )}
     </div>
   );

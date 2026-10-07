@@ -1,4 +1,3 @@
-import { trialReleased } from "@/lib/billing/trial";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -108,10 +107,10 @@ export function PricingPreview() {
               A clear way to start
             </p>
             <h2 className="mt-4 max-w-2xl font-display text-[2rem] font-semibold leading-[1.1] tracking-[-0.035em] sm:text-[2.5rem]">
-              {trialReleased ? "Try both workflows. Choose your capacity." : "Two workflows. Clear paid capacity."}
+              Free appraisal software for small teams.
             </h2>
             <p className="mt-4 max-w-xl text-base leading-relaxed text-muted-foreground">
-              Create a workspace now, or compare paid plans for teams ready to
+              Start Free for up to 10 active employees, or compare paid plans to
               grow their review process.
             </p>
           </div>
@@ -124,10 +123,10 @@ export function PricingPreview() {
         </div>
         <div className="mt-9 grid gap-4 md:grid-cols-3">
           <div className="marketing-card rounded-2xl border border-border bg-card p-6">
-            <p className="text-sm font-semibold">{trialReleased ? "14-day trial" : "Annual appraisals + anonymous 360"}</p>
-            <p className="mt-5 text-3xl font-semibold tracking-tight">{trialReleased ? "£0" : "One workspace"}</p>
+            <p className="text-sm font-semibold">Free</p>
+            <p className="mt-5 text-3xl font-semibold tracking-tight">£0 · Forever</p>
             <p className="mt-2 text-sm text-muted-foreground">
-              {trialReleased ? `${plans[0].employees} employees · ${plans[0].campaigns} active campaigns · ${plans[0].admins} admins. Read-only after 14 days unless upgraded.` : "Collect employee and manager reviews, or run an anonymous multi-rater feedback campaign."}
+              {plans[0].employees} active employees · {plans[0].campaigns} active campaign · {plans[0].admins} admin. Employee appraisals, standard templates and retained results. No card required.
             </p>
             <a
               href={PRIMARY_CTA_URL}

@@ -13,7 +13,7 @@ import { pageMetadata } from "@/lib/metadata";
 import { ROUTES } from "@/lib/routes";
 import { breadcrumbSchema, softwareApplicationSchema } from "@/lib/schema";
 
-const description = "Run 360 appraisals for UK teams. Invite managers, peers and direct reports, collect anonymous feedback and turn combined results into a useful development conversation.";
+const description = "Run anonymous 360 appraisals for UK teams on Pro at £39.99/month + VAT. Invite managers, peers and direct reports, collect anonymous feedback and turn combined results into a useful development conversation.";
 export const metadata = pageMetadata({
   title: "360 Appraisals & Feedback Software for UK Teams | Appraisal Software",
   description,
@@ -34,28 +34,26 @@ export default function Page() {
       <JsonLd data={softwareApplicationSchema({ path: ROUTES.feedback360Software, name: "360 Appraisals", description })} />
       <section className="overflow-hidden pb-16 pt-12 sm:pb-24 sm:pt-16 lg:pt-20">
         <div className="mx-auto max-w-6xl px-5 lg:px-8">
-          <div className="grid items-center gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
+          <div className="grid items-center gap-12 lg:grid-cols-[3fr_2fr] lg:gap-16">
             <div className="max-w-xl">
-              <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">360 appraisal software for UK teams</p>
-              <h1 className={marketingType.h1Home}>360 appraisals.<br /><span className="marketing-editorial text-primary">A fuller picture of their work.</span></h1>
+              <h1 className="font-display text-[2.875rem] font-semibold leading-[1.06] tracking-[-0.045em] text-ink sm:text-[3.8125rem] lg:text-[4.125rem]"><span className="block text-primary">360 appraisal</span>{" "}software.</h1>
               <p className={`mt-6 ${marketingType.lead}`}>Bring managers, peers and direct reports into the conversation. Collect anonymous feedback in one clear process, then use the combined results to help people develop.</p>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <Button size="lg" className="px-7" asChild><a href={PRIMARY_CTA_URL}>{PRIMARY_CTA_LABEL}<ArrowRight className="size-4" aria-hidden /></a></Button>
-                <Button size="lg" variant="outline" className="px-7" asChild><a href="#how-it-works">See how 360 appraisals work</a></Button>
               </div>
-              <p className="mt-5 text-xs leading-relaxed text-muted-foreground">Reusable questions · Personal reviewer links · Combined results</p>
+              <p className="mt-5 text-xs leading-relaxed text-muted-foreground">Anonymous feedback · 5+ reviewers · Combined results</p>
             </div>
             <figure className="min-w-0">
               <div className="relative aspect-[5/4] overflow-hidden rounded-2xl bg-surface-2">
-                <Image src="/marketing/team-conversation.jpg" alt="Three colleagues sharing perspectives around a table" fill priority sizes="(min-width: 1024px) 45vw, 100vw" className="object-cover" />
+                <Image src="/marketing/team-conversation.jpg" alt="Three colleagues sharing perspectives around a table" fill priority sizes="(min-width: 1152px) 410px, (min-width: 1024px) 38vw, calc(100vw - 40px)" className="object-cover" />
               </div>
-              <div className="relative mx-3 -mt-14 rounded-2xl border border-border bg-card p-5 shadow-[0_24px_55px_-40px_rgb(21_38_29_/_0.5)] sm:mx-6 sm:p-6">
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <p className="text-sm font-semibold">360 feedback summary</p>
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-2.5 py-1 text-[11px] font-medium text-primary"><CheckCircle2 className="size-3.5" aria-hidden />Closed · 8 reviewers</span>
+              <div className="relative mx-3 -mt-[70px] rounded-2xl border border-border bg-card p-5 shadow-[0_24px_55px_-40px_rgb(21_38_29_/_0.5)] sm:mx-6 sm:p-6">
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-xs font-semibold">360 feedback summary</p>
+                  <span className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full bg-primary/10 px-2 py-0.5 text-[9px] font-medium text-primary"><CheckCircle2 className="size-3" aria-hidden />Closed · 8 reviewers</span>
                 </div>
                 <dl className="mt-4 space-y-3">
-                  {[["Explains priorities clearly", "4.2", 84], ["Follows through on commitments", "4.5", 90], ["Supports colleagues", "4.0", 80]].map(([label, score, width]) => (
+                  {[["Explains priorities clearly", "4.2", 84], ["Follows through on commitments", "4.5", 90]].map(([label, score, width]) => (
                     <div key={label}>
                       <div className="flex justify-between gap-3 text-xs"><dt>{label}</dt><dd className="shrink-0 font-semibold tabular-nums">{score} / 5</dd></div>
                       <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-surface-2" aria-hidden><div className="h-full rounded-full bg-primary/65" style={{ width: `${width}%` }} /></div>
@@ -140,7 +138,7 @@ export default function Page() {
         { question: "How many reviewers do we need?", answer: "At least five reviewers must complete their responses before results can be released. Invite a relevant cohort with room for non-completion. Each displayed question must also have at least five valid answers." },
         { question: "Are 360 appraisal responses anonymous?", answer: <>Reports combine reviewer responses without names or response times. Comments can still identify their author. Read the <TextLink href="#privacy">privacy safeguards</TextLink> before explaining anonymity to reviewers.</> },
         { question: "Can we choose our own questions?", answer: <>Yes. Use reusable templates with rating and written questions. Our <TextLink href={ROUTES.feedback360Questions}>360 question bank</TextLink> can help you choose practical prompts.</> },
-        { question: "Can we run annual appraisals in the same workspace?", answer: "Yes. Annual appraisals use identified employee and manager responses. The 360 workflow collects anonymous multi-rater feedback. Both are available in the same workspace, with capacity determined by your plan." },
+        { question: "Can we run annual appraisals in the same workspace?", answer: "Yes. Annual appraisals use identified employee and manager responses. The 360 workflow collects anonymous multi-rater feedback. Employee appraisals are included on Free; anonymous 360 is available on Pro and Organisation." },
       ]} />
       <CtaBand title="Start with a fuller picture." copy="Bring the right reviewers together and make your next 360 appraisal a useful development conversation." secondaryHref={ROUTES.pricing} secondaryLabel="See plans and pricing" />
     </SiteChrome>

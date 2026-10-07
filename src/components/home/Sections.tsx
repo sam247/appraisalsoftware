@@ -52,12 +52,12 @@ const homeFaqs = [
   {
     question: "What types of review can we run?",
     answer:
-      "You can run annual employee and manager appraisals, and anonymous 360 feedback campaigns for a single subject with multiple reviewers. Reusable question templates keep both workflows consistent.",
+      "Free includes employee and manager appraisals for up to 10 active employees, with 1 active campaign and 1 admin. Pro adds capacity and anonymous 360 feedback campaigns for a single subject with multiple reviewers. Reusable question templates keep both workflows consistent.",
   },
   {
     question: "How does 360° feedback work?",
     answer:
-      "Create a 360 campaign for one person, invite at least five reviewers, and collect responses through secure personal links. Combined anonymous results unlock after closure once enough reviewers have completed. Free guides and templates help you plan the questions and conversation.",
+      "On Pro, create a 360 campaign for one person, invite at least five reviewers, and collect responses through secure personal links. Combined anonymous results unlock after closure once enough reviewers have completed. Free guides and templates help you plan the questions and conversation.",
   },
   {
     question: "Is feedback anonymous?",

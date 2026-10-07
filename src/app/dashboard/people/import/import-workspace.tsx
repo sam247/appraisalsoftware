@@ -13,10 +13,14 @@ type Preview = {
 };
 
 export default function ImportWorkspace({
+  employeeLimit,
+  activeEmployeeCount,
   returnTo,
   existingEmails,
   error,
 }: {
+  employeeLimit: number | null;
+  activeEmployeeCount: number;
   returnTo: string;
   existingEmails: string[];
   error?: string;
@@ -48,6 +52,8 @@ export default function ImportWorkspace({
     });
   }
 
+  const resultingCount = activeEmployeeCount + (preview?.ready.length ?? 0);
+  const overLimit = employeeLimit !== null && resultingCount > employeeLimit;
   const message = clientError ?? error;
 
   return (
@@ -68,7 +74,7 @@ export default function ImportWorkspace({
         </p>
       </header>
 
-      {message && <p role="alert" className="text-sm text-destructive">{message}</p>}
+      {message && <p role="alert" className="text-sm text-destructive">{message}{message.includes("/dashboard/upgrade") && <> <Link className="underline" href="/dashboard/upgrade">Explore upgrading</Link></>}</p>}
 
       <form action={importPeopleCsv} encType="multipart/form-data">
         <input type="hidden" name="return_to" value={returnTo} />
@@ -99,6 +105,8 @@ export default function ImportWorkspace({
               ? ` · ${preview.attention.length} need attention`
               : ""}
           </p>
+          <p className="mt-2" role="status">Resulting active employees: {resultingCount}{employeeLimit !== null ? ` / ${employeeLimit}` : ""}.</p>
+          {overLimit && <p role="alert">This import exceeds your allowance. Free includes 10 active employees; Pro includes 75 at £39.99/month + VAT. <Link className="underline" href="/dashboard/upgrade">Explore upgrading</Link>. No employees will be imported.</p>}
           {preview.attention.length > 0 && (
             <ul className="mt-3 max-h-32 space-y-1 overflow-y-auto text-xs text-muted-foreground">
               {preview.attention.slice(0, 8).map((item) => <li key={item}>{item}</li>)}
@@ -108,7 +116,7 @@ export default function ImportWorkspace({
       )}
 
         <div className="flex flex-wrap gap-2">
-          <Button type="submit" disabled={!file || !preview?.ready.length}>
+          <Button type="submit" disabled={!file || !preview?.ready.length || overLimit}>
             {preview ? `Import ${preview.ready.length}` : "Import people"}
           </Button>
           <Button type="button" variant="ghost" asChild>
