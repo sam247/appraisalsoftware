@@ -1,4 +1,6 @@
 import { trialCta } from "@/lib/billing/trial";
+import { absoluteUrl } from "@/lib/site";
+import { LEGAL_ROUTES } from "@/lib/routes";
 
 /** Parent team — subtle footer reference only. */
 export const DISCLOSURELY_URL = "https://disclosurely.com";
@@ -40,6 +42,7 @@ export const TRY_APPRAISAL_LABEL = "Try appraisal software";
 /** App login — existing customers. */
 export const SIGN_IN_URL = `${APP_ORIGIN}/login`;
 
-export const PRIVACY_URL = `${DISCLOSURELY_URL}/privacy`;
+export const PRIVACY_URL = absoluteUrl(LEGAL_ROUTES.privacy);
+export const COOKIE_POLICY_URL = absoluteUrl(LEGAL_ROUTES.cookies);
 export const TERMS_URL = `${DISCLOSURELY_URL}/terms`;
 export const CONTACT_URL = `${DISCLOSURELY_URL}/contact`;

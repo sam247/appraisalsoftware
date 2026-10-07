@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, ShieldCheck } from "lucide-react";
+import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { SiteChrome } from "@/components/layout/SiteChrome";
 import { PricingPreview } from "@/components/home/HomeBands";
 import { CtaBand, FaqSection, RelatedLinks, TextLink } from "@/components/marketing/PageSections";
@@ -107,13 +107,21 @@ export default function Page() {
       </section>
 
       <section id="privacy" className="scroll-mt-24 border-b border-border bg-surface-2/70 px-5 py-20 sm:py-24 lg:px-8">
-        <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:gap-20">
-          <div><ShieldCheck className="mb-5 size-10 text-primary" strokeWidth={1.5} aria-hidden /><p className={marketingType.eyebrow}>Clear privacy expectations</p><h2 className={`mt-4 ${marketingType.h2}`}>Give reviewers clarity before they give feedback.</h2></div>
-          <div className="space-y-5 leading-relaxed text-muted-foreground">
-            <p>Results unlock after campaign closure and at least five completed reviewer responses. Each displayed question also needs five valid answers; questions below that threshold are suppressed.</p>
-            <p>Reviewers form one combined group. Reports show no reviewer names or response times, and do not compare managers, peers and direct reports as separate groups.</p>
-            <p>Written comments can still reveal their author through a distinctive situation or phrasing. Explain this before sending invitations, and choose reviewers with recent, relevant experience of the person’s work.</p>
-            <p className="text-sm">Ordinary workspace administrators cannot query the private reviewer-to-answer mapping. Trusted platform and database operators can access operational records. Shared invitation links and outside knowledge can also affect anonymity.</p>
+        <div className="mx-auto max-w-6xl">
+          <div className="mx-auto max-w-3xl text-center">
+            <p className={marketingType.eyebrow}>Clear privacy expectations</p>
+            <h2 className={`mt-4 ${marketingType.h2}`}>Give reviewers clarity before they give feedback.</h2>
+          </div>
+          <div className="mt-10 grid items-center gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:gap-20">
+            <div className="relative mx-auto aspect-[3/2] w-full max-w-xl overflow-hidden rounded-2xl bg-surface-2">
+              <Image src="/marketing/one-to-one.jpg" alt="Two colleagues listening and sharing thoughts over a notebook" fill sizes="(min-width: 1152px) 456px, (min-width: 1024px) 38vw, (min-width: 640px) 576px, calc(100vw - 40px)" className="object-cover" />
+            </div>
+            <div className="space-y-5 leading-relaxed text-muted-foreground">
+              <p>Results unlock after campaign closure and at least five completed reviewer responses. Each displayed question also needs five valid answers; questions below that threshold are suppressed.</p>
+              <p>Reviewers form one combined group. Reports show no reviewer names or response times, and do not compare managers, peers and direct reports as separate groups.</p>
+              <p>Written comments can still reveal their author through a distinctive situation or phrasing. Explain this before sending invitations, and choose reviewers with recent, relevant experience of the person’s work.</p>
+              <p className="text-sm">Ordinary workspace administrators cannot query the private reviewer-to-answer mapping. Trusted platform and database operators can access operational records. Shared invitation links and outside knowledge can also affect anonymity.</p>
+            </div>
           </div>
         </div>
       </section>
@@ -124,7 +132,7 @@ export default function Page() {
         { href: ROUTES.feedback360Examples, label: "360 feedback examples", copy: "See how to write specific comments and discuss feedback." },
         { href: ROUTES.feedback360Template, label: "360 feedback template", copy: "Copy or print a form to plan your appraisal." },
       ]} />
-      <FaqSection items={[
+      <FaqSection collapsible items={[
         { question: "What is a 360 appraisal?", answer: "A 360 appraisal collects observations from several people who work with the subject, such as managers, peers and direct reports. It gives a broader starting point for discussing strengths and development needs." },
         { question: "Is a 360 appraisal the same as 360 degree feedback?", answer: "The terms are often used for the same multi-rater process. Be clear about the purpose of your exercise: development feedback and a formal assessment of performance can have different implications for reviewers." },
         { question: "How many reviewers do we need?", answer: "At least five reviewers must complete their responses before results can be released. Invite a relevant cohort with room for non-completion. Each displayed question must also have at least five valid answers." },

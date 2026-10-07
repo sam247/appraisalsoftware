@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { NextRequest } from "next/server";
 import { proxy } from "@/proxy";
 import { existsSync, readFileSync } from "node:fs";
-import { INDEXABLE_PATHS } from "@/lib/routes";
+import { INDEXABLE_PATHS, LEGAL_ROUTES } from "@/lib/routes";
 import { isIndexableDeployment, absoluteUrl } from "@/lib/site";
 import sitemap from "@/app/sitemap";
 import { resources, resourceListings } from "@/lib/resource-content";
@@ -13,6 +13,12 @@ import { createHash } from "node:crypto";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { ResourceHub } from "@/components/resources/ResourceHub";
+import { metadata as privacyMetadata } from "@/app/privacy/page";
+import { metadata as cookiesMetadata } from "@/app/cookies/page";
+import { COOKIE_POLICY_URL, PRIVACY_URL, PRIMARY_CTA_LABEL } from "@/lib/links";
+
+// These server-rendering checks isolate the client consent controls; browser checks exercise the real provider.
+vi.mock("@c15t/nextjs", () => ({ useConsentDialogTrigger: () => ({ openDialog: vi.fn() }) }));
 
 vi.mock("@/lib/supabase/middleware", async () => {
   const { NextResponse } = await import("next/server");
@@ -25,6 +31,18 @@ vi.mock("@/lib/supabase/middleware", async () => {
 });
 
 describe("marketing routes and indexability", () => {
+  it("keeps first-party legal destinations self-canonical and outside the SEO inventory", () => {
+    for (const [path, metadata, href] of [
+      [LEGAL_ROUTES.privacy, privacyMetadata, PRIVACY_URL],
+      [LEGAL_ROUTES.cookies, cookiesMetadata, COOKIE_POLICY_URL],
+    ] as const) {
+      expect(metadata.alternates?.canonical).toBe(absoluteUrl(path));
+      expect(href).toBe(absoluteUrl(path));
+      expect(metadata.robots).toEqual({ index: false, follow: true });
+      expect(sitemap().map((entry) => entry.url)).not.toContain(href);
+    }
+    expect(PRIMARY_CTA_LABEL).toBe("Start free trial");
+  });
   it("consolidates both retired commercial pages directly with 301 redirects", async () => {
     const redirects = await nextConfig.redirects!();
     for (const [source, destination] of [

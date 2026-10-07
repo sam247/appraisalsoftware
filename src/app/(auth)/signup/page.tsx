@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { trialReleased } from "@/lib/billing/trial";
+import { trialReleased, trialCta } from "@/lib/billing/trial";
 import { trackEvent } from "@/lib/analytics/events";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
@@ -184,7 +184,7 @@ export default function SignupPage() {
           </div>
 
           <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "Setting up…" : trialReleased ? "Start your 14-day free trial" : "Create account"}
+            {loading ? "Setting up…" : trialCta}
           </Button>
 
           <p className="text-center text-xs text-muted-foreground">

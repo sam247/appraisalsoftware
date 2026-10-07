@@ -31,3 +31,5 @@ Performance: **proven** means Sam reports meaningful organic traffic today. **Un
 | /blog/when-self-and-manager-ratings-differ | Discuss differing review perspectives | self vs manager ratings differ | appraisal rating disagreement | Article | Resources / Employee Appraisals | /employee-appraisal-software | Unverified | Improve contextual discovery from employee preparation guidance. |
 
 No new category, cadence, synonym or comparison URL is authorised by this map. Revisit ownership only when a distinct visitor task and search evidence support a change. Resource intent remains primary; commercial next steps should be contextual.
+
+Public legal pages added at the user’s request: `/privacy` (Appraisal Software privacy notice) and `/cookies` (browser storage and consent choices). Both self-canonicalise with `noindex, follow` and stay outside the 23-page SEO sitemap. They are available in the streamlined footer and c15t controls. The header contains only Pricing, Sign in and Start free trial, alongside the home logo.

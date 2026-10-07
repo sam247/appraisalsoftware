@@ -6,7 +6,7 @@ import { ResourceVisual } from "@/components/resources/ResourceVisual";
 import { RESOURCE_REVIEW_DATE, resources, type ResourceContent } from "@/lib/resource-content";
 import { articleSchema, breadcrumbSchema } from "@/lib/schema";
 import Link from "next/link";
-import { PRIMARY_CTA_URL } from "@/lib/links";
+import { PRIMARY_CTA_LABEL, PRIMARY_CTA_URL } from "@/lib/links";
 
 const commercialLinks: Record<string, { label: string; copy: string }> = {
   "appraisal-questions": { label: "Appraisal questions", copy: "Choose focused prompts for employee reflection and manager discussion." },
@@ -41,7 +41,7 @@ export function ResourcePage({ resource }: { resource: ResourceContent }) {
             </div>
             <div className="no-print mt-8 space-y-3 border-t border-border pt-6">
               <p className="text-sm leading-relaxed text-muted-foreground">To use these prompts in Appraisal Software, create a workspace and copy the relevant questions into a reusable template. This public form is not automatically imported.</p>
-              <a href={PRIMARY_CTA_URL} className="inline-block text-sm font-semibold text-primary underline underline-offset-4">Use these questions in Appraisal Software</a>
+              <a href={PRIMARY_CTA_URL} className="inline-block text-sm font-semibold text-primary underline underline-offset-4">{PRIMARY_CTA_LABEL}</a>
               {resource.slug === "360-feedback-template" ? <p className="text-sm"><Link href="/360-degree-feedback" className="underline underline-offset-4">Understand the 360 process</Link>{" · "}<Link href="/360-appraisals#privacy" className="underline underline-offset-4">Check the anonymity safeguards</Link></p> : null}
             </div>
           </div>

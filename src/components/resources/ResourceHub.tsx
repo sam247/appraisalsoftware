@@ -6,7 +6,7 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { resourceBySlug, resourceListings } from "@/lib/resource-content";
 import { breadcrumbSchema } from "@/lib/schema";
 import { blogPath, getPublishedPosts } from "@/lib/blog/posts";
-import { PRIMARY_CTA_URL } from "@/lib/links";
+import { PRIMARY_CTA_LABEL, PRIMARY_CTA_URL } from "@/lib/links";
 import { ROUTES } from "@/lib/routes";
 
 const templateGroups = [
@@ -143,7 +143,7 @@ export function ResourceHub({ templates = false }: { templates?: boolean }) {
         <div className="mx-auto max-w-6xl">
           <h2 className="font-display text-2xl font-semibold">{templates ? "Use the prompts in your own process." : "Looking for a form you can use?"}</h2>
           <p className="mt-4 max-w-2xl leading-relaxed text-muted-foreground">{templates ? "These forms work on their own. To run a campaign in Appraisal Software, create a workspace and copy the relevant prompts into a reusable question template. Public forms are not automatically imported." : "Our first-party template library has complete forms for annual reviews, self-appraisals, probation, development plans and 360 feedback."}</p>
-          <a href={templates ? PRIMARY_CTA_URL : ROUTES.templates} className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">{templates ? "Create a workspace to use your questions" : "Browse the template library"}<ArrowRight className="size-4" aria-hidden /></a>
+          <a href={templates ? PRIMARY_CTA_URL : ROUTES.templates} className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">{templates ? PRIMARY_CTA_LABEL : "Browse the template library"}<ArrowRight className="size-4" aria-hidden /></a>
           {!templates ? <p className="mt-6 text-sm text-muted-foreground">More practical notes are available in the <TextLink href={ROUTES.blog}>appraisal blog</TextLink>.</p> : null}
         </div>
       </section>

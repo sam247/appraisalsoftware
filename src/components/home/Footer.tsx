@@ -1,12 +1,9 @@
 import Link from "next/link";
 
-import { Logo } from "@/components/home/Logo";
-import {
-  DISCLOSURELY_URL,
-  PRIVACY_URL,
-  TERMS_URL,
-} from "@/lib/links";
-import { ROUTES } from "@/lib/routes";
+import { BrandMark } from "@/components/home/Logo";
+import { CookieSettings } from "@/components/consent/CookieSettings";
+import { DISCLOSURELY_URL } from "@/lib/links";
+import { LEGAL_ROUTES, ROUTES } from "@/lib/routes";
 
 const footerLinks = {
   product: [
@@ -18,17 +15,11 @@ const footerLinks = {
   resources: [
     { label: "All templates", href: ROUTES.templates },
     { label: "Resource library", href: ROUTES.resources },
-    { label: "Blog", href: ROUTES.blog },
-    { label: "Annual appraisal template", href: ROUTES.annualAppraisalTemplate },
-    { label: "Appraisal questions", href: ROUTES.appraisalQuestions },
-    { label: "Appraisal objectives", href: ROUTES.appraisalObjectives },
-    { label: "What is 360 feedback?", href: ROUTES.feedback360Guide },
-    { label: "360 feedback template", href: ROUTES.feedback360Template },
   ],
   company: [
-    { label: "Disclosurely privacy policy", href: PRIVACY_URL },
-    { label: "Disclosurely terms", href: TERMS_URL },
     { label: "Contact", href: ROUTES.contact },
+    { label: "Privacy policy", href: LEGAL_ROUTES.privacy },
+    { label: "Cookie policy", href: LEGAL_ROUTES.cookies },
   ],
 };
 
@@ -44,8 +35,8 @@ export function Footer() {
       <div className="mx-auto max-w-6xl px-5 py-14 lg:px-8">
         <div className="grid gap-10 md:grid-cols-[1.2fr_2fr]">
           <div>
-            <Link href={ROUTES.home} aria-label="appraisal.software home">
-              <Logo />
+            <Link href={ROUTES.home} className="inline-flex" aria-label="appraisal.software home">
+              <BrandMark size={30} />
             </Link>
             <p className="mt-4 max-w-xs text-xs leading-relaxed text-muted-foreground">
               Appraisal software for UK teams, with free review templates and practical
@@ -82,6 +73,7 @@ export function Footer() {
                       )}
                     </li>
                   ))}
+                  {col.heading === "Company" ? <li><CookieSettings /></li> : null}
                 </ul>
               </div>
             ))}

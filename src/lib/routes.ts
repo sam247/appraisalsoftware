@@ -26,3 +26,6 @@ export const ROUTES = {
 export type RoutePath = (typeof ROUTES)[keyof typeof ROUTES];
 
 export const INDEXABLE_PATHS: RoutePath[] = Object.values(ROUTES);
+
+/** Public legal information, kept outside the SEO landing-page inventory. */
+export const LEGAL_ROUTES = { privacy: "/privacy", cookies: "/cookies" } as const;

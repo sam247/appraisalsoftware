@@ -9,7 +9,7 @@ import {
 } from "@c15t/nextjs";
 
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
-import { PRIVACY_URL } from "@/lib/links";
+import { COOKIE_POLICY_URL, PRIVACY_URL } from "@/lib/links";
 
 const c15tBackendURL = process.env.NEXT_PUBLIC_C15T_BACKEND_URL;
 
@@ -36,9 +36,8 @@ export function ConsentManager({ children }: { children: ReactNode }) {
         legalLinks: {
           privacyPolicy: {
             href: PRIVACY_URL,
-            target: "_blank",
-            rel: "noopener noreferrer",
           },
+          cookiePolicy: { href: COOKIE_POLICY_URL },
         },
         theme: {
           colors: {
@@ -87,14 +86,14 @@ export function ConsentManager({ children }: { children: ReactNode }) {
     >
       <ConsentBanner
         hideBranding
-        legalLinks={["privacyPolicy"]}
+        legalLinks={["privacyPolicy", "cookiePolicy"]}
         title="Cookies"
         description="Essential cookies to run the site, plus optional ones to measure usage."
         layout={["customize", ["reject", "accept"]]}
         direction="column"
         primaryButton="accept"
       />
-      <ConsentDialog hideBranding showTrigger />
+      <ConsentDialog hideBranding showTrigger legalLinks={["privacyPolicy", "cookiePolicy"]} />
       <GoogleAnalytics />
       {children}
     </ConsentManagerProvider>

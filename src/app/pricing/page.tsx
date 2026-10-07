@@ -14,7 +14,7 @@ import { breadcrumbSchema } from "@/lib/schema";
 import { PRIMARY_CTA_URL } from "@/lib/links";
 import { pageMetadata } from "@/lib/metadata";
 import { trialReleased, trialCta } from "@/lib/billing/trial";
-import { plans, paidPlans, planContactHref } from "@/lib/pricing";
+import { plans, paidPlans } from "@/lib/pricing";
 
 const availablePlans = trialReleased ? plans : paidPlans;
 
@@ -112,15 +112,9 @@ export default function PricingPage() {
                   asChild
                 >
                   <a
-                    href={
-                      plan.name === "Trial"
-                        ? PRIMARY_CTA_URL
-                        : planContactHref(plan.name)
-                    }
+                    href={PRIMARY_CTA_URL}
                   >
-                    {plan.name === "Trial"
-                      ? trialCta
-                      : `Ask about ${plan.name}`}
+                    {trialCta}
                     <ArrowRight className="size-4" aria-hidden />
                   </a>
                 </Button>
@@ -312,8 +306,6 @@ export default function PricingPage() {
       <CtaBand
         title="Let’s find the right starting point."
         copy="Tell us how many people you review and how your cycles work. We will help you choose the capacity you need."
-        primaryLabel="Talk about your plan"
-        primaryHref="/contact?type=pricing"
         secondaryLabel="See how it works"
         secondaryHref="/how-it-works"
       />
