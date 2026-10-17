@@ -1,5 +1,6 @@
 "use server";
 
+import { friendlyError } from "@/lib/errors";
 import { requireOrgAdmin } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
@@ -36,7 +37,7 @@ export async function updateProfileName(formData: FormData): Promise<void> {
     .eq("id", userId);
 
   if (error) {
-    redirect(accountPath({ error: error.message }));
+    redirect(accountPath({ error: friendlyError(error) }));
   }
 
   revalidatePath("/dashboard/account");
@@ -60,7 +61,7 @@ export async function updatePassword(formData: FormData): Promise<void> {
 
   const { error } = await supabase.auth.updateUser({ password });
   if (error) {
-    redirect(accountPath({ error: error.message }));
+    redirect(accountPath({ error: friendlyError(error) }));
   }
 
   redirect(accountPath({ saved: "1" }));
@@ -97,7 +98,7 @@ export async function uploadAvatar(formData: FormData): Promise<void> {
     });
 
   if (uploadError) {
-    redirect(accountPath({ error: uploadError.message }));
+    redirect(accountPath({ error: friendlyError(uploadError) }));
   }
 
   const { data: pub } = supabase.storage
@@ -111,7 +112,7 @@ export async function uploadAvatar(formData: FormData): Promise<void> {
     .eq("id", userId);
 
   if (error) {
-    redirect(accountPath({ error: error.message }));
+    redirect(accountPath({ error: friendlyError(error) }));
   }
 
   revalidatePath("/dashboard/account");
@@ -136,7 +137,7 @@ export async function removeAvatar(formData: FormData): Promise<void> {
     .eq("id", userId);
 
   if (error) {
-    redirect(accountPath({ error: error.message }));
+    redirect(accountPath({ error: friendlyError(error) }));
   }
 
   revalidatePath("/dashboard/account");

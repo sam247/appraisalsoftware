@@ -8,24 +8,32 @@ export function OrgIdentityHeader({
   logoUrl,
   brandColor,
   size = 48,
+  align = "start",
 }: {
   orgName?: string | null;
   logoUrl?: string | null;
   brandColor?: string | null;
   size?: number;
+  align?: "start" | "center";
 }) {
   const accent = accentBorder(brandColor);
   const name = orgName?.trim();
 
   return (
-    <div className="space-y-3">
+    <div
+      className={
+        align === "center" ? "flex flex-col items-center gap-3" : "space-y-3"
+      }
+    >
       {logoUrl?.trim() ? (
         // eslint-disable-next-line @next/next/no-img-element -- org-uploaded remote URLs vary by storage host
         <img
           src={logoUrl}
           alt={name ? `${name} logo` : "Organisation logo"}
           style={{ maxHeight: size, maxWidth: size * 3 }}
-          className="object-contain object-left"
+          className={
+            align === "center" ? "object-contain" : "object-contain object-left"
+          }
         />
       ) : (
         <BrandMark size={size} />

@@ -200,7 +200,7 @@ describe("annual appraisal UX safeguards", () => {
     ).toHaveProperty("error");
     expect(mocks.rpc).not.toHaveBeenCalled();
     mocks.rpc.mockResolvedValueOnce({
-      error: { message: "Employee unavailable" },
+      error: { code: "P0001", message: "Employee unavailable" },
     });
     expect(
       await saveSubjectsAndAssignments("campaign", [
@@ -221,13 +221,13 @@ describe("annual appraisal UX safeguards", () => {
       ).rejects.toThrow("Invalid+send+date");
     expect(mocks.rpc).not.toHaveBeenCalled();
     mocks.rpc.mockResolvedValueOnce({
-      error: { message: "Send time must be in the future" },
+      error: { code: "P0001", message: "Send time must be in the future" },
     });
     await expect(
       scheduleCampaign("campaign", form({ opens_at: "2000-01-01" })),
     ).rejects.toThrow("future");
     mocks.rpc.mockResolvedValueOnce({
-      error: { message: "Close time must be after the send time" },
+      error: { code: "P0001", message: "Close time must be after the send time" },
     });
     await expect(
       scheduleCampaign("campaign", form({ opens_at: "2999-01-02" })),
@@ -252,7 +252,9 @@ describe("annual appraisal UX safeguards", () => {
     expect(mocks.rpc).toHaveBeenCalledWith("activate_campaign", {
       p_campaign_id: "campaign",
     });
-    await closeCampaign("campaign");
+    await expect(closeCampaign("campaign")).rejects.toThrow(
+      "/dashboard/campaigns/campaign?ok=",
+    );
     expect(mocks.rpc).toHaveBeenCalledWith("close_campaign", {
       p_campaign_id: "campaign",
     });
@@ -314,11 +316,11 @@ describe("annual appraisal UX safeguards", () => {
   });
   it("reports People save errors and preserves archive as a soft delete", async () => {
     mocks.from.mockReturnValue(
-      query({ error: { message: "Duplicate email" } }),
+      query({ error: { code: "23505", message: "Duplicate email" } }),
     );
     await expect(
       createPerson(form({ email: "a@example.test" })),
-    ).rejects.toThrow("Duplicate%20email");
+    ).rejects.toThrow("already%20in%20your%20workspace");
     const edit = query({ error: null });
     mocks.from
       .mockReturnValueOnce(query({ data: { id: "person" } }))

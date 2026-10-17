@@ -1,5 +1,6 @@
 "use server";
 
+import { friendlyError } from "@/lib/errors";
 import { requireOrgAdmin } from "@/lib/auth/session";
 import {
   DEFAULT_REMINDER_SETTINGS,
@@ -34,7 +35,7 @@ export async function createCampaign(formData: FormData): Promise<void> {
     });
     if (error)
       redirect(
-        `/dashboard/campaigns/new?type=360&error=${encodeURIComponent(error.message)}`,
+        `/dashboard/campaigns/new?type=360&error=${encodeURIComponent(friendlyError(error))}`,
       );
     redirect(`/dashboard/campaigns/${data}`);
   }
@@ -67,7 +68,7 @@ export async function createCampaign(formData: FormData): Promise<void> {
 
   if (error || !campaign)
     redirect(
-      `/dashboard/campaigns/new?error=${encodeURIComponent(error?.message ?? "Failed to create")}`,
+      `/dashboard/campaigns/new?error=${encodeURIComponent(error ? friendlyError(error) : "Failed to create")}`,
     );
 
   if (templateId) {
@@ -76,7 +77,7 @@ export async function createCampaign(formData: FormData): Promise<void> {
       p_template_id: templateId,
     });
     if (started.error)
-      redirect(`/dashboard/campaigns/${campaign.id}?error=${encodeURIComponent("Draft created. Open Questions to choose a form: " + started.error.message)}`);
+      redirect(`/dashboard/campaigns/${campaign.id}?error=${encodeURIComponent("Draft created. Open Questions to choose a form. " + friendlyError(started.error))}`);
   }
 
   redirect(`/dashboard/campaigns/${campaign.id}`);
@@ -109,7 +110,7 @@ export async function saveSubjectsAndAssignments(
       manager_person_id: s.managerPersonId,
     })),
   });
-  if (error) return { error: error.message };
+  if (error) return { error: friendlyError(error) };
 
   revalidatePath(`/dashboard/campaigns/${campaignId}`);
   return {};
@@ -123,7 +124,7 @@ export async function saveAnnualName(campaignId: string, value: string): Promise
   const { data, error } = await supabase.from("campaigns").update({ name })
     .eq("id", campaignId).eq("organization_id", org.id).eq("campaign_type", "annual_appraisal")
     .eq("status", "draft").is("questions_frozen_at", null).select("id").single();
-  if (error || !data) return { error: error?.message ?? "This draft can no longer be edited" };
+  if (error || !data) return { error: error ? friendlyError(error) : "This draft can no longer be edited" };
   revalidatePath(`/dashboard/campaigns/${campaignId}`);
   revalidatePath("/dashboard/campaigns");
   return {};
@@ -137,7 +138,7 @@ export async function saveAnnualTemplate(campaignId: string, templateId: string)
   const { data, error } = await supabase.from("campaigns").update({ template_id: templateId })
     .eq("id", campaignId).eq("organization_id", org.id).eq("campaign_type", "annual_appraisal")
     .eq("status", "draft").is("questions_frozen_at", null).select("id").single();
-  if (error || !data) return { error: error?.message ?? "This draft can no longer be edited" };
+  if (error || !data) return { error: error ? friendlyError(error) : "This draft can no longer be edited" };
   revalidatePath(`/dashboard/campaigns/${campaignId}`);
   revalidatePath("/dashboard/campaigns");
   return {};
@@ -152,7 +153,7 @@ export async function saveAnnualTiming(campaignId: string, mode: "now" | "later"
   const { error } = await supabase.rpc("save_annual_draft_timing", {
     p_campaign_id: campaignId, p_mode: mode, p_send_date: mode === "later" ? sendDate : null, p_close_date: closeDate || null,
   });
-  if (error) return { error: error.message };
+  if (error) return { error: friendlyError(error) };
   revalidatePath(`/dashboard/campaigns/${campaignId}`);
   revalidatePath("/dashboard/campaigns");
   return {};
@@ -177,7 +178,7 @@ export async function finalizeAnnualDraft(campaignId: string): Promise<{ error?:
     result = await supabase.rpc("activate_campaign", { p_campaign_id: campaignId });
     if (!result.error) void nudgeOutboxDrain();
   }
-  if (result.error) return { error: result.error.message };
+  if (result.error) return { error: friendlyError(result.error) };
   revalidatePath(`/dashboard/campaigns/${campaignId}`);
   revalidatePath("/dashboard/campaigns");
   revalidatePath("/dashboard");
@@ -192,7 +193,7 @@ export async function saveFeedback360Name(campaignId: string, value: string): Pr
   const { data, error } = await supabase.from("campaigns").update({ name })
     .eq("id", campaignId).eq("organization_id", org.id).eq("campaign_type", "feedback_360")
     .eq("status", "draft").select("id").single();
-  if (error || !data) return { error: error?.message ?? "This draft can no longer be edited" };
+  if (error || !data) return { error: error ? friendlyError(error) : "This draft can no longer be edited" };
   revalidatePath(`/dashboard/campaigns/${campaignId}`);
   return {};
 }
@@ -203,7 +204,7 @@ export async function saveFeedback360Cohort(campaignId: string, subjectId: strin
   const supabase = await createClient();
   const { error } = await supabase.rpc("save_feedback_360_cohort", { p_campaign_id: campaignId, p_subject: subjectId,
     p_reviewers: reviewers.map((r) => ({ person_id: r.personId, relationship: r.relationship })) });
-  if (error) return { error: error.message };
+  if (error) return { error: friendlyError(error) };
   revalidatePath(`/dashboard/campaigns/${campaignId}`);
   return {};
 }
@@ -212,7 +213,7 @@ export async function saveFeedback360Template(campaignId: string, templateId: st
   await requireOrgAdmin();
   const supabase = await createClient();
   const { error } = await supabase.rpc("save_feedback_360_template", { p_campaign_id: campaignId, p_template: templateId });
-  if (error) return { error: error.message };
+  if (error) return { error: friendlyError(error) };
   revalidatePath(`/dashboard/campaigns/${campaignId}`);
   return {};
 }
@@ -224,7 +225,7 @@ export async function saveFeedback360Timing(campaignId: string, mode: "now" | "l
   const supabase = await createClient();
   const { error } = await supabase.rpc("save_feedback_360_timing", { p_campaign_id: campaignId, p_mode: mode,
     p_send_date: mode === "later" ? sendDate : null, p_close_date: closeDate || null });
-  if (error) return { error: error.message };
+  if (error) return { error: friendlyError(error) };
   revalidatePath(`/dashboard/campaigns/${campaignId}`);
   return {};
 }
@@ -237,7 +238,7 @@ export async function finalizeFeedback360Draft(campaignId: string, acknowledged:
     .eq("id", campaignId).eq("organization_id", org.id).single();
   if (!campaign || campaign.campaign_type !== "feedback_360" || campaign.status !== "draft") return { error: "This 360 draft is no longer available" };
   const { error } = await supabase.rpc("finalize_feedback_360_draft", { p_campaign_id: campaignId, p_acknowledged: true });
-  if (error) return { error: error.message };
+  if (error) return { error: friendlyError(error) };
   if ((campaign.settings as Record<string, unknown>)?.draft_delivery_mode === "now") void nudgeOutboxDrain();
   revalidatePath(`/dashboard/campaigns/${campaignId}`);
   revalidatePath("/dashboard/campaigns");
@@ -270,7 +271,7 @@ export async function activateCampaign(
     p_campaign_id: campaignId,
   });
 
-  if (error) return { error: error.message };
+  if (error) return { error: friendlyError(error) };
 
   // Best-effort outbox nudge — never block or fail activation on Resend.
   void nudgeOutboxDrain();
@@ -316,11 +317,14 @@ export async function closeCampaign(campaignId: string): Promise<void> {
   });
   if (error) {
     redirect(
-      `/dashboard/campaigns/${campaignId}?error=${encodeURIComponent(error.message)}`,
+      `/dashboard/campaigns/${campaignId}?error=${encodeURIComponent(friendlyError(error))}`,
     );
   }
 
   revalidatePath(`/dashboard/campaigns/${campaignId}`);
+  redirect(
+    `/dashboard/campaigns/${campaignId}?ok=${encodeURIComponent("Campaign closed — results are ready to review")}`,
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -352,11 +356,11 @@ export async function scheduleCampaign(
   });
   if (error)
     redirect(
-      `/dashboard/campaigns/${campaignId}?error=${encodeURIComponent(error.message)}`,
+      `/dashboard/campaigns/${campaignId}?error=${encodeURIComponent(friendlyError(error))}`,
     );
 
   revalidatePath(`/dashboard/campaigns/${campaignId}`);
-  redirect(`/dashboard/campaigns/${campaignId}`);
+  redirect(`/dashboard/campaigns/${campaignId}?scheduled=1`);
 }
 
 function validDate(value: string): boolean {
@@ -431,7 +435,7 @@ export async function sendCampaign(
     redirect(
       `/dashboard/campaigns/${campaignId}?error=${encodeURIComponent(result.error)}`,
     );
-  redirect(`/dashboard/campaigns/${campaignId}`);
+  redirect(`/dashboard/campaigns/${campaignId}?sent=1`);
 }
 
 export async function renameCampaign(
@@ -455,12 +459,12 @@ export async function renameCampaign(
 
   if (error || !data)
     redirect(
-      `/dashboard/campaigns?error=${encodeURIComponent(error?.message ?? "Unable to rename campaign")}`,
+      `/dashboard/campaigns?error=${encodeURIComponent(error ? friendlyError(error) : "Unable to rename campaign")}`,
     );
 
   revalidatePath("/dashboard/campaigns");
   revalidatePath(`/dashboard/campaigns/${campaignId}`);
-  redirect("/dashboard/campaigns");
+  redirect("/dashboard/campaigns?ok=Campaign+renamed");
 }
 
 export async function archiveCampaign(campaignId: string): Promise<void> {
@@ -471,10 +475,10 @@ export async function archiveCampaign(campaignId: string): Promise<void> {
   });
   if (error)
     redirect(
-      `/dashboard/campaigns?error=${encodeURIComponent(error.message)}`,
+      `/dashboard/campaigns?error=${encodeURIComponent(friendlyError(error))}`,
     );
   revalidatePath("/dashboard/campaigns");
-  redirect("/dashboard/campaigns");
+  redirect("/dashboard/campaigns?ok=Campaign+archived");
 }
 
 /** Permanent delete — drafts only. Live/closed campaigns should be archived. */
@@ -493,13 +497,13 @@ export async function deleteCampaign(campaignId: string): Promise<void> {
   if (error || !data)
     redirect(
       `/dashboard/campaigns?error=${encodeURIComponent(
-        error?.message ??
+        error ? friendlyError(error) :
           "Only draft campaigns can be deleted. Archive collecting or closed campaigns instead.",
       )}`,
     );
 
   revalidatePath("/dashboard/campaigns");
-  redirect("/dashboard/campaigns");
+  redirect("/dashboard/campaigns?ok=Draft+deleted");
 }
 
 /** Manual reminders to respondents who have not submitted yet. */
@@ -513,7 +517,7 @@ export async function sendCampaignReminders(
   });
   if (error)
     redirect(
-      `/dashboard/campaigns?error=${encodeURIComponent(error.message)}`,
+      `/dashboard/campaigns?error=${encodeURIComponent(friendlyError(error))}`,
     );
 
   void nudgeOutboxDrain();

@@ -1,7 +1,9 @@
 import { requireOrgAdmin } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { PageHeader } from "../chrome";
+import { EmptyState, PageHeader } from "../chrome";
+import { Button } from "@/components/ui/button";
+import { SearchX } from "lucide-react";
 import Link from "next/link";
 import type { Campaign, Person, Template } from "@/lib/types/database";
 
@@ -67,7 +69,7 @@ export default async function SearchPage({
 
   return (
     <div>
-      <PageHeader title="Search" subtitle={`Results for “${q}” · ${total} found`} />
+      <PageHeader title="Search" subtitle={`${total} result${total === 1 ? "" : "s"} for “${q}”`} />
 
       {campaigns.length > 0 && (
         <section className="mt-6">
@@ -128,6 +130,24 @@ export default async function SearchPage({
             ))}
           </div>
         </section>
+      )}
+
+      {total === 0 && (
+        <EmptyState
+          icon={<SearchX aria-hidden />}
+          title={`Nothing matches “${q}”`}
+          description="Search looks through people, campaigns and templates by name, email and job title. Try a shorter or different word."
+          actions={
+            <>
+              <Button asChild variant="outline">
+                <Link href="/dashboard/people">Browse people</Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link href="/dashboard/campaigns">Browse campaigns</Link>
+              </Button>
+            </>
+          }
+        />
       )}
     </div>
   );

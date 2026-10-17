@@ -206,7 +206,6 @@ export default function ReviewersWorkspace({
       </header>
 
       {flash?.error && <p role="alert" className="text-sm text-destructive">{flash.error}</p>}
-      {flash?.ok && <p role="status" className="text-sm text-foreground">{flash.ok}</p>}
 
       <section className="max-w-xl border-b border-border pb-5">
         <label className="block text-sm font-medium">

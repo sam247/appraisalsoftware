@@ -1,5 +1,6 @@
 "use server";
 
+import { friendlyError } from "@/lib/errors";
 import { requireOrgAdmin } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
@@ -8,7 +9,7 @@ export async function startCampaignForm(campaignId: string, templateId: string |
   await requireOrgAdmin();
   const supabase = await createClient();
   const { data, error } = await supabase.rpc("start_campaign_form", { p_campaign_id: campaignId, p_template_id: templateId });
-  if (error) return { error: error.message };
+  if (error) return { error: friendlyError(error) };
   revalidatePath(`/dashboard/campaigns/${campaignId}`);
   revalidatePath(`/dashboard/campaigns/${campaignId}/form`);
   revalidatePath("/dashboard/campaigns");
@@ -34,7 +35,7 @@ export async function saveCampaignForm(campaignId: string, expectedRevision: num
     p_expected_revision: expectedRevision,
     p_questions: questions,
   });
-  if (error) return { error: error.message };
+  if (error) return { error: friendlyError(error) };
   revalidatePath(`/dashboard/campaigns/${campaignId}`);
   revalidatePath(`/dashboard/campaigns/${campaignId}/form`);
   revalidatePath("/dashboard/campaigns");

@@ -75,7 +75,14 @@ export default async function RespondPage({
   });
 
   if (error || !data || data.length === 0) {
-    return <ErrorPage message={error?.message ?? "Invalid or expired link."} />;
+    if (error)
+      console.error("[respond] respond_resolve failed", {
+        message: error.message,
+        code: error.code,
+      });
+    return (
+      <ErrorPage message="This personal link is invalid, has expired, or the review has closed." />
+    );
   }
 
   const ctx = data[0] as ResolveRow;
@@ -85,20 +92,17 @@ export default async function RespondPage({
     ctx.assignment_status === "submitted"
   ) {
     return (
-      <div className="min-h-screen bg-surface flex items-center justify-center px-4">
-        <div className="max-w-md w-full text-center py-16">
-          <div className="text-4xl mb-4">✓</div>
-          <div className="mb-6 flex justify-center">
-            <BrandMark size={40} />
-          </div>
-          <h1 className="font-display text-2xl font-semibold text-foreground">
-            Already submitted
-          </h1>
-          <p className="mt-3 text-sm text-muted-foreground">
-            You&apos;ve already completed this appraisal. Thank you!
-          </p>
-        </div>
-      </div>
+      <RespondForm
+        initialAnswers={[]}
+        token={token}
+        campaignName={ctx.campaign_name}
+        questions={[]}
+        relationship={ctx.relationship}
+        alreadySubmitted
+        orgName={ctx.org_name}
+        orgLogoUrl={ctx.org_logo_url}
+        orgBrandColor={ctx.org_brand_color}
+      />
     );
   }
 
@@ -145,15 +149,25 @@ export default async function RespondPage({
 
 function ErrorPage({ message }: { message: string }) {
   return (
-    <div className="min-h-screen bg-surface flex items-center justify-center px-4">
+    <div className="min-h-dvh bg-surface flex items-center justify-center px-5">
       <div className="max-w-md w-full text-center py-16">
         <div className="mb-6 flex justify-center">
           <BrandMark size={40} />
         </div>
-        <h1 className="font-display text-2xl font-semibold text-foreground mb-3">
-          Link unavailable
+        <h1 className="font-display text-2xl font-semibold tracking-tight text-foreground">
+          We couldn&apos;t open this form
         </h1>
-        <p className="text-sm text-muted-foreground">{message}</p>
+        <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+          {message}
+        </p>
+        <div className="mt-8 rounded-xl border border-border bg-card p-5 text-left">
+          <p className="text-sm font-medium text-foreground">Things to try</p>
+          <ul className="mt-3 space-y-2 text-sm leading-relaxed text-muted-foreground">
+            <li>Open the most recent invitation email — reminders carry the same personal link.</li>
+            <li>Make sure the whole link was copied, if you pasted it.</li>
+            <li>Still stuck? Ask the person who sent the invitation for a fresh link.</li>
+          </ul>
+        </div>
       </div>
     </div>
   );

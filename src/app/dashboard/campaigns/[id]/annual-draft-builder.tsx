@@ -1,5 +1,8 @@
 "use client";
 
+import { toast } from "@/components/ui/toaster";
+import { flashMessage } from "../../flash-toast";
+
 import Link from "next/link";
 import { useEffect, useState, useTransition, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
@@ -92,6 +95,8 @@ export default function AnnualDraftBuilder({
         return;
       }
       setConfirmationOpen(false);
+      const flash = flashMessage(deliveryMode === "later" ? "scheduled" : "sent", "1");
+      toast.success(flash.title, { description: flash.description });
       router.refresh();
     });
   };

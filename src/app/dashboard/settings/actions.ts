@@ -1,5 +1,6 @@
 "use server";
 
+import { friendlyError } from "@/lib/errors";
 import { getAppOrigin } from "@/lib/app-origin";
 import {
   LOGO_MAX_BYTES,
@@ -40,7 +41,7 @@ export async function updateOrgName(formData: FormData): Promise<void> {
     .eq("id", org.id);
 
   if (error) {
-    redirect(settingsPath("general", { error: error.message }));
+    redirect(settingsPath("general", { error: friendlyError(error) }));
   }
 
   revalidatePath("/dashboard/settings");
@@ -64,7 +65,7 @@ export async function updateBrandColor(formData: FormData): Promise<void> {
     .eq("id", org.id);
 
   if (error) {
-    redirect(settingsPath("branding", { error: error.message }));
+    redirect(settingsPath("branding", { error: friendlyError(error) }));
   }
 
   revalidatePath("/dashboard/settings");
@@ -107,7 +108,7 @@ export async function uploadOrgLogo(formData: FormData): Promise<void> {
     });
 
   if (uploadError) {
-    redirect(settingsPath("branding", { error: uploadError.message }));
+    redirect(settingsPath("branding", { error: "We couldn't upload that logo. Try again, or use a smaller PNG, JPG, WebP or SVG." }));
   }
 
   const { data: pub } = supabase.storage.from("org-branding").getPublicUrl(path);
@@ -119,7 +120,7 @@ export async function uploadOrgLogo(formData: FormData): Promise<void> {
     .eq("id", org.id);
 
   if (error) {
-    redirect(settingsPath("branding", { error: error.message }));
+    redirect(settingsPath("branding", { error: friendlyError(error) }));
   }
 
   revalidatePath("/dashboard/settings");
@@ -142,7 +143,7 @@ export async function removeOrgLogo(formData: FormData): Promise<void> {
     .eq("id", org.id);
 
   if (error) {
-    redirect(settingsPath("branding", { error: error.message }));
+    redirect(settingsPath("branding", { error: friendlyError(error) }));
   }
 
   revalidatePath("/dashboard/settings");
@@ -165,7 +166,7 @@ export async function inviteAdmin(formData: FormData): Promise<void> {
   });
 
   if (error) {
-    redirect(settingsPath("team", { error: error.message }));
+    redirect(settingsPath("team", { error: friendlyError(error) }));
   }
 
   const row = Array.isArray(data) ? data[0] : data;
@@ -190,7 +191,7 @@ export async function revokeInvite(formData: FormData): Promise<void> {
   });
 
   if (error) {
-    redirect(settingsPath("team", { error: error.message }));
+    redirect(settingsPath("team", { error: friendlyError(error) }));
   }
 
   revalidatePath("/dashboard/settings");
@@ -208,7 +209,7 @@ export async function removeMember(formData: FormData): Promise<void> {
   });
 
   if (error) {
-    redirect(settingsPath("team", { error: error.message }));
+    redirect(settingsPath("team", { error: friendlyError(error) }));
   }
 
   revalidatePath("/dashboard/settings");

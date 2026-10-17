@@ -1,6 +1,7 @@
 import { type WorkspaceEntitlement } from "@/lib/billing/plan";
 import { PageHeader } from "../chrome";
 import FormSubmit from "@/app/dashboard/form-submit";
+import CopyLink from "../copy-link";
 import { BrandMark } from "@/components/home/Logo";
 import { requireOrgAdmin } from "@/lib/auth/session";
 import {
@@ -200,20 +201,13 @@ export default async function SettingsPage({
           {params.error.includes("/dashboard/upgrade") && <> <Link href="/dashboard/upgrade" className="underline">Explore upgrading</Link></>}
         </p>
       ) : null}
-      {params.saved ? (
-        <p role="status" className="text-sm text-primary">
-          Saved ✓
-        </p>
-      ) : null}
       {params.inviteUrl ? (
-        <div className="max-w-2xl rounded-lg border border-border bg-accent/20 px-3 py-2.5 text-sm">
+        <div className="max-w-2xl rounded-xl border border-border bg-card p-4 text-sm">
           <p className="font-medium text-foreground">Invite link ready</p>
-          <p className="mt-1 break-all font-mono text-xs text-muted-foreground">
-            {params.inviteUrl}
+          <p className="mt-1 text-muted-foreground">
+            Share this private link with your colleague. It lets them join this workspace as an admin.
           </p>
-          <p className="mt-1 text-xs text-muted-foreground">
-            Copy and share this link with your colleague.
-          </p>
+          <CopyLink url={params.inviteUrl} />
         </div>
       ) : null}
 

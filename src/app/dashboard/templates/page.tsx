@@ -2,7 +2,8 @@ import { requireOrgAdmin } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { createTemplate } from "./actions";
-import { PageHeader } from "../chrome";
+import { EmptyState, PageHeader } from "../chrome";
+import { LayoutTemplate } from "lucide-react";
 import FormSubmit from "@/app/dashboard/form-submit";
 import Link from "next/link";
 import type { Template } from "@/lib/types/database";
@@ -67,9 +68,12 @@ export default async function TemplatesPage({
 
       <div className="mt-4">
         {!templates.length ? (
-          <p className="text-sm text-muted-foreground text-center py-8">
-            No templates yet — create one above.
-          </p>
+          <EmptyState
+            className="mt-0"
+            icon={<LayoutTemplate aria-hidden />}
+            title="Save your questions as a template"
+            description="Templates let you reuse a form across review cycles. Name one above to start, then add your questions."
+          />
         ) : (
           <div className="directory-table divide-y divide-border">
             {templates.map((t: Template) => (

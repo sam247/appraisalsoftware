@@ -145,7 +145,7 @@ describe("admin composition", () => {
   it("retains onboarding navigation for new workspaces and a useful empty report state", () => {
     const html = render("empty-reports", "/dashboard/reports", h(React.Fragment, null, h(PageHeader, { title: "Reports" }), h(ReportsDirectory, { entries: [] })), true);
     expect(html).toContain('href="/dashboard/getting-started"');
-    expect(html).toContain("Your campaign reports will appear here");
+    expect(html).toContain("Your reports will live here");
   });
   it("gives the form builder one focused toolbar with appraisal controls and a real preview", () => {
     const html = render("builder", "/dashboard/campaigns/fixture/form", h(FormBuilder, { campaign, initialQuestions: questions, templates: [], org, subjectName: "Employee" }));

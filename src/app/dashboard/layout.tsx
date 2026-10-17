@@ -6,6 +6,9 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { hasLaunchedCampaign } from "./workspace-state";
 import AppNavigation from "./app-navigation";
+import FlashToast from "./flash-toast";
+import { Toaster } from "@/components/ui/toaster";
+import { Suspense } from "react";
 
 export const metadata: Metadata = { robots: { index: false, follow: false } };
 
@@ -56,6 +59,10 @@ export default async function DashboardLayout({
         <WorkspaceActivation orgId={org.id} entitlement={entitlement} />
         {children}
       </div>
+      <Suspense fallback={null}>
+        <FlashToast />
+      </Suspense>
+      <Toaster />
     </AppNavigation>
   );
 }

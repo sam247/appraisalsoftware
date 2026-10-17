@@ -2,6 +2,8 @@
 
 import FormSubmit from "@/app/dashboard/form-submit";
 import { Button } from "@/components/ui/button";
+import { EmptyState } from "../chrome";
+import { UsersRound } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -268,30 +270,27 @@ export default function PeopleDirectory({
           {flash.error}
         </div>
       )}
-      {flash?.ok && (
-        <div className="mt-3 rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground">
-          {flash.ok}
-        </div>
-      )}
 
       {empty ? (
-        <div className="mt-10 max-w-md">
-          <p className="text-sm leading-relaxed text-muted-foreground">
-            Add your first person or import a CSV to get started.
-          </p>
-          <div className="mt-4 flex flex-wrap gap-2">
-            <Button type="button" onClick={() => setAddOpen(true)}>
-              + Add person
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setImportOpen(true)}
-            >
-              Import CSV
-            </Button>
-          </div>
-        </div>
+        <EmptyState
+          icon={<UsersRound aria-hidden />}
+          title="Bring your team in"
+          description="Add the people you'll review and the managers who'll review them. Got a spreadsheet? Import a CSV and we'll match managers for you."
+          actions={
+            <>
+              <Button type="button" onClick={() => setAddOpen(true)}>
+                + Add person
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setImportOpen(true)}
+              >
+                Import CSV
+              </Button>
+            </>
+          }
+        />
       ) : (
         <>
           {/* Stable-height control strip — selection reuses this row */}

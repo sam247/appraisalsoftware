@@ -1,5 +1,6 @@
 "use server";
 
+import { friendlyError } from "@/lib/errors";
 import { requireOrgAdmin } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
@@ -26,7 +27,7 @@ export async function createTemplate(formData: FormData): Promise<void> {
   });
 
   if (error)
-    redirect(`/dashboard/templates?error=${encodeURIComponent(error.message)}`);
+    redirect(`/dashboard/templates?error=${encodeURIComponent(friendlyError(error))}`);
 
   revalidatePath("/dashboard/templates");
 }
@@ -63,7 +64,7 @@ export async function updateTemplate(
 
   if (error) {
     redirect(
-      `/dashboard/templates/${templateId}?error=${encodeURIComponent(error.message)}`,
+      `/dashboard/templates/${templateId}?error=${encodeURIComponent(friendlyError(error))}`,
     );
   }
 
@@ -90,7 +91,7 @@ export async function archiveTemplate(templateId: string): Promise<void> {
     .eq("id", templateId);
 
   if (error)
-    redirect(`/dashboard/templates?error=${encodeURIComponent(error.message)}`);
+    redirect(`/dashboard/templates?error=${encodeURIComponent(friendlyError(error))}`);
 
   revalidatePath("/dashboard/templates");
   redirect("/dashboard/templates");
@@ -158,7 +159,7 @@ export async function upsertQuestion(
 
     if (error)
       redirect(
-        `/dashboard/templates/${templateId}?error=${encodeURIComponent(error.message)}`,
+        `/dashboard/templates/${templateId}?error=${encodeURIComponent(friendlyError(error))}`,
       );
   } else {
     const { error } = await supabase.from("template_questions").insert({
@@ -175,7 +176,7 @@ export async function upsertQuestion(
 
     if (error)
       redirect(
-        `/dashboard/templates/${templateId}?error=${encodeURIComponent(error.message)}`,
+        `/dashboard/templates/${templateId}?error=${encodeURIComponent(friendlyError(error))}`,
       );
   }
 
@@ -206,7 +207,7 @@ export async function deleteQuestion(
 
   if (error)
     redirect(
-      `/dashboard/templates/${templateId}?error=${encodeURIComponent(error.message)}`,
+      `/dashboard/templates/${templateId}?error=${encodeURIComponent(friendlyError(error))}`,
     );
 
   revalidatePath(`/dashboard/templates/${templateId}`);
