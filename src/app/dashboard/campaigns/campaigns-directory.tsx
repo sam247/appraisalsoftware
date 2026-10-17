@@ -1,7 +1,8 @@
 "use client";
 
 import FormSubmit from "@/app/dashboard/form-submit";
-import { StatusBadge } from "@/app/dashboard/chrome";
+import { EmptyState, StatusBadge } from "@/app/dashboard/chrome";
+import { Megaphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -231,17 +232,16 @@ export default function CampaignsDirectory({
 
       <section>
         {empty ? (
-          <div className="mt-3 border-t border-border py-8">
-            <p className="text-sm text-muted-foreground">
-              No campaigns yet. Create one from Home or use + Create campaign.
-            </p>
-            <Link
-              href="/dashboard/campaigns/new"
-              className="mt-3 inline-flex text-sm font-medium text-primary hover:underline"
-            >
-              Create campaign →
-            </Link>
-          </div>
+          <EmptyState
+            icon={<Megaphone aria-hidden />}
+            title="No campaigns yet"
+            description="A campaign sends your review form to the right people and tracks every response. Start with an annual appraisal or an anonymous 360."
+            actions={
+              <Button asChild>
+                <Link href="/dashboard/campaigns/new">Create a campaign</Link>
+              </Button>
+            }
+          />
         ) : (
           <>
             <div className="directory-toolbar">

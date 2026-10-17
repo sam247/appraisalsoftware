@@ -1,5 +1,6 @@
 "use server";
 
+import { friendlyError } from "@/lib/errors";
 import { employeeCapacity, type WorkspaceEntitlement } from "@/lib/billing/plan";
 
 import { requireOrgAdmin } from "@/lib/auth/session";
@@ -74,7 +75,7 @@ export async function createDepartment(
     .select("id, name")
     .single();
 
-  if (error) return { error: error.message };
+  if (error) return { error: friendlyError(error) };
   revalidatePath("/dashboard/people");
   return { id: data.id, name: data.name };
 }
@@ -121,11 +122,11 @@ export async function createPerson(formData: FormData): Promise<void> {
   });
 
   if (error)
-    redirect(`/dashboard/people?error=${encodeURIComponent(error.message)}`);
+    redirect(`/dashboard/people?error=${encodeURIComponent(friendlyError(error, { duplicate: "Someone with that email is already in your workspace." }))}`);
   revalidatePath("/dashboard/people");
   revalidatePath("/dashboard");
   revalidatePath("/dashboard/campaigns");
-  redirect("/dashboard/people");
+  redirect(`/dashboard/people?ok=${encodeURIComponent(`${fullName || email} added`)}`);
 }
 
 export async function updatePerson(
@@ -176,11 +177,11 @@ export async function updatePerson(
     .eq("organization_id", org.id);
 
   if (error)
-    redirect(`/dashboard/people?error=${encodeURIComponent(error.message)}`);
+    redirect(`/dashboard/people?error=${encodeURIComponent(friendlyError(error, { duplicate: "Someone with that email is already in your workspace." }))}`);
   revalidatePath("/dashboard/people");
   revalidatePath("/dashboard");
   revalidatePath("/dashboard/campaigns");
-  redirect("/dashboard/people");
+  redirect("/dashboard/people?saved=1");
 }
 
 export async function archivePerson(personId: string): Promise<void> {
@@ -194,9 +195,10 @@ export async function archivePerson(personId: string): Promise<void> {
     .eq("organization_id", org.id);
 
   if (error)
-    redirect(`/dashboard/people?error=${encodeURIComponent(error.message)}`);
+    redirect(`/dashboard/people?error=${encodeURIComponent(friendlyError(error))}`);
   revalidatePath("/dashboard/people");
   revalidatePath("/dashboard");
+  redirect(`/dashboard/people?ok=${encodeURIComponent("Person archived. You can restore them from the Archived filter.")}`);
 }
 
 export async function unarchivePerson(personId: string): Promise<void> {
@@ -210,9 +212,10 @@ export async function unarchivePerson(personId: string): Promise<void> {
     .eq("organization_id", org.id);
 
   if (error)
-    redirect(`/dashboard/people?error=${encodeURIComponent(error.message)}`);
+    redirect(`/dashboard/people?error=${encodeURIComponent(friendlyError(error))}`);
   revalidatePath("/dashboard/people");
   revalidatePath("/dashboard");
+  redirect(`/dashboard/people?ok=${encodeURIComponent("Person restored")}`);
 }
 
 /** Ensure org departments exist for the given names (case-insensitive). */
@@ -257,7 +260,7 @@ async function resolveDepartmentIds(
       for (const d of again ?? []) {
         byLower.set(d.name.trim().toLowerCase(), d.id);
       }
-      if (!byLower.has(key)) throw new Error(error.message);
+      if (!byLower.has(key)) throw new Error(friendlyError(error));
       continue;
     }
     byLower.set(data.name.trim().toLowerCase(), data.id);
@@ -335,7 +338,7 @@ export async function importPeopleCsv(formData: FormData): Promise<void> {
       })),
     );
     if (error) {
-      redirect(`${returnTo}?error=${encodeURIComponent(error.message)}`);
+      redirect(`${returnTo}?error=${encodeURIComponent(friendlyError(error))}`);
     }
   }
 

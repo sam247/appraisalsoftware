@@ -4,7 +4,8 @@ import CreationLauncher, {
 import { requireOrgAdmin } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
-import { PageHeader, StatusBadge } from "./chrome";
+import { Sprout } from "lucide-react";
+import { EmptyState, PageHeader, StatusBadge } from "./chrome";
 import {
   buildAttentionItems,
   dedupeAttentionByCampaign,
@@ -150,12 +151,12 @@ export default async function OverviewPage() {
         </div>
 
         {workItems.length === 0 ? (
-          <div className="border-t border-border py-6">
-            <p className="text-sm text-foreground">No campaigns yet.</p>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Start an appraisal or feedback cycle above.
-            </p>
-          </div>
+          <EmptyState
+            className="mt-0"
+            icon={<Sprout aria-hidden />}
+            title="Your first review cycle starts here"
+            description="Pick an appraisal or 360 above. We'll walk you through the form, the people and the send — most teams are ready in about ten minutes."
+          />
         ) : (
           <div className="border-t border-border">
             {workItems.map((item) => (

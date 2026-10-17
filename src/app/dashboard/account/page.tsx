@@ -47,11 +47,6 @@ export default async function AccountPage({
           {params.error}
         </p>
       ) : null}
-      {params.saved ? (
-        <p role="status" className="text-sm text-primary">
-          Saved ✓
-        </p>
-      ) : null}
 
       <section className="max-w-xl space-y-4 border-t border-border pt-6">
         <div>

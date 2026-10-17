@@ -263,7 +263,6 @@ export default function PeopleWorkspace({
       </header>
 
       {flash?.error && <p role="alert" className="text-sm text-destructive">{flash.error}</p>}
-      {flash?.ok && <p role="status" className="text-sm text-foreground">{flash.ok}</p>}
 
       <div className="space-y-3">
         <section className="min-w-0">

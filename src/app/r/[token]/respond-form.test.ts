@@ -38,6 +38,6 @@ describe("respondent-faithful preview", () => {
     expect(annual).toContain("How did the year go?");
     expect(annual).toContain("Consider your goals.");
     expect(feedback).toContain("How did the year go?");
-    expect(feedback).toContain("Submit feedback");
+    expect(feedback).toContain("Review answers");
   });
 });

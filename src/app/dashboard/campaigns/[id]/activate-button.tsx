@@ -6,6 +6,8 @@ import { useTransition, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { activateCampaign } from "../actions";
 import { useRouter } from "next/navigation";
+import { toast } from "@/components/ui/toaster";
+import { flashMessage } from "../../flash-toast";
 
 export default function ActivateButton({
   campaignId,
@@ -25,6 +27,8 @@ export default function ActivateButton({
       if (result.error) {
         setError(result.error);
       } else {
+        const flash = flashMessage("sent", "1");
+        toast.success(flash.title, { description: flash.description });
         router.refresh();
       }
     });

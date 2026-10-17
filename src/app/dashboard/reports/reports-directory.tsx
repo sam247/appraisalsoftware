@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { FileText } from "lucide-react";
 import { campaignDate, campaignLabels, campaignTypeLabel, statusTone } from "../campaigns/presentation";
-import { StatusBadge } from "../chrome";
+import { EmptyState, StatusBadge } from "../chrome";
 import { Button } from "@/components/ui/button";
 import { filterReports, type ReportEntry } from "./presentation";
 
@@ -27,6 +27,6 @@ export default function ReportsDirectory({ entries }: { entries: ReportEntry[] }
         <td className="text-muted-foreground">{entry.date ? <><span className="block text-xs">{entry.dateLabel}</span>{campaignDate(entry.date, entry.timezone)}</> : "—"}</td>
         <td><Button asChild variant="outline"><Link href={`/dashboard/campaigns/${entry.id}${entry.available ? "/results" : ""}`}>{entry.available ? "View report" : "Open campaign"}</Link></Button></td>
       </tr>)}</tbody>
-    </table></div> : <div className="directory-empty"><FileText size={28} className="mx-auto text-muted-foreground" aria-hidden /><h2 className="mt-4 text-lg font-semibold">{entries.length ? "No reports match these filters" : "Your campaign reports will appear here"}</h2><p className="mt-2 text-sm text-muted-foreground">{entries.length ? "Try a different search or campaign type." : "Send or schedule a campaign to track its report availability."}</p><Button asChild variant="outline" className="mt-5"><Link href="/dashboard/campaigns">View campaigns</Link></Button></div>}
+    </table></div> : <EmptyState icon={<FileText aria-hidden />} title={entries.length ? "No reports match these filters" : "Your reports will live here"} description={entries.length ? "Try a different search or campaign type." : "Once a campaign has responses, its results appear here — side-by-side views, ratings and comments, ready for the review conversation."} actions={entries.length ? <Button type="button" variant="outline" onClick={() => { setQuery(""); setType("all"); }}>Clear filters</Button> : <Button asChild variant="outline"><Link href="/dashboard/campaigns">View campaigns</Link></Button>} />}
   </section>;
 }

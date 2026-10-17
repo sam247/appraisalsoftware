@@ -318,3 +318,48 @@ export function AttentionRow({
     </Link>
   );
 }
+
+/**
+ * Friendly empty state: a small spot illustration, what this space is for,
+ * and the next step. Keep the copy encouraging and specific.
+ */
+export function EmptyState({
+  icon,
+  title,
+  description,
+  actions,
+  className,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  description: React.ReactNode;
+  actions?: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <div
+      className={cn(
+        "mt-5 flex flex-col items-center rounded-xl border border-dashed border-border-strong/70 bg-surface/60 px-6 py-12 text-center",
+        className,
+      )}
+    >
+      <div className="relative mb-5" aria-hidden>
+        <span className="absolute -left-3 top-1 size-3 rounded-full bg-warm/70" />
+        <span className="absolute -right-2 -top-2 size-2 rounded-full bg-primary/40" />
+        <span className="absolute -bottom-1 -right-4 h-1.5 w-5 rounded-full bg-primary/20" />
+        <div className="flex size-14 rotate-[-4deg] items-center justify-center rounded-2xl border border-border bg-card text-primary shadow-[0_10px_24px_-16px_rgb(28_24_18/0.5)] [&_svg]:size-6">
+          {icon}
+        </div>
+      </div>
+      <h2 className="font-display text-lg font-semibold tracking-tight text-foreground">
+        {title}
+      </h2>
+      <div className="mt-2 max-w-sm text-sm leading-relaxed text-muted-foreground">
+        {description}
+      </div>
+      {actions ? (
+        <div className="mt-6 flex flex-wrap justify-center gap-2">{actions}</div>
+      ) : null}
+    </div>
+  );
+}
