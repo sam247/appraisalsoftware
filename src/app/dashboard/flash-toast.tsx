@@ -2,7 +2,7 @@
 
 import { toast } from "@/components/ui/toaster";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 /**
  * Server actions report success by redirecting with a flash param. Show it as
@@ -36,10 +36,19 @@ export default function FlashToast() {
   const params = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
+  // Effects can run twice for one URL (Strict Mode, re-renders before the
+  // replace lands); remember what was shown so each flash toasts once.
+  const shown = useRef<string | null>(null);
 
   useEffect(() => {
     const present = FLASH_KEYS.filter((key) => params.get(key));
-    if (present.length === 0) return;
+    if (present.length === 0) {
+      shown.current = null;
+      return;
+    }
+    const signature = `${pathname}?${params.toString()}`;
+    if (shown.current === signature) return;
+    shown.current = signature;
     for (const key of present) {
       const { title, description } = flashMessage(key, params.get(key) ?? "");
       toast.success(title, { description });
