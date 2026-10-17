@@ -340,7 +340,7 @@ describe("annual appraisal UX safeguards", () => {
     });
     const archive = query({ error: null });
     mocks.from.mockReturnValue(archive);
-    await archivePerson("person");
+    await expect(archivePerson("person")).rejects.toThrow("/dashboard/people?ok=");
     expect(archive.update).toHaveBeenCalledWith({
       archived_at: expect.any(String),
     });

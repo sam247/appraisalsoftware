@@ -198,6 +198,7 @@ export async function archivePerson(personId: string): Promise<void> {
     redirect(`/dashboard/people?error=${encodeURIComponent(friendlyError(error))}`);
   revalidatePath("/dashboard/people");
   revalidatePath("/dashboard");
+  redirect(`/dashboard/people?ok=${encodeURIComponent("Person archived. You can restore them from the Archived filter.")}`);
 }
 
 export async function unarchivePerson(personId: string): Promise<void> {
@@ -214,6 +215,7 @@ export async function unarchivePerson(personId: string): Promise<void> {
     redirect(`/dashboard/people?error=${encodeURIComponent(friendlyError(error))}`);
   revalidatePath("/dashboard/people");
   revalidatePath("/dashboard");
+  redirect(`/dashboard/people?ok=${encodeURIComponent("Person restored")}`);
 }
 
 /** Ensure org departments exist for the given names (case-insensitive). */

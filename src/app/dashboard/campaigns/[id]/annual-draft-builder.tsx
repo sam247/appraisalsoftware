@@ -199,7 +199,7 @@ export default function AnnualDraftBuilder({
         details={[
           {
             label: "People",
-            value: `${initialSubjects.length} employees · ${managerCount} manager reviews`,
+            value: `${initialSubjects.length} employee${initialSubjects.length === 1 ? "" : "s"} · ${managerCount} manager review${managerCount === 1 ? "" : "s"}`,
           },
           {
             label: "Questions",

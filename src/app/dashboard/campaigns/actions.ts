@@ -323,7 +323,7 @@ export async function closeCampaign(campaignId: string): Promise<void> {
 
   revalidatePath(`/dashboard/campaigns/${campaignId}`);
   redirect(
-    `/dashboard/campaigns/${campaignId}?ok=${encodeURIComponent("Campaign closed — results are ready to review")}`,
+    `/dashboard/campaigns/${campaignId}?ok=${encodeURIComponent("Campaign closed — no further responses can be submitted")}`,
   );
 }
 
