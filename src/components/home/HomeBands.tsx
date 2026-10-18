@@ -247,16 +247,11 @@ export function GdprCommitment() {
       <div className="mx-auto grid max-w-content gap-6 lg:grid-cols-[0.85fr_1.15fr] lg:gap-20">
         <div className="flex items-start gap-6">
           <GdprEmblem />
-          <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
-            Our UK GDPR commitment
-          </p>
-          <h2 className="mt-4 max-w-md font-display text-[2rem] font-semibold leading-[1.1] tracking-[-0.035em] text-foreground sm:text-[2.5rem]">
+          <h2 className="max-w-md font-display text-[2rem] font-semibold leading-[1.1] tracking-[-0.035em] text-foreground sm:text-[2.5rem]">
             Privacy belongs in the review process.
           </h2>
-          </div>
         </div>
-        <div className="lg:pt-8">
+        <div className="lg:pt-2">
           <p className="max-w-xl text-base leading-relaxed text-muted-foreground">
             Appraisals contain personal information. We design for clear
             respondent context and controlled access. Anonymous 360 results are
