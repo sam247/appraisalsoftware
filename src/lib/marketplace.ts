@@ -10,7 +10,7 @@ import { financialPacks } from "./marketplace/packs/financial";
 import { generalPacks } from "./marketplace/packs/general";
 import { housingPacks } from "./marketplace/packs/housing";
 import { AGREE } from "./marketplace/scales";
-import type { PackGroup, TemplatePack } from "./marketplace/types";
+import type { PackGroup, PackQuestion, TemplatePack } from "./marketplace/types";
 
 export type { Nation, PackAccent, PackCampaignType, PackChange, PackGroup, PackQuestion, TemplatePack } from "./marketplace/types";
 
@@ -25,6 +25,37 @@ export const UPDATES_NOTE = "Includes future updates to this pack. Updates are a
 export const GROUP_ORDER: PackGroup[] = ["Review types", "Roles & teams", "Health & social care", "Children & education", "Financial services", "Housing"];
 
 export const groups = GROUP_ORDER.map((name) => ({ name, count: packs.filter((p) => p.group === name).length })).filter((g) => g.count > 0);
+
+/** Heading for written questions, which have no competency area. */
+export const WRITTEN_SECTION = "Reflection and next steps";
+
+export interface QuestionSection {
+  title: string;
+  /** Competency area for rating sections; null for written questions. */
+  area: string | null;
+  questions: { number: number; question: PackQuestion }[];
+}
+
+/**
+ * The pack's questions grouped by competency area. Groups are consecutive runs,
+ * so the pack's order is never changed and numbering stays 1..n.
+ */
+export function questionSections(pack: TemplatePack): QuestionSection[] {
+  const sections: QuestionSection[] = [];
+  pack.questions.forEach((question, i) => {
+    const area = question.type === "rating" ? (question.area ?? "General") : null;
+    const title = area ?? WRITTEN_SECTION;
+    const last = sections.at(-1);
+    if (last && last.title === title && last.area === area) last.questions.push({ number: i + 1, question });
+    else sections.push({ title, area, questions: [{ number: i + 1, question }] });
+  });
+  return sections;
+}
+
+/** Who completes the pack, e.g. "Adult social care · Self and manager appraisal". */
+export function packAudience(pack: TemplatePack): string {
+  return `${pack.category} · ${pack.campaignType === "feedback_360" ? "Anonymous 360 feedback" : "Self and manager appraisal"}`;
+}
 
 /** Public product page for a pack on the marketing site. */
 export function packPublicPath(slug: string): string {

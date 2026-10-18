@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, BadgeCheck, Check, Clock, Eye, ListChecks, MousePointerClick, ShoppingBag } from "lucide-react";
+import { ArrowRight, BadgeCheck, Check, Clock, Eye, FileText, ListChecks, MousePointerClick, ShoppingBag } from "lucide-react";
 import { SiteChrome } from "@/components/layout/SiteChrome";
 import { CtaBand } from "@/components/marketing/PageSections";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,7 @@ import { pageMetadata } from "@/lib/metadata";
 import { formatPackPrice, groups, packPublicPath, packs, previewQuestions, type TemplatePack } from "@/lib/marketplace";
 import { cn } from "@/lib/utils";
 import { PackBasis } from "@/components/marketplace/PackBasis";
+import { downloadFor } from "@/lib/marketplace/downloads";
 import { PACK_ACCENT } from "@/components/marketplace/pack-accent";
 import { APP_ORIGIN } from "@/lib/links";
 
@@ -34,6 +35,11 @@ function Meta({ pack, inverse = false }: { pack: TemplatePack; inverse?: boolean
       <span className="inline-flex items-center gap-1.5">
         <Clock className="size-4" aria-hidden /> ~{pack.minutes} min to complete
       </span>
+      {downloadFor(pack) ? (
+        <span className="inline-flex items-center gap-1.5">
+          <FileText className="size-4" aria-hidden /> Word + PDF coming soon
+        </span>
+      ) : null}
     </p>
   );
 }
