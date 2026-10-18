@@ -13,16 +13,11 @@ import { APP_ORIGIN } from "@/lib/links";
 
 const getPack = (slug: string) => `${APP_ORIGIN}/dashboard/marketplace#${slug}`;
 
-export const metadata: Metadata = {
-  ...pageMetadata({
-    title: "Appraisal Template Marketplace | Appraisal Software",
-    description: "Ready-to-run appraisal, probation and 360 feedback templates. Preview every question, buy once, and launch as a campaign in one click.",
-    path: "/marketplace",
-    imagePath: "/social/templates.png",
-  }),
-  // Design preview: kept out of search until purchasing ships.
-  robots: { index: false, follow: true },
-};
+export const metadata: Metadata = pageMetadata({
+  title: "Appraisal Template Marketplace | Appraisal Software",
+  description: "Ready-to-run appraisal, probation and 360 feedback templates. Preview every question, buy once, and launch as a campaign in one click.",
+  path: "/marketplace",
+});
 
 /** One accent per category; tints stay inside the warm brand palette. */
 const ACCENT: Record<PackAccent, { chip: string; dot: string; soft: string }> = {

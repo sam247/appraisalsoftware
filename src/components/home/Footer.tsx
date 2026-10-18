@@ -14,6 +14,7 @@ const footerLinks = {
   ],
   resources: [
     { label: "All templates", href: ROUTES.templates },
+    { label: "Template marketplace", href: ROUTES.marketplace },
     { label: "Resource library", href: ROUTES.resources },
   ],
   company: [

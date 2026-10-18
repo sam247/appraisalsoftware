@@ -8,6 +8,7 @@ export const ROUTES = {
   appraisalQuestions: "/appraisal-questions",
   feedback360Template: "/360-feedback-template",
   templates: "/templates",
+  marketplace: "/marketplace",
   resources: "/resources",
   blog: "/blog",
   howItWorks: "/how-it-works",

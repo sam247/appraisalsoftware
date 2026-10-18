@@ -1,6 +1,6 @@
 # URL ownership register — 7 October 2026
 
-One preferred destination per query family, with intent distinguishing commercial queries from guidance, form and example queries. This is the complete local indexable inventory: 22 core pages and one published article. Retired software URLs are redirects, not indexable pages.
+One preferred destination per query family, with intent distinguishing commercial queries from guidance, form and example queries. This is the complete local indexable inventory: 23 core pages and one published article. Retired software URLs are redirects, not indexable pages.
 
 Performance: **proven** means Sam reports meaningful organic traffic today. **Unverified** means no current query/page export was checked; it does not mean zero impressions or clicks. The historical 4 October programme contains small signals on other URLs, but those are not evidence of meaningful traffic today. No volumes, rankings or new analytics observations are invented here.
 
@@ -12,6 +12,7 @@ Performance: **proven** means Sam reports meaningful organic traffic today. **Un
 | /pricing | Compare capacity and costs | Appraisal Software pricing | appraisal software plans/cost | Commercial support | Software | Both pillars | Unverified | Make paid activation and plan boundaries easy to compare. |
 | /how-it-works | Understand the operational process | how Appraisal Software works | employee/360 campaign setup | Commercial support | Software | Both pillars | Unverified | Keep implementation guidance useful; reassess overlap after product-page polish. |
 | /contact | Enquire or arrange paid activation | contact Appraisal Software | pricing enquiry; product support | Commercial support | Software | Both pillars | Unverified | Verify the real enquiry delivery flow separately from URL checks. |
+| /marketplace | Buy a ready-to-run review pack | appraisal template packs; buy appraisal templates | probation, 360 leadership, engineering and sales review templates | Commercial catalogue | Templates | Both pillars | Not live yet; performance unverified | Add real customer proof and pack detail pages once purchases are flowing. |
 | /templates | Discover a usable first-party form | appraisal templates; free appraisal templates | employee review forms; 360 templates; probation and development forms | Template catalogue | Templates | Relevant pillar by form | Unverified | Improve real previews and catalogue usability; product import remains future work. |
 | /annual-appraisal-template | Obtain a complete annual review form | annual appraisal template/form | yearly performance review form | Template | Templates / Employee Appraisals | /employee-appraisal-software | Unverified | Keep useful examples and clear employee/manager completion instructions. |
 | /self-appraisal-template | Obtain blank employee reflection prompts | self appraisal template; self-assessment form | employee self review template | Template | Templates / Employee Appraisals | /employee-appraisal-software | Unverified | Make preparation/copy/print effortless; link to answer examples. |
