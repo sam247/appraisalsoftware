@@ -83,7 +83,7 @@ export default function PlanPicker({
               </div>
               <p className="mt-3">
                 <span className="font-display text-3xl font-semibold tracking-tight">{formatGbp(amount)}</span>
-                <span className="text-sm text-muted-foreground"> /{interval === "year" ? "year" : "month"} + VAT</span>
+                <span className="text-sm text-muted-foreground"> /{interval === "year" ? "year" : "month"}</span>
               </p>
               <p className="mt-1 h-5 text-xs text-muted-foreground">
                 {perMonth ? `Works out at ${perMonth}/month` : "Cancel any time"}

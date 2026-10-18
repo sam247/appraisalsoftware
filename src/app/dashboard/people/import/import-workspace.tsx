@@ -106,7 +106,7 @@ export default function ImportWorkspace({
               : ""}
           </p>
           <p className="mt-2" role="status">Resulting active employees: {resultingCount}{employeeLimit !== null ? ` / ${employeeLimit}` : ""}.</p>
-          {overLimit && <p role="alert">This import exceeds your allowance. Free includes 10 active employees; Pro includes 75 at £39.99/month + VAT. <Link className="underline" href="/dashboard/upgrade">Explore upgrading</Link>. No employees will be imported.</p>}
+          {overLimit && <p role="alert">This import exceeds your allowance. Free includes 10 active employees; Pro includes 75 at £39.99/month. <Link className="underline" href="/dashboard/upgrade">Explore upgrading</Link>. No employees will be imported.</p>}
           {preview.attention.length > 0 && (
             <ul className="mt-3 max-h-32 space-y-1 overflow-y-auto text-xs text-muted-foreground">
               {preview.attention.slice(0, 8).map((item) => <li key={item}>{item}</li>)}

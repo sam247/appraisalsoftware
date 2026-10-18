@@ -116,7 +116,7 @@ export default async function UpgradePage({
             </div>
           )}
           <p className="mt-6 text-xs leading-relaxed text-muted-foreground">
-            Prices exclude VAT. Payments are handled securely by Stripe; we never see your card details.
+            No VAT is charged. Payments are handled securely by Stripe; we never see your card details.
             Change plan or cancel any time from &ldquo;Manage billing&rdquo; — if you cancel, you keep your
             plan until the end of the period and your data is never deleted. Need more than 250 employees?{" "}
             <Link href="/contact?type=pricing&plan=Organisation" className="underline underline-offset-2">Talk to us</Link>.

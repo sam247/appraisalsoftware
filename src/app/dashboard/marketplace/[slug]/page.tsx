@@ -100,7 +100,7 @@ export default async function PackPage({ params }: { params: Promise<{ slug: str
             </li>
           </ul>
           <p className="mt-5 text-xs leading-relaxed text-muted-foreground">
-            Prices exclude VAT. Purchases belong to this workspace. {UPDATES_NOTE}
+            No VAT is charged. Purchases belong to this workspace. {UPDATES_NOTE}
           </p>
         </aside>
 

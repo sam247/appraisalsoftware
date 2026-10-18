@@ -485,7 +485,7 @@ export default async function SettingsPage({
               </p>
             </div>
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-              Free is permanent within its limits. Pro is £39.99/month + VAT; Organisation is £89.99/month + VAT. Contact our team for paid activation.
+              Free is permanent within its limits. Pro is £39.99/month; Organisation is £89.99/month. No VAT is charged. Contact our team for paid activation.
             </p>
             {free ? (
               <p className="mt-4 text-xs text-muted-foreground">

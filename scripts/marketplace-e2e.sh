@@ -29,6 +29,11 @@ docker run -d --name appraisal-e2e-rest --network host \
   -e PGRST_DB_URI="postgres://authenticator:postgres@localhost:$PG_PORT/postgres" \
   -e PGRST_DB_SCHEMAS=public -e PGRST_DB_ANON_ROLE=anon \
   -e PGRST_JWT_SECRET="$JWT_SECRET" postgrest/postgrest:v12.2.3 >/dev/null
-for _ in $(seq 1 30); do curl -s -o /dev/null "http://localhost:$REST_PORT/" && break; sleep 1; done
+# PostgREST answers 503 until its schema cache has loaded; wait for a real table response.
+for _ in $(seq 1 60); do
+  code=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:$REST_PORT/organizations?limit=1" || true)
+  [ "$code" != "000" ] && [ "$code" != "503" ] && break
+  sleep 1
+done
 
 MARKETPLACE_E2E=1 npx vitest run --config vitest.config.mts src/app/dashboard/marketplace/marketplace.e2e.test.ts

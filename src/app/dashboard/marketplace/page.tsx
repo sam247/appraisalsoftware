@@ -73,7 +73,7 @@ export default async function MarketplacePage({
       </div>
 
       <p className="mt-8 max-w-3xl text-xs leading-relaxed text-muted-foreground">
-        Prices exclude VAT. Purchases are one-off and belong to this workspace. {UPDATES_NOTE}
+        No VAT is charged. Purchases are one-off and belong to this workspace. {UPDATES_NOTE}
       </p>
     </div>
   );

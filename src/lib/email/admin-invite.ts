@@ -1,4 +1,5 @@
 import { EMAIL_LOGO_URL, PLATFORM_JADE } from "@/lib/branding";
+import { companyDisclosure } from "@/lib/company";
 
 const INK = "#171714";
 const MUTED = "#6b635a";
@@ -42,6 +43,7 @@ export function buildAdminInviteEmail(params: {
         </td></tr>
         <tr><td style="padding:18px 28px;background:${SURFACE};border-top:1px solid ${BORDER};">
           <p style="margin:0;font-size:12px;line-height:1.5;color:${MUTED};">Sent with <a href="https://appraisalsoftware.co.uk" style="color:${PLATFORM_JADE};text-decoration:none;">Appraisal Software</a></p>
+          <p style="margin:6px 0 0;font-size:11px;line-height:1.5;color:${MUTED};">${escapeHtml(companyDisclosure())}</p>
         </td></tr>
       </table>
     </td></tr>

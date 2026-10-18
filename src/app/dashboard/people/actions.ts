@@ -307,7 +307,7 @@ export async function importPeopleCsv(formData: FormData): Promise<void> {
 
   const resultingCount = (existing ?? []).filter((p) => !p.reviewer_only).length + toInsert.length;
   if (limit !== null && resultingCount > limit) {
-    redirect(`${returnTo}?error=${encodeURIComponent(`Import would result in ${resultingCount} active employees; your plan allows ${limit}. Free includes 10; Pro includes 75 at £39.99/month + VAT. No employees imported. Visit /dashboard/upgrade.`)}`);
+    redirect(`${returnTo}?error=${encodeURIComponent(`Import would result in ${resultingCount} active employees; your plan allows ${limit}. Free includes 10; Pro includes 75 at £39.99/month. No employees imported. Visit /dashboard/upgrade.`)}`);
   }
 
   let deptByLower = new Map<string, string>();

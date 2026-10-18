@@ -1,4 +1,5 @@
 import { SiteChrome } from "@/components/layout/SiteChrome";
+import { COMPANY, REGISTERED_OFFICE } from "@/lib/company";
 import { PageHero, TextLink, homeCrumb } from "@/components/marketing/PageSections";
 import { CookieSettings } from "@/components/consent/CookieSettings";
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -17,7 +18,7 @@ export default function CookiesPage() {
       <JsonLd data={breadcrumbSchema([{ name: "Home", path: "/" }, { name: "Cookie policy", path: LEGAL_ROUTES.cookies }])} />
       <PageHero compact eyebrow="Your browser, your choices" title="Cookie policy" description="How Appraisal Software uses cookies and browser storage, and how you can control optional website measurement." breadcrumbs={[homeCrumb(), { label: "Cookie policy", href: LEGAL_ROUTES.cookies }]} />
       <article className="mx-auto max-w-6xl space-y-10 px-5 py-12 text-sm leading-relaxed text-muted-foreground sm:text-base lg:px-8">
-        <p>Last updated: <time dateTime="2026-10-07">7 October 2026</time>. This policy covers appraisalsoftware.co.uk and app.appraisalsoftware.co.uk, operated by Umbrella Rank Ltd.</p>
+        <p>Last updated: <time dateTime="2026-10-07">7 October 2026</time>. This policy covers appraisalsoftware.co.uk and app.appraisalsoftware.co.uk, operated by {COMPANY.legalName}, {REGISTERED_OFFICE}.</p>
         <section className="space-y-4">
           <h2 className="font-display text-2xl font-semibold text-foreground">Change your choices</h2>
           <p>Our c15t controls let you accept, reject or customise optional cookies. Necessary storage keeps sign-in and consent choices working. Google Analytics loads only after measurement consent. You can reopen the controls here, through the footer, or using the privacy settings icon.</p>

@@ -138,3 +138,37 @@ export function breadcrumbSchema(items: { name: string; path: string }[]) {
     })),
   };
 }
+
+/**
+ * Product markup for a pack's interactive template licence, the only thing on
+ * the page that can be bought. Null when it can't be bought by any workspace
+ * (checkout not configured, or a 360 pack that needs Pro first). Downloadable
+ * documents are never included until they are actually for sale.
+ */
+export function packProductSchema(
+  pack: { slug: string; name: string; summary: string; category: string; price: number; campaignType: string },
+  { path, purchasable }: { path: string; purchasable: boolean },
+) {
+  if (!purchasable || pack.campaignType === "feedback_360") return null;
+  const url = absoluteUrl(path);
+  const price = (pack.price / 100).toFixed(2);
+  return {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: pack.name,
+    description: pack.summary,
+    sku: pack.slug,
+    category: pack.category,
+    image: absoluteUrl("/social/marketplace.png"),
+    url,
+    brand: { "@type": "Brand", name: SITE_NAME },
+    offers: {
+      "@type": "Offer",
+      url,
+      price,
+      priceCurrency: "GBP",
+      availability: "https://schema.org/InStock",
+      seller: { "@type": "Organization", name: SITE_NAME, url: SITE_URL },
+    },
+  };
+}

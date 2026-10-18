@@ -52,7 +52,7 @@ export function PackPrice({ pack, access, large = false }: { pack: TemplatePack;
       ) : (
         <>
           <span className={cn("font-display font-semibold text-foreground", large ? "text-3xl" : "text-lg")}>{formatPackPrice(pack.price)}</span>{" "}
-          one-off + VAT
+          one-off · no VAT
         </>
       )}
     </p>

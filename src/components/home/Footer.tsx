@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { companyDisclosure } from "@/lib/company";
 import { BrandMark } from "@/components/home/Logo";
 import { CookieSettings } from "@/components/consent/CookieSettings";
 import { DISCLOSURELY_URL } from "@/lib/links";
@@ -95,6 +96,7 @@ export function Footer() {
           </p>
           <p>© {new Date().getFullYear()} Appraisal Software. All rights reserved.</p>
         </div>
+        <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">{companyDisclosure()}</p>
       </div>
     </footer>
   );

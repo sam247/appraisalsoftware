@@ -46,7 +46,7 @@ We looked at the things UK buyers ask about most:
 
 Appraisal Software focuses on one job: running review cycles well. Employees complete a self-appraisal, managers complete theirs, and the results show both perspectives side by side — with a radar chart, the areas where views differ, and a PDF you can take into the meeting. Anonymous 360 feedback combines reviewers' answers and only releases results once at least five people have responded.
 
-- **Pricing:** Free for up to 10 active employees. Pro is £39.99 a month per workspace (75 employees, anonymous 360), Organisation is £89.99 a month (250 employees). Prices exclude VAT; annual billing gives two months free.
+- **Pricing:** Free for up to 10 active employees. Pro is £39.99 a month per workspace (75 employees, anonymous 360), Organisation is £89.99 a month (250 employees). No VAT is charged; annual billing gives two months free.
 - **Strengths:** Fast to set up, flat pricing that doesn't grow with every hire, ready-made templates, and results designed for the review conversation.
 - **Trade-offs:** It isn't an HR system — no payroll, absence or document management. If you need those in one place, look at Breathe or CharlieHR.
 

@@ -1,3 +1,4 @@
+import { DOWNLOADS } from "@/lib/marketplace/downloads";
 import { INDEXABLE_PATHS } from "@/lib/routes";
 
 export const GA_ID = "G-3LFNBQEPDF";
@@ -19,5 +20,33 @@ export function trackEvent(event: AnalyticsEvent): boolean {
   if (!analyticsReleased || typeof window === "undefined" || !window.appraisalMeasurementConsent || !window.gtag) return false;
   // No caller-supplied parameters: identity, content, tokens and app URLs cannot enter this contract.
   window.gtag("event", event, { send_to: GA_ID, page_location: window.location.origin + "/", page_referrer: "", page_title: "Appraisal Software" });
+  return true;
+}
+
+/**
+ * Downloadable-template events. Only events for capabilities that exist are
+ * callable; purchase and delivery events are reserved names until those ship.
+ */
+export type DownloadAnalyticsEvent =
+  | "download_option_viewed"
+  | "download_coming_soon_clicked"
+  | "download_purchase_started"
+  | "download_purchase_completed"
+  | "download_delivered";
+export const ACTIVE_DOWNLOAD_EVENTS = ["download_option_viewed"] as const satisfies readonly DownloadAnalyticsEvent[];
+export type ActiveDownloadEvent = (typeof ACTIVE_DOWNLOAD_EVENTS)[number];
+
+/** Sends only a catalogue pack slug and a fixed product type: nothing a visitor types reaches GA4. */
+export function trackDownloadEvent(event: ActiveDownloadEvent, packSlug: string): boolean {
+  if (!(ACTIVE_DOWNLOAD_EVENTS as readonly string[]).includes(event) || !Object.hasOwn(DOWNLOADS, packSlug)) return false;
+  if (!analyticsReleased || typeof window === "undefined" || !window.appraisalMeasurementConsent || !window.gtag) return false;
+  window.gtag("event", event, {
+    send_to: GA_ID,
+    pack_slug: packSlug,
+    product_type: "download",
+    page_location: window.location.origin + "/",
+    page_referrer: "",
+    page_title: "Appraisal Software",
+  });
   return true;
 }
