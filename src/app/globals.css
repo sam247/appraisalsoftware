@@ -5,6 +5,8 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  /* Marketing content width: matches the header's max-w-6xl minus its lg:px-8 gutters. */
+  --container-content: 68rem;
   --font-display: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, "Noto Sans", sans-serif;
@@ -539,7 +541,7 @@ section.marketing-contrast {
   padding: 1.25rem;
 }
 section.marketing-contrast > div {
-  max-width: 76rem;
+  max-width: 68rem;
   margin-inline: auto;
   border-radius: 2rem;
   padding: clamp(2.75rem, 6vw, 5rem) clamp(1.5rem, 5vw, 4.5rem);

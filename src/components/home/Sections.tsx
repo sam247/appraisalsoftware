@@ -94,7 +94,7 @@ export function HomeFaqSection() {
 export function FinalCtaSection() {
   return (
     <section className="marketing-contrast px-5 py-20 lg:px-8">
-      <div className="mx-auto max-w-6xl py-5 text-center">
+      <div className="mx-auto max-w-content py-5 text-center">
         <h2 className="font-display text-[1.75rem] font-semibold leading-[1.12] tracking-[-0.03em] text-foreground sm:text-[2rem]">
           Your next appraisal cycle
           <br />

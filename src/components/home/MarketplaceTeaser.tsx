@@ -25,7 +25,7 @@ export function MarketplaceTeaser() {
 
   return (
     <section className="border-t border-border bg-surface/50 px-5 py-20 sm:py-24 lg:px-8">
-      <div className="mx-auto max-w-6xl">
+      <div className="mx-auto max-w-content">
         <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">Template marketplace</p>

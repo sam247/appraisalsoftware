@@ -207,7 +207,7 @@ export function CtaBand({
 }) {
   return (
     <section className="marketing-contrast no-print px-5 py-20 lg:px-8">
-      <div className="mx-auto max-w-6xl py-2 text-center sm:py-5">
+      <div className="mx-auto max-w-content py-2 text-center sm:py-5">
         <h2 className={marketingType.h2}>{title}</h2>
         <p className="mx-auto mt-4 max-w-xl text-[15px] leading-relaxed text-muted-foreground">
           {copy}

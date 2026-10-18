@@ -68,7 +68,7 @@ export default function Page() {
       </section>
 
       <section className="border-y border-border bg-surface/50 px-5 py-20 sm:py-24 lg:px-8">
-        <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:gap-20">
+        <div className="mx-auto grid max-w-content gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:gap-20">
           <div><p className={marketingType.eyebrow}>Beyond the manager’s view</p><h2 className={`mt-4 ${marketingType.h2}`}>Different people see different strengths.</h2></div>
           <div className="space-y-5 leading-relaxed text-muted-foreground">
             <p>A 360 degree appraisal gathers feedback from people who work with someone in different ways. A manager sees progress against expectations. Peers see collaboration. Direct reports experience their leadership and support.</p>
@@ -80,7 +80,7 @@ export default function Page() {
       </section>
 
       <section id="how-it-works" className="scroll-mt-24 px-5 py-20 sm:py-24 lg:px-8">
-        <div className="mx-auto max-w-6xl">
+        <div className="mx-auto max-w-content">
           <p className={marketingType.eyebrow}>A clear process, start to finish</p>
           <h2 className={`mt-4 max-w-2xl ${marketingType.h2}`}>From a circle of reviewers<br />to a useful conversation.</h2>
           <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -90,7 +90,7 @@ export default function Page() {
       </section>
 
       <section className="marketing-contrast px-5 py-20 sm:py-24 lg:px-8">
-        <div className="mx-auto max-w-6xl">
+        <div className="mx-auto max-w-content">
           <p className={marketingType.eyebrow}>Make the feedback useful</p>
           <h2 className={`mt-4 max-w-2xl ${marketingType.h2}`}>More than another form to fill in.</h2>
           <div className="mt-10 grid gap-8 md:grid-cols-3">
@@ -105,7 +105,7 @@ export default function Page() {
       </section>
 
       <section id="privacy" className="scroll-mt-24 border-b border-border bg-surface-2/70 px-5 py-20 sm:py-24 lg:px-8">
-        <div className="mx-auto max-w-6xl">
+        <div className="mx-auto max-w-content">
           <div className="mx-auto max-w-3xl text-center">
             <p className={marketingType.eyebrow}>Clear privacy expectations</p>
             <h2 className={`mt-4 ${marketingType.h2}`}>Give reviewers clarity before they give feedback.</h2>

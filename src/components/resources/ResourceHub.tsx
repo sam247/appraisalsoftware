@@ -75,7 +75,7 @@ export function ResourceHub({ templates = false }: { templates?: boolean }) {
         breadcrumbs={[homeCrumb(), { label: title, href: path }]}
       />
       <section className="border-b border-border bg-surface/50 px-5 py-8 lg:px-8">
-        <nav aria-label={templates ? "Template groups" : "Learning paths"} className="mx-auto max-w-6xl">
+        <nav aria-label={templates ? "Template groups" : "Learning paths"} className="mx-auto max-w-content">
           <p className="text-sm font-semibold">{templates ? "Choose the task you need a form for" : "What are you preparing for?"}</p>
           <div className="mt-4 flex flex-wrap gap-3">
             {groups.map((group) => <a key={group.id} href={`#${group.id}`} className="inline-flex min-h-11 items-center gap-2 rounded-full border border-border bg-card px-5 py-3 text-sm font-medium hover:border-primary hover:text-primary">{group.title}<ArrowRight className="size-4" aria-hidden /></a>)}
@@ -85,7 +85,7 @@ export function ResourceHub({ templates = false }: { templates?: boolean }) {
 
       {templates ? templateGroups.map((group) => (
         <section key={group.id} id={group.id} className="border-b border-border px-5 py-16 sm:py-20 lg:px-8">
-          <div className="mx-auto max-w-6xl">
+          <div className="mx-auto max-w-content">
             <h2 className="font-display text-3xl font-semibold">{group.title}</h2>
             <p className="mt-4 max-w-2xl leading-relaxed text-muted-foreground">{group.copy}</p>
             <ul className="mt-8 grid gap-6 md:grid-cols-2">
@@ -116,7 +116,7 @@ export function ResourceHub({ templates = false }: { templates?: boolean }) {
         </section>
       )) : learningPaths.map((journey) => (
         <section key={journey.id} id={journey.id} className="border-b border-border px-5 py-16 sm:py-20 lg:px-8">
-          <div className="mx-auto max-w-6xl">
+          <div className="mx-auto max-w-content">
             <h2 className="font-display text-3xl font-semibold">{journey.title}</h2>
             <p className="mt-4 max-w-2xl leading-relaxed text-muted-foreground">{journey.copy}</p>
             <ul className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -140,7 +140,7 @@ export function ResourceHub({ templates = false }: { templates?: boolean }) {
         </section>
       ))}
       <section className="px-5 py-16 lg:px-8">
-        <div className="mx-auto max-w-6xl">
+        <div className="mx-auto max-w-content">
           <h2 className="font-display text-2xl font-semibold">{templates ? "Use the prompts in your own process." : "Looking for a form you can use?"}</h2>
           <p className="mt-4 max-w-2xl leading-relaxed text-muted-foreground">{templates ? "These forms work on their own. To run a campaign in Appraisal Software, create a workspace and copy the relevant prompts into a reusable question template. Public forms are not automatically imported." : "Our first-party template library has complete forms for annual reviews, self-appraisals, probation, development plans and 360 feedback."}</p>
           <a href={templates ? PRIMARY_CTA_URL : ROUTES.templates} className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">{templates ? PRIMARY_CTA_LABEL : "Browse the template library"}<ArrowRight className="size-4" aria-hidden /></a>

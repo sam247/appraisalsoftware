@@ -27,7 +27,7 @@ function FoundingTeams() {
   ];
   return (
     <section id="founding-teams" className="border-t border-border bg-surface/50 px-5 py-20 sm:py-24 lg:px-8">
-      <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center lg:gap-20">
+      <div className="mx-auto grid max-w-content gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center lg:gap-20">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">Founding teams</p>
           <h2 className="mt-4 font-display text-[2rem] font-semibold leading-[1.1] tracking-[-0.035em] sm:text-[2.5rem]">
@@ -70,7 +70,7 @@ function TestimonialCarousel({ items }: { items: Testimonial[] }) {
   const [paused, setPaused] = useState(false);
   return (
     <section id="reviews" className="border-t border-border bg-surface/50 px-5 py-20 sm:py-24 lg:px-8">
-      <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:items-center lg:gap-20">
+      <div className="mx-auto grid max-w-content gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:items-center lg:gap-20">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">Customer stories</p>
           <h2 className="mt-4 font-display text-[2rem] font-semibold leading-[1.1] tracking-[-0.035em] sm:text-[2.5rem]">What teams are saying.</h2>

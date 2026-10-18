@@ -117,7 +117,7 @@ export default function EmployeeAppraisalSoftwarePage() {
       </section>
 
       <section className="border-y border-border bg-surface/50 px-5 py-20 sm:py-24 lg:px-8">
-        <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:gap-20">
+        <div className="mx-auto grid max-w-content gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:gap-20">
           <div><p className={marketingType.eyebrow}>Both sides of the review</p><h2 className={`mt-4 ${marketingType.h2}`}>A shared process.<br />Two useful perspectives.</h2></div>
           <div className="space-y-5 leading-relaxed text-muted-foreground">
             <p>Employee appraisal software brings the review process together: a reusable form, employee self-assessment, manager response, a way to see who is still outstanding, and one record you can find again. Many UK teams also call this performance appraisal software.</p>
@@ -129,7 +129,7 @@ export default function EmployeeAppraisalSoftwarePage() {
       </section>
 
       <section id="annual-appraisals" className="scroll-mt-24 px-5 py-20 sm:py-24 lg:px-8">
-        <div className="mx-auto max-w-6xl">
+        <div className="mx-auto max-w-content">
           <p className={marketingType.eyebrow}>A clear process, every review period</p>
           <h2 className={`mt-4 max-w-2xl ${marketingType.h2}`}>From the first prompt<br />to the next conversation.</h2>
           <p className="mt-5 max-w-2xl leading-relaxed text-muted-foreground">Run your annual appraisal cycle with a clear review period, campaign dates and a reusable form. Share the prompts before the meetings so both people have time to prepare.</p>
@@ -146,7 +146,7 @@ export default function EmployeeAppraisalSoftwarePage() {
       </section>
 
       <section className="marketing-contrast px-5 py-20 sm:py-24 lg:px-8">
-        <div className="mx-auto max-w-6xl">
+        <div className="mx-auto max-w-content">
           <p className={marketingType.eyebrow}>Less chasing, a clearer record</p>
           <h2 className={`mt-4 max-w-2xl ${marketingType.h2}`}>Keep the review moving.</h2>
           <div className="mt-10 grid gap-8 md:grid-cols-3">
@@ -161,7 +161,7 @@ export default function EmployeeAppraisalSoftwarePage() {
       </section>
 
       <section className="border-b border-border bg-surface-2/70 px-5 py-20 sm:py-24 lg:px-8">
-        <div className="mx-auto max-w-6xl">
+        <div className="mx-auto max-w-content">
           <div className="mx-auto max-w-3xl text-center"><p className={marketingType.eyebrow}>Help both people prepare</p><h2 className={`mt-4 ${marketingType.h2}`}>Make room for the conversation.</h2></div>
           <div className="mt-10 grid items-center gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:gap-20">
             <div className="space-y-5 leading-relaxed text-muted-foreground">
@@ -178,7 +178,7 @@ export default function EmployeeAppraisalSoftwarePage() {
       </section>
 
       <section className="border-b border-border px-5 py-20 sm:py-24 lg:px-8">
-        <div className="mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-20">
+        <div className="mx-auto grid max-w-content items-center gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-20">
           <div>
             <p className={marketingType.eyebrow}>A focused respondent experience</p>
             <h2 className={`mt-4 ${marketingType.h2}`}>A clear form instead of a document chase.</h2>

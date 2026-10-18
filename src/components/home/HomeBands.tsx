@@ -27,7 +27,7 @@ const reviewSteps = [
 export function ProcessOverview() {
   return (
     <section className="border-t border-border px-5 py-20 sm:py-24 lg:px-8">
-      <div className="mx-auto max-w-6xl">
+      <div className="mx-auto max-w-content">
         <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
           How it works
         </p>
@@ -63,7 +63,7 @@ export function ProcessOverview() {
 export function MidPageCta() {
   return (
     <section className="marketing-contrast px-5 py-20 sm:py-28 lg:px-8">
-      <div className="reveal mx-auto max-w-6xl">
+      <div className="reveal mx-auto max-w-content">
         <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
           A focused way forward
         </p>
@@ -100,7 +100,7 @@ export function MidPageCta() {
 export function PricingPreview() {
   return (
     <section className="px-5 py-20 sm:py-24 lg:px-8">
-      <div className="mx-auto max-w-6xl">
+      <div className="mx-auto max-w-content">
         <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
@@ -178,7 +178,7 @@ export function PricingPreview() {
 export function ProductBenefits() {
   return (
     <section className="border-t border-border bg-surface/50 px-5 py-20 sm:py-24 lg:px-8">
-      <div className="mx-auto max-w-6xl">
+      <div className="mx-auto max-w-content">
         <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
           Built around the review
         </p>
@@ -244,7 +244,7 @@ function GdprEmblem() {
 export function GdprCommitment() {
   return (
     <section className="border-y border-border bg-surface-2/70 px-5 py-16 sm:py-20 lg:px-8">
-      <div className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-[0.85fr_1.15fr] lg:gap-20">
+      <div className="mx-auto grid max-w-content gap-6 lg:grid-cols-[0.85fr_1.15fr] lg:gap-20">
         <div className="flex items-start gap-6">
           <GdprEmblem />
           <div>
