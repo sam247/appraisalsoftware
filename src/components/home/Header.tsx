@@ -1,16 +1,19 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { BrandMark } from "@/components/home/Logo";
+import { NetwiskLogo } from "@/components/brand/NetwiskLogo";
 import { DISCLOSURELY_URL, PRIMARY_CTA_LABEL, PRIMARY_CTA_URL, SIGN_IN_URL } from "@/lib/links";
 import { ROUTES } from "@/lib/routes";
 
-/** Family strip, Intuit-style: the Disclosurely products side by side. */
+/** Family strip, Intuit-style: Netwisk and its products side by side. */
 function FamilyBar() {
   return (
     <div className="no-print border-b border-border bg-surface-2/70">
       <div className="mx-auto flex max-w-6xl items-center gap-5 px-5 py-1.5 text-[11px] lg:px-8">
-        <span className="hidden font-semibold uppercase tracking-[0.18em] text-muted-foreground sm:inline">Disclosurely</span>
-        <nav aria-label="Disclosurely products" className="flex items-center gap-4 sm:border-l sm:border-border sm:pl-5">
+        <span className="inline-flex text-foreground/80" aria-label="Netwisk">
+          <NetwiskLogo size={14} />
+        </span>
+        <nav aria-label="Netwisk products" className="flex items-center gap-4 border-l border-border pl-5">
           <a href={DISCLOSURELY_URL} className="text-muted-foreground transition-colors hover:text-foreground">
             Whistleblowing
           </a>
