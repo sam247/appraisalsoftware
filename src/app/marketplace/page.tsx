@@ -1,0 +1,278 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { ArrowRight, BadgeCheck, Check, Clock, Eye, ListChecks, MousePointerClick, ShoppingBag } from "lucide-react";
+import { SiteChrome } from "@/components/layout/SiteChrome";
+import { CtaBand } from "@/components/marketing/PageSections";
+import { Button } from "@/components/ui/button";
+import RespondForm from "@/app/r/[token]/respond-form";
+import { marketingType } from "@/lib/marketing-typography";
+import { pageMetadata } from "@/lib/metadata";
+import { categories, formatPackPrice, packs, previewQuestions, type PackAccent, type TemplatePack } from "@/lib/marketplace";
+import { cn } from "@/lib/utils";
+
+export const metadata: Metadata = {
+  ...pageMetadata({
+    title: "Appraisal Template Marketplace | Appraisal Software",
+    description: "Ready-to-run appraisal, probation and 360 feedback templates. Preview every question, buy once, and launch as a campaign in one click.",
+    path: "/marketplace",
+    imagePath: "/social/templates.png",
+  }),
+  // Design preview: kept out of search until purchasing ships.
+  robots: { index: false, follow: true },
+};
+
+/** One accent per category; tints stay inside the warm brand palette. */
+const ACCENT: Record<PackAccent, { chip: string; dot: string; soft: string }> = {
+  jade: { chip: "bg-accent text-accent-foreground", dot: "bg-primary", soft: "from-accent/70" },
+  amber: { chip: "bg-[color-mix(in_oklab,var(--warm)_22%,white)] text-warm-foreground", dot: "bg-warm", soft: "from-[color-mix(in_oklab,var(--warm)_16%,white)]" },
+  blue: { chip: "bg-[color-mix(in_oklab,var(--chart-3)_16%,white)] text-[color-mix(in_oklab,var(--chart-3)_70%,black)]", dot: "bg-chart-3", soft: "from-[color-mix(in_oklab,var(--chart-3)_10%,white)]" },
+  teal: { chip: "bg-[color-mix(in_oklab,var(--chart-5)_16%,white)] text-[color-mix(in_oklab,var(--chart-5)_65%,black)]", dot: "bg-chart-5", soft: "from-[color-mix(in_oklab,var(--chart-5)_10%,white)]" },
+  rose: { chip: "bg-[color-mix(in_oklab,var(--chart-4)_14%,white)] text-[color-mix(in_oklab,var(--chart-4)_65%,black)]", dot: "bg-chart-4", soft: "from-[color-mix(in_oklab,var(--chart-4)_9%,white)]" },
+};
+
+function Meta({ pack, inverse = false }: { pack: TemplatePack; inverse?: boolean }) {
+  return (
+    <p className={cn("flex flex-wrap items-center gap-x-4 gap-y-1 text-sm", inverse ? "text-white/80" : "text-muted-foreground")}>
+      <span className="inline-flex items-center gap-1.5">
+        <ListChecks className="size-4" aria-hidden /> {pack.questions} questions
+      </span>
+      <span className="inline-flex items-center gap-1.5">
+        <Clock className="size-4" aria-hidden /> ~{pack.minutes} min to complete
+      </span>
+    </p>
+  );
+}
+
+function Benefits({ items, inverse = false }: { items: string[]; inverse?: boolean }) {
+  return (
+    <ul className="mt-6 space-y-2.5">
+      {items.map((item) => (
+        <li key={item} className={cn("flex gap-2.5 text-[0.9375rem] leading-snug", inverse ? "text-white" : "text-foreground")}>
+          <span
+            className={cn(
+              "mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full",
+              inverse ? "bg-white text-primary" : "bg-primary text-primary-foreground",
+            )}
+            aria-hidden
+          >
+            <Check className="size-3" strokeWidth={3} />
+          </span>
+          {item}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function PriceLine({ pack, inverse = false }: { pack: TemplatePack; inverse?: boolean }) {
+  return (
+    <p className={cn("text-sm", inverse ? "text-white/85" : "text-muted-foreground")}>
+      <span className={cn("font-display text-2xl font-semibold tracking-tight", inverse ? "text-white" : "text-foreground")}>
+        {formatPackPrice(pack.price)}
+      </span>{" "}
+      one-off + VAT
+      {pack.includedWithPro ? <span className="ml-2 font-medium">· Included with Pro</span> : null}
+    </p>
+  );
+}
+
+function CircleArrow({ inverse = false }: { inverse?: boolean }) {
+  return (
+    <span
+      className={cn(
+        "flex size-9 items-center justify-center rounded-full transition-transform duration-200 group-hover:translate-x-0.5 motion-reduce:transition-none",
+        inverse ? "bg-white text-primary" : "bg-primary text-primary-foreground",
+      )}
+      aria-hidden
+    >
+      <ArrowRight className="size-4" />
+    </span>
+  );
+}
+
+function FeaturedPack({ pack }: { pack: TemplatePack }) {
+  return (
+    <article id={pack.slug} className="scroll-mt-24 overflow-hidden rounded-[1.75rem] bg-primary text-white lg:col-span-2 lg:grid lg:grid-cols-[0.95fr_1.1fr]">
+      <div className="flex flex-col p-8 sm:p-10">
+        <p className="inline-flex w-fit items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em]">
+          <BadgeCheck className="size-3.5" aria-hidden /> Featured pack
+        </p>
+        <h2 className="mt-6 font-display text-[2rem] font-semibold leading-[1.1] tracking-[-0.03em] sm:text-[2.25rem]">{pack.name}</h2>
+        <p className="mt-4 max-w-md text-[0.9375rem] leading-relaxed text-white/85">{pack.summary}</p>
+        <div className="mt-5">
+          <Meta pack={pack} inverse />
+        </div>
+        <Benefits items={pack.benefits} inverse />
+        <div className="mt-auto flex flex-wrap items-end justify-between gap-4 pt-10">
+          <PriceLine pack={pack} inverse />
+          <Link href={`#${pack.slug}`} className="group inline-flex items-center gap-3 text-base font-semibold">
+            Preview every question <CircleArrow inverse />
+          </Link>
+        </div>
+      </div>
+      <div className="relative flex items-center justify-center bg-[color-mix(in_oklab,var(--primary)_78%,black)] p-5 sm:p-7">
+        <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_70%_20%,rgb(255_255_255/0.14),transparent_55%)]" />
+        <div className="relative w-full max-w-md overflow-hidden rounded-2xl bg-card text-foreground shadow-[0_30px_60px_-30px_rgb(0_0_0/0.6)] ring-1 ring-white/10 [&_.min-h-\[38rem\]]:min-h-0 [&_.px-5]:px-6 sm:[&_.sm\:px-8]:px-6">
+          <RespondForm
+            preview
+            compact
+            previewQuestionIndex={0}
+            token="marketplace-preview"
+            campaignName={pack.name}
+            questions={previewQuestions(pack)}
+            relationship="self"
+            alreadySubmitted={false}
+            orgName="Your company"
+            initialAnswers={[]}
+          />
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function PackCard({ pack, large = false }: { pack: TemplatePack; large?: boolean }) {
+  const accent = ACCENT[pack.accent];
+  return (
+    <article
+      id={pack.slug}
+      className={cn(
+        "group flex scroll-mt-24 flex-col rounded-[1.75rem] border border-border bg-gradient-to-b to-card to-45% p-8 transition-shadow duration-200 hover:shadow-[0_24px_48px_-32px_rgb(28_24_18/0.4)] motion-reduce:transition-none",
+        accent.soft,
+        large ? "sm:p-10" : "",
+      )}
+    >
+      <div className="flex items-center justify-between gap-3">
+        <span className={cn("inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold", accent.chip)}>
+          <span className={cn("size-1.5 rounded-full", accent.dot)} aria-hidden />
+          {pack.category}
+        </span>
+        {pack.includedWithPro ? <span className="text-xs font-medium text-primary">Included with Pro</span> : null}
+      </div>
+      <h3 className={cn("mt-6", large ? "font-display text-[1.75rem] font-semibold leading-tight tracking-[-0.03em]" : marketingType.h3Card)}>{pack.name}</h3>
+      <p className="mt-3 text-[0.9375rem] leading-relaxed text-muted-foreground">{pack.summary}</p>
+      <div className="mt-4">
+        <Meta pack={pack} />
+      </div>
+      <Benefits items={pack.benefits} />
+      <div className="mt-auto flex items-end justify-between gap-4 pt-8">
+        <PriceLine pack={pack} />
+        <Link href={`#${pack.slug}`} aria-label={`Preview ${pack.name}`} className="inline-flex items-center gap-3 text-sm font-semibold text-foreground">
+          <span className="hidden sm:inline">Preview</span> <CircleArrow />
+        </Link>
+      </div>
+    </article>
+  );
+}
+
+const steps = [
+  { icon: Eye, title: "Preview every question", copy: "See the full form exactly as your people will, before you spend a penny." },
+  { icon: ShoppingBag, title: "Buy once, keep it", copy: "One payment per workspace. Reuse it every cycle and edit any question." },
+  { icon: MousePointerClick, title: "Run it in one click", copy: "Turn the template into a ready-made campaign draft, then add your people." },
+];
+
+export default function MarketplacePage() {
+  const [featured, second, ...rest] = packs;
+  return (
+    <SiteChrome commercial>
+      <section className="border-b border-border bg-background">
+        <div className="mx-auto max-w-6xl px-5 py-16 lg:px-8 lg:py-20">
+          <p className={marketingType.eyebrow}>Template marketplace · Preview</p>
+          <h1 className={cn("mt-4 max-w-3xl", marketingType.h1Home)}>
+            Appraisal templates, <span className="marketing-editorial text-primary">ready to run.</span>
+          </h1>
+          <p className={cn("mt-6 max-w-2xl", marketingType.lead)}>
+            Expert-built review packs for every team and stage — from probation to leadership 360. Preview every question,
+            buy once, and launch it as a campaign in a click.
+          </p>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Button size="lg" className="px-7" asChild>
+              <a href="#packs">
+                Browse packs <ArrowRight className="size-4" />
+              </a>
+            </Button>
+            <Button size="lg" variant="outline" className="px-7" asChild>
+              <Link href="/templates">Free templates</Link>
+            </Button>
+          </div>
+          <ul className="mt-10 flex flex-wrap gap-2" aria-label="Categories">
+            {categories.map((c) => (
+              <li key={c.name} className="rounded-full border border-border bg-card px-3.5 py-1.5 text-sm text-foreground">
+                {c.name} <span className="text-muted-foreground">· {c.count}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      <section id="packs" className="scroll-mt-20 bg-surface/60 py-16 lg:py-20">
+        <div className="mx-auto max-w-6xl space-y-5 px-5 lg:px-8">
+          <div className="grid gap-5 lg:grid-cols-3">
+            <FeaturedPack pack={featured} />
+            <PackCard pack={second} large />
+          </div>
+          <div className="grid gap-5 md:grid-cols-3">
+            {rest.map((pack) => (
+              <PackCard key={pack.slug} pack={pack} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="py-16 lg:py-20">
+        <div className="mx-auto max-w-6xl px-5 lg:px-8">
+          <p className={marketingType.eyebrow}>How it works</p>
+          <h2 className={cn("mt-4 max-w-2xl", marketingType.h2)}>From template to review in minutes.</h2>
+          <ol className="mt-10 grid gap-5 md:grid-cols-3">
+            {steps.map(({ icon: Icon, title, copy }, i) => (
+              <li key={title} className="rounded-[1.5rem] border border-border bg-card p-7">
+                <div className="flex items-center justify-between">
+                  <span className="flex size-11 items-center justify-center rounded-2xl bg-accent text-primary" aria-hidden>
+                    <Icon className="size-5" />
+                  </span>
+                  <span className="font-display text-sm font-semibold text-muted-foreground">0{i + 1}</span>
+                </div>
+                <h3 className={cn("mt-6", marketingType.h3)}>{title}</h3>
+                <p className={cn("mt-2", marketingType.cardBody)}>{copy}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      <section className="pb-16 lg:pb-20">
+        <div className="mx-auto grid max-w-6xl gap-5 px-5 lg:grid-cols-[1.4fr_1fr] lg:px-8">
+          <div className="rounded-[1.75rem] bg-ink p-8 text-white sm:p-10">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/60">For Pro workspaces</p>
+            <h2 className="mt-4 font-display text-[1.75rem] font-semibold leading-tight tracking-[-0.03em]">
+              The Annual and Probation packs are included with Pro.
+            </h2>
+            <p className="mt-3 max-w-lg text-[0.9375rem] leading-relaxed text-white/75">
+              Upgrade once and start every review cycle from a proven structure — plus anonymous 360 feedback and room for 75 people.
+            </p>
+            <Link href="/pricing" className="group mt-8 inline-flex items-center gap-3 font-semibold">
+              See Pro <CircleArrow inverse />
+            </Link>
+          </div>
+          <div className="rounded-[1.75rem] border border-dashed border-border-strong p-8 sm:p-10">
+            <p className={marketingType.eyebrow}>Coming soon</p>
+            <h2 className={cn("mt-4", marketingType.h3Card)}>Are you an HR consultant?</h2>
+            <p className={cn("mt-2", marketingType.cardBody)}>
+              We&apos;re opening the marketplace to experienced practitioners. Sell the review frameworks you already use with clients.
+            </p>
+            <Link href="/contact?type=other" className="group mt-6 inline-flex items-center gap-3 text-sm font-semibold text-foreground">
+              Join the seller waitlist <CircleArrow />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <CtaBand
+        title="Not ready to buy? Start with the free templates."
+        copy="Every free template can be copied, printed or run as a campaign on the Free plan."
+        secondaryHref="/templates"
+        secondaryLabel="Browse free templates"
+      />
+    </SiteChrome>
+  );
+}
