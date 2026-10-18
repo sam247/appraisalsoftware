@@ -286,14 +286,14 @@ export default function Page() {
             copy: "A complete starting form for both sides of the review.",
           },
           {
-            href: "/appraisal-questions",
-            label: "Appraisal questions",
-            copy: "Focused prompts for employee and manager reflection.",
+            href: "/self-appraisal-template",
+            label: "Self-appraisal template",
+            copy: "Help employees reflect on the period before the meeting.",
           },
           {
-            href: "/360-feedback-questions",
-            label: "360 feedback questions",
-            copy: "Choose prompts around observable behaviours.",
+            href: "/360-feedback-template",
+            label: "360 feedback template",
+            copy: "A ready form built around observable behaviours.",
           },
         ]}
       />

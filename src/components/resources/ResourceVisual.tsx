@@ -265,34 +265,6 @@ export function ResourceVisual({ resource }: { resource: ResourceContent }) {
     );
   }
 
-  if (resource.slug === "360-degree-feedback") {
-    return (
-      <ProcessRail
-        eyebrow="A multi-rater process"
-        title="From the subject’s purpose to useful development action"
-        copy="360 feedback is an educational process, not a score collection exercise. Be clear about who can observe the work, what will be shared and how themes will be discussed."
-        steps={[
-          {
-            title: "Define",
-            copy: "Agree what the subject should understand or develop before choosing questions.",
-          },
-          {
-            title: "Invite",
-            copy: "Choose reviewers with recent, relevant experience of the work.",
-          },
-          {
-            title: "Interpret",
-            copy: "Compare themes and examples carefully; different groups see different parts of the role.",
-          },
-          {
-            title: "Act",
-            copy: "Agree one or two practical changes, support and a date to revisit them.",
-          },
-        ]}
-      />
-    );
-  }
-
   if (resource.slug === "appraisal-answers") {
     return (
       <EvidencePattern
@@ -304,22 +276,6 @@ export function ResourceVisual({ resource }: { resource: ResourceContent }) {
           "Your contribution",
           "Result or evidence",
           "Learning or next step",
-        ]}
-      />
-    );
-  }
-
-  if (resource.slug === "appraisal-comments") {
-    return (
-      <EvidencePattern
-        eyebrow="A fair manager comment"
-        title="Describe the work, its effect and the support that follows"
-        copy="Specific observations are easier to discuss and fairer to review than labels about someone’s character."
-        steps={[
-          "Expected standard",
-          "Observed behaviour or result",
-          "Effect on the work",
-          "Continue, change or support",
         ]}
       />
     );
@@ -357,22 +313,7 @@ export function ResourceVisual({ resource }: { resource: ResourceContent }) {
     );
   }
 
-  if (resource.slug === "360-feedback-questions") {
-    return (
-      <QuestionGroupsPreview
-        groups={resource.sections.slice(1, 5).map((section) => ({
-          title: section.title,
-          copy:
-            section.paragraphs[0] ??
-            "Choose observable behaviours relevant to the review.",
-          count: section.items?.length,
-          example: section.items?.[0],
-        }))}
-      />
-    );
-  }
-
-  return (
+return (
     <section
       className={shellClassName}
       aria-labelledby="resource-overview-title"

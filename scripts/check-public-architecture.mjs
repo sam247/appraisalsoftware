@@ -10,7 +10,7 @@ const response = await fetch(`${origin}/sitemap.xml`);
 assert.equal(response.status, 200);
 const sitemap = await response.text();
 const urls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => new URL(match[1]));
-assert.equal(urls.length, 24, "23 core pages and one published article");
+assert.equal(urls.length, 20, "19 core pages and one published article");
 assert.equal(new Set(urls.map((url) => url.pathname)).size, urls.length);
 const legalPaths = ["/privacy", "/cookies"];
 for (const path of legalPaths) assert(!urls.some((url) => url.pathname === path), "Legal pages stay outside the SEO sitemap");

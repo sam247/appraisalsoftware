@@ -181,7 +181,7 @@ describe("marketing routes and indexability", () => {
       ).toBe(absoluteUrl(path));
     }
     expect(resourceListings.map((resource) => resource.slug)).toContain(
-      "appraisal-questions",
+      "appraisal-answers",
     );
     for (const resource of resourceListings)
       expect(INDEXABLE_PATHS).toContain(`/${resource.slug}`);

@@ -60,7 +60,7 @@ Do not force a single rating if the evidence genuinely supports two perspectives
 ## Useful next steps
 
 - Use the [annual appraisal guide](/annual-appraisal-guide) when you are planning the overall cycle
-- Browse [appraisal questions](/appraisal-questions) if the form itself is producing vague answers
+- Use the [annual appraisal template](/annual-appraisal-template) if the form itself is producing vague answers
 - See [how Appraisal Software works](/how-it-works) if you want employee and manager responses collected in one place before the meeting
 
 Differences between self and manager reviews are normal. Handled well, they improve the quality of the conversation rather than undermining it.

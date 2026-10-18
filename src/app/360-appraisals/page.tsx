@@ -74,7 +74,7 @@ export default function Page() {
             <p>A 360 degree appraisal gathers feedback from people who work with someone in different ways. A manager sees progress against expectations. Peers see collaboration. Direct reports experience their leadership and support.</p>
             <p>Also called a 360 review or multi-rater feedback, it helps bring those observations into a development conversation. Use it for leadership development, team relationships or a broader view of how someone works.</p>
             <p>It complements an <TextLink href={ROUTES.employeeAppraisalSoftware}>annual appraisal</TextLink>. An average rating is a starting point for discussion, rather than a verdict on someone’s performance.</p>
-            <Link href={ROUTES.feedback360Guide} className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">Read the 360 degree feedback guide <ArrowRight className="size-4" aria-hidden /></Link>
+            <Link href={ROUTES.feedback360Examples} className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">See 360 feedback examples <ArrowRight className="size-4" aria-hidden /></Link>
           </div>
         </div>
       </section>
@@ -127,7 +127,6 @@ export default function Page() {
       <Reviews />
       <PricingPreview />
       <RelatedLinks title="Prepare your first 360 appraisal" links={[
-        { href: ROUTES.feedback360Questions, label: "360 feedback questions", copy: "Choose prompts about behaviours reviewers can observe." },
         { href: ROUTES.feedback360Examples, label: "360 feedback examples", copy: "See how to write specific comments and discuss feedback." },
         { href: ROUTES.feedback360Template, label: "360 feedback template", copy: "Copy or print a form to plan your appraisal." },
       ]} />
@@ -136,7 +135,7 @@ export default function Page() {
         { question: "Is a 360 appraisal the same as 360 degree feedback?", answer: "The terms are often used for the same multi-rater process. Be clear about the purpose of your exercise: development feedback and a formal assessment of performance can have different implications for reviewers." },
         { question: "How many reviewers do we need?", answer: "At least five reviewers must complete their responses before results can be released. Invite a relevant cohort with room for non-completion. Each displayed question must also have at least five valid answers." },
         { question: "Are 360 appraisal responses anonymous?", answer: <>Reports combine reviewer responses without names or response times. Comments can still identify their author. Read the <TextLink href="#privacy">privacy safeguards</TextLink> before explaining anonymity to reviewers.</> },
-        { question: "Can we choose our own questions?", answer: <>Yes. Use reusable templates with rating and written questions. Our <TextLink href={ROUTES.feedback360Questions}>360 question bank</TextLink> can help you choose practical prompts.</> },
+        { question: "Can we choose our own questions?", answer: <>Yes. Use reusable templates with rating and written questions. Our <TextLink href={ROUTES.feedback360Template}>360 feedback template</TextLink> gives you practical prompts to start from.</> },
         { question: "Can we run annual appraisals in the same workspace?", answer: "Yes. Annual appraisals use identified employee and manager responses. The 360 workflow collects anonymous multi-rater feedback. Employee appraisals are included on Free; anonymous 360 is available on Pro and Organisation." },
       ]} />
       <CtaBand title="Start with a fuller picture." copy="Bring the right reviewers together and make your next 360 appraisal a useful development conversation." secondaryHref={ROUTES.pricing} secondaryLabel="See plans and pricing" />

@@ -6,13 +6,13 @@ import { INDEXABLE_PATHS } from "./routes";
 import sitemap from "@/app/sitemap";
 
 describe("SEO publication discipline", () => {
- it("keeps six staged articles outside public discovery and validates their local links", () => {
+ it("keeps any staged articles out of public discovery, and every article links only to live pages", () => {
   const all = getAllPosts();
-  const drafts = all.filter(p => p.draft);
-  expect(drafts).toHaveLength(6);
-  for (const post of drafts) {
+  for (const post of all.filter(p => p.draft)) {
    expect(getPublishedPosts().some(p => p.slug === post.slug)).toBe(false);
    expect(sitemap().some(entry => entry.url.endsWith(`/blog/${post.slug}`))).toBe(false);
+  }
+  for (const post of all) {
    for (const match of post.body.matchAll(/\]\((\/[^)]+)\)/g)) {
     const destination = match[1].split(/[?#]/)[0];
     expect(INDEXABLE_PATHS.includes(destination as typeof INDEXABLE_PATHS[number]) || all.some(p => `/blog/${p.slug}` === destination), `${post.slug}: ${destination}`).toBe(true);

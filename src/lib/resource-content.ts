@@ -59,7 +59,6 @@ export const resources: ResourceContent[] = [
       }
     ],
     "related": [
-      "appraisal-questions",
       "annual-appraisal-guide",
       "self-appraisal-template",
       "employee-appraisal-software"
@@ -248,7 +247,6 @@ export const resources: ResourceContent[] = [
     ],
     "related": [
       "self-appraisal-template",
-      "appraisal-comments",
       "employee-appraisal-software"
     ],
     "template": [
@@ -431,7 +429,6 @@ export const resources: ResourceContent[] = [
       }
     ],
     "related": [
-      "360-feedback-questions",
       "360-feedback-examples",
       "360-appraisals"
     ],
@@ -612,67 +609,6 @@ export const resources: ResourceContent[] = [
     }
   },
   {
-    "slug": "appraisal-comments",
-    "title": "Manager Appraisal Comments and Examples",
-    "description": "Manager-written appraisal comment examples for performance, strengths and development, with practical wording grounded in observable work.",
-    "audience": "Managers writing review observations",
-    "intent": "Manager perspective and fair evidence; employee answers live separately",
-    "kind": "guide",
-    "sections": [
-      {
-        "title": "Write about the work you observed",
-        "paragraphs": [
-          "Name the expected standard, the behaviour or result you observed and its effect. Then explain what should continue or change. Avoid turning one incident into a judgement about the employee’s character.",
-          "These examples illustrate structure. Use your own evidence from across the review period and give the employee an opportunity to explain their perspective."
-        ]
-      },
-      {
-        "title": "Recognising reliable delivery",
-        "paragraphs": [
-          "Example: “During the quarterly reporting cycle, Sam submitted each draft by the agreed date and resolved the checks before publication. This gave the team time to review the figures without delaying the release. Continue using the preparation checklist next quarter.”",
-          "This is more useful than “Sam is excellent”: it identifies a repeatable practice and explains why it matters."
-        ]
-      },
-      {
-        "title": "Recognising teamwork",
-        "paragraphs": [
-          "Example: “Priya helped the new team members understand the stock process by demonstrating the first reconciliation and reviewing their questions. Both could complete routine checks independently by the second week. Keep sharing that approach when the next starter joins.”",
-          "Credit the contribution without assuming the employee must always absorb additional work. Discuss the time and support needed if coaching becomes a regular responsibility."
-        ]
-      },
-      {
-        "title": "Describing a development need",
-        "paragraphs": [
-          "Example: “In two project handovers, the next owner was not confirmed, so the tasks were picked up late. For the next month, record an owner and due date for each handover and confirm them with the receiving colleague. I will review the first two handovers with you.”",
-          "The comment describes the gap and manager support. Replace “poor communicator” with the specific communication behaviour that needs to change."
-        ]
-      },
-      {
-        "title": "When an objective was partly met",
-        "paragraphs": [
-          "Example: “The team delivered the first release on time, but the documentation objective was only partly completed. The scope expanded in May and we did not reset the deadline. We will agree a smaller documentation milestone and protected time to finish it.”",
-          "Include changes in expectations or resources. Do not assess someone against a target that changed without acknowledging that change."
-        ]
-      },
-      {
-        "title": "Check the comment before sharing",
-        "paragraphs": [
-          "Ask whether the evidence supports the wording, whether the standard was clear and whether you would use the same language for another employee in the same situation. Avoid “always” and “never” unless the evidence genuinely supports them.",
-          "Keep formal employment decisions within your organisation’s established processes. These examples help write a review; they do not replace those processes."
-        ]
-      }
-    ],
-    "related": [
-      "appraisal-answers",
-      "probation-review-template",
-      "employee-appraisal-software"
-    ],
-    "bridge": {
-      "title": "Prepare both sides of the review",
-      "copy": "Collect manager observations and employee self-assessments in Appraisal Software, then use the differences as prompts for the conversation."
-    }
-  },
-  {
     "slug": "appraisal-objectives",
     "title": "Appraisal Objectives and Examples",
     "description": "Practical appraisal objective examples with success measures, deadlines and support, for managers and employees planning the next review period.",
@@ -744,161 +680,6 @@ export const resources: ResourceContent[] = [
     ]
   },
   {
-    "slug": "360-degree-feedback",
-    "title": "What Is 360 Degree Feedback?",
-    "description": "A practical guide to 360 degree feedback: who takes part, how to choose questions, how to handle responses and how to turn themes into development actions.",
-    "audience": "Managers and facilitators evaluating multi-rater feedback",
-    "intent": "Explanation and process, distinct from software selection and forms",
-    "kind": "guide",
-    "sections": [
-      {
-        "title": "What 360 degree feedback means",
-        "paragraphs": [
-          "360 degree feedback collects observations about a person’s work from several perspectives, commonly their manager, peers, direct reports and the person themselves. Different reviewers see different parts of the role.",
-          "It can highlight strengths and development needs that one manager would miss. It is not a complete picture of a person, and an average score is not an objective verdict."
-        ]
-      },
-      {
-        "title": "How it differs from an annual appraisal",
-        "paragraphs": [
-          "An annual appraisal usually compares the employee’s work with agreed role expectations and objectives. A 360 exercise adds views from people who work with them, often focused on observable behaviours.",
-          "The two can inform the same development conversation, but explain their purposes clearly. Reviewers should know whether their responses are for development or will inform other decisions."
-        ]
-      },
-      {
-        "title": "Choose reviewers who can observe the work",
-        "paragraphs": [
-          "Select people with recent, relevant experience rather than simply collecting the largest possible group. A peer may see coordination and reliability; a direct report may see clarity and support.",
-          "Let reviewers select “not observed”. Forcing a score from someone without direct experience adds uncertainty, not insight."
-        ]
-      },
-      {
-        "title": "Make privacy expectations explicit",
-        "paragraphs": [
-          "Explain who will see responses, how names will be handled and what will appear in a summary. Removing names does not guarantee anonymity: a unique situation or very small group can identify a reviewer.",
-          "Do not make promises your actual process cannot keep. Decide how comments will be reviewed and shared before invitations are sent, rather than after sensitive responses arrive."
-        ]
-      },
-      {
-        "title": "Interpret themes with care",
-        "paragraphs": [
-          "Compare perspectives and examples. A difference between self and others can start a conversation, but it does not by itself show who is right. Reviewer groups may have different opportunities to observe the behaviour.",
-          "Avoid presenting fictional scales as validated psychometric assessments. The resources here provide practical prompts, not a diagnostic instrument."
-        ]
-      },
-      {
-        "title": "Close the loop",
-        "paragraphs": [
-          "Discuss the summary with the person receiving feedback. Agree one strength to continue and one or two changes to try, with support and a review date.",
-          "The exercise is useful when the person can understand and act on the feedback. A long report without a conversation or follow-up leaves the hard part unfinished."
-        ]
-      }
-    ],
-    "related": [
-      "360-feedback-template",
-      "360-feedback-examples",
-      "360-appraisals"
-    ],
-    "bridge": {
-      "title": "Collect the feedback in Appraisal Software",
-      "copy": "Create a 360 campaign for one person, invite at least five reviewers and release combined anonymous results once the campaign is closed."
-    },
-    "sources": [
-      {
-        "label": "Center for Creative Leadership: implementing a 360 feedback initiative",
-        "href": "https://www.ccl.org/articles/leading-effectively-articles/how-to-implement-360-feedback-initiative/"
-      }
-    ]
-  },
-  {
-    "slug": "360-feedback-questions",
-    "title": "360 Feedback Questions",
-    "description": "Example 360 feedback questions by competency and reviewer relationship, with guidance on choosing observable behaviours and avoiding leading questions.",
-    "audience": "Facilitators choosing questions",
-    "intent": "A larger question bank, rather than a ready-to-use form",
-    "kind": "guide",
-    "sections": [
-      {
-        "title": "Choose questions reviewers can answer",
-        "paragraphs": [
-          "Select a small set that relates to the purpose of the exercise. Each question should describe one observable behaviour. Combine a rating, if useful, with a request for an example.",
-          "Use “not observed” where reviewers lack relevant experience. Avoid asking reviewers to guess someone’s intentions or agree with a flattering statement."
-        ]
-      },
-      {
-        "title": "Communication",
-        "paragraphs": [
-          "Use these prompts when reviewers regularly exchange information with the subject."
-        ],
-        "items": [
-          "How clearly does this person explain priorities and next steps?",
-          "How reliably do they share updates before others need to act?",
-          "How do they check that others have understood?",
-          "Give an example of a conversation that helped or hindered shared work."
-        ]
-      },
-      {
-        "title": "Teamwork and follow-through",
-        "paragraphs": [
-          "Focus on commitments and coordination rather than popularity."
-        ],
-        "items": [
-          "How reliably does this person follow through on agreed actions?",
-          "How do they handle a dependency that puts someone else’s work at risk?",
-          "How effectively do they share information during handovers?",
-          "What should they continue doing to make shared work easier?"
-        ]
-      },
-      {
-        "title": "Leadership and support",
-        "paragraphs": [
-          "These are most useful for reviewers who experience the person’s leadership directly."
-        ],
-        "items": [
-          "How clearly does this person explain what good work looks like?",
-          "How available are they when a decision or support is needed?",
-          "How do they respond when someone raises a concern?",
-          "Give an example of feedback that helped you improve your work."
-        ]
-      },
-      {
-        "title": "Decision-making",
-        "paragraphs": [
-          "Ask about decisions reviewers have actually seen."
-        ],
-        "items": [
-          "How clearly does this person explain the reason for a decision?",
-          "How do they seek relevant information before deciding?",
-          "How do they respond when new information changes the situation?",
-          "What one change would make their decisions easier to act on?"
-        ]
-      },
-      {
-        "title": "Adapt by relationship",
-        "paragraphs": [
-          "Manager: ask about agreed results, judgement and escalation. Peer: ask about coordination, information sharing and reliability. Direct report: ask about expectations, support and feedback. Self: ask for reflection on the same behaviours.",
-          "Keep common behavioural questions consistent if you want to compare perspectives. Add relationship-specific prompts only where they answer a different useful question."
-        ]
-      },
-      {
-        "title": "Questions to avoid",
-        "paragraphs": [
-          "“Is this person an inspiring leader?” is vague and encourages a general impression. “How clearly does this person explain the team’s next priorities?” describes something a reviewer can observe.",
-          "“Are they reliable and supportive?” combines two behaviours. Split it if both matter. Avoid demanding a positive or negative anecdote from someone who has not observed one."
-        ]
-      }
-    ],
-    "related": [
-      "360-feedback-template",
-      "360-degree-feedback",
-      "360-appraisals"
-    ],
-    "bridge": {
-      "title": "Turn these prompts into a 360 campaign",
-      "copy": "Save the questions as a reusable template in Appraisal Software, then invite reviewers to answer the same prompts through secure personal links."
-    }
-  },
-  {
     "slug": "360-feedback-examples",
     "title": "360 Feedback Examples",
     "description": "Example 360 feedback comments and a summary report, showing how to describe behaviours, compare perspectives and agree development actions.",
@@ -958,9 +739,7 @@ export const resources: ResourceContent[] = [
       }
     ],
     "related": [
-      "360-feedback-questions",
-      "360-feedback-template",
-      "360-degree-feedback"
+      "360-feedback-template"
     ],
     "bridge": {
       "title": "See how themes appear after a live 360",
@@ -982,12 +761,5 @@ export function resourceBySlug(slug: string): ResourceContent {
 }
 /** The question guide has a dedicated page; include its metadata in library discovery. */
 export const resourceListings: Pick<ResourceContent, "slug" | "title" | "description" | "audience" | "kind">[] = [
-  ...resources,
-  {
-    slug: "appraisal-questions",
-    title: "Appraisal Questions",
-    description: "Practical questions grouped by performance, objectives, strengths, development, manager support and the next review period.",
-    audience: "Employees and managers choosing questions for a UK team review",
-    kind: "guide",
-  },
+  ...resources
 ];

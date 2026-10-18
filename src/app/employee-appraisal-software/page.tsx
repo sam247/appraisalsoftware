@@ -166,7 +166,7 @@ export default function EmployeeAppraisalSoftwarePage() {
           <div className="mt-10 grid items-center gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:gap-20">
             <div className="space-y-5 leading-relaxed text-muted-foreground">
               <p>A useful appraisal has both voices: what the employee thinks happened in the period, and what the manager observed. Collect those responses before the meeting so you can spend the conversation on what they mean.</p>
-              <p>Use <TextLink href={ROUTES.appraisalAnswers}>employee self-appraisal examples</TextLink> to help employees prepare, and <TextLink href={ROUTES.appraisalComments}>manager comment examples</TextLink> for observations grounded in evidence. The <TextLink href={ROUTES.appraisalQuestions}>appraisal questions</TextLink> guide can help you choose focused prompts.</p>
+              <p>Use <TextLink href={ROUTES.appraisalAnswers}>employee self-appraisal examples</TextLink> to help employees prepare, and the <TextLink href={ROUTES.selfAppraisalTemplate}>self-appraisal template</TextLink> to give their reflection a clear structure.</p>
               <p>Leave time to agree the next steps and book a shorter progress check after the review. Our <TextLink href={ROUTES.appraisalObjectives}>appraisal objectives</TextLink> guide offers practical examples.</p>
               <p className="text-sm">Employee appraisals use identified responses. If you also need anonymous input from peers and direct reports, explore <TextLink href={ROUTES.feedback360Software}>360 appraisals</TextLink>, available on Pro and Organisation.</p>
             </div>
