@@ -96,9 +96,9 @@ export default function EmployeeAppraisalSoftwarePage() {
               <p className="mt-5 text-xs leading-relaxed text-muted-foreground">Free for up to 10 employees · No card required</p>
             </div>
             <figure className="min-w-0">
-              <div className="relative aspect-[5/4] overflow-hidden rounded-2xl bg-surface-2">
+              <div className="photo-frame mr-3 mb-3 sm:mr-4 sm:mb-4"><div className="relative aspect-[5/4] overflow-hidden rounded-2xl bg-surface-2">
                 <Image src="/marketing/one-to-one.jpg" alt="An employee and manager talking through a review together" fill preload sizes="(min-width: 1152px) 410px, (min-width: 1024px) 38vw, calc(100vw - 40px)" className="object-cover" />
-              </div>
+              </div></div>
               <div className="relative mx-3 -mt-[70px] rounded-2xl border border-border bg-card p-5 shadow-[0_24px_55px_-40px_rgb(21_38_29_/_0.5)] sm:mx-6 sm:p-6">
                 <div className="flex items-center justify-between gap-2">
                   <p className="text-xs font-semibold">Employee review</p>
@@ -170,9 +170,9 @@ export default function EmployeeAppraisalSoftwarePage() {
               <p>Leave time to agree the next steps and book a shorter progress check after the review. Our <TextLink href={ROUTES.appraisalObjectives}>appraisal objectives</TextLink> guide offers practical examples.</p>
               <p className="text-sm">Employee appraisals use identified responses. If you also need anonymous input from peers and direct reports, explore <TextLink href={ROUTES.feedback360Software}>360 appraisals</TextLink>, available on Pro and Organisation.</p>
             </div>
-            <div className="relative mx-auto aspect-[4/3] w-full max-w-xl overflow-hidden rounded-2xl bg-surface-2">
+            <div className="photo-frame mx-auto w-full max-w-xl"><div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-surface-2">
               <Image src="/marketing/team-conversation.jpg" alt="Colleagues listening and sharing perspectives in a review conversation" fill sizes="(min-width: 1152px) 428px, (min-width: 1024px) 38vw, (min-width: 640px) 576px, calc(100vw - 40px)" className="object-cover" />
-            </div>
+            </div></div>
           </div>
         </div>
       </section>

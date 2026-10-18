@@ -388,6 +388,21 @@
   }
 }
 
+/* Calm version of the hero motif: an offset jade panel behind a photo. */
+.photo-frame { position: relative; isolation: isolate; }
+.photo-frame::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: 1.25rem;
+  transform: translate(14px, 14px);
+  background-color: var(--primary);
+  background-image: radial-gradient(rgb(255 255 255 / 0.14) 1.2px, transparent 1.2px);
+  background-size: 18px 18px;
+}
+@media (max-width: 639px) { .photo-frame::before { transform: translate(8px, 8px); } }
+
 @keyframes hero-float {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-8px); }

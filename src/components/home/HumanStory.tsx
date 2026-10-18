@@ -7,14 +7,16 @@ export function HumanStory() {
   return (
     <section className="border-y border-border bg-surface/70 py-16 sm:py-24">
       <div className="mx-auto grid max-w-6xl gap-10 px-5 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:gap-16 lg:px-8">
-        <div className="relative aspect-[4/3] overflow-hidden rounded-2xl">
-          <Image
-            src="/marketing/team-conversation.jpg"
-            alt="Three colleagues listening and talking together around a table"
-            fill
-            sizes="(min-width: 1024px) 48vw, 100vw"
-            className="object-cover"
-          />
+        <div className="photo-frame mr-3 mb-3 sm:mr-4 sm:mb-4">
+          <div className="relative aspect-[4/3] overflow-hidden rounded-2xl">
+            <Image
+              src="/marketing/team-conversation.jpg"
+              alt="Three colleagues listening and talking together around a table"
+              fill
+              sizes="(min-width: 1024px) 48vw, 100vw"
+              className="object-cover"
+            />
+          </div>
         </div>
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.14em] text-primary">Built for the conversation</p>

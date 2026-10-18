@@ -44,9 +44,9 @@ export default function Page() {
               <p className="mt-5 text-xs leading-relaxed text-muted-foreground">Anonymous feedback · 5+ reviewers · Combined results</p>
             </div>
             <figure className="min-w-0">
-              <div className="relative aspect-[5/4] overflow-hidden rounded-2xl bg-surface-2">
+              <div className="photo-frame mr-3 mb-3 sm:mr-4 sm:mb-4"><div className="relative aspect-[5/4] overflow-hidden rounded-2xl bg-surface-2">
                 <Image src="/marketing/team-conversation.jpg" alt="Three colleagues sharing perspectives around a table" fill priority sizes="(min-width: 1152px) 410px, (min-width: 1024px) 38vw, calc(100vw - 40px)" className="object-cover" />
-              </div>
+              </div></div>
               <div className="relative mx-3 -mt-[70px] rounded-2xl border border-border bg-card p-5 shadow-[0_24px_55px_-40px_rgb(21_38_29_/_0.5)] sm:mx-6 sm:p-6">
                 <div className="flex items-center justify-between gap-2">
                   <p className="text-xs font-semibold">360 feedback summary</p>
@@ -111,9 +111,9 @@ export default function Page() {
             <h2 className={`mt-4 ${marketingType.h2}`}>Give reviewers clarity before they give feedback.</h2>
           </div>
           <div className="mt-10 grid items-center gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:gap-20">
-            <div className="relative mx-auto aspect-[3/2] w-full max-w-xl overflow-hidden rounded-2xl bg-surface-2">
+            <div className="photo-frame mx-auto w-full max-w-xl"><div className="relative aspect-[3/2] w-full overflow-hidden rounded-2xl bg-surface-2">
               <Image src="/marketing/one-to-one.jpg" alt="Two colleagues listening and sharing thoughts over a notebook" fill sizes="(min-width: 1152px) 456px, (min-width: 1024px) 38vw, (min-width: 640px) 576px, calc(100vw - 40px)" className="object-cover" />
-            </div>
+            </div></div>
             <div className="space-y-5 leading-relaxed text-muted-foreground">
               <p>Results unlock after campaign closure and at least five completed reviewer responses. Each displayed question also needs five valid answers; questions below that threshold are suppressed.</p>
               <p>Reviewers form one combined group. Reports show no reviewer names or response times, and do not compare managers, peers and direct reports as separate groups.</p>

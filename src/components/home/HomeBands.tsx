@@ -223,17 +223,38 @@ export function ProductBenefits() {
   );
 }
 
+/**
+ * Neutral privacy emblem — deliberately not a certification-style badge,
+ * since there is no official GDPR mark.
+ */
+function GdprEmblem() {
+  return (
+    <div className="hidden shrink-0 flex-col items-center gap-1.5 text-muted-foreground/55 sm:flex" aria-hidden>
+      <svg viewBox="0 0 64 72" className="h-[4.5rem] w-16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinejoin="round">
+        <path d="M32 4 58 13v20c0 17-11 29-26 35C17 62 6 50 6 33V13L32 4Z" />
+        <rect x="21" y="32" width="22" height="17" rx="3" />
+        <path d="M25.5 32v-4.5a6.5 6.5 0 0 1 13 0V32" strokeLinecap="round" />
+        <circle cx="32" cy="40" r="2.2" fill="currentColor" stroke="none" />
+      </svg>
+      <span className="text-[10px] font-semibold uppercase tracking-[0.2em]">UK GDPR</span>
+    </div>
+  );
+}
+
 export function GdprCommitment() {
   return (
     <section className="border-y border-border bg-surface-2/70 px-5 py-16 sm:py-20 lg:px-8">
       <div className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-[0.85fr_1.15fr] lg:gap-20">
-        <div>
+        <div className="flex items-start gap-6">
+          <GdprEmblem />
+          <div>
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
             Our UK GDPR commitment
           </p>
           <h2 className="mt-4 max-w-md font-display text-[2rem] font-semibold leading-[1.1] tracking-[-0.035em] text-foreground sm:text-[2.5rem]">
             Privacy belongs in the review process.
           </h2>
+          </div>
         </div>
         <div className="lg:pt-8">
           <p className="max-w-xl text-base leading-relaxed text-muted-foreground">

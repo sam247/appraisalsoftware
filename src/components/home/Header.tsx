@@ -1,11 +1,33 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { BrandMark } from "@/components/home/Logo";
-import { PRIMARY_CTA_LABEL, PRIMARY_CTA_URL, SIGN_IN_URL } from "@/lib/links";
+import { DISCLOSURELY_URL, PRIMARY_CTA_LABEL, PRIMARY_CTA_URL, SIGN_IN_URL } from "@/lib/links";
 import { ROUTES } from "@/lib/routes";
+
+/** Family strip, Intuit-style: the Disclosurely products side by side. */
+function FamilyBar() {
+  return (
+    <div className="no-print border-b border-border bg-surface-2/70">
+      <div className="mx-auto flex max-w-6xl items-center gap-5 px-5 py-1.5 text-[11px] lg:px-8">
+        <span className="hidden font-semibold uppercase tracking-[0.18em] text-muted-foreground sm:inline">Disclosurely</span>
+        <nav aria-label="Disclosurely products" className="flex items-center gap-4 sm:border-l sm:border-border sm:pl-5">
+          <a href={DISCLOSURELY_URL} className="text-muted-foreground transition-colors hover:text-foreground">
+            Whistleblowing
+          </a>
+          <span aria-current="page" className="font-semibold text-foreground">
+            Appraisals
+          </span>
+        </nav>
+        <span className="ml-auto hidden text-muted-foreground md:inline">Secure people software for UK organisations</span>
+      </div>
+    </div>
+  );
+}
 
 export function Header() {
   return (
+    <>
+    <FamilyBar />
     <header className="no-print sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur-md">
       <div className="mx-auto flex max-w-6xl items-center gap-3 px-5 py-3.5 sm:gap-6 lg:px-8">
         <Link href={ROUTES.home} className="shrink-0" aria-label="appraisal.software home">
@@ -20,5 +42,6 @@ export function Header() {
         </nav>
       </div>
     </header>
+    </>
   );
 }
