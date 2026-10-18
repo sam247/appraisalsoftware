@@ -100,7 +100,7 @@ export function FinalCtaSection() {
           <br />
           could be this simple.
         </h2>
-        <p className="mx-auto mt-4 max-w-md text-[15px] text-muted-foreground">
+        <p className="mx-auto mt-4 max-w-2xl text-[15px] text-muted-foreground">
           Create the campaign. Send the forms. Collect the responses. Understand the results.
         </p>
         <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
