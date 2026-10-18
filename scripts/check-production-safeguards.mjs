@@ -96,6 +96,7 @@ try {
   run("psql", [...args, "-f", join(root, "supabase/migrations/20261007120000_permanent_free_plan.sql")]);
   assert.equal(run("psql", [...args, "-At", "-c", "SELECT md5(string_agg(row_to_json(c)::text,',' ORDER BY id)) FROM public.campaigns c"]).trim(), before, "Migration changed campaigns");
   run("psql", [...args, "-f", join(root, "supabase/tests/workspace_free.sql")]);
+  run("psql", [...args, "-f", join(root, "supabase/tests/stripe_billing.sql")]);
   // Two sessions competing for the final employee seat cannot both succeed.
   sql(`INSERT INTO public.organizations(name,slug) VALUES('Free race','free-race');
     INSERT INTO public.people(organization_id,email) SELECT (SELECT id FROM public.organizations WHERE name='Free race'),'race-'||i||'@example.test' FROM generate_series(1,9) i;`);

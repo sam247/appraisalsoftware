@@ -51,7 +51,9 @@ export async function proxy(request: NextRequest) {
 
   // Signed-in users skip auth pages
   if (user && (pathname === "/login" || pathname === "/signup")) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+    const plan = request.nextUrl.searchParams.get("plan");
+    const next = plan === "pro" || plan === "organisation" ? "/dashboard/upgrade" : "/dashboard";
+    return NextResponse.redirect(new URL(next, request.url));
   }
 
   return supabaseResponse;

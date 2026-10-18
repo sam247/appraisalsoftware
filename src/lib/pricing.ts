@@ -1,4 +1,4 @@
-/** Capacities match the durable entitlement migration. Paid activation is manual. */
+/** Capacities match the durable entitlement migration. Paid plans are bought online via Stripe. */
 export const plans = [
   {
     name: "Free",
@@ -45,6 +45,10 @@ export const plans = [
   },
 ] as const;
 export const paidPlans = plans.filter((plan) => plan.name !== "Free");
+/** Signup that continues to checkout for the chosen paid plan. */
+export function planSignupHref(name: string) {
+  return `/signup?plan=${encodeURIComponent(name.toLowerCase())}`;
+}
 export function planContactHref(name: string) {
   return `/contact?type=pricing&plan=${encodeURIComponent(name)}`;
 }

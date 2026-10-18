@@ -167,8 +167,8 @@ export function PricingPreview() {
           ))}
         </div>
         <p className="mt-5 text-xs text-muted-foreground">
-          Paid plans are activated with our team. We confirm the details before
-          you commit.
+          Upgrade online any time, monthly or annually. Cancel whenever you
+          like and your data stays.
         </p>
       </div>
     </section>
