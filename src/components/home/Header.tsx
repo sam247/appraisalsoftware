@@ -10,9 +10,7 @@ function FamilyBar() {
   return (
     <div className="no-print border-b border-border bg-surface-2/70">
       <div className="mx-auto flex max-w-6xl items-center gap-5 px-5 py-1.5 text-[11px] lg:px-8">
-        <span className="inline-flex text-foreground/80" aria-label="Netwisk">
-          <NetwiskLogo size={14} />
-        </span>
+        <NetwiskLogo size={15} className="text-foreground/85" />
         <nav aria-label="Netwisk products" className="flex items-center gap-4 border-l border-border pl-5">
           <a href={DISCLOSURELY_URL} className="text-muted-foreground transition-colors hover:text-foreground">
             Whistleblowing
