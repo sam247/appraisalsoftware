@@ -80,7 +80,9 @@ export default function SignupPage() {
     }
 
     trackEvent("sign_up");
-    router.push("/dashboard");
+    // Visitors who picked a paid plan on Pricing continue straight to checkout.
+    const plan = new URLSearchParams(window.location.search).get("plan");
+    router.push(plan === "pro" || plan === "organisation" ? "/dashboard/upgrade" : "/dashboard");
     router.refresh();
   }
 

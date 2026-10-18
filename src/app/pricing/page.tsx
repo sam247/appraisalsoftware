@@ -14,7 +14,8 @@ import { breadcrumbSchema } from "@/lib/schema";
 import { PRIMARY_CTA_URL } from "@/lib/links";
 import { pageMetadata } from "@/lib/metadata";
 import { PRIMARY_CTA_LABEL } from "@/lib/links";
-import { plans, planContactHref } from "@/lib/pricing";
+import { plans, planSignupHref } from "@/lib/pricing";
+import { APP_ORIGIN } from "@/lib/links";
 
 const availablePlans = plans;
 
@@ -43,7 +44,7 @@ export default function PricingPage() {
             </span>
           </>
         }
-        description="Start Free with a complete employee appraisal workflow for up to 10 people. No card required. Upgrade for more capacity or anonymous 360 feedback. Paid plans are activated with our team."
+        description="Start Free with a complete employee appraisal workflow for up to 10 people. No card required. Upgrade online for more capacity or anonymous 360 feedback, monthly or annually."
         breadcrumbs={[homeCrumb(), { label: "Pricing", href: "/pricing" }]}
       />
       <section className="px-5 pb-16 pt-12 lg:px-0 lg:pb-24">
@@ -104,9 +105,9 @@ export default function PricingPage() {
                   asChild
                 >
                   <a
-                    href={plan.name === "Free" ? PRIMARY_CTA_URL : planContactHref(plan.name)}
+                    href={plan.name === "Free" ? PRIMARY_CTA_URL : `${APP_ORIGIN}${planSignupHref(plan.name)}`}
                   >
-                    {plan.name === "Free" ? PRIMARY_CTA_LABEL : `Contact us about ${plan.name}`}
+                    {plan.name === "Free" ? PRIMARY_CTA_LABEL : `Choose ${plan.name}`}
                     <ArrowRight className="size-4" aria-hidden />
                   </a>
                 </Button>
@@ -114,8 +115,8 @@ export default function PricingPage() {
             ))}
           </div>
           <p className="mt-6 max-w-3xl text-sm leading-relaxed text-muted-foreground">
-            These are workspace capacity limits. Paid activation and
-            capacity are managed with our team. If you need more than 250
+            These are workspace capacity limits. Pay monthly, or annually and
+            get two months free. Cancel any time. If you need more than 250
             employees,{" "}
             <Link
               href="/contact?type=pricing"
@@ -266,7 +267,7 @@ export default function PricingPage() {
           {
             question: "Can I buy a paid plan online?",
             answer:
-              "Paid activation is handled by our team. Send an enquiry and we will confirm the terms and next step before you commit.",
+              "Yes. Choose Pro or Organisation, create your workspace and pay securely by card through Stripe. Your new limits apply straight away, and you can change plan or cancel from Plans & billing.",
           },
           {
             question: "What happens when we need more capacity?",

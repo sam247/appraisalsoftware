@@ -11,6 +11,7 @@ import {
   Users,
   FileText,
   Settings,
+  CreditCard,
   LogOut,
   Search,
   FileBarChart,
@@ -159,6 +160,15 @@ function AccountMenu({
             >
               <Settings className="size-4 text-muted-foreground" aria-hidden />
               My account
+            </Link>
+            <Link
+              href="/dashboard/upgrade"
+              role="menuitem"
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-2 rounded-lg px-2.5 py-2 text-sm text-foreground hover:bg-surface"
+            >
+              <CreditCard className="size-4 text-muted-foreground" aria-hidden />
+              Plans &amp; billing
             </Link>
             <form action="/logout" method="POST">
               <button

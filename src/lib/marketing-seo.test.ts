@@ -35,7 +35,7 @@ vi.mock("@/lib/supabase/middleware", async () => {
 });
 
 describe("marketing routes and indexability", () => {
-  it("renders permanent Free with manual paid CTAs and a compact accurate comparison", () => {
+  it("renders permanent Free with self-serve paid CTAs and a compact accurate comparison", () => {
     const pricing = renderToStaticMarkup(createElement(PricingPage));
     const preview = renderToStaticMarkup(createElement(PricingPreview));
     for (const html of [pricing, preview]) {
@@ -50,8 +50,10 @@ describe("marketing routes and indexability", () => {
     expect(pricing).toContain("1 active campaign");
     expect(pricing).toContain("1 admin, including the owner");
     expect(pricing).toContain("Available on Pro");
-    expect(pricing).toContain("/contact?type=pricing&amp;plan=Pro");
-    expect(pricing).toContain("/contact?type=pricing&amp;plan=Organisation");
+    expect(pricing).toContain("/signup?plan=pro");
+    expect(pricing).toContain("/signup?plan=organisation");
+    expect(pricing).toContain("Choose Pro");
+    expect(pricing).not.toContain("Paid activation is handled by our team");
     expect(pricing.match(/<tr/g)).toHaveLength(10);
   });
   it("renders collapsed native FAQs with their full answers on home and shared sections", () => {
