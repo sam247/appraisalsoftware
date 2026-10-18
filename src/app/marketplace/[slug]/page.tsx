@@ -27,7 +27,8 @@ import { downloadFor } from "@/lib/marketplace/downloads";
 import { AGREE } from "@/lib/marketplace/scales";
 import { pageMetadata } from "@/lib/metadata";
 import { ROUTES } from "@/lib/routes";
-import { breadcrumbSchema } from "@/lib/schema";
+import { breadcrumbSchema, packProductSchema } from "@/lib/schema";
+import { billingConfigured } from "@/lib/billing/stripe";
 import { cn } from "@/lib/utils";
 
 export const dynamicParams = false;
@@ -57,6 +58,7 @@ export default async function PublicPackPage({ params }: { params: Promise<{ slu
   const getPack = `${APP_ORIGIN}/dashboard/marketplace/${pack.slug}`;
   const areas = [...new Set(pack.questions.map((q) => q.area).filter((a): a is string => Boolean(a)))];
   const download = downloadFor(pack);
+  const product = packProductSchema(pack, { path: packPublicPath(pack.slug), purchasable: billingConfigured() });
   const reviewed = new Date(`${pack.reviewed}T00:00:00Z`).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
   const others = packs.filter((p) => p.slug !== pack.slug);
   const related = [...others.filter((p) => p.group === pack.group), ...others.filter((p) => p.group !== pack.group)].slice(0, 3);
@@ -69,6 +71,7 @@ export default async function PublicPackPage({ params }: { params: Promise<{ slu
           { name: pack.name, path: packPublicPath(pack.slug) },
         ])}
       />
+      {product ? <JsonLd data={product} /> : null}
       <section className="border-b border-border bg-background">
         <div className="mx-auto max-w-6xl px-5 py-10 lg:px-8 lg:py-14">
           <Link href={ROUTES.marketplace} className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">

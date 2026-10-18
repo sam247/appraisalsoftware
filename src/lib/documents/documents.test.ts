@@ -51,6 +51,13 @@ describe("document model", () => {
     }
   });
 
+  it("identifies pack and version but carries no order reference or buyer details", () => {
+    const html = renderPrintHtml(docFor("eyfs-supervision-pack")).replace(/<style>[\s\S]*?<\/style>/, "");
+    expect(html).toContain("EYFS Supervision &amp; Practitioner Appraisal");
+    expect(html).toContain("v1.1");
+    expect(html).not.toMatch(/\b(order (number|reference|ref)|invoice|receipt|licensed to|purchased by)\b|@\w/i);
+  });
+
   it("refuses a product built for another pack or version", () => {
     const care = packBySlug("care-worker-appraisal-pack")!;
     const product = downloadFor(care)!;
@@ -62,9 +69,9 @@ describe("document model", () => {
 describe("print HTML", () => {
   it("escapes special characters", () => {
     expect(escapeHtml(`SM&CR <b>"x"</b> 'y'`)).toBe("SM&amp;CR &lt;b&gt;&quot;x&quot;&lt;/b&gt; &#39;y&#39;");
-    const html = renderPrintHtml(docFor("smcr-fitness-propriety-pack"));
-    expect(html).toContain("<title>SM&amp;CR Fitness &amp; Propriety Review (v1.1)</title>");
-    expect(html).not.toMatch(/SM&CR/);
+    const html = renderPrintHtml(docFor("care-worker-appraisal-pack"));
+    expect(html).toContain("<title>Care Worker Appraisal &amp; Supervision (CQC) (v1.1)</title>");
+    expect(html).not.toMatch(/Appraisal & Supervision/);
   });
 
   it("contains every question in order, the version, nations, basis and disclaimer, and no external resources", () => {
@@ -84,7 +91,7 @@ describe("print HTML", () => {
 
 describe("Word document", () => {
   it("is a valid .docx with every question in order, real checkboxes and version details", async () => {
-    const pack = packBySlug("smcr-fitness-propriety-pack")!;
+    const pack = packBySlug("care-worker-appraisal-pack")!;
     const doc = docFor(pack.slug);
     const zip = await JSZip.loadAsync(await renderDocx(doc));
     const body = await zip.file("word/document.xml")!.async("string");
@@ -94,7 +101,7 @@ describe("Word document", () => {
     expect(body.match(/<w14:checkbox>/g)?.length).toBe(ratings * 2 * 5);
     expect(body).not.toContain('w14:val="1"');
     const core = await zip.file("docProps/core.xml")!.async("string");
-    expect(core).toContain("<dc:title>SM&amp;CR Fitness &amp; Propriety Review (v1.1)</dc:title>");
+    expect(core).toContain("<dc:title>Care Worker Appraisal &amp; Supervision (CQC) (v1.1)</dc:title>");
     expect(core).toContain("<dc:creator>Appraisal Software</dc:creator>");
     const footers = await Promise.all(Object.keys(zip.files).filter((f) => /word\/footer\d*\.xml/.test(f)).map((f) => zip.file(f)!.async("string")));
     expect(footers.join("")).toContain("v1.1");

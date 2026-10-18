@@ -69,23 +69,91 @@ describe("public pack pages", () => {
         const option = markup.slice(markup.indexOf("Downloadable template") - 400, markup.indexOf("Not available to buy yet"));
         expect(option).toContain('aria-disabled="true"');
         expect(option).not.toMatch(/<a\b|<button\b|<form\b/);
-        // No download price is shown: the only prices are interactive ones.
-        expect(body).not.toMatch(/£(1[0-9]|2[0-9])\b(?! one-off)/);
+        // The indicative download price is never shown.
+        expect(markup).not.toMatch(/24\.99|2499/);
       } else {
         expect(body).not.toContain("Word + PDF");
       }
     }
   });
 
-  it("publish no Product or Offer data, so unavailable downloads are never advertised", async () => {
+  const jsonLd = (markup: string) =>
+    [...markup.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map((m) => JSON.parse(m[1]) as Record<string, unknown>);
+
+  it("publish no Product markup when packs can't be bought online", async () => {
+    vi.stubEnv("STRIPE_SECRET_KEY", "");
+    for (const pack of packs) expect(jsonLd(await html(pack.slug)).map((b) => b["@type"])).toEqual(["BreadcrumbList"]);
+    vi.unstubAllEnvs();
+  });
+
+  it("describe only the interactive offer, at its real price, and never a download", async () => {
+    vi.stubEnv("STRIPE_SECRET_KEY", "sk_test_schema");
     for (const pack of packs) {
-      const markup = await html(pack.slug);
-      const blocks = [...markup.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map((m) => JSON.parse(m[1]));
-      expect(blocks.length).toBeGreaterThan(0);
+      const blocks = jsonLd(await html(pack.slug));
+      const products = blocks.filter((b) => b["@type"] === "Product");
+      if (pack.campaignType === "feedback_360") {
+        // Needs Pro before it can be bought, so no InStock offer is advertised.
+        expect(products).toEqual([]);
+        continue;
+      }
+      expect(products).toHaveLength(1);
+      const product = products[0] as { name: string; sku: string; url: string; offers: Record<string, unknown> };
+      expect(product.name).toBe(pack.name);
+      expect(product.sku).toBe(pack.slug);
+      expect(product.url).toBe(absoluteUrl(`/marketplace/${pack.slug}`));
+      expect(product.offers).toMatchObject({
+        "@type": "Offer",
+        price: (pack.price / 100).toFixed(2),
+        priceCurrency: "GBP",
+        availability: "https://schema.org/InStock",
+        priceSpecification: { "@type": "UnitPriceSpecification", valueAddedTaxIncluded: false },
+      });
       const json = JSON.stringify(blocks);
-      expect(json).not.toMatch(/"@type":"(Product|Offer|AggregateOffer|AggregateRating|Review)"/);
-      expect(json).not.toMatch(/download|\.docx|\.pdf/i);
-      expect(blocks.map((b) => b["@type"])).toEqual(["BreadcrumbList"]);
+      expect(json).not.toMatch(/AggregateOffer|AggregateRating|"Review"|download|\.docx|\.pdf|24\.99/i);
+      expect(validateSchema(product)).toEqual([]);
     }
+    vi.unstubAllEnvs();
   });
 });
+
+/**
+ * Property → types it is defined on, from the Schema.org vocabulary
+ * (schemaorg-current-https.jsonld, checked 18 Oct 2026), for the properties we emit.
+ */
+const SCHEMA_DOMAINS: Record<string, string[]> = {
+  name: ["Thing"],
+  description: ["Thing"],
+  image: ["Thing"],
+  url: ["Thing"],
+  sku: ["Offer", "Product", "Demand"],
+  category: ["Offer", "Product", "Service"],
+  brand: ["Product", "Service", "Organization", "Person"],
+  offers: ["Product", "Service", "CreativeWork", "Event"],
+  price: ["Offer", "PriceSpecification"],
+  priceCurrency: ["Offer", "PriceSpecification"],
+  priceSpecification: ["Offer", "Demand"],
+  valueAddedTaxIncluded: ["PriceSpecification"],
+  availability: ["Offer", "Demand"],
+  seller: ["Offer", "Demand"],
+};
+/** Subtype → supertypes, for the types we emit. */
+const SUPERTYPES: Record<string, string[]> = {
+  Product: ["Thing"],
+  Offer: ["Intangible", "Thing"],
+  Brand: ["Intangible", "Thing"],
+  Organization: ["Thing"],
+  UnitPriceSpecification: ["PriceSpecification", "StructuredValue", "Intangible", "Thing"],
+};
+
+function validateSchema(node: Record<string, unknown>, problems: string[] = []): string[] {
+  const type = node["@type"] as string;
+  const types = [type, ...(SUPERTYPES[type] ?? [])];
+  if (!SUPERTYPES[type]) problems.push(`unknown type ${type}`);
+  for (const [key, value] of Object.entries(node)) {
+    if (key.startsWith("@")) continue;
+    const domains = SCHEMA_DOMAINS[key];
+    if (!domains || !domains.some((d) => types.includes(d))) problems.push(`${type}.${key} is not a Schema.org property of ${type}`);
+    if (value && typeof value === "object" && !Array.isArray(value)) validateSchema(value as Record<string, unknown>, problems);
+  }
+  return problems;
+}

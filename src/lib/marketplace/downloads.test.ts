@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import type Stripe from "stripe";
 import { templatePurchaseArgs } from "@/lib/billing/webhook";
 import { packAccess, packBySlug, packs } from "@/lib/marketplace";
-import { DOWNLOAD_PURCHASE_KIND, DOWNLOADS, downloadFor, isDownloadPurchasable, type DownloadProduct } from "./downloads";
+import { DOWNLOAD_PURCHASE_KIND, DOWNLOAD_SALES, DOWNLOADS, downloadFor, isDownloadPurchasable, type DownloadProduct } from "./downloads";
 
 describe("interactive catalogue is unchanged by the download product", () => {
   it("keeps every interactive price", () => {
@@ -47,11 +47,19 @@ describe("interactive catalogue is unchanged by the download product", () => {
 });
 
 describe("download configuration", () => {
-  it("is configured per pack and only for real packs", () => {
-    for (const slug of Object.keys(DOWNLOADS)) expect(packBySlug(slug), slug).toBeDefined();
-    // Anonymous 360 relies on the software's aggregation, so it has no paper version.
-    expect(downloadFor(packBySlug("leadership-360-pack")!)).toBeNull();
-    expect(downloadFor(packBySlug("care-worker-appraisal-pack")!)?.formats).toEqual(["docx", "pdf"]);
+  it("covers exactly the approved England-only packs at the indicative £24.99", () => {
+    expect(Object.keys(DOWNLOADS).sort()).toEqual(["care-worker-appraisal-pack", "childrens-home-appraisal-pack", "eyfs-supervision-pack"]);
+    for (const slug of Object.keys(DOWNLOADS)) {
+      expect(packBySlug(slug)?.nations).toEqual(["England"]);
+      expect(DOWNLOADS[slug].indicativePrice).toBe(2499);
+      expect(DOWNLOADS[slug].formats).toEqual(["docx", "pdf"]);
+    }
+    for (const slug of ["leadership-360-pack", "annual-appraisal-pack", "smcr-fitness-propriety-pack"]) expect(downloadFor(packBySlug(slug)!)).toBeNull();
+  });
+
+  it("sells to UK billing addresses only, with VAT unconfirmed", () => {
+    expect(DOWNLOAD_SALES.countries).toEqual(["GB"]);
+    expect(DOWNLOAD_SALES.vat).toEqual({ sellerRegistered: null, priceIncludesVat: null });
   });
 
   it("takes the pack version from the pack, never its own copy", () => {
@@ -73,12 +81,15 @@ describe("download configuration", () => {
     }
   });
 
-  it("refuses to sell an 'available' download without an approved price", () => {
+  it("refuses to sell without an available status, an approved price and a confirmed VAT position", () => {
     const base = downloadFor(packBySlug("eyfs-supervision-pack")!)!;
-    expect(isDownloadPurchasable({ ...base, status: "available", price: null })).toBe(false);
-    expect(isDownloadPurchasable({ ...base, status: "retired", price: 1900 })).toBe(false);
-    expect(isDownloadPurchasable({ ...base, status: "available", price: 1900, formats: [] } as DownloadProduct)).toBe(false);
-    expect(isDownloadPurchasable({ ...base, status: "available", price: 1900 })).toBe(true);
+    const vatDone = { ...DOWNLOAD_SALES, vat: { sellerRegistered: true, priceIncludesVat: true } };
+    expect(isDownloadPurchasable({ ...base, status: "available", price: null }, vatDone)).toBe(false);
+    expect(isDownloadPurchasable({ ...base, status: "retired", price: 2499 }, vatDone)).toBe(false);
+    expect(isDownloadPurchasable({ ...base, status: "available", price: 2499, formats: [] } as DownloadProduct, vatDone)).toBe(false);
+    // Everything else ready, but VAT unconfirmed (today's state): still not for sale.
+    expect(isDownloadPurchasable({ ...base, status: "available", price: 2499 })).toBe(false);
+    expect(isDownloadPurchasable({ ...base, status: "available", price: 2499 }, vatDone)).toBe(true);
   });
 
   it("holds no URLs or storage paths", () => {

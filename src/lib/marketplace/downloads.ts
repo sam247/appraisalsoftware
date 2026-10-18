@@ -15,9 +15,11 @@ export type LicenceType = "interactive" | "download";
 export interface DownloadConfig {
   status: DownloadStatus;
   formats: DownloadFormat[];
+  /** Planning price in pence. Never shown publicly and never charged. */
+  indicativePrice: number;
   /**
-   * Price in pence, excluding VAT. Null until a price is approved; a pack
-   * cannot become "available" without one.
+   * Approved sale price in pence. Null until approved for sale; a pack cannot
+   * be sold without one. VAT treatment comes from DOWNLOAD_SALES.vat.
    */
   price: number | null;
   currency: "gbp";
@@ -30,24 +32,35 @@ export interface DownloadConfig {
   updated: string;
 }
 
-/** Every pack that will be offered as a document is listed here; absence means "not planned". */
+/**
+ * Every pack that will be offered as a document is listed here; absence means
+ * "not planned". Approved scope: three England-only sector packs.
+ */
 export const DOWNLOADS: Readonly<Record<string, DownloadConfig>> = {
-  "annual-appraisal-pack": comingSoon(),
-  "probation-review-pack": comingSoon(),
-  "engineering-ladder-pack": comingSoon(),
-  "sales-performance-pack": comingSoon(),
   "care-worker-appraisal-pack": comingSoon(),
-  "childrens-home-appraisal-pack": comingSoon(),
   "eyfs-supervision-pack": comingSoon(),
-  "smcr-fitness-propriety-pack": comingSoon(),
-  "social-housing-competence-pack": comingSoon(),
-  // leadership-360-pack is deliberately absent: anonymous 360 feedback relies on
-  // the software's aggregation and thresholds, which a paper form can't provide.
+  "childrens-home-appraisal-pack": comingSoon(),
 };
 
 function comingSoon(): DownloadConfig {
-  return { status: "coming_soon", formats: ["docx", "pdf"], price: null, currency: "gbp", documentRevision: 1, updated: "2026-10-18" };
+  return { status: "coming_soon", formats: ["docx", "pdf"], indicativePrice: 2499, price: null, currency: "gbp", documentRevision: 1, updated: "2026-10-18" };
 }
+
+/**
+ * Sales boundaries shared by every document licence. UK buyers only: no EU OSS.
+ * VAT stays unconfirmed until the seller's VAT status is checked, and nothing
+ * can be sold while it is (see docs/marketplace-downloads.md, "VAT").
+ */
+export const DOWNLOAD_SALES = {
+  /** ISO 3166-1 alpha-2 billing countries Checkout will accept. */
+  countries: ["GB"] as const,
+  vat: {
+    /** Whether the seller is VAT-registered; null until confirmed. */
+    sellerRegistered: null as boolean | null,
+    /** Whether `price` includes VAT. Prices shown to consumers must; null until decided. */
+    priceIncludesVat: null as boolean | null,
+  },
+};
 
 /** A pack's document product, with the version it is generated from. */
 export interface DownloadProduct extends DownloadConfig {
@@ -62,11 +75,12 @@ export function downloadFor(pack: TemplatePack): DownloadProduct | null {
 }
 
 /**
- * Whether a download may be sold. False for every pack today; also false for
- * any pack without an approved price, whatever its status says.
+ * Whether a download may be sold. False for every pack today: it needs an
+ * "available" status, an approved price and a confirmed VAT position.
  */
-export function isDownloadPurchasable(product: DownloadProduct | null): boolean {
-  return Boolean(product && product.status === "available" && product.price !== null && product.formats.length > 0);
+export function isDownloadPurchasable(product: DownloadProduct | null, sales: typeof DOWNLOAD_SALES = DOWNLOAD_SALES): boolean {
+  const vatConfirmed = sales.vat.sellerRegistered !== null && sales.vat.priceIncludesVat !== null;
+  return Boolean(product && product.status === "available" && product.price !== null && product.formats.length > 0 && vatConfirmed);
 }
 
 /** Version label printed on documents, e.g. "v2.1" = pack version 2, document revision 1. */
