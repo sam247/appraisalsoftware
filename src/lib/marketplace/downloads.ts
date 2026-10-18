@@ -48,17 +48,17 @@ function comingSoon(): DownloadConfig {
 
 /**
  * Sales boundaries shared by every document licence. UK buyers only: no EU OSS.
- * VAT stays unconfirmed until the seller's VAT status is checked, and nothing
- * can be sold while it is (see docs/marketplace-downloads.md, "VAT").
+ * Founder decision (18 Oct 2026): no VAT is charged on downloads, so the price
+ * is the total and must be shown as "No VAT charged" (docs/marketplace-downloads.md, "VAT").
  */
 export const DOWNLOAD_SALES = {
   /** ISO 3166-1 alpha-2 billing countries Checkout will accept. */
   countries: ["GB"] as const,
   vat: {
-    /** Whether the seller is VAT-registered; null until confirmed. */
-    sellerRegistered: null as boolean | null,
-    /** Whether `price` includes VAT. Prices shown to consumers must; null until decided. */
-    priceIncludesVat: null as boolean | null,
+    /** Whether the seller charges VAT on downloads; null would block sales until decided. */
+    sellerRegistered: false as boolean | null,
+    /** Whether `price` includes VAT. False with no VAT charged: the price is the total. */
+    priceIncludesVat: false as boolean | null,
   },
 };
 
@@ -76,7 +76,7 @@ export function downloadFor(pack: TemplatePack): DownloadProduct | null {
 
 /**
  * Whether a download may be sold. False for every pack today: it needs an
- * "available" status, an approved price and a confirmed VAT position.
+ * "available" status, an approved price and a decided VAT position.
  */
 export function isDownloadPurchasable(product: DownloadProduct | null, sales: typeof DOWNLOAD_SALES = DOWNLOAD_SALES): boolean {
   const vatConfirmed = sales.vat.sellerRegistered !== null && sales.vat.priceIncludesVat !== null;
@@ -84,6 +84,12 @@ export function isDownloadPurchasable(product: DownloadProduct | null, sales: ty
 }
 
 /** Version label printed on documents, e.g. "v2.1" = pack version 2, document revision 1. */
+/** Price wording shown with a download price, from the VAT decision. */
+export function downloadVatNote(sales: typeof DOWNLOAD_SALES = DOWNLOAD_SALES): string {
+  if (sales.vat.sellerRegistered === null) throw new Error("VAT position undecided");
+  return sales.vat.sellerRegistered ? "including VAT" : "No VAT charged";
+}
+
 export function documentVersionLabel(product: DownloadProduct): string {
   return `v${product.packVersion}.${product.documentRevision}`;
 }

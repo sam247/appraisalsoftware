@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import type Stripe from "stripe";
 import { templatePurchaseArgs } from "@/lib/billing/webhook";
 import { packAccess, packBySlug, packs } from "@/lib/marketplace";
-import { DOWNLOAD_PURCHASE_KIND, DOWNLOAD_SALES, DOWNLOADS, downloadFor, isDownloadPurchasable, type DownloadProduct } from "./downloads";
+import { DOWNLOAD_PURCHASE_KIND, DOWNLOAD_SALES, DOWNLOADS, downloadFor, downloadVatNote, isDownloadPurchasable, type DownloadProduct } from "./downloads";
 
 describe("interactive catalogue is unchanged by the download product", () => {
   it("keeps every interactive price", () => {
@@ -57,9 +57,11 @@ describe("download configuration", () => {
     for (const slug of ["leadership-360-pack", "annual-appraisal-pack", "smcr-fitness-propriety-pack"]) expect(downloadFor(packBySlug(slug)!)).toBeNull();
   });
 
-  it("sells to UK billing addresses only, with VAT unconfirmed", () => {
+  it("sells to UK billing addresses only, with no VAT charged", () => {
     expect(DOWNLOAD_SALES.countries).toEqual(["GB"]);
-    expect(DOWNLOAD_SALES.vat).toEqual({ sellerRegistered: null, priceIncludesVat: null });
+    expect(DOWNLOAD_SALES.vat).toEqual({ sellerRegistered: false, priceIncludesVat: false });
+    expect(downloadVatNote()).toBe("No VAT charged");
+    expect(() => downloadVatNote({ ...DOWNLOAD_SALES, vat: { sellerRegistered: null, priceIncludesVat: null } })).toThrow();
   });
 
   it("takes the pack version from the pack, never its own copy", () => {
@@ -81,14 +83,16 @@ describe("download configuration", () => {
     }
   });
 
-  it("refuses to sell without an available status, an approved price and a confirmed VAT position", () => {
+  it("refuses to sell without an available status, an approved price and a decided VAT position", () => {
     const base = downloadFor(packBySlug("eyfs-supervision-pack")!)!;
-    const vatDone = { ...DOWNLOAD_SALES, vat: { sellerRegistered: true, priceIncludesVat: true } };
+    const vatDone = DOWNLOAD_SALES;
+    const vatUndecided = { ...DOWNLOAD_SALES, vat: { sellerRegistered: null, priceIncludesVat: null } };
     expect(isDownloadPurchasable({ ...base, status: "available", price: null }, vatDone)).toBe(false);
     expect(isDownloadPurchasable({ ...base, status: "retired", price: 2499 }, vatDone)).toBe(false);
     expect(isDownloadPurchasable({ ...base, status: "available", price: 2499, formats: [] } as DownloadProduct, vatDone)).toBe(false);
-    // Everything else ready, but VAT unconfirmed (today's state): still not for sale.
-    expect(isDownloadPurchasable({ ...base, status: "available", price: 2499 })).toBe(false);
+    expect(isDownloadPurchasable({ ...base, status: "available", price: 2499 }, vatUndecided)).toBe(false);
+    // Today's state: coming soon with no approved price, so not for sale.
+    expect(isDownloadPurchasable(base)).toBe(false);
     expect(isDownloadPurchasable({ ...base, status: "available", price: 2499 }, vatDone)).toBe(true);
   });
 

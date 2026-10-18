@@ -155,31 +155,22 @@ Signature verification and idempotency reuse the existing pattern; the journey t
 - **Accessibility:** the PDFs are tagged, and the Word files use real headings. Before launch, check the PDF with PAC or Acrobat's accessibility checker.
 - **Privacy:** the privacy notice must cover the purchase email, Stripe as processor, download records and retention. No IP addresses or user agents are kept.
 
-## VAT (to confirm before checkout is activated)
+## VAT
 
-**Seller.** Umbrella Rank Ltd, per the privacy and cookie pages. The repository holds no VAT number, so the VAT status is **unconfirmed**. Downloads model this as `DOWNLOAD_SALES.vat.sellerRegistered = null`, and nothing can be sold until it is set.
+**Decision (founder, 18 October 2026): no VAT is charged.** `DOWNLOAD_SALES.vat` records the seller as not charging VAT and the price as not including VAT, and `downloadVatNote()` returns "No VAT charged".
 
-**Things to confirm:**
-1. Is Umbrella Rank Ltd VAT-registered? If so, record the VAT number and show it in the confirmation email and on receipts. The registration threshold is £90,000 of taxable turnover over 12 months, and a business can register voluntarily below it.
-2. **If registered:**
-   - Downloads are standard-rated (20%). Fill-in templates are "predominantly for completing", so the e-publication zero rate in VAT Notice 701/10 is unlikely to apply. Get an adviser to confirm.
-   - Show £24.99 as VAT-inclusive (£20.83 + £4.16 VAT), because consumers can buy and must see the total price (DMCC Act 2024 s.230).
-   - In Stripe:
-     - `tax_behavior: "inclusive"`;
-     - a downloadable-digital-goods tax code, not the SaaS code used for interactive packs;
-     - `automatic_tax` on;
-     - `billing_address_collection: "required"`;
-     - shipping and billing restricted to GB;
-     - tax ID collection on.
-3. **If not registered:** no VAT can be charged or shown. Show "£24.99. No VAT is charged", leave `automatic_tax` off, and keep watching turnover against the threshold.
+**What this means for downloads:**
+- The price is the total. Show "£24.99. No VAT charged", with nothing added at checkout (DMCC Act 2024 s.230).
+- In Stripe: `automatic_tax` off, no tax rates, and no VAT number on receipts. Checkout still restricts billing to GB.
+- Keep an eye on taxable turnover against the VAT registration threshold (£90,000 over 12 months). If the company registers, the price wording, the Stripe settings and `DOWNLOAD_SALES.vat` must all change, and existing download prices need a decision: keep £24.99 inclusive of VAT, or reprice.
 
-**Interactive packs.** These are already priced "+ VAT", with Checkout prices VAT-exclusive (`tax_behavior: "exclusive"`) and `STRIPE_AUTOMATIC_TAX` switchable. That is only correct if the company is VAT-registered. If it isn't, "+ VAT" should come off and no VAT should be added. This needs checking whatever happens with downloads.
+**Interactive packs and subscriptions (open item).** About 20 places across the site show prices "+ VAT" or "excluding VAT". These include the pricing page, upgrade page, marketplace and in-app limits, plus the Product structured data (`valueAddedTaxIncluded: false`). Interactive checkout sends prices as VAT-exclusive, with `STRIPE_AUTOMATIC_TAX` switchable.
+- If no VAT is charged anywhere, that wording overstates the price. It should become "No VAT charged", and `STRIPE_AUTOMATIC_TAX` must stay off.
+- This hasn't been changed here: the brief is to preserve the existing interactive marketplace and checkout. Do it as a separate PR once confirmed.
 
 **Activation checklist (all needed before `isDownloadPurchasable` can be true):**
-- `DOWNLOAD_SALES.vat` filled in;
 - `price` set;
 - `status: "available"`;
-- the Stripe tax code chosen;
 - the legal drafts approved;
 - the draft migration reviewed and applied;
 - delivery built and tested end to end.
@@ -196,10 +187,10 @@ Signature verification and idempotency reuse the existing pattern; the journey t
   - when online checkout isn't configured (`STRIPE_SECRET_KEY` absent at build time);
   - for 360 packs, which need Pro before they can be bought, so an "InStock" offer would mislead most visitors.
 - **Never included:** download offers, ratings and reviews. Tests check this, and check every property against the Schema.org vocabulary. Run Google's Rich Results Test on a deployed preview URL before merge, because it can't be run locally.
-- **If the company turns out not to be VAT-registered:** change `valueAddedTaxIncluded` together with the page copy.
+- **If interactive prices move to "No VAT charged":** change `valueAddedTaxIncluded` together with the page copy (see VAT).
 
 ## Open founder decisions
 
-1. Confirm the VAT status of Umbrella Rank Ltd. This affects the download price wording, the Stripe tax settings, and the existing "+ VAT" on interactive packs.
-2. Approve or edit the legal drafts in `docs/legal/drafts/document-licence-terms.md`, then get a solicitor's review.
+1. Approve or edit the legal drafts in `docs/legal/drafts/document-licence-terms.md`, then get a solicitor's review.
+2. Confirm whether "+ VAT" on interactive packs and subscriptions should become "No VAT charged" (a separate PR).
 3. Approve a sale price, and separately approve activation, once delivery is built.

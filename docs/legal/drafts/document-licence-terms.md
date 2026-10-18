@@ -4,7 +4,7 @@
 > Prepared 18 October 2026 for founder and legal review before downloads launch. Nothing here is live, and no checkout uses it.
 > Words in [square brackets] are choices to confirm. Statutory references were checked against legislation.gov.uk on 18 October 2026 (see "Sources"). This is drafting support, not legal advice: a solicitor should review it before launch.
 
-Seller: **Umbrella Rank Ltd**, trading as Appraisal Software. [Add company number, registered office and, if registered, VAT number.]
+Seller: **Umbrella Rank Ltd**, trading as Appraisal Software. [Add company number and registered office.] Umbrella Rank Ltd does not charge VAT on these purchases (founder decision, 18 October 2026).
 
 ---
 
@@ -36,11 +36,11 @@ Completed forms you create for your own staff are yours, and these limits do not
 
 1.8 **Interactive templates are separate.** Buying a downloadable Template does not give you access to Appraisal Software, or to the interactive version of the pack, and buying one doesn't give you the other.
 
-## 2. Free updates
+## 2. Updates at no extra cost
 
-2.1 We may update a Template, for example to reflect a change in regulation or guidance, fix an error or improve the wording. When we publish a new version, you can download it from your access link at no extra cost.
+2.1 We may update a Template, for example to reflect a change in regulation or guidance, fix an error or improve the wording. When we publish a new version, you can download it from your access link at no extra cost: updates are included in the price you paid.
 
-2.2 **How long.** Free updates are available for [as long as we offer the Template for sale, and in any case for at least 12 months from your purchase]. If we stop offering a Template, we will tell you by email, and you can download the latest version for at least [90 days] afterwards.
+2.2 **How long.** Updates are available for [as long as we offer the Template for sale, and in any case for at least 12 months from your purchase]. If we stop offering a Template, we will tell you by email, and you can download the latest version for at least [90 days] afterwards.
 
 2.3 Updates are offered, not imposed. Your existing copies and completed forms are never changed, and you choose whether to start using a new version.
 
@@ -58,7 +58,7 @@ Completed forms you create for your own staff are yours, and these limits do not
 - (a) expressly ask us to supply it now; and
 - (b) acknowledge that you will lose your right to cancel once the download begins.
 
-We ask for both at checkout (section 4). If you do, and the download starts, you can no longer cancel. If you don't, you keep the right to cancel for 14 days, and we won't release the files until that period has passed or you give consent.
+We ask for both at checkout (section 4). Because the Template is supplied by instant download, giving them is a condition of buying. [Option B instead: make the checkbox optional, and if it isn't ticked, keep the right to cancel for 14 days and release the files only after that period, or once consent is given.] Once you have given them and the download starts, you can no longer cancel.
 
 3.3 [**Goodwill refund (optional, recommended):** if you haven't downloaded any file, you can ask for a full refund within 14 days of purchase, even if you gave consent at checkout.]
 
@@ -68,7 +68,7 @@ We ask for both at checkout (section 4). If you do, and the download starts, you
 
 If faulty digital content we supplied damages your device or other digital content because we didn't take reasonable care, we will repair the damage or compensate you.
 
-3.5 **How to cancel or ask for a refund.** Email [support@appraisalsoftware.co.uk] with your order reference, or use the cancellation form on your order confirmation. Refunds go to your original payment method within 14 days of us agreeing to refund.
+3.5 **How to cancel or ask for a refund.** Email [support@appraisalsoftware.co.uk] with your order reference. If you are cancelling within your 14-day right to cancel, we will refund you within 14 days of you telling us. Other refunds are made within 14 days of us agreeing to them. Refunds go to your original payment method.
 
 ### Business buyers
 
@@ -90,7 +90,7 @@ Shown on the Stripe Checkout page as a **required, unticked** checkbox, separate
 
 Shown under the button:
 
-> By paying you agree to our [Template Licence and Terms]. Price £[24.99] [including VAT | no VAT is charged], one-off payment. UK billing addresses only.
+> By paying you agree to our [Template Licence and Terms]. Price £[24.99], one-off payment. No VAT is charged. UK billing addresses only.
 
 **Implementation notes, not customer-facing:**
 - Record the time the box was ticked (`cancellation_waiver_at`).
@@ -106,8 +106,8 @@ Shown under the button:
 >
 > **Order reference:** AS-D-XXXX-XXXX-XXXX
 > **Template:** [Care Worker Appraisal & Supervision (CQC)], version [v1.1], Word (.docx) and PDF
-> **Price paid:** £[24.99] [including £[4.16] VAT | No VAT charged]
-> **Seller:** Umbrella Rank Ltd, [registered office], [company number], [VAT number]
+> **Price paid:** £[24.99] (no VAT charged)
+> **Seller:** Umbrella Rank Ltd, [registered office], [company number]
 >
 > **Download your files:** [secure link, valid for [12 months]; request a new link any time at appraisalsoftware.co.uk/downloads]
 >
@@ -115,7 +115,7 @@ Shown under the button:
 >
 > **Your licence:** use, copy and adapt the template within your organisation. Don't share or resell it outside your organisation. Full terms: [link to the version of the terms in force at purchase].
 >
-> **Updates:** new versions are free and appear at the same link. [Duration as in 2.2.]
+> **Updates:** new versions are included at no extra cost and appear at the same link. [Duration as in 2.2.]
 >
 > This template is designed to support your appraisal and supervision processes. It is not a substitute for your organisation's regulatory obligations or legal advice. Buying or completing it does not by itself demonstrate compliance.
 >
@@ -125,15 +125,27 @@ Attach or link the full terms as a PDF, so the buyer has them on a durable mediu
 
 ## 6. Product page summary (when downloads launch)
 
-> **Editable Word + printable PDF: £[24.99] [inc. VAT]**
-> One-off purchase. Use it across your organisation, with free updates [while we offer this template]. UK buyers only. Instant download: by downloading straight away, consumers give up the 14-day right to cancel. [Goodwill refund if not downloaded.] [Licence and terms]
+> **Editable Word + printable PDF: £[24.99]. No VAT charged.**
+> One-off purchase. Use it across your organisation, with updates included [while we offer this template]. UK buyers only. Instant download: by downloading straight away, consumers give up the 14-day right to cancel. [Goodwill refund if not downloaded.] [Licence and terms]
 
----
+## 7. Information to show before purchase (consumers)
+
+Under the Consumer Contracts Regulations 2013 (reg 13 and Schedule 2), the product page or checkout must show the following before the buyer pays:
+
+- **Main characteristics:** what's in the pack, both formats, number of questions, that it's written for England, and the regulatory disclaimer.
+- **Seller identity:** Umbrella Rank Ltd, registered office address, company number, and contact email (and phone, if offered).
+- **Price:** £[24.99] total, no VAT charged, no extra fees. One-off; it is not a subscription.
+- **Payment and delivery:** payment by card through Stripe; delivery by immediate download link and email.
+- **Functionality and compatibility:** an editable .docx that opens in Microsoft Word 2016 or later, LibreOffice or Google Docs (check before launch), and a PDF for any PDF reader. No DRM, no account needed.
+- **Right to cancel:** the 14-day right, and that it is lost once the buyer consents to immediate download and the download starts (Schedule 2 (l)).
+- **Legal guarantee:** a reminder that statutory rights for digital content apply.
+- **Complaints:** how to complain, and the response time we commit to.
+- **Order button:** labelled with words that make clear the buyer must pay, e.g. "Pay £24.99" (reg 14(3)). Stripe's default "Pay" meets this.
 
 ## Review checklist
 
-- [ ] Company details, contact email and (if registered) VAT number.
-- [ ] VAT position confirmed (see `docs/marketplace-downloads.md`, "VAT"). Price wording chosen: "including VAT" or "no VAT charged".
+- [ ] Company details and contact email.
+- [x] VAT position: no VAT charged (founder, 18 October 2026). Price wording: "No VAT charged". Revisit if the company registers for VAT.
 - [ ] Licence scope: single entity or group (1.2); consultant and reseller restriction wording (1.4).
 - [ ] Update period (2.2) and wind-down period after a template is withdrawn.
 - [ ] Goodwill refund (3.3, 3.6) on or off.
@@ -141,6 +153,9 @@ Attach or link the full terms as a PDF, so the buyer has them on a durable mediu
 - [ ] Checkout consent captured as a separate, unticked, required checkbox, with the time recorded.
 - [ ] Confirmation email sent within a reasonable time, including the consent confirmation and the terms.
 - [ ] Privacy notice updated: purchase email, Stripe, download records, retention.
+- [ ] Company number and registered office shown on the website (required on company websites, and not shown today), on order emails and in the terms.
+- [ ] Checkout consent: option A (required) or option B (optional, release after 14 days). The draft uses A.
+- [ ] Section 7 information present on the product page or checkout before launch; file compatibility claims tested.
 - [ ] Solicitor sign-off.
 
 ## Sources (checked 18 October 2026)
