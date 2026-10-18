@@ -482,7 +482,7 @@ main section[id] { scroll-margin-top: 6rem; }
 @media print {
   @page { margin: 16mm; }
   body { background: white; color: black; }
-  .no-print, .template-page .template-support, [data-c15t-trigger] { display: none !important; }
+  .no-print, .template-page .template-support, [data-c15t-trigger], [data-testid="consent-banner-root"] { display: none !important; }
   .resource-page { background: white; }
   .resource-page section { padding-block: 12pt; border-color: #aaa; }
   .resource-page section > div { padding-inline: 0; }
@@ -491,4 +491,16 @@ main section[id] { scroll-margin-top: 6rem; }
   .resource-page p, .resource-page dt { color: black; }
   .resource-page nav { display: none; }
   .reveal { animation: none; }
+
+  /* Results report → PDF: just the report, colours kept, sensible breaks. */
+  .app-header, .app-sidebar, .admin-shell [aria-live="polite"].fixed { display: none !important; }
+  .admin-shell { border-top: 0; }
+  .dashboard-content { padding: 0 !important; }
+  .report-content, .report-content * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .report-page-break { break-before: page; border-top: 0 !important; padding-top: 0 !important; }
+  .report-avoid-break, .report-content svg, .report-content tr { break-inside: avoid; }
+  .report-content h2, .report-content h3, .report-content article > header { break-after: avoid; }
+  .report-content .shadow-sm, .report-content [class*="shadow-"] { box-shadow: none !important; }
+  .print-only { display: block !important; }
 }
+.print-only { display: none; }

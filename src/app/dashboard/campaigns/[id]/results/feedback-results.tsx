@@ -1,43 +1,28 @@
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
 import type { Campaign } from "@/lib/types/database";
-import {
-  feedback360OverallAverage,
-  feedback360RatingProfile,
-  feedback360ScoredAnswers,
-  shortPrompt,
-  type Feedback360Question,
-} from "./presentation";
+import { EmptyState } from "@/app/dashboard/chrome";
+import { deriveInsights, recurringThemes, type Dimension, type Scores } from "@/lib/reports/insights";
+import { LockKeyhole } from "lucide-react";
+import type { Feedback360Report } from "./data";
+import ExportBar from "./export-bar";
+import { feedback360OverallAverage, feedback360RatingProfile } from "./presentation";
+import { DimensionBars, InsightList, RadarChart, StatTile, ThemeChips } from "./report-charts";
 import { ResultsShell, resultsMetaLine } from "./results-shell";
-import { FeedbackRadar } from "./visuals";
 
-interface Report {
-  state: string;
-  completed?: number;
-  minimum_responses?: number;
-  questions?: Feedback360Question[];
-}
-
-export default async function FeedbackResults({
+export default function FeedbackResults({
   campaign,
+  report,
   orgName,
   orgLogoUrl,
 }: {
   campaign: Campaign;
+  report: Feedback360Report;
   orgName: string;
   orgLogoUrl?: string | null;
 }) {
-  const supabase = await createClient();
-  const { data, error } = await supabase.rpc("feedback_360_report", {
-    p_campaign_id: campaign.id,
-  });
-  if (error || !data) throw new Error("Unable to load anonymous results");
-  const report = data as unknown as Report;
-
+  const available = report.state === "available";
   const meta = resultsMetaLine(campaign, [
-    report.state === "available" && report.completed
-      ? `${report.completed} anonymous reviewers`
-      : "Anonymous feedback",
+    available && report.completed ? `${report.completed} anonymous reviewers` : "Anonymous feedback",
   ]);
 
   return (
@@ -46,232 +31,128 @@ export default async function FeedbackResults({
       meta={meta}
       orgName={orgName}
       orgLogoUrl={orgLogoUrl}
+      actions={available ? <ExportBar campaignId={campaign.id} fileTitle={`${campaign.name} – 360 feedback report`} /> : undefined}
     >
-      <p className="max-w-2xl text-sm text-muted-foreground">
-        Reviewers form one combined group. Results contain no reviewer names or
-        response times. Written comments may still identify their author.
+      <p className="max-w-3xl text-sm text-muted-foreground">
+        Reviewers form one combined group. Results contain no reviewer names or response times. Written comments may still
+        identify their author.
       </p>
-
-      {report.state !== "available" ? (
-        <section className="mt-8 max-w-2xl">
-          <h2 className="text-base font-medium text-foreground">
-            {report.state === "not_closed"
-              ? "Results available after closure"
+      {available ? (
+        <AvailableReport report={report} />
+      ) : (
+        <EmptyState
+          icon={<LockKeyhole aria-hidden />}
+          title={
+            report.state === "not_closed"
+              ? "Results unlock when the campaign closes"
               : report.state === "insufficient_responses"
                 ? "Not enough responses to release feedback"
-                : "Results unavailable"}
-          </h2>
-          <p className="mt-2 text-sm text-muted-foreground">
-            {report.state === "not_closed"
-              ? "Keep collecting feedback, then close the campaign. Anonymous answers stay hidden while it is open."
-              : `At least ${report.minimum_responses ?? 5} reviewers must respond. This privacy minimum cannot be lowered, and each displayed question must meet that threshold.`}
-          </p>
-          <Link
-            href={`/dashboard/campaigns/${campaign.id}`}
-            className="mt-4 inline-block text-sm font-medium text-primary hover:underline"
-          >
-            Back to campaign →
-          </Link>
-        </section>
-      ) : (
-        <AvailableReport report={report} />
+                : "Results unavailable"
+          }
+          description={
+            report.state === "not_closed"
+              ? "Anonymous answers stay hidden while feedback is being collected. Close the campaign once reviewers have responded."
+              : `At least ${report.minimum_responses ?? 5} reviewers must respond. This privacy minimum can't be lowered, and each question must meet it to be shown.`
+          }
+          actions={
+            <Link href={`/dashboard/campaigns/${campaign.id}`} className="text-sm font-medium text-primary hover:underline">
+              Back to campaign →
+            </Link>
+          }
+        />
       )}
     </ResultsShell>
   );
 }
 
-function AvailableReport({ report }: { report: Report }) {
+function AvailableReport({ report }: { report: Feedback360Report }) {
   const questions = report.questions ?? [];
   const ratings = feedback360RatingProfile(questions);
   const overall = feedback360OverallAverage(ratings);
-  const scored = feedback360ScoredAnswers(ratings);
   const texts = questions.filter((q) => q.type === "text");
-  const showRadar = ratings.length >= 3 && ratings.length <= 8;
+  const comments = texts.flatMap((q) => q.comments ?? []);
+  const dimensions: Dimension[] = ratings.map((r) => ({ key: r.id, label: r.label, max: 5, questionIds: [r.id] }));
+  const scores: Scores = Object.fromEntries(ratings.map((r) => [r.id, r.average]));
+  // Reviewers' combined view is the "manager" lens: there is no self rating in a 360.
+  const insights = deriveInsights(dimensions, {}, scores, { audience: "person", name: "this colleague" });
+  const themes = recurringThemes(comments);
+
+  if (!questions.length)
+    return <p className="mt-8 text-sm text-muted-foreground">No questions received enough non-empty answers to release.</p>;
 
   return (
-    <div className="mt-8 space-y-10">
-      <p className="text-sm text-primary">
-        {report.completed} reviewers completed · Five-reviewer privacy minimum
-        met
-      </p>
+    <div className="mt-8 space-y-12">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <StatTile label="Reviewers" value={String(report.completed ?? 0)} hint="Privacy minimum met" />
+        <StatTile label="Overall" value={overall === null ? "—" : `${overall}/5`} hint="Average of released ratings" />
+        <StatTile label="Rated areas" value={String(ratings.length)} hint={`${questions.length} questions released`} />
+        <StatTile label="Comments" value={String(comments.length)} hint={`Across ${texts.length} written ${texts.length === 1 ? "question" : "questions"}`} />
+      </div>
 
-      {(overall !== null || ratings.length > 0) && (
-        <section className="report-panel">
-          <div className="grid gap-8 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
-            <div>
-              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                Overall feedback
-              </p>
-              {overall !== null ? (
-                <>
-                  <p className="mt-2 text-4xl font-medium tabular-nums tracking-tight text-foreground">
-                    {overall}
-                    <span className="ml-1 text-base font-normal text-muted-foreground">
-                      / 5
-                    </span>
-                  </p>
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    {scored} scored answers · {report.completed} anonymous
-                    reviewers
-                  </p>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    Average of released rating questions — not a performance
-                    score.
-                  </p>
-                </>
-              ) : (
-                <p className="mt-3 text-sm text-muted-foreground">
-                  No rating questions met the privacy threshold.
-                </p>
-              )}
-
-              {ratings.length > 0 && (
-                <ul className="mt-6 divide-y divide-border border-t border-border">
-                  {ratings.map((row) => (
-                    <li
-                      key={row.id}
-                      className="flex items-baseline justify-between gap-3 py-2"
-                    >
-                      <span className="min-w-0 text-sm text-foreground">
-                        {shortPrompt(row.label, 48)}
-                      </span>
-                      <span className="shrink-0 text-sm font-medium tabular-nums text-foreground">
-                        {row.average}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-
-            <div className="report-chart min-w-0">
-              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                Feedback profile
-              </p>
-              {showRadar ? (
-                <div className="mt-3">
-                  <FeedbackRadar dimensions={ratings} />
-                </div>
-              ) : ratings.length > 0 ? (
-                <ul className="mt-4 space-y-3">
-                  {ratings.map((row) => (
-                    <li key={row.id}>
-                      <div className="flex justify-between gap-2 text-sm">
-                        <span className="text-foreground">
-                          {shortPrompt(row.label, 40)}
-                        </span>
-                        <span className="tabular-nums text-muted-foreground">
-                          {row.average}
-                        </span>
-                      </div>
-                      <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-surface">
-                        <div
-                          className="h-full rounded-full bg-primary/70"
-                          style={{
-                            width: `${Math.min(100, (row.average / 5) * 100)}%`,
-                          }}
-                        />
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="mt-3 text-sm text-muted-foreground">
-                  Profile appears when rating questions meet the privacy
-                  threshold.
-                </p>
-              )}
-            </div>
+      {(insights.length > 0 || themes.length > 0) && (
+        <section aria-labelledby="insights" className="space-y-4">
+          <div>
+            <h2 id="insights" className="font-display text-xl font-semibold tracking-tight">Key insights</h2>
+            <p className="mt-1 text-sm text-muted-foreground">Drawn directly from the combined ratings. Use them to shape a development conversation.</p>
           </div>
+          <InsightList insights={insights} />
+          {themes.length > 0 && (
+            <div className="report-avoid-break rounded-xl border border-border bg-card p-4">
+              <p className="text-sm font-semibold text-foreground">Recurring themes in comments</p>
+              <p className="mb-3 mt-1 text-xs text-muted-foreground">Words that come up in more than one comment.</p>
+              <ThemeChips themes={themes} />
+            </div>
+          )}
+        </section>
+      )}
+
+      {dimensions.length > 0 && (
+        <section aria-labelledby="profile" className="report-avoid-break grid gap-6 rounded-xl border border-border bg-card p-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:items-center">
+          <div>
+            <h2 id="profile" className="font-display text-xl font-semibold tracking-tight">Feedback profile</h2>
+            <p className="mt-1 text-sm text-muted-foreground">Average rating from all reviewers combined, out of 5.</p>
+            <ul className="mt-5 divide-y divide-border border-t border-border">
+              {[...ratings]
+                .sort((a, b) => b.average - a.average)
+                .map((row) => (
+                  <li key={row.id} className="flex items-baseline justify-between gap-3 py-2">
+                    <span className="min-w-0 text-sm text-foreground">{row.label}</span>
+                    <span className="shrink-0 text-sm font-medium tabular-nums">{row.average}</span>
+                  </li>
+                ))}
+            </ul>
+          </div>
+          {dimensions.length >= 3 && dimensions.length <= 10 ? (
+            <RadarChart dimensions={dimensions} series={[{ name: "Reviewers", scores, tone: "group" }]} title="Feedback profile" />
+          ) : (
+            <DimensionBars dimensions={dimensions} series={[{ name: "Reviewers", scores, tone: "group" }]} />
+          )}
         </section>
       )}
 
       {texts.length > 0 && (
-        <section className="report-panel">
-          <h2 className="text-sm font-semibold text-foreground">
-            Written feedback
-          </h2>
-          <p className="mt-0.5 text-xs text-muted-foreground">
-            Comments are shown without reviewer attribution.
-          </p>
-          <div className="mt-4 space-y-6">
-            {texts.map((q) => (
-              <div
-                key={q.question_id}
-                className="border-b border-border pb-5 last:border-0"
-              >
-                <p className="text-sm font-medium text-foreground">{q.prompt}</p>
-                <p className="mt-0.5 text-xs text-muted-foreground">
-                  {q.answer_count} comments · Combined reviewers
-                </p>
-                <ul className="mt-3 space-y-3">
-                  {(q.comments ?? []).map((text, i) => (
-                    <li
-                      key={i}
-                      className="text-sm leading-relaxed whitespace-pre-wrap break-words text-foreground"
-                    >
-                      “{text}”
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
+        <section aria-labelledby="comments" className="space-y-4">
+          <h2 id="comments" className="font-display text-xl font-semibold tracking-tight">What reviewers said</h2>
+          {texts.map((q) => (
+            <div key={q.question_id} className="report-avoid-break rounded-xl border border-border bg-card p-5">
+              <p className="text-sm font-medium text-foreground">{q.prompt}</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">{q.answer_count} comments · combined reviewers</p>
+              <ul className="mt-3 space-y-3">
+                {(q.comments ?? []).map((text, i) => (
+                  <li key={i} className="border-l-2 border-primary/40 pl-3 text-sm leading-relaxed whitespace-pre-wrap break-words text-foreground">
+                    {text}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </section>
       )}
 
-      {!questions.length && (
-        <p className="text-sm text-muted-foreground">
-          No questions received enough non-empty answers to release.
-        </p>
-      )}
-
-      {questions.length > 0 && (
-        <details className="group border-t border-border pt-4">
-          <summary className="cursor-pointer list-none text-sm font-semibold text-foreground [&::-webkit-details-marker]:hidden">
-            <span className="text-primary group-open:hidden">▸ </span>
-            <span className="hidden text-primary group-open:inline">▾ </span>
-            Question-level results
-            <span className="ml-2 font-normal text-muted-foreground">
-              {questions.length} released
-            </span>
-          </summary>
-          <div className="mt-4 space-y-5">
-            {questions.map((q) => (
-              <div key={q.question_id} className="border-b border-border pb-4">
-                <p className="text-sm font-medium text-foreground">{q.prompt}</p>
-                <p className="mt-0.5 text-xs text-muted-foreground">
-                  {q.answer_count} answers · Combined reviewers
-                </p>
-                {q.type === "rating" ? (
-                  <p className="mt-2 text-2xl font-medium tabular-nums text-foreground">
-                    {q.average}
-                    <span className="ml-1 text-sm font-normal text-muted-foreground">
-                      average rating
-                    </span>
-                  </p>
-                ) : (
-                  <ul className="mt-2 space-y-2">
-                    {(q.comments ?? []).map((text, i) => (
-                      <li
-                        key={i}
-                        className="text-sm leading-relaxed whitespace-pre-wrap break-words text-foreground"
-                      >
-                        {text}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            ))}
-          </div>
-          <p className="mt-4 text-xs text-muted-foreground">
-            Questions with fewer than five answers are omitted. Comments are
-            ordered independently of reviewer and submission time. There are no
-            relationship-level results.
-          </p>
-        </details>
-      )}
+      <p className="text-xs text-muted-foreground">
+        Questions with fewer than five answers are omitted. Comments are ordered independently of reviewer and submission time.
+        There are no relationship-level results.
+      </p>
     </div>
   );
 }

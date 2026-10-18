@@ -14,17 +14,19 @@ export function ResultsShell({
   meta,
   orgName,
   orgLogoUrl,
+  actions,
   children,
 }: {
   campaign: Campaign;
   meta: string;
   orgName?: string;
   orgLogoUrl?: string | null;
+  actions?: ReactNode;
   children: ReactNode;
 }) {
   return (
     <div className="w-full">
-      <div className="flex flex-wrap items-center gap-5"><Link href="/dashboard/reports" className="text-sm text-primary hover:underline">← Reports</Link><Link
+      <div className="no-print flex flex-wrap items-center gap-5"><Link href="/dashboard/reports" className="text-sm text-primary hover:underline">← Reports</Link><Link
         href={`/dashboard/campaigns/${campaign.id}`}
         className="text-xs text-muted-foreground hover:text-foreground"
       >
@@ -49,7 +51,11 @@ export function ResultsShell({
           </div>
           <p className="mt-0.5 text-xs text-muted-foreground">{meta}</p>
         </div>
+        {actions}
       </header>
+      <p className="print-only mt-2 text-xs text-muted-foreground">
+        Generated {new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })} · Confidential — contains personal data
+      </p>
 
       <div className="report-content mt-8">{children}</div>
     </div>
