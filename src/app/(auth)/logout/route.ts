@@ -5,7 +5,10 @@ import { NextResponse } from "next/server";
 export async function POST() {
   const supabase = await createClient();
   await supabase.auth.signOut();
-  return NextResponse.redirect(new URL("/login", getAppOrigin()), {
+  // Production: back to the public site. Elsewhere (local, previews): stay put.
+  const destination =
+    process.env.VERCEL_ENV === "production" ? "https://appraisalsoftware.co.uk/" : new URL("/", getAppOrigin());
+  return NextResponse.redirect(destination, {
     status: 302,
   });
 }

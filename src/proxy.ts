@@ -7,6 +7,7 @@
 import { updateSession } from "@/lib/supabase/middleware";
 import {
   APP_HOST,
+  MARKETING_HOST,
   isAppProductPath,
   isMarketingHostname,
   hostnameOf,
@@ -24,6 +25,26 @@ export async function proxy(request: NextRequest) {
     const target = request.nextUrl.clone();
     target.protocol = "https:";
     target.host = APP_HOST;
+    return NextResponse.redirect(target, 308);
+  }
+
+  // App host → marketing host for public pages (pricing, templates, blog…),
+  // so leaving the product never strands visitors on app.appraisalsoftware.co.uk.
+  // The bare app host is the workspace entrance (signed-out visitors go on to /login).
+  if (hostname === APP_HOST && pathname === "/") {
+    return NextResponse.redirect(new URL("/dashboard", request.url), 307);
+  }
+  if (
+    hostname === APP_HOST &&
+    !isAppProductPath(pathname) &&
+    !pathname.startsWith("/api/") &&
+    !pathname.startsWith("/_next/") &&
+    !/\.[a-z0-9]+$/i.test(pathname)
+  ) {
+    const target = request.nextUrl.clone();
+    target.protocol = "https:";
+    target.host = MARKETING_HOST;
+    target.port = "";
     return NextResponse.redirect(target, 308);
   }
 
