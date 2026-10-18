@@ -86,6 +86,8 @@ export default async function UpgradePage({
                   ? `Renews on ${periodEnd}.`
                   : entitlement.plan === "free"
                     ? "10 active employees, 1 active campaign and 1 admin. Free forever."
+                    : entitlement.plan === "legacy"
+                      ? "You joined during early access, so your workspace has no limits for now. Choose a plan below whenever you're ready to subscribe."
                     : outcome === "success"
                       ? "Confirming your payment…"
                       : null}
@@ -100,7 +102,7 @@ export default async function UpgradePage({
         ) : null}
       </section>
 
-      {entitlement.plan !== "organisation" && entitlement.plan !== "legacy" ? (
+      {entitlement.plan !== "organisation" ? (
         <div className="mt-8">
           {configured ? (
             <PlanPicker currentPlan={entitlement.plan} canCheckout />
