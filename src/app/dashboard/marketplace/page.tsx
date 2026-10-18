@@ -1,28 +1,23 @@
-import FormSubmit from "@/app/dashboard/form-submit";
 import { Button } from "@/components/ui/button";
+import { PackCover } from "@/components/marketplace/PackCover";
 import { requireOrgAdmin } from "@/lib/auth/session";
 import { billingConfigured } from "@/lib/billing/stripe";
-import { formatPackPrice, packAccess, packBySlug, packs, type PackAccess, type TemplatePack } from "@/lib/marketplace";
+import { categories, packAccess, packBySlug, packs, type PackAccess, type TemplatePack } from "@/lib/marketplace";
 import { cn } from "@/lib/utils";
-import { Check, Clock, ListChecks, Lock } from "lucide-react";
+import { Clock, ListChecks } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { PageHeader } from "../chrome";
-import { buyPack, usePack } from "./actions";
+import { PackAction, PackPrice, PackStatus } from "./pack-parts";
 import PurchaseReturn from "./purchase-return";
 import { workspacePackState } from "./state";
 
-const STATUS: Record<PackAccess, { label: string; tone: string }> = {
-  owned: { label: "Owned", tone: "bg-accent text-accent-foreground" },
-  included: { label: "Included with your plan", tone: "bg-accent text-accent-foreground" },
-  available: { label: "", tone: "" },
-  needs_pro: { label: "Needs Pro", tone: "bg-surface-2 text-muted-foreground" },
-};
+const MARKET = "/dashboard/marketplace";
 
 export default async function MarketplacePage({
   searchParams,
 }: {
-  searchParams: Promise<{ purchased?: string; error?: string }>;
+  searchParams: Promise<{ purchased?: string; error?: string; category?: string }>;
 }) {
   let orgAdmin;
   try {
@@ -34,6 +29,8 @@ export default async function MarketplacePage({
   const { plan, purchased } = await workspacePackState(orgAdmin.org.id);
   const justBought = params.purchased ? packBySlug(params.purchased) : undefined;
   const canBuy = billingConfigured();
+  const category = categories.some((c) => c.name === params.category) ? params.category : undefined;
+  const shown = category ? packs.filter((p) => p.category === category) : packs;
 
   return (
     <div className="w-full">
@@ -54,13 +51,20 @@ export default async function MarketplacePage({
         </p>
       ) : null}
 
-      <div className="mt-6 grid max-w-6xl gap-4 lg:grid-cols-2">
-        {packs.map((pack) => (
-          <PackTile key={pack.slug} pack={pack} access={packAccess(pack, plan, purchased)} canBuy={canBuy} highlight={pack.slug === justBought?.slug} />
+      <nav aria-label="Categories" className="mt-6 flex flex-wrap items-center gap-2">
+        <CategoryLink href={MARKET} active={!category} label="All packs" count={packs.length} />
+        {categories.map((c) => (
+          <CategoryLink key={c.name} href={`${MARKET}?category=${encodeURIComponent(c.name)}`} active={category === c.name} label={c.name} count={c.count} />
+        ))}
+      </nav>
+
+      <div className="mt-5 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+        {shown.map((pack) => (
+          <ProductCard key={pack.slug} pack={pack} access={packAccess(pack, plan, purchased)} canBuy={canBuy} highlight={pack.slug === justBought?.slug} />
         ))}
       </div>
 
-      <p className="mt-6 max-w-3xl text-xs leading-relaxed text-muted-foreground">
+      <p className="mt-8 max-w-3xl text-xs leading-relaxed text-muted-foreground">
         Prices exclude VAT. Purchases are one-off and belong to this workspace. Using a pack copies its questions into your
         templates, so later changes to the pack never alter your past reviews.
       </p>
@@ -68,89 +72,58 @@ export default async function MarketplacePage({
   );
 }
 
-function PackTile({ pack, access, canBuy, highlight }: { pack: TemplatePack; access: PackAccess; canBuy: boolean; highlight: boolean }) {
-  const status = STATUS[access];
-  const ready = access === "owned" || access === "included";
+function CategoryLink({ href, active, label, count }: { href: string; active: boolean; label: string; count: number }) {
+  return (
+    <Link
+      href={href}
+      aria-current={active ? "page" : undefined}
+      className={cn(
+        "inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-sm transition-colors",
+        active ? "border-foreground bg-foreground text-background" : "border-border bg-card text-foreground hover:border-foreground/40",
+      )}
+    >
+      {label}
+      <span className={cn("text-xs tabular-nums", active ? "text-background/70" : "text-muted-foreground")}>{count}</span>
+    </Link>
+  );
+}
+
+function ProductCard({ pack, access, canBuy, highlight }: { pack: TemplatePack; access: PackAccess; canBuy: boolean; highlight: boolean }) {
   return (
     <article
       id={pack.slug}
       className={cn(
-        "flex scroll-mt-24 flex-col rounded-xl border bg-card p-5",
+        "group relative flex scroll-mt-24 flex-col overflow-hidden rounded-xl border bg-card transition-shadow hover:shadow-[0_20px_44px_-30px_rgb(21_38_29/0.45)]",
         highlight ? "border-primary shadow-[0_16px_40px_-28px_var(--primary)]" : "border-border",
       )}
     >
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{pack.category}</span>
-        {status.label ? (
-          <span className={cn("inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium", status.tone)}>
-            {access === "needs_pro" ? <Lock className="size-3" aria-hidden /> : <Check className="size-3" aria-hidden />}
-            {status.label}
+      <PackCover pack={pack} className="aspect-[16/10] border-b border-border">
+        <PackStatus access={access} className="absolute left-3 top-3" />
+      </PackCover>
+      <div className="flex flex-1 flex-col p-5">
+        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{pack.category}</p>
+        <h2 className="mt-1.5 font-display text-lg font-semibold tracking-tight">
+          {/* Stretched link: the whole card opens the product page; the action stays clickable above it. */}
+          <Link href={`${MARKET}/${pack.slug}`} className="after:absolute after:inset-0 focus-visible:outline-none group-hover:underline">
+            {pack.name}
+          </Link>
+        </h2>
+        <p className="mt-1.5 line-clamp-2 text-sm leading-relaxed text-muted-foreground">{pack.summary}</p>
+        <p className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+          <span className="inline-flex items-center gap-1.5">
+            <ListChecks className="size-3.5" aria-hidden /> {pack.questions.length} questions
           </span>
-        ) : null}
-      </div>
-      <h2 className="mt-2 font-display text-lg font-semibold tracking-tight">{pack.name}</h2>
-      <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{pack.summary}</p>
-      <p className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
-        <span className="inline-flex items-center gap-1.5">
-          <ListChecks className="size-3.5" aria-hidden /> {pack.questions.length} questions
-        </span>
-        <span className="inline-flex items-center gap-1.5">
-          <Clock className="size-3.5" aria-hidden /> ~{pack.minutes} min
-        </span>
-        <span>{pack.campaignType === "feedback_360" ? "Anonymous 360" : "Self + manager appraisal"}</span>
-      </p>
-
-      <details className="group mt-4 rounded-lg border border-border bg-surface/60 px-3 py-2">
-        <summary className="cursor-pointer list-none text-sm font-medium text-foreground [&::-webkit-details-marker]:hidden">
-          <span className="text-primary group-open:hidden">▸ </span>
-          <span className="hidden text-primary group-open:inline">▾ </span>
-          Preview all {pack.questions.length} questions
-        </summary>
-        <ol className="mt-3 space-y-2 pb-1 text-sm">
-          {pack.questions.map((q, i) => (
-            <li key={i} className="flex gap-2">
-              <span className="w-5 shrink-0 text-xs tabular-nums text-muted-foreground">{i + 1}</span>
-              <span className="text-foreground">
-                {q.prompt}
-                <span className="ml-1.5 text-xs text-muted-foreground">
-                  {q.type === "rating" ? `Rating · ${q.area}` : "Written"}
-                  {q.required === false ? " · optional" : ""}
-                </span>
-              </span>
-            </li>
-          ))}
-        </ol>
-      </details>
-
-      <div className="mt-auto flex flex-wrap items-center justify-between gap-3 pt-5">
-        <p className="text-sm text-muted-foreground">
-          {ready ? (
-            access === "included" ? "Included" : "Yours to keep"
-          ) : (
-            <>
-              <span className="font-display text-xl font-semibold text-foreground">{formatPackPrice(pack.price)}</span> one-off + VAT
-            </>
-          )}
+          <span className="inline-flex items-center gap-1.5">
+            <Clock className="size-3.5" aria-hidden /> ~{pack.minutes} min
+          </span>
+          <span>{pack.campaignType === "feedback_360" ? "Anonymous 360" : "Self + manager"}</span>
         </p>
-        {ready ? (
-          <form action={usePack}>
-            <input type="hidden" name="pack" value={pack.slug} />
-            <FormSubmit pendingLabel="Setting up…">Use this template</FormSubmit>
-          </form>
-        ) : access === "needs_pro" ? (
-          <Button asChild variant="outline">
-            <Link href="/dashboard/upgrade">Upgrade to Pro</Link>
-          </Button>
-        ) : canBuy ? (
-          <form action={buyPack}>
-            <input type="hidden" name="pack" value={pack.slug} />
-            <FormSubmit pendingLabel="Opening checkout…">Buy for {formatPackPrice(pack.price)}</FormSubmit>
-          </form>
-        ) : (
-          <Button asChild variant="outline">
-            <Link href={`/contact?type=pricing&plan=${encodeURIComponent(pack.name)}`}>Ask about this pack</Link>
-          </Button>
-        )}
+        <div className="mt-auto flex flex-wrap items-center justify-between gap-3 pt-5">
+          <PackPrice pack={pack} access={access} />
+          <div className="relative z-10">
+            <PackAction pack={pack} access={access} canBuy={canBuy} />
+          </div>
+        </div>
       </div>
     </article>
   );

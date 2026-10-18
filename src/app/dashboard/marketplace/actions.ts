@@ -60,7 +60,7 @@ export async function buyPack(formData: FormData): Promise<void> {
       customer_update: { address: "auto", name: "auto" },
       automatic_tax: { enabled: process.env.STRIPE_AUTOMATIC_TAX === "true" },
       success_url: `${origin}${MARKET}?purchased=${pack.slug}`,
-      cancel_url: `${origin}${MARKET}#${pack.slug}`,
+      cancel_url: `${origin}${MARKET}/${pack.slug}`,
     });
     url = session.url;
   } catch (error) {

@@ -7,11 +7,12 @@ import { Button } from "@/components/ui/button";
 import RespondForm from "@/app/r/[token]/respond-form";
 import { marketingType } from "@/lib/marketing-typography";
 import { pageMetadata } from "@/lib/metadata";
-import { categories, formatPackPrice, packs, previewQuestions, type PackAccent, type TemplatePack } from "@/lib/marketplace";
+import { categories, formatPackPrice, packs, previewQuestions, type TemplatePack } from "@/lib/marketplace";
 import { cn } from "@/lib/utils";
+import { PACK_ACCENT } from "@/components/marketplace/pack-accent";
 import { APP_ORIGIN } from "@/lib/links";
 
-const getPack = (slug: string) => `${APP_ORIGIN}/dashboard/marketplace#${slug}`;
+const getPack = (slug: string) => `${APP_ORIGIN}/dashboard/marketplace/${slug}`;
 
 export const metadata: Metadata = pageMetadata({
   title: "Appraisal Template Marketplace | Appraisal Software",
@@ -19,14 +20,7 @@ export const metadata: Metadata = pageMetadata({
   path: "/marketplace",
 });
 
-/** One accent per category; tints stay inside the warm brand palette. */
-const ACCENT: Record<PackAccent, { chip: string; dot: string; soft: string }> = {
-  jade: { chip: "bg-accent text-accent-foreground", dot: "bg-primary", soft: "from-accent/70" },
-  amber: { chip: "bg-[color-mix(in_oklab,var(--warm)_22%,white)] text-warm-foreground", dot: "bg-warm", soft: "from-[color-mix(in_oklab,var(--warm)_16%,white)]" },
-  blue: { chip: "bg-[color-mix(in_oklab,var(--chart-3)_16%,white)] text-[color-mix(in_oklab,var(--chart-3)_70%,black)]", dot: "bg-chart-3", soft: "from-[color-mix(in_oklab,var(--chart-3)_10%,white)]" },
-  teal: { chip: "bg-[color-mix(in_oklab,var(--chart-5)_16%,white)] text-[color-mix(in_oklab,var(--chart-5)_65%,black)]", dot: "bg-chart-5", soft: "from-[color-mix(in_oklab,var(--chart-5)_10%,white)]" },
-  rose: { chip: "bg-[color-mix(in_oklab,var(--chart-4)_14%,white)] text-[color-mix(in_oklab,var(--chart-4)_65%,black)]", dot: "bg-chart-4", soft: "from-[color-mix(in_oklab,var(--chart-4)_9%,white)]" },
-};
+const ACCENT = PACK_ACCENT;
 
 function Meta({ pack, inverse = false }: { pack: TemplatePack; inverse?: boolean }) {
   return (
