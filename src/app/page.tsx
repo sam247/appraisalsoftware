@@ -40,9 +40,9 @@ export default function HomePage() {
         <HumanStory />
         <Reviews />
         <PricingPreview />
-        <MarketplaceTeaser />
         <ProductBenefits />
         <GdprCommitment />
+        <MarketplaceTeaser />
         <HomeFaqSection />
         <FinalCtaSection />
       </main>
