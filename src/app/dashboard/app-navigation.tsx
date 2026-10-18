@@ -12,6 +12,7 @@ import {
   FileText,
   Settings,
   CreditCard,
+  Compass,
   ShoppingBag,
   LogOut,
   Search,
@@ -29,6 +30,7 @@ import {
 } from "@/components/ui/sheet";
 import { CONTACT_URL } from "@/lib/links";
 import NavLink from "./nav-link";
+import ProductTour, { START_TOUR_EVENT } from "./product-tour";
 
 const NAV = [
   { href: "/dashboard", label: "Home", exact: true, icon: LayoutDashboard },
@@ -40,11 +42,12 @@ const NAV = [
   { href: "/dashboard/settings", label: "Settings", icon: Settings },
 ];
 
-function CreateButton({ onNavigate }: { onNavigate?: () => void }) {
+function CreateButton({ onNavigate, tour }: { onNavigate?: () => void; tour?: boolean }) {
   return (
     <Link
       href="/dashboard/campaigns/new"
       onClick={onNavigate}
+      data-tour={tour ? "create" : undefined}
       className="flex h-10 items-center justify-center gap-2 rounded-md border border-input bg-card px-3 text-[13px] font-medium text-foreground transition-colors hover:bg-surface"
     >
       <Plus className="size-4" aria-hidden />
@@ -172,6 +175,18 @@ function AccountMenu({
               <CreditCard className="size-4 text-muted-foreground" aria-hidden />
               Plans &amp; billing
             </Link>
+            <button
+              type="button"
+              role="menuitem"
+              onClick={() => {
+                setOpen(false);
+                window.dispatchEvent(new Event(START_TOUR_EVENT));
+              }}
+              className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-sm text-foreground hover:bg-surface"
+            >
+              <Compass className="size-4 text-muted-foreground" aria-hidden />
+              Take the tour
+            </button>
             <form action="/logout" method="POST">
               <button
                 type="submit"
@@ -236,7 +251,7 @@ function AppLinks({
     >
       {showGettingStarted && <NavLink href="/dashboard/getting-started" label="Getting Started" icon={CircleCheck} onNavigate={onNavigate} />}
       {NAV.map((item) => (
-        <NavLink key={item.href} {...item} onNavigate={onNavigate} />
+        <NavLink key={item.href} {...item} onNavigate={onNavigate} tourId={mobile ? undefined : item.href} />
       ))}
 
     </nav>
@@ -312,6 +327,7 @@ export default function AppNavigation({
             href={CONTACT_URL}
             target="_blank"
             rel="noopener noreferrer"
+            data-tour="help"
             className="hidden text-sm font-medium text-muted-foreground transition-colors hover:text-foreground sm:inline"
           >
             Help
@@ -327,7 +343,7 @@ export default function AppNavigation({
 
       <div className="md:flex">
         {!focusedForm && <aside className="app-sidebar sticky top-16 hidden h-[calc(100vh-4rem)] w-60 shrink-0 flex-col border-r border-border bg-card px-3 py-5 md:flex">
-          <CreateButton />
+          <CreateButton tour />
           <div className="mt-4 flex-1 overflow-y-auto">
             <AppLinks showGettingStarted={showGettingStarted} />
           </div>
@@ -338,6 +354,7 @@ export default function AppNavigation({
           {children}
         </main>
       </div>
+      {!focusedForm && <ProductTour />}
     </div>
   );
 }

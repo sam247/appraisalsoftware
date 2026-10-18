@@ -11,12 +11,15 @@ export default function NavLink({
   exact,
   icon: Icon,
   onNavigate,
+  tourId,
 }: {
   href: string;
   label: string;
   exact?: boolean;
   icon?: LucideIcon;
   onNavigate?: () => void;
+  /** Anchor for the product tour (desktop sidebar only). */
+  tourId?: string;
 }) {
   const pathname = usePathname();
   const isActive = exact ? pathname === href : pathname.startsWith(href);
@@ -25,6 +28,7 @@ export default function NavLink({
     <Link
       href={href}
       onClick={onNavigate}
+      data-tour={tourId}
       aria-current={isActive ? "page" : undefined}
       className={cn(
         "relative flex items-center min-h-10 gap-3 rounded-md px-3 py-2 text-sm transition-colors",

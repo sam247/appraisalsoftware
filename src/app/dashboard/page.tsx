@@ -6,6 +6,9 @@ import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { Sprout } from "lucide-react";
 import { EmptyState, PageHeader, StatusBadge } from "./chrome";
+import WelcomeFlow, { type CycleKind, type WelcomeTemplate } from "./home/welcome-flow";
+import { workspacePackState } from "./marketplace/state";
+import { packAccess, packs } from "@/lib/marketplace";
 import {
   buildAttentionItems,
   dedupeAttentionByCampaign,
@@ -57,7 +60,7 @@ export default async function OverviewPage() {
       supabase.from("template_questions").select("template_id, type").eq("organization_id", org.id),
       supabase.from("campaign_questions").select("campaign_id, type").eq("organization_id", org.id),
       supabase.from("people").select("id, archived_at").eq("organization_id", org.id),
-      supabase.from("templates").select("id").eq("organization_id", org.id).is("archived_at", null),
+      supabase.from("templates").select("id, name, campaign_type_default, settings").eq("organization_id", org.id).is("archived_at", null),
     ]);
 
   if (campaignResult.error || assignmentResult.error || subjectResult.error || templateQuestions.error || frozenQuestions.error || peopleResult.error || activeTemplatesResult.error)
@@ -101,6 +104,34 @@ export default async function OverviewPage() {
     ? `${dayGreeting(org.timezone || "Europe/London")}, ${firstName}`
     : dayGreeting(org.timezone || "Europe/London");
 
+  // Welcome flow: workspace templates plus marketplace packs this workspace can use.
+  const packState = await workspacePackState(org.id);
+  const kindOfTemplate = (type: string): CycleKind =>
+    type === "probation_review" ? "probation" : type === "feedback_360" ? "feedback_360" : "annual";
+  const installedPacks = new Set<string>();
+  const welcomeTemplates: WelcomeTemplate[] = [];
+  for (const t of (activeTemplatesResult.data ?? []) as Array<{ id: string; name: string; campaign_type_default: string; settings: Record<string, unknown> | null }>) {
+    const pack = t.settings?.marketplace_pack;
+    if (typeof pack === "string") installedPacks.add(pack);
+    const questions = questionCounts[t.id] ?? 0;
+    if (!questions) continue;
+    const kind = kindOfTemplate(t.campaign_type_default);
+    if (kind === "feedback_360" && invalidQuestions.has(t.id)) continue;
+    welcomeTemplates.push({ key: t.id, name: t.name, questions, kind, source: "workspace" });
+  }
+  for (const pack of packs) {
+    if (installedPacks.has(pack.slug)) continue;
+    const access = packAccess(pack, packState.plan, packState.purchased);
+    if (access !== "owned" && access !== "included") continue;
+    welcomeTemplates.push({
+      key: `pack:${pack.slug}`,
+      name: pack.name,
+      questions: pack.questions.length,
+      kind: pack.campaignType === "feedback_360" ? "feedback_360" : pack.category === "Probation" ? "probation" : "annual",
+      source: "pack",
+    });
+  }
+
   const probationTemplateId = templateResult.data?.id ?? null;
   const probationHref = probationTemplateId
     ? `/dashboard/campaigns/new?template=${probationTemplateId}`
@@ -137,8 +168,18 @@ export default async function OverviewPage() {
     <div className="mx-auto w-full space-y-6 pb-4">
       <PageHeader title="What would you like to do?" subtitle={greeting} action={<Link href="/dashboard/reports" className="inline-flex h-10 items-center rounded-md border border-input px-4 text-sm font-medium hover:bg-surface">View reports</Link>} />
 
-      <CreationLauncher actions={launcherActions} />
+      {campaigns.length === 0 ? (
+        <WelcomeFlow
+          firstName={firstName}
+          can360={["pro", "organisation", "legacy"].includes(packState.plan)}
+          peopleCount={activePersonIds.size}
+          templates={welcomeTemplates}
+        />
+      ) : (
+        <CreationLauncher actions={launcherActions} />
+      )}
 
+      {campaigns.length > 0 && (
       <section className="space-y-3">
         <div className="flex items-baseline justify-between gap-3">
           <h2 className="text-sm font-semibold text-foreground">Your work</h2>
@@ -198,6 +239,7 @@ export default async function OverviewPage() {
           </div>
         )}
       </section>
+      )}
     </div>
   );
 }
