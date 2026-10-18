@@ -40,8 +40,13 @@ const pages = await Promise.all(publicUrls.map(async (url) => {
   for (const anchor of html.matchAll(/<a\b([^>]*)>(.*?)<\/a>/gs)) {
     const href = attributes(anchor[1]).href;
     if (!href || !/^https?:|^\//.test(href)) continue;
-    if (new URL(href, url).pathname !== "/signup") continue;
-    assert.equal(anchor[2].replace(/<[^>]*>/g, "").trim(), "Start Free", `${url.pathname}: signup CTA`);
+    const target = new URL(href, url);
+    if (target.pathname !== "/signup") continue;
+    const label = anchor[2].replace(/<[^>]*>/g, "").trim();
+    // Plain signup says Start Free; paid-plan signup names the plan it continues to checkout for.
+    const plan = target.searchParams.get("plan");
+    const expected = plan === "pro" ? "Choose Pro" : plan === "organisation" ? "Choose Organisation" : "Start Free";
+    assert.equal(label, expected, `${url.pathname}: signup CTA`);
   }
   return { path: url.pathname, url, html, anchors: new Set([...html.matchAll(/\bid="([^"]+)"/g)].map((match) => match[1])) };
 }));
