@@ -152,8 +152,10 @@
     --surface: oklch(0.23 0.005 85);
     --primary: oklch(0.97 0.003 85);
     --primary-hover: oklch(0.90 0.006 85);
-    --primary-foreground: oklch(0.13 0.01 75);
-    background: oklch(0.16 0.006 75);
+    --primary-foreground: oklch(0.22 0.04 163);
+    --muted-foreground: oklch(0.83 0.02 160);
+    --border: oklch(0.42 0.03 163);
+    --contrast-panel: oklch(0.29 0.055 162);
     color: var(--foreground);
   }
 
@@ -526,3 +528,26 @@ main section[id] { scroll-margin-top: 6rem; }
   .print-only { display: block !important; }
 }
 .print-only { display: none; }
+
+/*
+ * Dark "third colour" sections render as inset, rounded deep-green panels
+ * (matching the site's cards) instead of full-bleed ink slabs. Unlayered so
+ * it overrides each section's own spacing and max-width utilities.
+ */
+section.marketing-contrast {
+  background: transparent;
+  padding: 1.25rem;
+}
+section.marketing-contrast > div {
+  max-width: 76rem;
+  margin-inline: auto;
+  border-radius: 2rem;
+  padding: clamp(2.75rem, 6vw, 5rem) clamp(1.5rem, 5vw, 4.5rem);
+  background-color: var(--contrast-panel);
+  background-image: radial-gradient(rgb(255 255 255 / 0.05) 1.2px, transparent 1.2px);
+  background-size: 18px 18px;
+  box-shadow: 0 30px 60px -45px rgb(15 35 26 / 0.6);
+}
+@media (min-width: 1024px) {
+  section.marketing-contrast { padding: 2rem; }
+}

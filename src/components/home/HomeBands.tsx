@@ -69,7 +69,7 @@ export function MidPageCta() {
         </p>
         <div className="mt-5 flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <h2 className="max-w-3xl font-display text-[2.25rem] font-semibold leading-[1.08] tracking-[-0.04em] text-foreground sm:text-[3.25rem]">
+            <h2 className="max-w-4xl font-display text-[2.25rem] font-semibold leading-[1.08] tracking-[-0.04em] text-foreground sm:text-[2.75rem] xl:text-[3rem]">
               Make more room for the conversation, less for the admin.
             </h2>
             <p className="mt-5 max-w-xl text-base leading-relaxed text-muted-foreground">
