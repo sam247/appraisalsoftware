@@ -1,4 +1,4 @@
-import { ArrowRight, Check } from "lucide-react";
+import { ArrowRight, Check, Star } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import {
@@ -39,14 +39,16 @@ export function Hero() {
                 <a href={SEE_HOW_IT_WORKS_HREF}>{SEE_HOW_IT_WORKS_LABEL}</a>
               </Button>
             </div>
-            <ul className="mt-7 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
-              {["Free for up to 10 people", "No card required", "Upgrade or cancel any time"].map((fact) => (
-                <li key={fact} className="inline-flex items-center gap-2">
-                  <Check className="size-4 text-primary" strokeWidth={2.5} aria-hidden />
-                  {fact}
-                </li>
-              ))}
-            </ul>
+            <div className="mt-6 flex items-center gap-4" aria-hidden="true">
+              <span className="flex -space-x-3">
+                {["amelia", "daniel", "priya", "amelia", "daniel"].map((portrait, index) => (
+                  <Image key={index} src={`/marketing/review-${portrait}.jpg`} alt="" width={40} height={40} sizes="40px" className="size-10 rounded-full border-2 border-background object-cover" />
+                ))}
+              </span>
+              <span className="flex gap-0.5 text-primary">
+                {Array.from({ length: 5 }, (_, index) => <Star key={index} className="size-4 fill-current" strokeWidth={1.5} />)}
+              </span>
+            </div>
           </div>
 
           <div className="relative mx-auto w-full max-w-md py-6 sm:max-w-lg lg:max-w-none lg:py-0">
