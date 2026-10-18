@@ -56,7 +56,7 @@ export default async function UpgradePage({
   const periodEnd = billing?.current_period_end ? dateFormat.format(new Date(billing.current_period_end)) : null;
 
   return (
-    <div className="mx-auto w-full max-w-4xl">
+    <div className="w-full">
       <CheckoutReturn outcome={outcome} planActive={paid} />
       <PageHeader title="Plans & billing" subtitle="More room for people, campaigns and admins — and anonymous 360 feedback." />
 
@@ -66,7 +66,7 @@ export default async function UpgradePage({
         </p>
       ) : null}
 
-      <section className="mt-6 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-border bg-card p-5">
+      <section className="mt-6 flex max-w-6xl flex-wrap items-center justify-between gap-4 rounded-xl border border-border bg-card p-5">
         <div>
           <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Current plan</p>
           <p className="mt-1 font-display text-xl font-semibold">
@@ -103,7 +103,7 @@ export default async function UpgradePage({
       </section>
 
       {entitlement.plan !== "organisation" ? (
-        <div className="mt-8">
+        <div className="mt-8 max-w-6xl">
           {configured ? (
             <PlanPicker currentPlan={entitlement.plan} canCheckout />
           ) : (
