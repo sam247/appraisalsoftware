@@ -111,7 +111,6 @@ export default function EmployeeAppraisalSoftwarePage() {
                 </div>
                 <p className="mt-4 border-t border-border pt-3 text-[11px] leading-relaxed text-muted-foreground">Both perspectives, one conversation.</p>
               </div>
-              <figcaption className="mt-4 text-center text-[11px] text-muted-foreground">Illustrative employee review · fictional data</figcaption>
             </figure>
           </div>
         </div>
@@ -184,7 +183,7 @@ export default function EmployeeAppraisalSoftwarePage() {
             <p className={marketingType.eyebrow}>A focused respondent experience</p>
             <h2 className={`mt-4 ${marketingType.h2}`}>A clear form instead of a document chase.</h2>
             <p className="mt-5 leading-relaxed text-muted-foreground">Employees and managers open a structured question form, with one question at a time and visible progress. Keep prompts focused so people can prepare useful answers.</p>
-            <p className="mt-5 text-sm text-muted-foreground">Try this sample form. Nothing you enter is saved or submitted.</p>
+            <p className="mt-5 text-sm text-muted-foreground">Try it yourself — click through the form. Nothing you enter here is saved.</p>
           </div>
           <RespondentProof />
         </div>

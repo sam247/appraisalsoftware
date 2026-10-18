@@ -17,7 +17,7 @@ export function HumanStory() {
           />
         </div>
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-primary">Illustrative review conversation</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-primary">Built for the conversation</p>
           <h2 className="mt-4 max-w-md font-display text-[2rem] font-semibold leading-[1.1] tracking-[-0.035em] text-foreground sm:text-[2.5rem]">
             Better preparation makes room for a better conversation.
           </h2>

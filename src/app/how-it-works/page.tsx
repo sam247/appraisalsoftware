@@ -85,9 +85,6 @@ export default function Page() {
         visual={
           <>
             <HeroWizardPreview />
-            <p className="mt-3 text-xs text-muted-foreground">
-              Illustrative 360 campaign builder · fictional people
-            </p>
           </>
         }
       />
@@ -149,9 +146,6 @@ export default function Page() {
           </div>
           <div className="min-w-0 lg:sticky lg:top-28">
             <ResultsProof />
-            <p className="mt-3 text-xs text-muted-foreground">
-              Illustrative annual results · fictional answers
-            </p>
           </div>
         </div>
       </section>
@@ -203,9 +197,6 @@ export default function Page() {
                 Read the privacy safeguards
               </Link>
             </div>
-            <p className="mt-3 text-xs text-muted-foreground">
-              Illustrative campaign · fictional people
-            </p>
           </div>
         </div>
       </section>
@@ -231,7 +222,7 @@ export default function Page() {
           <div className="min-w-0">
             <RespondentProof />
             <p className="mt-3 text-xs text-muted-foreground">
-              Interactive product preview · sample questions
+              Try it — click through the questions
             </p>
           </div>
         </div>

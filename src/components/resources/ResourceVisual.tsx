@@ -346,7 +346,7 @@ export function ResourceVisual({ resource }: { resource: ResourceContent }) {
       <EvidencePattern
         eyebrow="Read the example carefully"
         title="A useful feedback theme connects behaviour to an action"
-        copy="Fictional examples are here to show structure, not to provide a score or a product report. Look for the behaviour, its effect and the practical next step."
+        copy="The examples show structure, not a score or a product report. Look for the behaviour, its effect and the practical next step."
         steps={[
           "Behaviour observed",
           "Effect on shared work",

@@ -34,7 +34,7 @@ export const resources: ResourceContent[] = [
       {
         "title": "Completed example: a customer support role",
         "paragraphs": [
-          "Fictional employee: Alex, Customer Support Adviser. Review period: April 2025 to March 2026. Objective: resolve routine enquiries within two working days while maintaining accurate records.",
+          "Example: Alex, Customer Support Adviser. Review period: April 2025 to March 2026. Objective: resolve routine enquiries within two working days while maintaining accurate records.",
           "Employee reflection: “I met the response target in nine of twelve months. During the autumn launch I missed the target when complex tickets increased. I created a triage checklist with the team, which reduced repeated handovers.”",
           "Manager observation: “Alex’s records are clear and colleagues can pick up the next step. In October, three complex cases waited too long for escalation. We will agree an escalation trigger and review it after six weeks.”",
           "Agreed next step: Alex will pilot the checklist on complex enquiries by 30 April. The manager will provide one hour of coaching each fortnight. Progress will be checked on 15 June."
@@ -43,7 +43,7 @@ export const resources: ResourceContent[] = [
       {
         "title": "Completed example: an operations coordinator in a growing firm",
         "paragraphs": [
-          "Fictional employee: Jordan, Operations Coordinator in a 35-person professional services firm. Review period: January to December 2025. Objective: keep client onboarding packs complete within five working days of signed engagement.",
+          "Example: Jordan, Operations Coordinator in a 35-person professional services firm. Review period: January to December 2025. Objective: keep client onboarding packs complete within five working days of signed engagement.",
           "Employee reflection: “Eleven of twelve months met the five-day target. In August, three packs slipped when two starters joined the same week. I built a shared checklist so any coordinator can finish a pack, and the average delay fell the following month.”",
           "Manager observation: “Jordan’s packs are clear and clients ask fewer follow-up questions. The August delay was real. Next period we will keep a simple capacity note when more than one starter joins in the same fortnight, and Jordan will own updating that note.”",
           "Agreed next step: Jordan will add the capacity note to the onboarding checklist by 28 February. The manager will review onboarding delays with Jordan each month for the first quarter."
@@ -139,7 +139,7 @@ export const resources: ResourceContent[] = [
       {
         "title": "Worked example: improving a team handover",
         "paragraphs": [
-          "Fictional example: “My objective was to make the weekly stock handover more reliable. I introduced a checklist and tested it with both shifts. Missed entries fell from six in the first month to two in the last month. The improvement was shared work: the evening team helped simplify the checklist.”",
+          "Example: “My objective was to make the weekly stock handover more reliable. I introduced a checklist and tested it with both shifts. Missed entries fell from six in the first month to two in the last month. The improvement was shared work: the evening team helped simplify the checklist.”",
           "“I still need to flag unusual stock movements sooner. Next period I would like to agree an exception threshold with my manager and review the log every Friday for six weeks.”",
           "This answer names the objective, the employee’s action, a result and an improvement. It acknowledges the team’s contribution without hiding the employee’s part."
         ]
@@ -227,7 +227,7 @@ export const resources: ResourceContent[] = [
       {
         "title": "Completed example: an operations assistant",
         "paragraphs": [
-          "Fictional example: “Jordan completes the daily reconciliation accurately and has handled the standard supplier queries independently for three weeks. The remaining development need is escalating discrepancies on the day they are found.”",
+          "Example: “Jordan completes the daily reconciliation accurately and has handled the standard supplier queries independently for three weeks. The remaining development need is escalating discrepancies on the day they are found.”",
           "Support action: the manager will demonstrate two exception cases on Tuesday. Jordan will use the escalation checklist for the next four weeks. They will review examples together each Friday.",
           "Record the evidence and the action separately from the organisation’s formal outcome. A general label such as “needs confidence” is less useful than the behaviour that needs support."
         ]
@@ -322,7 +322,7 @@ export const resources: ResourceContent[] = [
       {
         "title": "Completed example: leading a project update",
         "paragraphs": [
-          "Fictional goal: “By July, I will lead the fortnightly project update so that attendees understand risks, decisions and next steps.”",
+          "Example goal: “By July, I will lead the fortnightly project update so that attendees understand risks, decisions and next steps.”",
           "Actions: observe two experienced colleagues; prepare an agenda with my manager; lead three updates; ask attendees whether the next steps were clear. Support: thirty minutes of preparation time with the manager before each update.",
           "Evidence: each meeting ends with named owners and dates; outstanding decisions are recorded. Review: discuss feedback after the third meeting and agree what to practise next."
         ]
@@ -623,7 +623,7 @@ export const resources: ResourceContent[] = [
         "title": "Write about the work you observed",
         "paragraphs": [
           "Name the expected standard, the behaviour or result you observed and its effect. Then explain what should continue or change. Avoid turning one incident into a judgement about the employee’s character.",
-          "These fictional examples illustrate structure. Use your own evidence from across the review period and give the employee an opportunity to explain their perspective."
+          "These examples illustrate structure. Use your own evidence from across the review period and give the employee an opportunity to explain their perspective."
         ]
       },
       {
@@ -901,7 +901,7 @@ export const resources: ResourceContent[] = [
   {
     "slug": "360-feedback-examples",
     "title": "360 Feedback Examples",
-    "description": "Fictional 360 feedback comments and a sample summary report, showing how to describe behaviours, compare perspectives and agree development actions.",
+    "description": "Example 360 feedback comments and a summary report, showing how to describe behaviours, compare perspectives and agree development actions.",
     "audience": "Reviewers writing comments and facilitators summarising themes",
     "intent": "Completed comments and report interpretation, distinct from blank questions",
     "kind": "guide",
@@ -910,7 +910,7 @@ export const resources: ResourceContent[] = [
         "title": "A useful comment names behaviour and effect",
         "paragraphs": [
           "Describe what you saw, the situation and the effect on the work. Then suggest what should continue or change. Do not diagnose personality or assume a motive.",
-          "All names, comments and scores on this page are fictional illustrations. The sample is not an assessment result or a product report."
+          "Names, comments and scores on this page are examples — not an assessment result or a product report."
         ]
       },
       {
@@ -935,9 +935,9 @@ export const resources: ResourceContent[] = [
         ]
       },
       {
-        "title": "Fictional summary report",
+        "title": "Example summary report",
         "paragraphs": [
-          "Illustrative communication ratings on a five-point scale: self 3.0; manager 4.0; peers 3.5. These numbers are invented to show interpretation, not a meaningful benchmark.",
+          "Example communication ratings on a five-point scale: self 3.0; manager 4.0; peers 3.5. Use them to practise interpretation, not as a benchmark.",
           "Theme: reviewers value clear handovers, while some want earlier explanation when priorities change. The self-rating is lower than other perspectives, which is a prompt to discuss what the subject was considering.",
           "Do not conclude that the subject is underconfident from the gap alone. Check the examples, review period and differences in what each group observed. Keep “not observed” responses out of rating calculations."
         ]
@@ -952,7 +952,7 @@ export const resources: ResourceContent[] = [
       ,{
         "title": "Giving feedback to your manager",
         "paragraphs": [
-          "Describe an observable decision or behaviour and its effect on the work. A fictional example: ‘When project priorities changed in May, the update named the new deadline but not which tasks could wait. I spent time on the original task before learning it was no longer urgent. It would help if future updates listed the immediate priority and what to pause.’",
+          "Describe an observable decision or behaviour and its effect on the work. An example: ‘When project priorities changed in May, the update named the new deadline but not which tasks could wait. I spent time on the original task before learning it was no longer urgent. It would help if future updates listed the immediate priority and what to pause.’",
           "The example describes a situation and a practical request. It does not label the manager’s character or claim to know their motives. Use your own evidence, include a strength where relevant, and avoid private details that unnecessarily identify another person. Written comments may still reveal their author even when the report omits names."
         ]
       }
@@ -964,7 +964,7 @@ export const resources: ResourceContent[] = [
     ],
     "bridge": {
       "title": "See how themes appear after a live 360",
-      "copy": "Appraisal Software combines anonymous reviewer responses after closure. Use these fictional examples to prepare the conversation before you send invitations."
+      "copy": "Appraisal Software combines anonymous reviewer responses after closure. Use these examples to prepare the conversation before you send invitations."
     },
     "sources": [
       {

@@ -62,7 +62,6 @@ export default function Page() {
                 </dl>
                 <p className="mt-4 border-t border-border pt-3 text-[11px] leading-relaxed text-muted-foreground">Combined reviewer ratings. Individual identities are not shown.</p>
               </div>
-              <figcaption className="mt-4 text-center text-[11px] text-muted-foreground">Illustrative feedback summary · fictional data</figcaption>
             </figure>
           </div>
         </div>
