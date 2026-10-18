@@ -1,7 +1,7 @@
 /**
  * Template marketplace catalogue. First-party packs, versioned in code so the
  * questions a workspace installs are reviewable like any other change.
- * Prices are in pence and exclude VAT. Pack data lives in ./marketplace/packs.
+ * Prices are in pence; no VAT is charged. Pack data lives in ./marketplace/packs.
  */
 import type { CampaignQuestion } from "@/lib/types/database";
 import { carePacks } from "./marketplace/packs/care";

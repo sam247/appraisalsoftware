@@ -52,12 +52,12 @@ Six conditions must be met before activation:
 | 2 | Reg 16 confirmation on a durable medium, repeating the consent | Drafted (§5) | Send within minutes of payment. Attach the terms as PDF. |
 | 3 | Sch 2 pre-contract information | **Not met**: listed in draft §7, not yet built | Add to the product page and checkout before launch, including file compatibility. |
 | 4 | Order button names the obligation to pay | Met by Stripe ("Pay £24.99") | Keep the default wording. |
-| 5 | Total price shown, with no VAT confusion | Met for downloads ("No VAT charged") | Interactive packs and subscriptions still say "+ VAT" in ~20 places. Align (separate PR). |
-| 6 | Trading disclosures (company number, registered office) on the site | **Not met site-wide** | Add to the footer, legal pages and order emails. This already applies to the existing site. |
+| 5 | Total price shown, with no VAT confusion | Met site-wide ("No VAT charged"; Stripe automatic tax off in code) | — |
+| 6 | Trading disclosures (company number, registered office) on the site | Partly met: name, "registered in England and Wales" and the registered office are in the footer, legal pages and admin emails | Add the company number to `src/lib/company.ts`. |
 | 7 | CRA statutory rights preserved | Met in the draft (§3.4, §2.5) | Solicitor to confirm wording. |
 | 8 | Statutory refund timing (reg 34) | Fixed in the draft (§3.5) | — |
 | 9 | Updates promise clear in scope and duration (CRA s.40, Sch 20) | Drafted with brackets (§2.2) | Choose the duration and wind-down period. |
-| 10 | Privacy notice covers download purchases | **Not met** | Update before launch: purchase email, Stripe, download history, retention, recovery emails. |
+| 10 | Privacy notice covers download purchases | Met (rebuilt 18 October 2026, downloads described as not yet available) | Confirm the retention periods match practice; refresh when downloads launch. |
 | 11 | Marketing consent kept separate from order emails | Not designed | Add an unticked marketing opt-in at checkout, or none. |
 | 12 | Business liability cap reasonable (UCTA) | Drafted (§3.7) | Solicitor review. |
 | 13 | Regulatory disclaimer and no compliance claims | Met (enforced by tests; on files, pages and emails) | Keep the banned-claims test in place. |
@@ -70,8 +70,8 @@ Six conditions must be met before activation:
 |---|---|---|
 | Consumers keep a 14-day cancellation right (and pay nothing) if the consent or confirmation is defective (reg 37(4)) | High | One clear checkbox, timestamped; confirmation email with the consent line; files released only after both. Covered in an end-to-end test when built. |
 | Implying regulatory compliance in a sector regulated by CQC or Ofsted (misleading practice, reputational) | High | "Designed to support…" wording, the disclaimer everywhere, and a banned-claims test. Review the wording each time a pack is updated. |
-| Missing trading disclosures across the existing site | Medium | Add the company number and registered office to the footer and emails now, independent of downloads. |
-| "+ VAT" shown while no VAT is charged (inaccurate price information) | Medium | Separate PR to align the copy and structured data; keep `STRIPE_AUTOMATIC_TAX` off. |
+| Missing trading disclosures across the existing site | Low | Registered office added; add the company number. |
+| "+ VAT" shown while no VAT is charged (inaccurate price information) | Resolved | Copy, structured data and Stripe settings aligned. |
 | Redistribution of files (each copy identical, no buyer marking) | Medium | Licence §1.4; order references kept off files by design. Enforce by takedown requests if copies appear online. Accepted trade-off for privacy. |
 | Access link forwarded or leaked | Low–Medium | Hashed tokens, expiry, signed URLs (5 min), daily download limit, revocation on refund. |
 | Content drifts from framework updates (CQC's new framework, EYFS revisions) | Medium | `reviewed` dates on every file; the sources register; updates included; review each pack when frameworks change. |

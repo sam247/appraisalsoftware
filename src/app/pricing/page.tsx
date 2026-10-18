@@ -22,7 +22,7 @@ const availablePlans = plans;
 export const metadata = pageMetadata({
   title: "Pricing | Appraisal Software",
   description:
-    "Free appraisal software for up to 10 employees. Compare Free forever, Pro at £39.99 and Organisation at £89.99 per month + VAT.",
+    "Free appraisal software for up to 10 employees. Compare Free forever, Pro at £39.99 and Organisation at £89.99 per month. No VAT charged.",
   path: "/pricing",
 });
 export default function PricingPage() {
@@ -72,7 +72,7 @@ export default function PricingPage() {
                 <p className="mt-2 text-sm text-muted-foreground">
                   {plan.name === "Free"
                     ? "Forever. No card required."
-                    : "Per workspace per month + VAT."}
+                    : "Per workspace per month. No VAT charged."}
                 </p>
                 <p className="mt-6 min-h-12 text-sm leading-relaxed text-muted-foreground">
                   {plan.audience}
@@ -245,7 +245,7 @@ export default function PricingPage() {
           },
           {
             title: "Confirm the details",
-            copy: "We discuss your capacity, monthly price, VAT and the activation arrangements.",
+            copy: "We discuss your capacity, monthly price and the activation arrangements.",
           },
           {
             title: "Activate your workspace",
@@ -262,7 +262,7 @@ export default function PricingPage() {
           {
             question: "Are prices per employee?",
             answer:
-              "No. Paid prices are per workspace per month, excluding VAT, with the employee capacity shown above.",
+              "No. Paid prices are per workspace per month, with the employee capacity shown above. No VAT is charged.",
           },
           {
             question: "Can I buy a paid plan online?",

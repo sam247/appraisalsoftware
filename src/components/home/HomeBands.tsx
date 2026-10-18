@@ -148,7 +148,7 @@ export function PricingPreview() {
                 </span>
               </p>
               <p className="mt-2 text-sm text-muted-foreground">
-                per workspace + VAT
+                per workspace · no VAT
               </p>
               <p className="mt-5 text-sm leading-relaxed text-muted-foreground">
                 {plan.audience}

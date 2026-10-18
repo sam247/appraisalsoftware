@@ -98,7 +98,7 @@ export default async function PublicPackPage({ params }: { params: Promise<{ slu
                   <p className="text-xs font-semibold uppercase tracking-[0.14em] text-primary">Use in Appraisal Software</p>
                   <p className="mt-2 font-semibold text-foreground">Interactive appraisal template</p>
                   <p className="mt-3 text-sm text-muted-foreground">
-                    <span className="font-display text-3xl font-semibold tracking-tight text-foreground">{formatPackPrice(pack.price)}</span> one-off + VAT
+                    <span className="font-display text-3xl font-semibold tracking-tight text-foreground">{formatPackPrice(pack.price)}</span> one-off · No VAT charged
                     {pack.includedWithPro ? <span className="mt-1 block font-medium text-primary">Included with Pro</span> : null}
                   </p>
                   <Button size="lg" className="mt-5 w-full px-7 sm:w-auto sm:self-start" asChild>
@@ -263,7 +263,7 @@ export default async function PublicPackPage({ params }: { params: Promise<{ slu
                 <div className="p-5">
                   <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{p.category}</p>
                   <p className="mt-1 font-semibold group-hover:underline">{p.name}</p>
-                  <p className="mt-1 text-sm text-muted-foreground">{formatPackPrice(p.price)} one-off + VAT</p>
+                  <p className="mt-1 text-sm text-muted-foreground">{formatPackPrice(p.price)} one-off</p>
                 </div>
               </Link>
             ))}

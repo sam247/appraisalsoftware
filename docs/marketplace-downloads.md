@@ -164,9 +164,10 @@ Signature verification and idempotency reuse the existing pattern; the journey t
 - In Stripe: `automatic_tax` off, no tax rates, and no VAT number on receipts. Checkout still restricts billing to GB.
 - Keep an eye on taxable turnover against the VAT registration threshold (£90,000 over 12 months). If the company registers, the price wording, the Stripe settings and `DOWNLOAD_SALES.vat` must all change, and existing download prices need a decision: keep £24.99 inclusive of VAT, or reprice.
 
-**Interactive packs and subscriptions (open item).** About 20 places across the site show prices "+ VAT" or "excluding VAT". These include the pricing page, upgrade page, marketplace and in-app limits, plus the Product structured data (`valueAddedTaxIncluded: false`). Interactive checkout sends prices as VAT-exclusive, with `STRIPE_AUTOMATIC_TAX` switchable.
-- If no VAT is charged anywhere, that wording overstates the price. It should become "No VAT charged", and `STRIPE_AUTOMATIC_TAX` must stay off.
-- This hasn't been changed here: the brief is to preserve the existing interactive marketplace and checkout. Do it as a separate PR once confirmed.
+**Interactive packs and subscriptions (done, 18 October 2026).**
+- Every "+ VAT" and "excluding VAT" on the site now reads "No VAT charged", or the price stands alone. That covers the pricing page, upgrade, settings, marketplace, in-app limits, the 360 page and the comparison blog post (our own pricing only; the CharlieHR line describes that vendor's pricing).
+- The Product structured data no longer carries a VAT-exclusive `priceSpecification`: the offer price is the total.
+- Both Stripe checkouts hard-code `automatic_tax: { enabled: false }`, so tax can't be added even if `STRIPE_AUTOMATIC_TAX` is still set in the environment. That variable is no longer read.
 
 **Activation checklist (all needed before `isDownloadPurchasable` can be true):**
 - `price` set;
@@ -192,5 +193,5 @@ Signature verification and idempotency reuse the existing pattern; the journey t
 ## Open founder decisions
 
 1. Approve or edit the legal drafts in `docs/legal/drafts/document-licence-terms.md`, then get a solicitor's review.
-2. Confirm whether "+ VAT" on interactive packs and subscriptions should become "No VAT charged" (a separate PR).
+2. Add the company number to `src/lib/company.ts`. It is shown wherever it is set.
 3. Approve a sale price, and separately approve activation, once delivery is built.

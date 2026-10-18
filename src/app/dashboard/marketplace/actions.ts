@@ -58,7 +58,8 @@ export async function buyPack(formData: FormData): Promise<void> {
       billing_address_collection: "required",
       tax_id_collection: { enabled: true },
       customer_update: { address: "auto", name: "auto" },
-      automatic_tax: { enabled: process.env.STRIPE_AUTOMATIC_TAX === "true" },
+      // No VAT is charged (Umbrella Rank Ltd), so Stripe must never add tax.
+      automatic_tax: { enabled: false },
       success_url: `${origin}${MARKET}?purchased=${pack.slug}`,
       cancel_url: `${origin}${MARKET}/${pack.slug}`,
     });

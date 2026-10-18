@@ -13,7 +13,7 @@ import { pageMetadata } from "@/lib/metadata";
 import { ROUTES } from "@/lib/routes";
 import { breadcrumbSchema, softwareApplicationSchema } from "@/lib/schema";
 
-const description = "Run anonymous 360 appraisals for UK teams on Pro at £39.99/month + VAT. Invite managers, peers and direct reports, collect anonymous feedback and turn combined results into a useful development conversation.";
+const description = "Run anonymous 360 appraisals for UK teams on Pro at £39.99/month. Invite managers, peers and direct reports, collect anonymous feedback and turn combined results into a useful development conversation.";
 export const metadata = pageMetadata({
   title: "360 Appraisals & Feedback Software for UK Teams | Appraisal Software",
   description,

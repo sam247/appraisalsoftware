@@ -29,7 +29,7 @@ export default async function NewCampaignPage({
   if (is360 && entitlement.plan === "free") return (
     <section className="max-w-xl space-y-4">
       <h1 className="text-2xl font-semibold">Anonymous 360 appraisals</h1>
-      <p>Collect anonymous feedback from managers, peers and direct reports. This workflow is available on Pro at £39.99/month + VAT.</p>
+      <p>Collect anonymous feedback from managers, peers and direct reports. This workflow is available on Pro at £39.99/month.</p>
       <p>Free includes employee appraisals for 10 active employees, 1 active campaign and 1 admin. Your results stay available.</p>
       <p><a className="text-primary underline" href="/dashboard/upgrade">Explore upgrading to Pro</a></p>
       <p><a className="text-primary underline" href="/360-appraisals">See how 360 works</a> · <a className="text-primary underline" href="/templates">Browse templates</a></p>

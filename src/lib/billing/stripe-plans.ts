@@ -10,7 +10,7 @@ export const PRICE_LOOKUP_KEYS: Record<PaidPlan, Record<BillingInterval, string>
   organisation: { month: "as_org_monthly", year: "as_org_annual" },
 };
 
-/** Annual = ten months: two months free. Amounts in pence, excluding VAT. */
+/** Annual = ten months: two months free. Amounts in pence; no VAT is charged. */
 export const PRICE_AMOUNTS: Record<PaidPlan, Record<BillingInterval, number>> = {
   pro: { month: 3999, year: 39990 },
   organisation: { month: 8999, year: 89990 },

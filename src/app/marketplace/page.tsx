@@ -71,7 +71,7 @@ function PriceLine({ pack, inverse = false }: { pack: TemplatePack; inverse?: bo
       <span className={cn("font-display text-2xl font-semibold tracking-tight", inverse ? "text-white" : "text-foreground")}>
         {formatPackPrice(pack.price)}
       </span>{" "}
-      one-off + VAT
+      one-off · no VAT
       {pack.includedWithPro ? <span className="ml-2 font-medium">· Included with Pro</span> : null}
     </p>
   );

@@ -167,8 +167,6 @@ export function packProductSchema(
       url,
       price,
       priceCurrency: "GBP",
-      // The page shows prices "+ VAT"; say so rather than imply VAT is included.
-      priceSpecification: { "@type": "UnitPriceSpecification", price, priceCurrency: "GBP", valueAddedTaxIncluded: false },
       availability: "https://schema.org/InStock",
       seller: { "@type": "Organization", name: SITE_NAME, url: SITE_URL },
     },

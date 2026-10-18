@@ -4,7 +4,7 @@
 > Prepared 18 October 2026 for founder and legal review before downloads launch. Nothing here is live, and no checkout uses it.
 > Words in [square brackets] are choices to confirm. Statutory references were checked against legislation.gov.uk on 18 October 2026 (see "Sources"). This is drafting support, not legal advice: a solicitor should review it before launch.
 
-Seller: **Umbrella Rank Ltd**, trading as Appraisal Software. [Add company number and registered office.] Umbrella Rank Ltd does not charge VAT on these purchases (founder decision, 18 October 2026).
+Seller: **Umbrella Rank Ltd**, trading as Appraisal Software, registered in England and Wales [company number], registered office 128 City Road, London EC1V 2NX. Umbrella Rank Ltd does not charge VAT on these purchases (founder decision, 18 October 2026).
 
 ---
 
@@ -107,7 +107,7 @@ Shown under the button:
 > **Order reference:** AS-D-XXXX-XXXX-XXXX
 > **Template:** [Care Worker Appraisal & Supervision (CQC)], version [v1.1], Word (.docx) and PDF
 > **Price paid:** £[24.99] (no VAT charged)
-> **Seller:** Umbrella Rank Ltd, [registered office], [company number]
+> **Seller:** Umbrella Rank Ltd, 128 City Road, London EC1V 2NX, [company number]
 >
 > **Download your files:** [secure link, valid for [12 months]; request a new link any time at appraisalsoftware.co.uk/downloads]
 >

@@ -106,8 +106,9 @@ describe("public pack pages", () => {
         price: (pack.price / 100).toFixed(2),
         priceCurrency: "GBP",
         availability: "https://schema.org/InStock",
-        priceSpecification: { "@type": "UnitPriceSpecification", valueAddedTaxIncluded: false },
       });
+      // No VAT is charged, so the price is the total: no VAT-exclusive specification.
+      expect(product.offers).not.toHaveProperty("priceSpecification");
       const json = JSON.stringify(blocks);
       expect(json).not.toMatch(/AggregateOffer|AggregateRating|"Review"|download|\.docx|\.pdf|24\.99/i);
       expect(validateSchema(product)).toEqual([]);
