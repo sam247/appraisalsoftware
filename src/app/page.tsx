@@ -9,6 +9,7 @@ import { HumanStory } from "@/components/home/HumanStory";
 import { Reviews } from "@/components/home/Reviews";
 import { GdprCommitment, MidPageCta, PricingPreview, ProcessOverview, ProductBenefits } from "@/components/home/HomeBands";
 import { Footer } from "@/components/home/Footer";
+import { MarketplaceTeaser } from "@/components/home/MarketplaceTeaser";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { pageMetadata } from "@/lib/metadata";
 import { ROUTES } from "@/lib/routes";
@@ -39,6 +40,7 @@ export default function HomePage() {
         <HumanStory />
         <Reviews />
         <PricingPreview />
+        <MarketplaceTeaser />
         <ProductBenefits />
         <GdprCommitment />
         <HomeFaqSection />
