@@ -90,12 +90,12 @@ function CircleArrow({ inverse = false }: { inverse?: boolean }) {
 
 function FeaturedPack({ pack }: { pack: TemplatePack }) {
   return (
-    <article id={pack.slug} className="scroll-mt-24 overflow-hidden rounded-[1.75rem] bg-primary text-white lg:col-span-2 lg:grid lg:grid-cols-[0.95fr_1.1fr]">
-      <div className="flex flex-col p-8 sm:p-10">
+    <article id={pack.slug} className="scroll-mt-24 overflow-hidden rounded-[1.75rem] bg-primary text-white lg:grid lg:grid-cols-[1fr_1fr]">
+      <div className="flex flex-col p-8 sm:p-12">
         <p className="inline-flex w-fit items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em]">
           <BadgeCheck className="size-3.5" aria-hidden /> Featured pack
         </p>
-        <h2 className="mt-6 font-display text-[2rem] font-semibold leading-[1.1] tracking-[-0.03em] sm:text-[2.25rem]">{pack.name}</h2>
+        <h2 className="mt-6 font-display text-[2rem] font-semibold leading-[1.1] tracking-[-0.03em] sm:text-[2.75rem]">{pack.name}</h2>
         <p className="mt-4 max-w-md text-[0.9375rem] leading-relaxed text-white/85">{pack.summary}</p>
         <div className="mt-5">
           <Meta pack={pack} inverse />
@@ -108,7 +108,7 @@ function FeaturedPack({ pack }: { pack: TemplatePack }) {
           </a>
         </div>
       </div>
-      <div className="relative flex items-center justify-center bg-[color-mix(in_oklab,var(--primary)_78%,black)] p-5 sm:p-7">
+      <div className="relative flex items-center justify-center bg-[color-mix(in_oklab,var(--primary)_78%,black)] p-5 sm:p-12">
         <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_70%_20%,rgb(255_255_255/0.14),transparent_55%)]" />
         <div className="relative w-full max-w-md overflow-hidden rounded-2xl bg-card text-foreground shadow-[0_30px_60px_-30px_rgb(0_0_0/0.6)] ring-1 ring-white/10 [&_.min-h-\[38rem\]]:min-h-0 [&_.px-5]:px-6 sm:[&_.sm\:px-8]:px-6">
           <RespondForm
@@ -153,10 +153,10 @@ function PackCard({ pack, large = false }: { pack: TemplatePack; large?: boolean
         <Meta pack={pack} />
       </div>
       <Benefits items={pack.benefits} />
-      <div className="mt-auto flex items-end justify-between gap-4 pt-8">
+      <div className="mt-auto flex flex-wrap items-end justify-between gap-4 pt-8">
         <PriceLine pack={pack} />
         <a href={getPack(pack.slug)} aria-label={`Get ${pack.name}`} className="group inline-flex items-center gap-3 text-sm font-semibold text-foreground">
-          <span className="hidden sm:inline">Get pack</span> <CircleArrow />
+          <span className="hidden whitespace-nowrap sm:inline">Get pack</span> <CircleArrow />
         </a>
       </div>
     </article>
@@ -170,7 +170,7 @@ const steps = [
 ];
 
 export default function MarketplacePage() {
-  const [featured, second, ...rest] = packs;
+  const [featured, ...rest] = packs;
   return (
     <SiteChrome commercial>
       <section className="border-b border-border bg-background">
@@ -196,7 +196,7 @@ export default function MarketplacePage() {
           <ul className="mt-10 flex flex-wrap gap-2" aria-label="Categories">
             {categories.map((c) => (
               <li key={c.name} className="rounded-full border border-border bg-card px-3.5 py-1.5 text-sm text-foreground">
-                {c.name} <span className="text-muted-foreground">· {c.count}</span>
+                {c.name}
               </li>
             ))}
           </ul>
@@ -205,13 +205,10 @@ export default function MarketplacePage() {
 
       <section id="packs" className="scroll-mt-20 bg-surface/60 py-16 lg:py-20">
         <div className="mx-auto max-w-6xl space-y-5 px-5 lg:px-8">
-          <div className="grid gap-5 lg:grid-cols-3">
-            <FeaturedPack pack={featured} />
-            <PackCard pack={second} large />
-          </div>
-          <div className="grid gap-5 md:grid-cols-3">
+          <FeaturedPack pack={featured} />
+          <div className="grid gap-5 md:grid-cols-2">
             {rest.map((pack) => (
-              <PackCard key={pack.slug} pack={pack} />
+              <PackCard key={pack.slug} pack={pack} large />
             ))}
           </div>
         </div>
