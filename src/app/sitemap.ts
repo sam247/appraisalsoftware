@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 
 import { blogPath, getPublishedPosts } from "@/lib/blog/posts";
+import { isIndexablePack, packPublicPath, packs } from "@/lib/marketplace";
 import { INDEXABLE_PATHS } from "@/lib/routes";
 import { absoluteUrl } from "@/lib/site";
 
@@ -20,5 +21,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.7,
   }));
 
-  return [...marketing, ...articles];
+  const packPages = packs.filter(isIndexablePack).map((pack) => ({
+    url: absoluteUrl(packPublicPath(pack.slug)),
+    lastModified: pack.reviewed,
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
+  }));
+
+  return [...marketing, ...articles, ...packPages];
 }

@@ -7,7 +7,7 @@ import { billingConfigured, stripe } from "@/lib/billing/stripe";
 import { friendlyError } from "@/lib/errors";
 import { packAccess, packBySlug, packTemplateQuestions, type TemplatePack } from "@/lib/marketplace";
 import { createClient } from "@/lib/supabase/server";
-import { workspacePackState } from "./state";
+import { installedVersion, workspacePackState } from "./state";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
@@ -70,27 +70,38 @@ export async function buyPack(formData: FormData): Promise<void> {
   redirect(url);
 }
 
-/** Copies the pack into the workspace's templates once; returns the template id. */
+/** Template name for a pack version; v1 keeps the plain pack name. */
+function versionedName(pack: TemplatePack): string {
+  if (pack.version === 1) return pack.name;
+  const released = pack.changelog.find((c) => c.version === pack.version)?.date;
+  const month = released ? new Date(`${released}T00:00:00Z`).toLocaleDateString("en-GB", { month: "short", year: "numeric", timeZone: "UTC" }) : "";
+  return `${pack.name} (v${pack.version}${month ? `, ${month}` : ""})`;
+}
+
+/**
+ * Copies the current version of the pack into the workspace's templates once;
+ * returns the template id. Older versions stay as they are, so an update adds
+ * a new template and past or running reviews never change.
+ */
 async function installPack(pack: TemplatePack, org: { id: string }, userId: string): Promise<string> {
   const supabase = await createClient();
   const { data: existing } = await supabase
     .from("templates")
-    .select("id")
+    .select("id, settings")
     .eq("organization_id", org.id)
     .is("archived_at", null)
-    .eq("settings->>marketplace_pack", pack.slug)
-    .limit(1)
-    .maybeSingle();
-  if (existing?.id) return existing.id as string;
+    .eq("settings->>marketplace_pack", pack.slug);
+  const current = (existing ?? []).find((t) => installedVersion(t.settings as Record<string, unknown> | null) === pack.version);
+  if (current?.id) return current.id as string;
 
   const { data: template, error } = await supabase
     .from("templates")
     .insert({
       organization_id: org.id,
-      name: pack.name,
+      name: versionedName(pack),
       description: pack.summary,
       campaign_type_default: pack.campaignType,
-      settings: { marketplace_pack: pack.slug },
+      settings: { marketplace_pack: pack.slug, marketplace_pack_version: pack.version },
       created_by: userId,
     })
     .select("id")

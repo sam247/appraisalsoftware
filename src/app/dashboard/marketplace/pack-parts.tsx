@@ -2,7 +2,7 @@ import FormSubmit from "@/app/dashboard/form-submit";
 import { Button } from "@/components/ui/button";
 import { formatPackPrice, type PackAccess, type TemplatePack } from "@/lib/marketplace";
 import { cn } from "@/lib/utils";
-import { Check, Lock } from "lucide-react";
+import { Check, Lock, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import { buyPack, usePack } from "./actions";
 
@@ -13,7 +13,15 @@ const STATUS: Record<PackAccess, string> = {
   needs_pro: "Needs Pro",
 };
 
-export function PackStatus({ access, className }: { access: PackAccess; className?: string }) {
+export function PackStatus({ access, update = false, className }: { access: PackAccess; update?: boolean; className?: string }) {
+  if (update) {
+    return (
+      <span className={cn("inline-flex items-center gap-1 rounded-full bg-warm px-2.5 py-1 text-xs font-medium text-warm-foreground shadow-sm", className)}>
+        <RefreshCw className="size-3" aria-hidden />
+        Update available
+      </span>
+    );
+  }
   const label = STATUS[access];
   if (!label) return null;
   return (
@@ -52,14 +60,27 @@ export function PackPrice({ pack, access, large = false }: { pack: TemplatePack;
 }
 
 /** The single next step for a pack: use it, buy it, upgrade, or ask. */
-export function PackAction({ pack, access, canBuy, block = false }: { pack: TemplatePack; access: PackAccess; canBuy: boolean; block?: boolean }) {
+export function PackAction({
+  pack,
+  access,
+  canBuy,
+  update = false,
+  block = false,
+}: {
+  pack: TemplatePack;
+  access: PackAccess;
+  canBuy: boolean;
+  /** An older version is installed: using the pack adds the latest as a new template. */
+  update?: boolean;
+  block?: boolean;
+}) {
   const width = block ? "w-full" : "";
   if (access === "owned" || access === "included") {
     return (
       <form action={usePack} className={width}>
         <input type="hidden" name="pack" value={pack.slug} />
         <FormSubmit pendingLabel="Setting up…" className={width}>
-          Use this template
+          {update ? `Install update (v${pack.version})` : "Use this template"}
         </FormSubmit>
       </form>
     );

@@ -10,7 +10,7 @@ declare global {
 }
 export function publicAnalyticsPath(path: string): string | null {
   if (path.includes("?") || path.includes("#")) return null;
-  return INDEXABLE_PATHS.includes(path as typeof INDEXABLE_PATHS[number]) || path === "/signup" || /^\/blog\/[a-z0-9]+(?:-[a-z0-9]+)*$/.test(path) ? path : null;
+  return INDEXABLE_PATHS.includes(path as typeof INDEXABLE_PATHS[number]) || path === "/signup" || /^\/(?:blog|marketplace)\/[a-z0-9]+(?:-[a-z0-9]+)*$/.test(path) ? path : null;
 }
 export function safeReferrer(value: string): string {
   try { return new URL(value).origin; } catch { return ""; }

@@ -1,0 +1,121 @@
+import { AGREE } from "../scales";
+import { ENGLAND, type TemplatePack } from "../types";
+
+/** Children's homes and early years packs. Sources: docs/marketplace-sources.md. */
+export const childrenPacks: TemplatePack[] = [
+  {
+    slug: "childrens-home-appraisal-pack",
+    name: "Children's Home Annual Appraisal & Supervision",
+    category: "Children's homes",
+    group: "Children & education",
+    summary:
+      "Annual appraisal and supervision for residential childcare workers, centred on relationships, safeguarding and reflective practice.",
+    benefits: [
+      "Performance and suitability for the role reviewed together",
+      "Safeguarding, recording and multi-agency work covered",
+      "Qualification and CPD progress tracked each year",
+    ],
+    basis:
+      "Designed to support the supervision, CPD and annual appraisal arrangements relevant to regulation 33 of the Children's Homes (England) Regulations 2015.",
+    seoTitle: "Children's Home Staff Appraisal and Supervision Template",
+    nations: ENGLAND,
+    reviewed: "2026-10-18",
+    version: 1,
+    changelog: [{ version: 1, date: "2026-10-18", summary: "First release." }],
+    minutes: 15,
+    price: 6900,
+    includedWithPro: false,
+    campaignType: "annual_appraisal",
+    accent: "rose",
+    questions: [
+      { type: "rating", area: "Relationships", prompt: "How well are trusting, consistent relationships built with the children in the home?", scale: AGREE },
+      { type: "rating", area: "Child's voice", prompt: "How well are children's wishes and feelings sought and acted on?", scale: AGREE },
+      {
+        type: "rating",
+        area: "Safeguarding",
+        prompt: "How confidently are safeguarding concerns, including exploitation and going missing, recognised and escalated?",
+        scale: AGREE,
+      },
+      {
+        type: "rating",
+        area: "Positive behaviour support",
+        prompt: "How well are de-escalation and positive behaviour support used, with restraint only as a last resort?",
+        scale: AGREE,
+      },
+      { type: "rating", area: "Outcomes", prompt: "How actively are children supported with their education, health and wellbeing?", scale: AGREE },
+      { type: "rating", area: "Recording", prompt: "How accurate, timely and child-centred are daily logs, incident reports and records?", scale: AGREE },
+      { type: "rating", area: "Working with others", prompt: "How well does work with social workers, schools, families and other professionals go?", scale: AGREE },
+      { type: "rating", area: "Teamwork", prompt: "How consistently are handovers, the home's policies and the agreed team approach followed?", scale: AGREE },
+      { type: "rating", area: "Reflective practice", prompt: "How openly are supervision and feedback used to reflect on and improve practice?", scale: AGREE },
+      {
+        type: "text",
+        prompt: "Describe a piece of work with a child you are proud of, and what made it work.",
+        help: "Use initials or a role, not a child's name.",
+      },
+      { type: "text", prompt: "What has been most challenging since the last review, and what helped?" },
+      {
+        type: "text",
+        prompt: "Qualification progress, including the Level 3 Diploma for Residential Childcare where it applies.",
+      },
+      { type: "text", prompt: "Training and professional development planned for the next year." },
+      {
+        type: "text",
+        prompt: "Manager: overall view of performance and suitability for the role, with evidence.",
+        help: "Base this on supervision records, observed practice and feedback. Follow your own policy for any concerns.",
+      },
+      { type: "text", prompt: "Agreed actions, support and the date of the next supervision." },
+    ],
+  },
+  {
+    slug: "eyfs-supervision-pack",
+    name: "EYFS Supervision & Practitioner Appraisal",
+    category: "Early years",
+    group: "Children & education",
+    summary:
+      "Supervision and appraisal for nursery and pre-school practitioners: key person practice, safeguarding and coaching.",
+    benefits: [
+      "Built around key person practice and children's next steps",
+      "Safeguarding and safety practices checked every time",
+      "Coaching and training needs agreed and recorded",
+    ],
+    basis:
+      "Designed to support staff supervision and development arrangements relevant to the EYFS statutory framework for group and school-based providers.",
+    seoTitle: "EYFS Staff Supervision and Appraisal Template for Nurseries",
+    nations: ENGLAND,
+    reviewed: "2026-10-18",
+    version: 1,
+    changelog: [{ version: 1, date: "2026-10-18", summary: "First release." }],
+    minutes: 12,
+    price: 4900,
+    includedWithPro: false,
+    campaignType: "annual_appraisal",
+    accent: "amber",
+    questions: [
+      { type: "rating", area: "Key person", prompt: "How well are secure, responsive relationships built with key children?", scale: AGREE },
+      { type: "rating", area: "Observation and planning", prompt: "How effectively are observations used to plan next steps for each child?", scale: AGREE },
+      { type: "rating", area: "Observation and planning", prompt: "How well is learning supported across all the areas of learning?", scale: AGREE },
+      { type: "rating", area: "Communication and language", prompt: "How well are everyday interactions used to develop children's communication and language?", scale: AGREE },
+      { type: "rating", area: "Safeguarding", prompt: "How confidently are safeguarding and child protection concerns recognised and reported?", scale: AGREE },
+      {
+        type: "rating",
+        area: "Health and safety",
+        prompt: "How consistently are safer sleeping, safer eating, hygiene and supervision practices followed?",
+        scale: AGREE,
+      },
+      { type: "rating", area: "Working with parents", prompt: "How well are parents kept informed and involved in their child's learning?", scale: AGREE },
+      { type: "rating", area: "Inclusion and SEND", prompt: "How well are additional needs noticed early and support agreed with the SENCo?", scale: AGREE },
+      { type: "rating", area: "Teamwork", prompt: "How reliably are ratios, routines and room plans supported?", scale: AGREE },
+      { type: "text", prompt: "What has gone well with your key children since the last supervision?", help: "Use first names or initials only." },
+      {
+        type: "text",
+        prompt: "Are there any children or families you are concerned about?",
+        help: "Supervision is a confidential space for this. Report urgent concerns through your safeguarding procedure straight away.",
+        required: false,
+      },
+      { type: "text", prompt: "Training completed, including paediatric first aid and safeguarding refreshers, and how it has been used." },
+      { type: "text", prompt: "What coaching or support would help your practice?" },
+      { type: "text", prompt: "Development goals for the next period." },
+      { type: "text", prompt: "Agreed actions and the date of the next supervision." },
+    ],
+  },
+];

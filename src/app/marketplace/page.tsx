@@ -7,8 +7,9 @@ import { Button } from "@/components/ui/button";
 import RespondForm from "@/app/r/[token]/respond-form";
 import { marketingType } from "@/lib/marketing-typography";
 import { pageMetadata } from "@/lib/metadata";
-import { categories, formatPackPrice, packs, previewQuestions, type TemplatePack } from "@/lib/marketplace";
+import { formatPackPrice, groups, packPublicPath, packs, previewQuestions, type TemplatePack } from "@/lib/marketplace";
 import { cn } from "@/lib/utils";
+import { PackBasis } from "@/components/marketplace/PackBasis";
 import { PACK_ACCENT } from "@/components/marketplace/pack-accent";
 import { APP_ORIGIN } from "@/lib/links";
 
@@ -21,6 +22,8 @@ export const metadata: Metadata = pageMetadata({
 });
 
 const ACCENT = PACK_ACCENT;
+
+const groupId = (name: string) => name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
 
 function Meta({ pack, inverse = false }: { pack: TemplatePack; inverse?: boolean }) {
   return (
@@ -129,7 +132,7 @@ function PackCard({ pack, large = false }: { pack: TemplatePack; large?: boolean
     <article
       id={pack.slug}
       className={cn(
-        "group flex scroll-mt-24 flex-col rounded-[1.75rem] border border-border bg-gradient-to-b to-card to-45% p-8 transition-shadow duration-200 hover:shadow-[0_24px_48px_-32px_rgb(28_24_18/0.4)] motion-reduce:transition-none",
+        "group flex h-full scroll-mt-24 flex-col rounded-[1.75rem] border border-border bg-gradient-to-b to-card to-45% p-8 transition-shadow duration-200 hover:shadow-[0_24px_48px_-32px_rgb(28_24_18/0.4)] motion-reduce:transition-none",
         accent.soft,
         large ? "sm:p-10" : "",
       )}
@@ -147,11 +150,16 @@ function PackCard({ pack, large = false }: { pack: TemplatePack; large?: boolean
         <Meta pack={pack} />
       </div>
       <Benefits items={pack.benefits} />
+      {pack.basis ? (
+        <div className="mt-6">
+          <PackBasis pack={pack} compact />
+        </div>
+      ) : null}
       <div className="mt-auto flex flex-wrap items-end justify-between gap-4 pt-8">
         <PriceLine pack={pack} />
-        <a href={getPack(pack.slug)} aria-label={`Get ${pack.name}`} className="group inline-flex items-center gap-3 text-sm font-semibold text-foreground">
-          <span className="hidden whitespace-nowrap sm:inline">Get pack</span> <CircleArrow />
-        </a>
+        <Link href={packPublicPath(pack.slug)} aria-label={`View ${pack.name}`} className="group inline-flex items-center gap-3 text-sm font-semibold text-foreground">
+          <span className="hidden whitespace-nowrap sm:inline">View pack</span> <CircleArrow />
+        </Link>
       </div>
     </article>
   );
@@ -174,8 +182,8 @@ export default function MarketplacePage() {
             Appraisal templates, <span className="marketing-editorial text-primary">ready to run.</span>
           </h1>
           <p className={cn("mt-6 max-w-2xl", marketingType.lead)}>
-            Expert-built review packs for every team and stage — from probation to leadership 360. Preview every question,
-            buy once, and launch it as a campaign in a click.
+            Review packs for every stage, and for UK sectors with their own standards, from adult social care and early years to
+            financial services and social housing. Preview every question, buy once, and launch it as a campaign in a click.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Button size="lg" className="px-7" asChild>
@@ -187,10 +195,15 @@ export default function MarketplacePage() {
               <Link href="/templates">Free templates</Link>
             </Button>
           </div>
-          <ul className="mt-10 flex flex-wrap gap-2" aria-label="Categories">
-            {categories.map((c) => (
-              <li key={c.name} className="rounded-full border border-border bg-card px-3.5 py-1.5 text-sm text-foreground">
-                {c.name}
+          <ul className="mt-10 flex flex-wrap gap-2" aria-label="Pack groups">
+            {groups.map((g) => (
+              <li key={g.name}>
+                <a
+                  href={`#${groupId(g.name)}`}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3.5 py-1.5 text-sm text-foreground hover:border-foreground/40"
+                >
+                  {g.name} <span className="text-xs tabular-nums text-muted-foreground">{g.count}</span>
+                </a>
               </li>
             ))}
           </ul>
@@ -200,11 +213,22 @@ export default function MarketplacePage() {
       <section id="packs" className="scroll-mt-20 bg-surface/60 py-16 lg:py-20">
         <div className="mx-auto max-w-6xl space-y-5 px-5 lg:px-8">
           <FeaturedPack pack={featured} />
-          <div className="grid gap-5 md:grid-cols-2">
-            {rest.map((pack) => (
-              <PackCard key={pack.slug} pack={pack} large />
-            ))}
-          </div>
+          {[
+            { title: "General review packs", items: rest.filter((pack) => !pack.basis) },
+            { title: "UK sector packs", items: rest.filter((pack) => pack.basis) },
+          ].map((section) => (
+            <div key={section.title} className="pt-8">
+              <h2 className={marketingType.h3}>{section.title}</h2>
+              <div className="mt-5 grid gap-5 md:grid-cols-2">
+                {section.items.map((pack) => (
+                  // The first pack of each group is the target of that group's chip.
+                  <div key={pack.slug} id={rest.find((p) => p.group === pack.group) === pack ? groupId(pack.group) : undefined} className="flex scroll-mt-24 flex-col">
+                    <PackCard pack={pack} large />
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 

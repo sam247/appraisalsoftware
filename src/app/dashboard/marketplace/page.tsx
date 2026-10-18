@@ -1,8 +1,9 @@
 import { Button } from "@/components/ui/button";
+import { PackBasis } from "@/components/marketplace/PackBasis";
 import { PackCover } from "@/components/marketplace/PackCover";
 import { requireOrgAdmin } from "@/lib/auth/session";
 import { billingConfigured } from "@/lib/billing/stripe";
-import { categories, packAccess, packBySlug, packs, type PackAccess, type TemplatePack } from "@/lib/marketplace";
+import { groups, packAccess, packBySlug, packs, UPDATES_NOTE, type PackAccess, type TemplatePack } from "@/lib/marketplace";
 import { cn } from "@/lib/utils";
 import { Clock, ListChecks } from "lucide-react";
 import Link from "next/link";
@@ -10,14 +11,14 @@ import { redirect } from "next/navigation";
 import { PageHeader } from "../chrome";
 import { PackAction, PackPrice, PackStatus } from "./pack-parts";
 import PurchaseReturn from "./purchase-return";
-import { workspacePackState } from "./state";
+import { installedPackVersions, workspacePackState } from "./state";
 
 const MARKET = "/dashboard/marketplace";
 
 export default async function MarketplacePage({
   searchParams,
 }: {
-  searchParams: Promise<{ purchased?: string; error?: string; category?: string }>;
+  searchParams: Promise<{ purchased?: string; error?: string; group?: string }>;
 }) {
   let orgAdmin;
   try {
@@ -26,11 +27,11 @@ export default async function MarketplacePage({
     redirect("/login");
   }
   const params = await searchParams;
-  const { plan, purchased } = await workspacePackState(orgAdmin.org.id);
+  const [{ plan, purchased }, installed] = await Promise.all([workspacePackState(orgAdmin.org.id), installedPackVersions(orgAdmin.org.id)]);
   const justBought = params.purchased ? packBySlug(params.purchased) : undefined;
   const canBuy = billingConfigured();
-  const category = categories.some((c) => c.name === params.category) ? params.category : undefined;
-  const shown = category ? packs.filter((p) => p.category === category) : packs;
+  const group = groups.find((g) => g.name === params.group)?.name;
+  const shown = group ? packs.filter((p) => p.group === group) : packs;
 
   return (
     <div className="w-full">
@@ -51,22 +52,28 @@ export default async function MarketplacePage({
         </p>
       ) : null}
 
-      <nav aria-label="Categories" className="mt-6 flex flex-wrap items-center gap-2">
-        <CategoryLink href={MARKET} active={!category} label="All packs" count={packs.length} />
-        {categories.map((c) => (
-          <CategoryLink key={c.name} href={`${MARKET}?category=${encodeURIComponent(c.name)}`} active={category === c.name} label={c.name} count={c.count} />
+      <nav aria-label="Pack groups" className="mt-6 flex flex-wrap items-center gap-2">
+        <CategoryLink href={MARKET} active={!group} label="All packs" count={packs.length} />
+        {groups.map((g) => (
+          <CategoryLink key={g.name} href={`${MARKET}?group=${encodeURIComponent(g.name)}`} active={group === g.name} label={g.name} count={g.count} />
         ))}
       </nav>
 
       <div className="mt-5 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
         {shown.map((pack) => (
-          <ProductCard key={pack.slug} pack={pack} access={packAccess(pack, plan, purchased)} canBuy={canBuy} highlight={pack.slug === justBought?.slug} />
+          <ProductCard
+            key={pack.slug}
+            pack={pack}
+            access={packAccess(pack, plan, purchased)}
+            installedVersion={installed.get(pack.slug)}
+            canBuy={canBuy}
+            highlight={pack.slug === justBought?.slug}
+          />
         ))}
       </div>
 
       <p className="mt-8 max-w-3xl text-xs leading-relaxed text-muted-foreground">
-        Prices exclude VAT. Purchases are one-off and belong to this workspace. Using a pack copies its questions into your
-        templates, so later changes to the pack never alter your past reviews.
+        Prices exclude VAT. Purchases are one-off and belong to this workspace. {UPDATES_NOTE}
       </p>
     </div>
   );
@@ -88,7 +95,20 @@ function CategoryLink({ href, active, label, count }: { href: string; active: bo
   );
 }
 
-function ProductCard({ pack, access, canBuy, highlight }: { pack: TemplatePack; access: PackAccess; canBuy: boolean; highlight: boolean }) {
+function ProductCard({
+  pack,
+  access,
+  installedVersion,
+  canBuy,
+  highlight,
+}: {
+  pack: TemplatePack;
+  access: PackAccess;
+  installedVersion: number | undefined;
+  canBuy: boolean;
+  highlight: boolean;
+}) {
+  const update = (access === "owned" || access === "included") && installedVersion !== undefined && installedVersion < pack.version;
   return (
     <article
       id={pack.slug}
@@ -98,7 +118,7 @@ function ProductCard({ pack, access, canBuy, highlight }: { pack: TemplatePack; 
       )}
     >
       <PackCover pack={pack} className="aspect-[16/10] border-b border-border">
-        <PackStatus access={access} className="absolute left-3 top-3" />
+        <PackStatus access={access} update={update} className="absolute left-3 top-3" />
       </PackCover>
       <div className="flex flex-1 flex-col p-5">
         <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{pack.category}</p>
@@ -118,10 +138,15 @@ function ProductCard({ pack, access, canBuy, highlight }: { pack: TemplatePack; 
           </span>
           <span>{pack.campaignType === "feedback_360" ? "Anonymous 360" : "Self + manager"}</span>
         </p>
+        {pack.basis ? (
+          <div className="mt-3">
+            <PackBasis pack={pack} compact />
+          </div>
+        ) : null}
         <div className="mt-auto flex flex-wrap items-center justify-between gap-3 pt-5">
           <PackPrice pack={pack} access={access} />
           <div className="relative z-10">
-            <PackAction pack={pack} access={access} canBuy={canBuy} />
+            <PackAction pack={pack} access={access} canBuy={canBuy} update={update} />
           </div>
         </div>
       </div>
