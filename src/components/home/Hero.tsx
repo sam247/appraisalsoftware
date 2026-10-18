@@ -59,14 +59,14 @@ export function Hero() {
             >
               <div className="absolute inset-0 rounded-[2rem] bg-[radial-gradient(rgb(255_255_255/0.14)_1.2px,transparent_1.2px)] [background-size:18px_18px]" />
             </div>
-            <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[1.75rem] bg-surface-2 shadow-[0_30px_60px_-30px_rgb(21_38_29/0.55)] lg:aspect-[5/6]">
+            <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[1.75rem] bg-surface-2 shadow-[0_30px_60px_-30px_rgb(21_38_29/0.55)] lg:aspect-[6/5]">
               <Image
                 src="/marketing/one-to-one.jpg"
                 alt="Two colleagues talking through a review in a naturally lit workspace"
                 fill
                 priority
                 sizes="(min-width: 1024px) 42vw, (min-width: 640px) 512px, 100vw"
-                className="object-cover object-center lg:object-[62%_center]"
+                className="object-cover object-[80%_center] lg:object-right"
               />
             </div>
 
