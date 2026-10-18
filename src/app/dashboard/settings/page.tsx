@@ -203,9 +203,9 @@ export default async function SettingsPage({
       ) : null}
       {params.inviteUrl ? (
         <div className="max-w-2xl rounded-xl border border-border bg-card p-4 text-sm">
-          <p className="font-medium text-foreground">Invite link ready</p>
+          <p className="font-medium text-foreground">We couldn&apos;t email the invitation</p>
           <p className="mt-1 text-muted-foreground">
-            Share this private link with your colleague. It lets them join this workspace as an admin.
+            Copy this private link and send it to your colleague yourself. It lets them join this workspace as an admin and works for 14 days.
           </p>
           <CopyLink url={params.inviteUrl} />
         </div>

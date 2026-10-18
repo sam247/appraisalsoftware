@@ -2,6 +2,8 @@
 
 import { friendlyError } from "@/lib/errors";
 import { getAppOrigin } from "@/lib/app-origin";
+import { buildAdminInviteEmail } from "@/lib/email/admin-invite";
+import { sendViaResend } from "@/lib/email/resend";
 import {
   LOGO_MAX_BYTES,
   LOGO_MIME,
@@ -151,7 +153,7 @@ export async function removeOrgLogo(formData: FormData): Promise<void> {
 }
 
 export async function inviteAdmin(formData: FormData): Promise<void> {
-  const { org } = await requireOrgAdmin();
+  const { org, userId, email: inviterEmail } = await requireOrgAdmin();
   const supabase = await createClient();
 
   const email = (formData.get("email") as string | null)?.trim();
@@ -176,7 +178,23 @@ export async function inviteAdmin(formData: FormData): Promise<void> {
   }
 
   const inviteUrl = `${getAppOrigin()}/invite/${rawToken}`;
+  const { data: profile } = await supabase.from("profiles").select("full_name").eq("id", userId).maybeSingle();
+  const message = buildAdminInviteEmail({
+    inviteUrl,
+    orgName: org.name,
+    inviterName: profile?.full_name?.trim() || inviterEmail,
+  });
+  const sent = await sendViaResend({
+    to: email,
+    subject: message.subject,
+    html: message.html,
+    text: message.text,
+    replyTo: inviterEmail,
+  });
   revalidatePath("/dashboard/settings");
+  if (sent.ok) redirect(settingsPath("team", { ok: `Invitation emailed to ${email}` }));
+  console.error("[invite] email failed", sent.error);
+  // Email failed: fall back to a link the admin can share themselves.
   redirect(settingsPath("team", { inviteUrl }));
 }
 

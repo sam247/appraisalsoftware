@@ -12,7 +12,7 @@ export const APP_HOST = "app.appraisalsoftware.co.uk";
 
 /** Paths that belong on the app host in production. */
 const APP_PATH_PREFIX =
-  /^\/(dashboard|app|onboarding|login|signup|logout|invite|r)(\/|$)/;
+  /^\/(dashboard|app|onboarding|login|signup|logout|invite|r|forgot-password|reset-password|auth)(\/|$)/;
 
 export function isAppProductPath(pathname: string): boolean {
   return APP_PATH_PREFIX.test(pathname);

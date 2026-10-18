@@ -7,19 +7,21 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Logo, BrandMark } from "@/components/home/Logo";
 
-export default function LoginPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ next?: string; error?: string }>;
-}) {
-  return <LoginForm searchParams={searchParams} />;
+export default function LoginPage() {
+  return <LoginForm />;
 }
 
-function LoginForm({
-  searchParams,
-}: {
-  searchParams: Promise<{ next?: string; error?: string }>;
-}) {
+function friendlySignInError(message: string): string {
+  if (/invalid login credentials/i.test(message))
+    return "That email and password don't match. Check them, or reset your password.";
+  if (/email not confirmed/i.test(message))
+    return "Please confirm your email address first — check your inbox for the link.";
+  if (/rate limit|too many/i.test(message))
+    return "Too many attempts. Please wait a minute and try again.";
+  return "We couldn't sign you in just now. Please try again.";
+}
+
+function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -38,14 +40,15 @@ function LoginForm({
     });
 
     if (authError) {
-      setError(authError.message);
+      setError(friendlySignInError(authError.message));
       setLoading(false);
       return;
     }
 
-    // Read next param synchronously from URL
+    // Read next param synchronously from URL; same-site paths only.
     const params = new URLSearchParams(window.location.search);
-    const next = params.get("next") ?? "/dashboard";
+    const requested = params.get("next");
+    const next = requested?.startsWith("/") && !requested.startsWith("//") ? requested : "/dashboard";
     router.push(next);
     router.refresh();
   }
@@ -93,12 +96,17 @@ function LoginForm({
           </div>
 
           <div className="space-y-1.5">
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-foreground"
-            >
-              Password
-            </label>
+            <div className="flex items-baseline justify-between">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-foreground"
+              >
+                Password
+              </label>
+              <Link href="/forgot-password" className="text-xs font-medium text-primary hover:underline">
+                Forgot password?
+              </Link>
+            </div>
             <input
               id="password"
               type="password"

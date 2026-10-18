@@ -1,18 +1,30 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { Suspense, useRef, useState } from "react";
 import { PRIMARY_CTA_LABEL } from "@/lib/links";
 import { trackEvent } from "@/lib/analytics/events";
 import { createClient } from "@/lib/supabase/client";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Logo, BrandMark } from "@/components/home/Logo";
 
 export default function SignupPage() {
+  return (
+    <Suspense fallback={null}>
+      <SignupForm />
+    </Suspense>
+  );
+}
+
+function SignupForm() {
+  const searchParams = useSearchParams();
+  // Invited admins join an existing workspace instead of creating one.
+  const inviteParam = searchParams.get("invite");
+  const inviteToken = inviteParam && /^[A-Za-z0-9_-]{16,}$/.test(inviteParam) ? inviteParam : null;
   const [fullName, setFullName] = useState("");
   const [orgName, setOrgName] = useState("");
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(() => searchParams.get("email") ?? "");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -63,6 +75,13 @@ export default function SignupPage() {
       }
     }
 
+    if (inviteToken) {
+      trackEvent("sign_up");
+      router.push(`/invite/${inviteToken}`);
+      router.refresh();
+      return;
+    }
+
     // 3. Bootstrap org (creates org + owner membership + copies builtin templates)
     const { error: rpcError } = await supabase.rpc("bootstrap_organization", {
       p_name: orgName,
@@ -95,10 +114,12 @@ export default function SignupPage() {
             <Logo size="lg" />
           </Link>
           <h1 className="font-display text-2xl font-semibold tracking-tight text-foreground">
-            Start Free
+            {inviteToken ? "Join your team" : "Start Free"}
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Free forever for up to 10 active employees, 1 active campaign and 1 admin. No card required.
+            {inviteToken
+              ? "Create your account to accept the invitation. Use the email address it was sent to."
+              : "Free forever for up to 10 active employees, 1 active campaign and 1 admin. No card required."}
           </p>
         </div>
 
@@ -128,7 +149,7 @@ export default function SignupPage() {
             />
           </div>
 
-          <div className="space-y-1.5">
+          {!inviteToken && <div className="space-y-1.5">
             <label
               htmlFor="org_name"
               className="block text-sm font-medium text-foreground"
@@ -144,7 +165,7 @@ export default function SignupPage() {
               className="w-full field"
               placeholder="Acme Ltd"
             />
-          </div>
+          </div>}
 
           <div className="space-y-1.5">
             <label
