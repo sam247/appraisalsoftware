@@ -5,12 +5,17 @@ export type ResourceContent = {
   template?: { title: string; fields: string[] }[];
   bridge?: { title: string; copy: string };
   sources?: { label: string; href: string }[];
+  /** Search-result title/description, when it should differ from the on-page heading. */
+  seoTitle?: string;
+  seoDescription?: string;
 };
 
 export const RESOURCE_REVIEW_DATE = "2026-09-20";
 export const resources: ResourceContent[] = [
   {
     "slug": "annual-appraisal-template",
+    "seoTitle": "Free Annual Appraisal Form Template (UK) – Print or Save as PDF",
+    "seoDescription": "Free annual appraisal form for employees and managers: objectives, performance, development and next steps. Copy, print or save as PDF.",
     "title": "Annual Appraisal Template",
     "description": "A free annual appraisal template for UK managers and employees, with objectives, self-reflection, manager comments and next steps. Copy it, print it or save it as a PDF.",
     "audience": "Managers and employees preparing an annual review in a UK SME",
@@ -122,6 +127,8 @@ export const resources: ResourceContent[] = [
   },
   {
     "slug": "self-appraisal-template",
+    "seoTitle": "Free Self-Appraisal Template & Employee Self-Assessment Form (UK)",
+    "seoDescription": "Free employee self-assessment form with prompts for achievements, challenges and development. Copy, print or save as PDF — no sign-up needed.",
     "title": "Self Appraisal Template",
     "description": "A free employee self-assessment form to prepare for your review. Copy the prompts, print the form or save it as a PDF.",
     "audience": "Employees preparing their own review",
@@ -210,6 +217,8 @@ export const resources: ResourceContent[] = [
   },
   {
     "slug": "probation-review-template",
+    "seoTitle": "Probation Review Template & Meeting Form – Free (UK)",
+    "seoDescription": "Free probation review form for the end-of-probation meeting: performance, conduct, support and a clear pass, extend or end outcome. Copy or print.",
     "title": "Probation Review Template",
     "description": "A free probation review form for UK managers and employees, with evidence prompts, support actions and a follow-up checklist.",
     "audience": "Managers reviewing a new starter",
@@ -478,6 +487,8 @@ export const resources: ResourceContent[] = [
   },
   {
     "slug": "annual-appraisal-guide",
+    "seoTitle": "Annual Appraisal Guide: What It Is & How to Run One (UK)",
+    "seoDescription": "What an annual appraisal is, how to prepare, what to ask and how to follow up — a practical UK guide for managers and employees.",
     "title": "Annual Appraisal Guide",
     "description": "How to prepare, run and follow up an annual employee appraisal, with a practical checklist for UK managers and small teams.",
     "audience": "Managers organising annual reviews",
@@ -610,6 +621,8 @@ export const resources: ResourceContent[] = [
   },
   {
     "slug": "appraisal-objectives",
+    "seoTitle": "Appraisal Objectives: SMART Examples for Employees (UK)",
+    "seoDescription": "Practical, SMART appraisal objective examples for employees and managers, with how to measure progress and agree support.",
     "title": "Appraisal Objectives and Examples",
     "description": "Practical appraisal objective examples with success measures, deadlines and support, for managers and employees planning the next review period.",
     "audience": "Managers and employees agreeing next-period results",

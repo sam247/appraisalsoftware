@@ -1,6 +1,6 @@
 # URL ownership register — 7 October 2026
 
-One preferred destination per query family, with intent distinguishing commercial queries from guidance, form and example queries. This is the complete local indexable inventory: 19 core pages and one published article. Retired software URLs are redirects, not indexable pages.
+One preferred destination per query family, with intent distinguishing commercial queries from guidance, form and example queries. This is the complete local indexable inventory: 19 core pages and two published articles. Retired software URLs are redirects, not indexable pages.
 
 Performance: **proven** means Sam reports meaningful organic traffic today. **Unverified** means no current query/page export was checked; it does not mean zero impressions or clicks. The historical 4 October programme contains small signals on other URLs, but those are not evidence of meaningful traffic today. No volumes, rankings or new analytics observations are invented here.
 
@@ -26,6 +26,7 @@ Performance: **proven** means Sam reports meaningful organic traffic today. **Un
 | /360-feedback-examples | Write and interpret multi-rater feedback | 360 feedback examples | 360 review wording; peer/manager feedback examples | Examples guide | Resources / 360 Appraisals | /360-appraisals | Unverified | Keep fictional teaching examples separate from actual combined product reports. |
 | /blog | Browse deeper practical articles | Appraisal Software blog | practical appraisal articles | Article archive | Content | Relevant pillar by article | Unverified | Remain low prominence until the useful published collection grows. |
 | /blog/when-self-and-manager-ratings-differ | Discuss differing review perspectives | self vs manager ratings differ | appraisal rating disagreement | Article | Resources / Employee Appraisals | /employee-appraisal-software | Unverified | Improve contextual discovery from employee preparation guidance. |
+| /blog/best-appraisal-software-uk | Compare appraisal tools before buying | best appraisal software UK; appraisal software comparison | best performance review software UK; Breathe/CharlieHR/Appraisd/Lattice alternatives | Comparison article | Software | Both pillars | Not live yet; performance unverified | Keep vendor pricing current (G-Cloud and public listings); refresh quarterly. Must not target the homepage query "appraisal software uk". |
 
 No new category, cadence, synonym or comparison URL is authorised by this map. Revisit ownership only when a distinct visitor task and search evidence support a change. Resource intent remains primary; commercial next steps should be contextual.
 
