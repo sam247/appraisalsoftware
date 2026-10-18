@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type Stripe from "stripe";
 import { PRICE_AMOUNTS, PRICE_LOOKUP_KEYS, formatGbp, planForLookupKey } from "./stripe-plans";
-import { subscriptionToApplyArgs } from "./webhook";
+import { subscriptionToApplyArgs, templatePurchaseArgs } from "./webhook";
 import { plans } from "@/lib/pricing";
 
 const ORG = "3f2b6c1e-8a4d-4e5f-9b7a-1c2d3e4f5a6b";
@@ -69,5 +69,36 @@ describe("subscriptionToApplyArgs", () => {
     const args = subscriptionToApplyArgs(subscription({}, "legacy_price"), 1);
     expect(args.p_plan).toBeNull();
     expect(args.p_interval).toBeNull();
+  });
+});
+
+describe("templatePurchaseArgs", () => {
+  const session = (overrides: Partial<Stripe.Checkout.Session> = {}) =>
+    ({
+      id: "cs_123",
+      mode: "payment",
+      payment_status: "paid",
+      amount_total: 5880,
+      currency: "gbp",
+      client_reference_id: ORG,
+      metadata: { kind: "template_pack", pack_slug: "annual-appraisal-pack", organization_id: ORG },
+      ...overrides,
+    }) as unknown as Stripe.Checkout.Session;
+
+  it("records paid template-pack sessions", () => {
+    expect(templatePurchaseArgs(session())).toEqual({
+      p_organization_id: ORG,
+      p_pack_slug: "annual-appraisal-pack",
+      p_session: "cs_123",
+      p_amount: 5880,
+      p_currency: "gbp",
+    });
+  });
+
+  it("ignores unpaid, unrelated or malformed sessions", () => {
+    expect(templatePurchaseArgs(session({ payment_status: "unpaid" }))).toBeNull();
+    expect(templatePurchaseArgs(session({ metadata: { pack_slug: "annual-appraisal-pack" } }))).toBeNull();
+    expect(templatePurchaseArgs(session({ metadata: { kind: "template_pack", pack_slug: "Bad Slug", organization_id: ORG } }))).toBeNull();
+    expect(templatePurchaseArgs(session({ metadata: { kind: "template_pack", pack_slug: "x-pack", organization_id: "nope" }, client_reference_id: null }))).toBeNull();
   });
 });

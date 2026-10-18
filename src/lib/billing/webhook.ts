@@ -47,6 +47,30 @@ export function subscriptionToApplyArgs(
   };
 }
 
+/**
+ * Arguments for `record_template_purchase`, or null when the session is not a
+ * paid template-pack purchase (e.g. an unrelated one-off payment).
+ */
+export function templatePurchaseArgs(session: Stripe.Checkout.Session): {
+  p_organization_id: string;
+  p_pack_slug: string;
+  p_session: string;
+  p_amount: number | null;
+  p_currency: string | null;
+} | null {
+  const org = session.metadata?.organization_id ?? session.client_reference_id ?? "";
+  const slug = session.metadata?.pack_slug ?? "";
+  if (session.metadata?.kind !== "template_pack" || session.payment_status !== "paid") return null;
+  if (!UUID_RE.test(org) || !/^[a-z0-9-]{3,64}$/.test(slug)) return null;
+  return {
+    p_organization_id: org,
+    p_pack_slug: slug,
+    p_session: session.id,
+    p_amount: session.amount_total ?? null,
+    p_currency: session.currency ?? null,
+  };
+}
+
 export const HANDLED_EVENTS = new Set<string>([
   "checkout.session.completed",
   "customer.subscription.created",

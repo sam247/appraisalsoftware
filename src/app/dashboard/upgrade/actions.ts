@@ -3,6 +3,7 @@
 import { getAppOrigin } from "@/lib/app-origin";
 import { requireOrgAdmin } from "@/lib/auth/session";
 import { billingConfigured, stripe } from "@/lib/billing/stripe";
+import { ensureWorkspaceCustomer } from "@/lib/billing/customer";
 import { PRICE_LOOKUP_KEYS, isInterval, isPaidPlan } from "@/lib/billing/stripe-plans";
 import { createServiceClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
@@ -12,27 +13,6 @@ const UPGRADE = "/dashboard/upgrade";
 
 function fail(message: string): never {
   redirect(`${UPGRADE}?error=${encodeURIComponent(message)}`);
-}
-
-/** The workspace's Stripe customer, created on first checkout. */
-async function ensureCustomer(org: { id: string; name: string }, email: string): Promise<string> {
-  const service = createServiceClient();
-  const { data: existing, error } = await service.rpc("workspace_stripe_customer", {
-    p_organization_id: org.id,
-  });
-  if (error) throw new Error("Unable to read billing customer");
-  if (typeof existing === "string" && existing) return existing;
-
-  const customer = await stripe().customers.create(
-    { email, name: org.name, metadata: { organization_id: org.id } },
-    { idempotencyKey: `workspace-customer-${org.id}` },
-  );
-  const { data: stored, error: storeError } = await service.rpc("set_workspace_stripe_customer", {
-    p_organization_id: org.id,
-    p_customer: customer.id,
-  });
-  if (storeError || typeof stored !== "string") throw new Error("Unable to save billing customer");
-  return stored;
 }
 
 async function hasLiveSubscription(orgId: string): Promise<boolean> {
@@ -54,7 +34,7 @@ export async function startCheckout(formData: FormData): Promise<void> {
 
   let url: string | null = null;
   try {
-    const customer = await ensureCustomer(org, email);
+    const customer = await ensureWorkspaceCustomer(org, email);
     const lookupKey = PRICE_LOOKUP_KEYS[plan][interval];
     const prices = await stripe().prices.list({ lookup_keys: [lookupKey], active: true, limit: 1 });
     const price = prices.data[0];

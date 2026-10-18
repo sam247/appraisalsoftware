@@ -6,7 +6,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import type Stripe from "stripe";
 import { stripe } from "@/lib/billing/stripe";
-import { HANDLED_EVENTS, subscriptionToApplyArgs } from "@/lib/billing/webhook";
+import { HANDLED_EVENTS, subscriptionToApplyArgs, templatePurchaseArgs } from "@/lib/billing/webhook";
 import { createServiceClient } from "@/lib/supabase/admin";
 
 export const runtime = "nodejs";
@@ -30,6 +30,16 @@ export async function POST(req: NextRequest) {
   let organizationHint: string | null = null;
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
+    if (session.mode === "payment") {
+      const purchase = templatePurchaseArgs(session);
+      if (!purchase) return NextResponse.json({ received: true });
+      const recorded = await createServiceClient().rpc("record_template_purchase", purchase);
+      if (recorded.error) {
+        console.error("[stripe-webhook] pack", event.id, recorded.error.code, recorded.error.message);
+        return NextResponse.json({ error: "Not recorded" }, { status: 500 });
+      }
+      return NextResponse.json({ received: true, result: recorded.data });
+    }
     if (session.mode !== "subscription" || !session.subscription)
       return NextResponse.json({ received: true });
     subscription =

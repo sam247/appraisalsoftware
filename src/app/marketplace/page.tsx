@@ -9,6 +9,9 @@ import { marketingType } from "@/lib/marketing-typography";
 import { pageMetadata } from "@/lib/metadata";
 import { categories, formatPackPrice, packs, previewQuestions, type PackAccent, type TemplatePack } from "@/lib/marketplace";
 import { cn } from "@/lib/utils";
+import { APP_ORIGIN } from "@/lib/links";
+
+const getPack = (slug: string) => `${APP_ORIGIN}/dashboard/marketplace#${slug}`;
 
 export const metadata: Metadata = {
   ...pageMetadata({
@@ -34,7 +37,7 @@ function Meta({ pack, inverse = false }: { pack: TemplatePack; inverse?: boolean
   return (
     <p className={cn("flex flex-wrap items-center gap-x-4 gap-y-1 text-sm", inverse ? "text-white/80" : "text-muted-foreground")}>
       <span className="inline-flex items-center gap-1.5">
-        <ListChecks className="size-4" aria-hidden /> {pack.questions} questions
+        <ListChecks className="size-4" aria-hidden /> {pack.questions.length} questions
       </span>
       <span className="inline-flex items-center gap-1.5">
         <Clock className="size-4" aria-hidden /> ~{pack.minutes} min to complete
@@ -105,9 +108,9 @@ function FeaturedPack({ pack }: { pack: TemplatePack }) {
         <Benefits items={pack.benefits} inverse />
         <div className="mt-auto flex flex-wrap items-end justify-between gap-4 pt-10">
           <PriceLine pack={pack} inverse />
-          <Link href={`#${pack.slug}`} className="group inline-flex items-center gap-3 text-base font-semibold">
-            Preview every question <CircleArrow inverse />
-          </Link>
+          <a href={getPack(pack.slug)} className="group inline-flex items-center gap-3 text-base font-semibold">
+            Get this pack <CircleArrow inverse />
+          </a>
         </div>
       </div>
       <div className="relative flex items-center justify-center bg-[color-mix(in_oklab,var(--primary)_78%,black)] p-5 sm:p-7">
@@ -157,16 +160,16 @@ function PackCard({ pack, large = false }: { pack: TemplatePack; large?: boolean
       <Benefits items={pack.benefits} />
       <div className="mt-auto flex items-end justify-between gap-4 pt-8">
         <PriceLine pack={pack} />
-        <Link href={`#${pack.slug}`} aria-label={`Preview ${pack.name}`} className="inline-flex items-center gap-3 text-sm font-semibold text-foreground">
-          <span className="hidden sm:inline">Preview</span> <CircleArrow />
-        </Link>
+        <a href={getPack(pack.slug)} aria-label={`Get ${pack.name}`} className="group inline-flex items-center gap-3 text-sm font-semibold text-foreground">
+          <span className="hidden sm:inline">Get pack</span> <CircleArrow />
+        </a>
       </div>
     </article>
   );
 }
 
 const steps = [
-  { icon: Eye, title: "Preview every question", copy: "See the full form exactly as your people will, before you spend a penny." },
+  { icon: Eye, title: "Preview every question", copy: "Read the full question set in your workspace before you spend a penny." },
   { icon: ShoppingBag, title: "Buy once, keep it", copy: "One payment per workspace. Reuse it every cycle and edit any question." },
   { icon: MousePointerClick, title: "Run it in one click", copy: "Turn the template into a ready-made campaign draft, then add your people." },
 ];
@@ -177,7 +180,7 @@ export default function MarketplacePage() {
     <SiteChrome commercial>
       <section className="border-b border-border bg-background">
         <div className="mx-auto max-w-6xl px-5 py-16 lg:px-8 lg:py-20">
-          <p className={marketingType.eyebrow}>Template marketplace · Preview</p>
+          <p className={marketingType.eyebrow}>Template marketplace</p>
           <h1 className={cn("mt-4 max-w-3xl", marketingType.h1Home)}>
             Appraisal templates, <span className="marketing-editorial text-primary">ready to run.</span>
           </h1>

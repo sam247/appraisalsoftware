@@ -12,6 +12,7 @@ import {
   FileText,
   Settings,
   CreditCard,
+  ShoppingBag,
   LogOut,
   Search,
   FileBarChart,
@@ -34,6 +35,7 @@ const NAV = [
   { href: "/dashboard/campaigns", label: "Campaigns", icon: Megaphone },
   { href: "/dashboard/people", label: "People", icon: Users },
   { href: "/dashboard/templates", label: "Templates", icon: FileText },
+  { href: "/dashboard/marketplace", label: "Marketplace", icon: ShoppingBag },
   { href: "/dashboard/reports", label: "Reports", icon: FileBarChart },
   { href: "/dashboard/settings", label: "Settings", icon: Settings },
 ];
