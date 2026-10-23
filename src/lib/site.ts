@@ -4,8 +4,11 @@ export const SITE_URL = "https://appraisalsoftware.co.uk/";
 
 export const SITE_NAME = "Appraisal Software";
 
+// Lead with the descriptive phrase and keep the brand as a trailing segment:
+// Google shows the site name separately and strips a leading brand, which
+// previously left "for UK Teams | Employee Appraisals" in search results.
 export const SITE_TITLE =
-  "Appraisal Software for UK Teams | Employee Appraisals";
+  "Free Appraisal Software for Small UK Teams | Appraisal Software";
 
 export const SITE_DESCRIPTION =
   "Free appraisal software for small UK teams. Run employee appraisals for up to 10 people with retained results. Upgrade for more capacity or anonymous 360 feedback.";
