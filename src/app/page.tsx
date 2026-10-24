@@ -10,11 +10,13 @@ import { Reviews } from "@/components/home/Reviews";
 import { GdprCommitment, MidPageCta, PricingPreview, ProcessOverview, ProductBenefits } from "@/components/home/HomeBands";
 import { Footer } from "@/components/home/Footer";
 import { MarketplaceTeaser } from "@/components/home/MarketplaceTeaser";
+import { ProductVideo } from "@/components/home/ProductVideo";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { pageMetadata } from "@/lib/metadata";
 import { ROUTES } from "@/lib/routes";
 import { softwareApplicationSchema } from "@/lib/schema";
 import { SITE_DESCRIPTION, SITE_TITLE } from "@/lib/site";
+import { productVideoSchema } from "@/lib/video";
 
 export const metadata = pageMetadata({
   title: SITE_TITLE,
@@ -31,10 +33,12 @@ export default function HomePage() {
           description: SITE_DESCRIPTION,
         })}
       />
+      <JsonLd data={productVideoSchema()} />
       <Header />
       <main>
         <Hero />
         <WorkflowTypesSection />
+        <ProductVideo />
         <ProcessOverview />
         <MidPageCta />
         <HumanStory />
