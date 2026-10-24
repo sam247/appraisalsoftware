@@ -31,6 +31,8 @@ export type ResourceContent = {
   /** Search-result title/description, when it should differ from the on-page heading. */
   seoTitle?: string;
   seoDescription?: string;
+  /** Last substantive review, when later than RESOURCE_REVIEW_DATE. */
+  reviewed?: string;
 };
 
 export const RESOURCE_REVIEW_DATE = "2026-09-20";
@@ -150,6 +152,7 @@ export const resources: ResourceContent[] = [
   },
   {
     "slug": "self-appraisal-template",
+    "reviewed": "2026-10-24",
     "seoTitle": "Free Self-Appraisal Template & Employee Self-Assessment Form (UK)",
     "seoDescription": "Free employee self-assessment form with prompts for achievements, challenges and development. Copy, print or save as PDF — no sign-up needed.",
     "title": "Self Appraisal Template",
@@ -159,11 +162,70 @@ export const resources: ResourceContent[] = [
     "kind": "template",
     "sections": [
       {
+        "title": "What a self-appraisal is for",
+        "paragraphs": [
+          "A self-appraisal — sometimes called an employee self-assessment or self-review — is the employee’s own account of the review period, written before the appraisal meeting. It gives the employee a voice in the review and gives the manager context they may not have seen: obstacles, extra work, support that helped and support that was missing.",
+          "It is not a test, and it should not decide the outcome on its own. Its job is to make the conversation better prepared. When both people arrive having thought about the same questions, the meeting can focus on what the evidence means and what should happen next."
+        ],
+        "figure": {
+          "type": "photo",
+          "id": "self-appraisal-template-reflection",
+          "brief": "An employee quietly completing a printed self-appraisal form or on a laptop, pen in hand. Calm, focused mood; a real UK workplace such as an office, shop back room or care setting.",
+          "alt": "An employee completing a self-appraisal form before their review"
+        }
+      },
+      {
         "title": "Prepare your evidence",
         "paragraphs": [
           "Look back over the whole review period: objectives, project notes, customer feedback and work you delivered. Choose a few examples that show your contribution, rather than listing everything you did.",
           "Separate results from effort. “I attended weekly project meetings” describes an activity. “I resolved the handover issue so the project met its deadline” explains a contribution. Only use figures you can support."
         ]
+      },
+      {
+        "title": "How to complete each section of the form",
+        "paragraphs": [
+          "Each section of the template asks for something different. Use this table as a guide when you fill it in, and keep each answer to a few sentences."
+        ],
+        "table": {
+          "caption": "What to write in each section of the self-appraisal template",
+          "headers": [
+            "Section",
+            "What to write",
+            "Common mistake"
+          ],
+          "rows": [
+            [
+              "Review details",
+              "Your role, manager, the period covered and the meeting date.",
+              "Leaving the period blank, so examples drift outside it."
+            ],
+            [
+              "Achievements",
+              "Two or three agreed objectives or pieces of work, your part in them and the evidence.",
+              "Listing every task you did instead of the results that mattered."
+            ],
+            [
+              "Strengths and learning",
+              "A strength shown in a real situation, and something you found hard.",
+              "Claiming no difficulties — it reads as unreflective."
+            ],
+            [
+              "Support and development",
+              "The support you need and one practical development action.",
+              "Writing “more training” without saying what or why."
+            ],
+            [
+              "Next period",
+              "A proposed objective, how success would be seen and questions for your manager.",
+              "Leaving it for the manager to decide alone."
+            ]
+          ]
+        },
+        "figure": {
+          "type": "app",
+          "graphic": "self-appraisal-form",
+          "caption": "The same prompts in Appraisal Software: one question at a time, with progress shown and answers saved as you go. Try it — nothing here is saved."
+        }
       },
       {
         "title": "Worked example: improving a team handover",
@@ -174,11 +236,55 @@ export const resources: ResourceContent[] = [
         ]
       },
       {
+        "title": "Self-assessment questions you can add",
+        "paragraphs": [
+          "The template keeps to the essentials. If your organisation wants more depth, choose two or three of these questions rather than adding them all — long forms produce repetitive answers."
+        ],
+        "items": [
+          "What are you most proud of from this review period, and why?",
+          "Which objective was hardest to achieve, and what got in the way?",
+          "Describe a time you helped a colleague or another team.",
+          "What feedback have you received this year, and what did you do with it?",
+          "Which part of your role would you like to spend more time on?",
+          "Which part of your role would you like to spend less time on?",
+          "What is one process or tool that would make your work easier?",
+          "What new skill have you used at work this year?",
+          "How well do you understand what is expected of you in your role?",
+          "What would you like to achieve in the next twelve months?",
+          "What support would help you most from your manager?",
+          "Is there anything else you would like to discuss in the meeting?"
+        ],
+        "callout": {
+          "title": "Need example answers?",
+          "copy": "This page gives you blank prompts. For worked first-person answers to these questions — by question and by role — see our self appraisal answers and examples guide."
+        }
+      },
+      {
+        "title": "Rating yourself fairly",
+        "paragraphs": [
+          "Some forms ask employees to rate themselves, often on a five-point scale. If yours does, read the definition of each point before you choose. A 3 on many scales means “fully meets expectations”, not “average” or “mediocre”.",
+          "Base the rating on the whole period and on the agreed expectations, not on how you feel about your last week. Then add a sentence of evidence: a rating without a reason gives your manager nothing to discuss.",
+          "People tend to rate themselves differently. Some are modest; others are generous. A gap between your rating and your manager’s is normal and worth exploring — it often reveals work one of you did not see, or an expectation that was never made clear."
+        ]
+      },
+      {
         "title": "When you are unsure what to write",
         "paragraphs": [
           "If an objective changed, explain when it changed and what was agreed instead. If a result was missed, describe the gap, the factors involved and your next action. Avoid blaming another person or claiming success without evidence.",
           "Write down questions for your manager. Self-assessment should help the conversation: it is not a test of who can sound most confident."
         ]
+      },
+      {
+        "title": "For managers: sharing the form with your team",
+        "paragraphs": [
+          "Send the self-appraisal at least a week before the meeting, together with the review period and any objectives agreed last time. Explain who will read the answers and how they will be used. Employees write more honestly when they know the purpose.",
+          "Read the self-appraisal before you finalise your own view, and use it to plan the meeting. Start the conversation with the employee’s reflection, then add your observations. If you are running reviews for several people, keep track of who has completed their form so nobody arrives unprepared."
+        ],
+        "figure": {
+          "type": "app",
+          "graphic": "campaign-progress",
+          "caption": "Appraisal Software tracks which self-assessments and manager responses are complete, and reminds anyone with an outstanding form."
+        }
       }
     ],
     "related": [
@@ -240,6 +346,7 @@ export const resources: ResourceContent[] = [
   },
   {
     "slug": "probation-review-template",
+    "reviewed": "2026-10-24",
     "seoTitle": "Probation Review Template & Meeting Form – Free (UK)",
     "seoDescription": "Free probation review form for the end-of-probation meeting: performance, conduct, support and a clear pass, extend or end outcome. Copy or print.",
     "title": "Probation Review Template",
@@ -249,6 +356,50 @@ export const resources: ResourceContent[] = [
     "kind": "template",
     "sections": [
       {
+        "title": "What a probation review is for",
+        "paragraphs": [
+          "A probation period gives a new employee and their employer time to check that the role is working. The probation review is the structured conversation at the end of that period — and ideally at points along the way — where the manager and employee look at progress against the role’s expectations and agree what happens next.",
+          "A good review is a two-way conversation. The manager shares evidence about the employee’s work; the employee shares how their induction, training and support have gone. Both perspectives matter: a new starter who is struggling has often not had the support or clarity they needed."
+        ],
+        "figure": {
+          "type": "photo",
+          "id": "probation-review-template-new-starter",
+          "brief": "A manager and a recently hired employee in a friendly check-in meeting — perhaps in a shop, warehouse, care home or office. The new starter looks engaged; the mood is supportive rather than formal.",
+          "alt": "A manager and new employee in a probation review meeting"
+        }
+      },
+      {
+        "title": "When to hold probation reviews",
+        "paragraphs": [
+          "Probation length is set by the employment contract or your policy. Three or six months is common in the UK, with longer periods for some senior roles. Whatever the length, do not wait until the final week to talk about progress — regular reviews make the final meeting a confirmation rather than a surprise."
+        ],
+        "table": {
+          "caption": "Suggested probation review points for a six-month probation period",
+          "headers": [
+            "Review point",
+            "Focus"
+          ],
+          "rows": [
+            [
+              "End of week one",
+              "Induction, equipment, introductions and early questions."
+            ],
+            [
+              "End of month one",
+              "Understanding of the role, first tasks and any training gaps."
+            ],
+            [
+              "Midpoint (month three)",
+              "Progress against expectations; raise any concerns clearly, with support."
+            ],
+            [
+              "Final review (month six)",
+              "Overall evidence and the outcome: confirm, extend or, in some cases, end employment."
+            ]
+          ]
+        }
+      },
+      {
         "title": "Prepare for the probation meeting",
         "paragraphs": [
           "Check the expectations agreed when the person joined and collect examples from the role. Ask the employee how induction, training and manager support have worked. Do not introduce a concern for the first time in the final meeting if it could have been discussed earlier.",
@@ -256,11 +407,82 @@ export const resources: ResourceContent[] = [
         ]
       },
       {
+        "title": "Probation review questions to ask",
+        "paragraphs": [
+          "Choose questions that cover both the work and the experience of joining. The template includes the essentials; these are useful additions for the conversation."
+        ],
+        "items": [
+          "Which parts of the role are you now confident doing on your own?",
+          "Which tasks still feel unclear, and what would help?",
+          "How well did your induction prepare you for the role?",
+          "Is there any training you expected but have not received?",
+          "How are you finding working with the team?",
+          "Are the standards and expectations of the role clear to you?",
+          "What has surprised you about the job, compared with what you expected?",
+          "What support do you need from me over the next few months?",
+          "Is there anything about the role or the organisation you would change?"
+        ],
+        "figure": {
+          "type": "app",
+          "graphic": "probation-form",
+          "caption": "A probation review form in Appraisal Software, completed by the manager with a rating and an example for each expectation. Try it — nothing here is saved."
+        }
+      },
+      {
         "title": "Completed example: an operations assistant",
         "paragraphs": [
           "Example: “Jordan completes the daily reconciliation accurately and has handled the standard supplier queries independently for three weeks. The remaining development need is escalating discrepancies on the day they are found.”",
           "Support action: the manager will demonstrate two exception cases on Tuesday. Jordan will use the escalation checklist for the next four weeks. They will review examples together each Friday.",
           "Record the evidence and the action separately from the organisation’s formal outcome. A general label such as “needs confidence” is less useful than the behaviour that needs support."
+        ]
+      },
+      {
+        "title": "Probation review outcomes",
+        "paragraphs": [
+          "Most probation reviews end with one of three outcomes. Whichever applies, explain it clearly, confirm it in writing and follow your organisation’s policy and the employee’s contract."
+        ],
+        "table": {
+          "caption": "Common probation review outcomes",
+          "headers": [
+            "Outcome",
+            "When it applies",
+            "What to record"
+          ],
+          "rows": [
+            [
+              "Confirm (pass)",
+              "The employee is meeting the role’s expectations.",
+              "The evidence, any remaining development actions and the confirmation date."
+            ],
+            [
+              "Extend",
+              "Progress is being made but some standards are not yet met, and your contract or policy allows an extension.",
+              "The specific gaps, the support offered, the new end date and the next review."
+            ],
+            [
+              "End employment",
+              "Expectations are not being met despite clear feedback and reasonable support.",
+              "The concerns, how they were raised earlier, the support given and the process followed."
+            ]
+          ]
+        },
+        "callout": {
+          "title": "Take advice before ending employment",
+          "copy": "Employment law protections, including for new starters, are changing in the UK. Before deciding not to confirm someone’s employment, check your contract and policy, review current Acas guidance and take appropriate advice. This template supports the conversation; it does not make or justify the decision."
+        }
+      },
+      {
+        "title": "Extending a probation period",
+        "paragraphs": [
+          "An extension is useful when a new starter is close to the standard but needs more time — for example because training was delayed or the role changed. It should only be used if the contract or policy allows it, and it is not a way to postpone a difficult conversation.",
+          "When you extend, be specific: which expectations are not yet met, what evidence you will look for, what support will be provided and the new review date. Agree weekly or fortnightly check-ins so the employee knows how they are doing before the end of the extension."
+        ]
+      },
+      {
+        "title": "Raising concerns during probation",
+        "paragraphs": [
+          "If a concern appears early, raise it early. Describe the specific task or behaviour, the standard you expected and the effect, and ask the employee for their view. They may not have known the expectation, or may have been missing information or training.",
+          "Agree a practical action and a date to review it, and write a short note of what was discussed. A concern raised at month two, with support and a clear plan, is fairer to the employee and easier to resolve than one raised for the first time in the final meeting."
         ]
       },
       {
@@ -417,6 +639,7 @@ export const resources: ResourceContent[] = [
   },
   {
     "slug": "360-feedback-template",
+    "reviewed": "2026-10-24",
     "title": "360 Feedback Template",
     "description": "A free 360 feedback form with questions, an example rating scale and prompts for managers, peers and direct reports. Copy it, print it or save it as a PDF.",
     "audience": "Managers and facilitators preparing multi-rater feedback",
@@ -624,6 +847,7 @@ export const resources: ResourceContent[] = [
   },
   {
     "slug": "annual-appraisal-guide",
+    "reviewed": "2026-10-24",
     "seoTitle": "Annual Appraisal Guide: What It Is & How to Run One (UK)",
     "seoDescription": "What an annual appraisal is, how to prepare, what to ask and how to follow up — a practical UK guide for managers and employees.",
     "title": "Annual Appraisal Guide",
@@ -640,6 +864,58 @@ export const resources: ResourceContent[] = [
         ]
       },
       {
+        "title": "Annual appraisal, performance review or check-in?",
+        "paragraphs": [
+          "UK organisations use these terms loosely, and many use them interchangeably. The differences that matter are how often the conversation happens and what it is for."
+        ],
+        "table": {
+          "caption": "How an annual appraisal compares with other review conversations",
+          "headers": [
+            "Conversation",
+            "How often",
+            "Main purpose"
+          ],
+          "rows": [
+            [
+              "Annual appraisal",
+              "Once a year",
+              "Look back over the year, agree objectives and development for the next one."
+            ],
+            [
+              "Mid-year review",
+              "Halfway through the year",
+              "Check progress on objectives and adjust them if circumstances changed."
+            ],
+            [
+              "One-to-one or check-in",
+              "Weekly to monthly",
+              "Day-to-day priorities, problems and support."
+            ],
+            [
+              "Probation review",
+              "During and at the end of probation",
+              "Confirm a new starter is settling in and meeting the role’s standards."
+            ],
+            [
+              "360 feedback",
+              "Occasionally, for development",
+              "Gather views from peers, direct reports and others who see the person’s work."
+            ]
+          ]
+        },
+        "callout": {
+          "title": "Is an annual appraisal a legal requirement?",
+          "copy": "For most UK employers there is no general legal requirement to hold annual appraisals, though some regulated sectors and contracts set their own expectations. Whatever you do, apply your process consistently and fairly. Acas publishes practical guidance on appraisals and performance management."
+        }
+      },
+      {
+        "title": "Who should be involved",
+        "paragraphs": [
+          "The employee and their line manager are the core of the appraisal. The manager should be someone who has seen the employee’s work over the period; if the line manager changed during the year, ask the previous manager for input before the meeting.",
+          "In a small business, the owner or a director often runs appraisals. That works well when they see people’s work day to day. If they do not, ask a supervisor or team lead to contribute observations. HR, where you have it, is there to support a fair and consistent process — not to run the conversation."
+        ]
+      },
+      {
         "title": "Two weeks before: agree the preparation",
         "paragraphs": [
           "Confirm the review period and the purpose of the meeting. Send the form and ask both people to prepare examples. Allow enough time for the employee to ask questions about the process.",
@@ -653,12 +929,100 @@ export const resources: ResourceContent[] = [
         ]
       },
       {
+        "title": "Keeping preparation on track",
+        "paragraphs": [
+          "Preparation is where most annual appraisal cycles slip. Forms go out late, a few people do not complete them, and meetings happen with one side unprepared. Set a clear deadline for self-assessments — a few days before the meeting — and check who is still outstanding.",
+          "If you are reviewing several people, stagger the meetings so you have time to read each self-assessment properly and prepare your own view."
+        ],
+        "figure": {
+          "type": "app",
+          "graphic": "campaign-progress",
+          "caption": "An annual appraisal campaign in Appraisal Software: employee and manager responses tracked in one place, with reminders for anyone outstanding."
+        }
+      },
+      {
         "title": "During the meeting: compare perspectives",
         "paragraphs": [
           "Start with the employee’s reflection. Ask what they are proud of, what they found difficult and what support they needed. Then share your observations using specific examples and their effect.",
           "If your views differ, explore the evidence and context. Record an unresolved difference honestly rather than forcing a shared rating. Separate a lack of skill from unclear expectations or insufficient resources.",
           "Spend time on the next period. Agree a small number of objectives and development actions, with owners, measures and dates."
         ]
+      },
+      {
+        "title": "A simple meeting agenda",
+        "paragraphs": [
+          "Allow around an hour. A predictable structure helps the employee relax and makes sure the future gets as much time as the past."
+        ],
+        "table": {
+          "caption": "Suggested agenda for a one-hour annual appraisal meeting",
+          "headers": [
+            "Time",
+            "Focus",
+            "Questions to ask"
+          ],
+          "rows": [
+            [
+              "5 min",
+              "Purpose and tone",
+              "“How are you feeling about the year overall?”"
+            ],
+            [
+              "15 min",
+              "The employee’s reflection",
+              "“What are you most proud of? What was hardest?”"
+            ],
+            [
+              "15 min",
+              "Manager’s observations",
+              "“Here is what I saw — how does that match your view?”"
+            ],
+            [
+              "15 min",
+              "Objectives and development for next year",
+              "“What should we focus on? What support do you need?”"
+            ],
+            [
+              "10 min",
+              "Summary and next steps",
+              "“Let me summarise what we agreed — have I missed anything?”"
+            ]
+          ]
+        },
+        "figure": {
+          "type": "app",
+          "graphic": "self-vs-manager",
+          "caption": "When self and manager answers sit side by side, the largest differences show where to focus the conversation."
+        }
+      },
+      {
+        "title": "Questions to ask in the appraisal meeting",
+        "paragraphs": [
+          "Open questions get better answers than yes-or-no ones. Choose a handful that fit the person and the year; you do not need to ask them all."
+        ],
+        "items": [
+          "What are you most proud of from this year?",
+          "Which objectives went well, and which were harder than expected?",
+          "What got in the way of your work, and what helped?",
+          "What feedback have you had from colleagues or customers?",
+          "Which parts of the role do you enjoy most, and least?",
+          "Is there anything I could do differently to support you?",
+          "What would you like to learn or develop next year?",
+          "Where do you see your role developing over the next year or two?",
+          "Is there anything we have not discussed that you want to raise?"
+        ]
+      },
+      {
+        "title": "Handling disagreement",
+        "paragraphs": [
+          "Disagreement in an appraisal is normal and often useful. When your view differs from the employee’s, ask for their examples first, then share yours. Look for the reason behind the gap: unclear expectations, work you did not see, or a change in priorities during the year.",
+          "If you still disagree, say so plainly and record both views. Forcing agreement produces a document neither person believes. If a performance concern is serious enough to need a formal process, keep that separate from the appraisal and follow your organisation’s procedure."
+        ],
+        "figure": {
+          "type": "photo",
+          "id": "annual-appraisal-guide-meeting",
+          "brief": "A manager and employee in an annual appraisal meeting, sitting at a corner of a table rather than across a desk. Relaxed, open body language; papers or a laptop between them. UK small-business setting.",
+          "alt": "A manager and employee talking through an annual appraisal together"
+        }
       },
       {
         "title": "After the meeting: turn discussion into actions",
@@ -668,10 +1032,35 @@ export const resources: ResourceContent[] = [
         ]
       },
       {
+        "title": "Using ratings carefully",
+        "paragraphs": [
+          "Ratings can make results easier to compare across a team, but they also pull attention away from the conversation. If you use them, define each point on the scale in plain language and share the definitions before anyone completes a form.",
+          "Avoid forced distributions in small teams, where a fixed share of people must receive each rating. With a handful of employees they rarely reflect reality. If pay decisions are linked to appraisal ratings, explain how — and consider holding the development conversation separately so it is not overshadowed."
+        ]
+      },
+      {
         "title": "Common mistakes to avoid",
         "paragraphs": [
           "Long question lists produce repetitive answers. Choose prompts that inform a decision or useful discussion. Vague labels such as “more proactive” need a concrete example of what someone should do.",
           "Keep developmental conversation distinct from any formal capability or disciplinary process. This guide is a practical meeting structure, not employment-law advice. Acas provides additional guidance and appraisal form templates."
+        ]
+      },
+      {
+        "title": "Annual appraisal checklist",
+        "paragraphs": [
+          "Use this checklist to run an annual appraisal cycle from start to finish."
+        ],
+        "items": [
+          "Confirm the review period and meeting dates.",
+          "Share the form, any rating definitions and last year’s objectives.",
+          "Ask the employee to complete a self-assessment by an agreed date.",
+          "Gather your own evidence from across the whole year.",
+          "Read the self-assessment before the meeting.",
+          "Hold the meeting in private, with enough time.",
+          "Agree three to five objectives and one or two development actions.",
+          "Write and share a summary within a few days.",
+          "Book a check-in for three to six months’ time.",
+          "Store the record securely according to your organisation’s approach."
         ]
       }
     ],
@@ -697,6 +1086,7 @@ export const resources: ResourceContent[] = [
   },
   {
     "slug": "appraisal-answers",
+    "reviewed": "2026-10-24",
     "title": "Self Appraisal Answers and Examples",
     "description": "Employee self-appraisal answer examples for achievements, challenges, development and manager support, with advice on making each answer your own.",
     "audience": "Employees writing self-assessment answers",
@@ -709,6 +1099,47 @@ export const resources: ResourceContent[] = [
           "A useful answer names the situation or objective, explains your contribution and describes the result. Finish with what you learned or will do next. Keep it honest: a modest result with clear evidence is stronger than a broad claim you cannot support.",
           "The examples below are fictional. Adapt the structure to your work; do not copy their results or present invented figures as your own."
         ]
+      },
+      {
+        "title": "A simple structure for every answer",
+        "paragraphs": [
+          "Most self-appraisal questions can be answered with the same four parts. You do not need to label them, and a short answer can cover all four in three or four sentences."
+        ],
+        "table": {
+          "caption": "Four parts of a self-appraisal answer",
+          "headers": [
+            "Part",
+            "What to include",
+            "Example phrase"
+          ],
+          "rows": [
+            [
+              "Situation or objective",
+              "The goal, task or problem, and when it happened",
+              "“In the spring rota change…”"
+            ],
+            [
+              "Your contribution",
+              "What you did — not what the team did in general",
+              "“I drafted the new handover checklist and tested it with both shifts.”"
+            ],
+            [
+              "Result or evidence",
+              "What changed, with a figure or example you can support",
+              "“Missed entries fell from six to two over the quarter.”"
+            ],
+            [
+              "Learning or next step",
+              "What you would repeat, change or need help with",
+              "“Next I want to agree an escalation threshold with my manager.”"
+            ]
+          ]
+        },
+        "figure": {
+          "type": "app",
+          "graphic": "self-appraisal-form",
+          "caption": "In Appraisal Software, employees answer one focused question at a time, with guidance under each prompt. Try it — nothing you type here is saved."
+        }
       },
       {
         "title": "What went well?",
@@ -744,6 +1175,148 @@ export const resources: ResourceContent[] = [
           "Example: “I want to become more effective at presenting project risks. Over the next three months I would like to lead two updates, ask attendees what was clear and discuss the feedback with my manager.”",
           "Before submitting, check that each answer relates to this review period. Remove repeated examples, unsupported numbers and statements that describe another person’s motives."
         ]
+      },
+      {
+        "title": "Example answers to common self-appraisal questions",
+        "paragraphs": [
+          "Forms word their questions differently, but most ask about the same few things. These fictional answers show the structure in action. Replace the details with your own work, and keep only the claims you can back up."
+        ],
+        "examples": [
+          {
+            "label": "What are your key strengths?",
+            "quote": "I am reliable under deadline pressure. During the year-end close I kept the reconciliation tracker up to date every day, which meant the finance lead could see blockers early. I would like to use that strength in a wider role by coordinating the next close.",
+            "note": "Name one or two strengths and prove each with a situation. A list of adjectives is easy to write and hard to discuss."
+          },
+          {
+            "label": "How have you contributed to the team?",
+            "quote": "I took over onboarding for the two new starters in March. I rewrote the first-week checklist and sat with each of them for their first three shifts. Both were working independently on the till by week three, a week earlier than the previous starters.",
+            "note": "Contribution answers are stronger when they describe what changed for other people, not just the tasks you completed."
+          },
+          {
+            "label": "Describe a challenge and how you handled it",
+            "quote": "Our main supplier changed its ordering system in July and orders started arriving incomplete. I logged every discrepancy for three weeks, shared the pattern with the supplier’s account manager and agreed a daily check. Incomplete orders stopped by late August, but I should have escalated to my manager in the first week rather than the third.",
+            "note": "A good challenge answer includes what you would do differently. It shows judgement, not weakness."
+          },
+          {
+            "label": "How have you developed this year?",
+            "quote": "I completed the internal data protection training and applied it when we updated the customer sign-up form. I also asked to shadow the team lead in two difficult customer calls, which helped me handle a complaint on my own in September.",
+            "note": "Link learning to a moment where you used it. Courses alone do not show development."
+          },
+          {
+            "label": "What are your goals for next year?",
+            "quote": "I want to take ownership of the weekly stock report by the end of the first quarter, including the supplier follow-ups. To get there I need access to the purchasing system and two review sessions with the operations manager.",
+            "note": "Goals are easier to agree when they include a date and the support you need. Your manager will turn the final version into objectives."
+          },
+          {
+            "label": "How could your manager support you better?",
+            "quote": "Our weekly one-to-ones help most when we look at specific cases. Moving them to Monday, before the week’s deadlines, would let me raise risks while there is still time to act.",
+            "note": "Make support requests concrete and practical. This question is an invitation, not a trap."
+          }
+        ]
+      },
+      {
+        "title": "Self-appraisal examples by role",
+        "paragraphs": [
+          "The same structure works in any job. What changes is the evidence: a care worker might point to a family’s feedback, a developer to a fix that reduced support tickets. These short examples show the kind of detail that makes an answer credible."
+        ],
+        "examples": [
+          {
+            "label": "Customer service",
+            "quote": "I handled most of the team’s escalated billing queries from April. I wrote a short guide to the three most common causes, and the team now resolves about half of them without escalating."
+          },
+          {
+            "label": "Sales",
+            "quote": "I reached 92% of my annual target. I missed the second quarter after two large renewals were delayed, but I rebuilt the pipeline from referrals and finished the year with four new accounts."
+          },
+          {
+            "label": "Office and administration",
+            "quote": "I moved the meeting-room booking system online and trained the reception team. Double bookings, which happened most weeks, have not occurred since June."
+          },
+          {
+            "label": "Team leader",
+            "quote": "I introduced monthly development check-ins with my four direct reports. Two have since taken on new responsibilities, and I want to do better at following up actions between check-ins."
+          },
+          {
+            "label": "Software developer",
+            "quote": "I led the fix for the export timeouts that generated the most support tickets in spring. After the change, related tickets dropped from around ten a week to one or two."
+          },
+          {
+            "label": "Care and support work",
+            "quote": "I updated the care plans for my three key residents after each review and shared changes at handover. One family said they felt better informed about their mother’s routine since the summer."
+          }
+        ],
+        "figure": {
+          "type": "photo",
+          "id": "appraisal-answers-preparing",
+          "brief": "An employee preparing their self-appraisal at a desk or kitchen table — laptop open, notes beside them, thoughtful rather than stressed. Natural light, everyday UK workplace or home setting.",
+          "alt": "An employee preparing their self-appraisal answers with notes and a laptop"
+        }
+      },
+      {
+        "title": "Phrases that weaken an answer",
+        "paragraphs": [
+          "Some phrases appear in almost every self-appraisal and tell the reader very little. Swap them for something specific."
+        ],
+        "table": {
+          "caption": "Weak self-appraisal phrases and stronger alternatives",
+          "headers": [
+            "Instead of",
+            "Try"
+          ],
+          "rows": [
+            [
+              "“I always go above and beyond.”",
+              "One example of extra work, and what it achieved."
+            ],
+            [
+              "“I am a team player.”",
+              "A time you helped a colleague or another team, and the result."
+            ],
+            [
+              "“I worked really hard this year.”",
+              "The objective you met, missed or exceeded, with evidence."
+            ],
+            [
+              "“I need more training.”",
+              "The skill, the situation where you need it, and a suggested course or activity."
+            ],
+            [
+              "“Communication could be better.”",
+              "A specific situation, its effect on your work and what would help."
+            ],
+            [
+              "“No areas for improvement.”",
+              "One honest development area, framed as a next step."
+            ]
+          ]
+        }
+      },
+      {
+        "title": "If you have had a difficult year",
+        "paragraphs": [
+          "Not every review period goes well. Illness, caring responsibilities, a restructure or an unclear role can all affect results. Your self-appraisal can say so without becoming a list of excuses: describe what happened, what you still delivered and what would help now.",
+          "Example: “The second half of the year was disrupted by the team restructure and my change of manager. I kept the monthly reporting on time, but I did not finish the process documentation. I would like to agree a revised date and a clearer scope for it.”",
+          "You do not have to share private health or personal details in a written form. If something significant affected your work, it is reasonable to mention that there were personal circumstances and ask to discuss them in the meeting."
+        ]
+      },
+      {
+        "title": "How long should your answers be?",
+        "paragraphs": [
+          "Aim for three to six sentences per question — long enough to include evidence, short enough for your manager to discuss in the meeting. Two well-supported examples are better than a page covering everything you did.",
+          "Before you submit, read your answers as your manager will:"
+        ],
+        "items": [
+          "Does each answer relate to this review period?",
+          "Have you named your own contribution, not just the team’s?",
+          "Can you support every number or result you mention?",
+          "Is there at least one honest development area?",
+          "Have you removed comments about colleagues’ motives or character?",
+          "Would you be comfortable discussing every sentence face to face?"
+        ],
+        "callout": {
+          "title": "Your manager answers too",
+          "copy": "Many appraisals collect a manager response alongside your self-assessment. Differences between the two are normal and are a good starting point for the conversation — they are not a verdict on who is right."
+        }
       }
     ],
     "related": [
@@ -758,6 +1331,7 @@ export const resources: ResourceContent[] = [
   },
   {
     "slug": "appraisal-objectives",
+    "reviewed": "2026-10-24",
     "seoTitle": "Appraisal Objectives: SMART Examples for Employees (UK)",
     "seoDescription": "Practical, SMART appraisal objective examples for employees and managers, with how to measure progress and agree support.",
     "title": "Appraisal Objectives and Examples",
@@ -771,6 +1345,54 @@ export const resources: ResourceContent[] = [
         "paragraphs": [
           "An objective describes a result the role needs, not just an activity. Agree what will change, how you will know it happened, when it is due and what support is available. Check that the person has enough influence over the result.",
           "“Improve communication” is too broad. “Send the weekly delivery update by Thursday afternoon, with risks, decisions and named action owners, for the next eight weeks” gives both people something to review."
+        ]
+      },
+      {
+        "title": "SMART objectives, explained",
+        "paragraphs": [
+          "SMART is the most common way to check an objective is clear enough to review. Use it as a checklist rather than a formula — an objective does not have to sound mechanical to be SMART."
+        ],
+        "table": {
+          "caption": "What each part of a SMART objective means",
+          "headers": [
+            "Letter",
+            "Meaning",
+            "Question to ask"
+          ],
+          "rows": [
+            [
+              "S",
+              "Specific",
+              "What exactly should be different, and in which part of the role?"
+            ],
+            [
+              "M",
+              "Measurable",
+              "What evidence will show progress — a number, a record, feedback?"
+            ],
+            [
+              "A",
+              "Achievable",
+              "Does the person have the skills, time and authority to do it?"
+            ],
+            [
+              "R",
+              "Relevant",
+              "Does it matter to the team’s or organisation’s priorities?"
+            ],
+            [
+              "T",
+              "Time-bound",
+              "When is it due, and when will you check progress?"
+            ]
+          ]
+        }
+      },
+      {
+        "title": "Objectives and development goals are different",
+        "paragraphs": [
+          "An objective describes a result the role needs to deliver: a report, a target, a standard of service. A development goal describes what the person wants to learn or become able to do. Both belong in an appraisal, but mixing them makes both harder to review.",
+          "For example, “Deliver the new onboarding guide by 30 June” is an objective. “Become confident presenting to senior stakeholders” is a development goal, supported by actions such as leading two project updates. Record development goals in a personal development plan, and keep objectives focused on outcomes."
         ]
       },
       {
@@ -806,11 +1428,109 @@ export const resources: ResourceContent[] = [
         ]
       },
       {
+        "title": "More appraisal objective examples by role",
+        "paragraphs": [
+          "These examples show the level of detail that makes an objective reviewable. Adjust the numbers, dates and measures to your own role and organisation — the figures here are illustrative."
+        ],
+        "examples": [
+          {
+            "label": "Sales",
+            "quote": "Generate twelve qualified opportunities from existing accounts by the end of Q2, logged in the CRM with the next step and date for each.",
+            "note": "Measures activity the salesperson controls, as well as the result the business needs."
+          },
+          {
+            "label": "Office and administration",
+            "quote": "Move supplier invoices to the shared digital approval process by 31 March, so every invoice has an approver and date recorded.",
+            "note": "Clear finish line and an observable standard."
+          },
+          {
+            "label": "Hospitality",
+            "quote": "Train the three new weekend staff on the closing checklist by the end of May, and check their first two closes each."
+          },
+          {
+            "label": "Finance",
+            "quote": "Complete the month-end reconciliation by the fifth working day for the next six months, with variances over the agreed threshold explained in the pack."
+          },
+          {
+            "label": "Software development",
+            "quote": "Reduce the average response time of the reporting page to under two seconds by the end of the quarter, measured in production monitoring."
+          },
+          {
+            "label": "Care and support work",
+            "quote": "Review and update the care plans for your key residents within one week of each formal review, and share the changes at the next handover."
+          },
+          {
+            "label": "HR and people",
+            "quote": "Introduce a consistent onboarding checklist for all new starters by September, and ask each starter for feedback at the end of their first month."
+          }
+        ]
+      },
+      {
+        "title": "Weak objectives and stronger versions",
+        "paragraphs": [
+          "Most weak objectives are activities or wishes. Rewrite them around a result, a measure and a date."
+        ],
+        "table": {
+          "caption": "Weak appraisal objectives compared with stronger versions",
+          "headers": [
+            "Weak",
+            "Stronger"
+          ],
+          "rows": [
+            [
+              "“Improve customer service.”",
+              "“Respond to all routine enquiries within one working day for the next quarter, with complete case notes.”"
+            ],
+            [
+              "“Be more organised.”",
+              "“Keep the project tracker updated every Friday, with owners and dates for each open action.”"
+            ],
+            [
+              "“Learn Excel.”",
+              "“Build the monthly sales report in Excel without help by the end of April.” (Record the learning itself as a development goal.)"
+            ],
+            [
+              "“Support the team more.”",
+              "“Hold a monthly check-in with each direct report and agree one development action at each.”"
+            ],
+            [
+              "“Increase sales.”",
+              "“Grow repeat orders from existing accounts by 10% compared with last year, by year end.”"
+            ]
+          ]
+        }
+      },
+      {
+        "title": "How many objectives should you set?",
+        "paragraphs": [
+          "Three to five objectives is enough for most roles over a year. More than that, and the most important work gets lost among the routine. If a task is simply part of the job, it does not need to be an objective — it belongs in the role description.",
+          "Agree the objectives together. Employees are more committed to objectives they helped shape, and they often know better than their manager what is realistic. Ask the employee to propose their own objectives before the meeting, then refine them together."
+        ],
+        "figure": {
+          "type": "app",
+          "graphic": "objectives-form",
+          "caption": "In Appraisal Software, employees can propose next-period objectives in their self-assessment, so the meeting starts from a draft. Try it — nothing here is saved."
+        }
+      },
+      {
         "title": "Review objectives fairly",
         "paragraphs": [
           "Use a small number of priorities that reflect the role. Too many objectives obscure the most important work. Explain the measure before the review period starts.",
           "At the check-in, compare the result with the agreed expectation and discuss changed circumstances. If a target became unrealistic, record the change and the revised agreement rather than quietly rewriting history."
         ]
+      },
+      {
+        "title": "When circumstances change",
+        "paragraphs": [
+          "Objectives agreed in January can be overtaken by events — a lost client, a restructure, a long absence. Review them at a mid-year check-in and change them openly when they no longer fit. Note the date and reason, so the end-of-year review assesses the person against what was actually expected.",
+          "Do not penalise someone for missing an objective that became impossible for reasons outside their control. Instead, look at how they responded: what they prioritised, what they communicated and what they delivered instead."
+        ],
+        "figure": {
+          "type": "photo",
+          "id": "appraisal-objectives-planning",
+          "brief": "A manager and employee planning together at a whiteboard or over a printed plan — writing down goals or dates. Collaborative, energetic mood; UK office or workshop setting.",
+          "alt": "A manager and employee agreeing appraisal objectives together"
+        }
       }
     ],
     "related": [

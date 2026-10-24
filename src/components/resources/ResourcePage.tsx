@@ -21,12 +21,13 @@ function sectionId(section: ResourceSection, index: number) {
 export function ResourcePage({ resource }: { resource: ResourceContent }) {
   const path = `/${resource.slug}`;
   const crumbs = [homeCrumb(), { label: resource.kind === "template" ? "Templates" : "Resources", href: resource.kind === "template" ? "/templates" : "/resources" }, { label: resource.title, href: path }];
+  const reviewed = resource.reviewed ?? RESOURCE_REVIEW_DATE;
   const templateText = resource.template?.map((block) => `${block.title}\n${block.fields.join("\n\n")}\n`).join("\n") ?? "";
 
   return <SiteChrome>
     <article className={resource.template ? "resource-page template-page" : "resource-page"}>
       <JsonLd data={breadcrumbSchema(crumbs.map((crumb) => ({ name: crumb.label, path: crumb.href })))} />
-      {resource.kind === "guide" ? <JsonLd data={articleSchema({ title: resource.title, description: resource.description, path, dateModified: RESOURCE_REVIEW_DATE })} /> : null}
+      {resource.kind === "guide" ? <JsonLd data={articleSchema({ title: resource.title, description: resource.description, path, dateModified: reviewed })} /> : null}
       <PageHero compact={Boolean(resource.template)} eyebrow={resource.kind === "template" ? "Free template" : "Practical guide"} title={resource.title} description={resource.description} breadcrumbs={crumbs} />
       <ResourceVisual resource={resource} />
       {resource.template ? <section id="template" className="border-b border-border py-10 sm:py-12">
@@ -52,7 +53,7 @@ export function ResourcePage({ resource }: { resource: ResourceContent }) {
         </div>
       </section> : null}
       <div className="no-print mx-auto max-w-6xl px-5 py-8 lg:px-8">
-        <p className="text-xs text-muted-foreground">Written and reviewed by the Appraisal Software team · <time dateTime={RESOURCE_REVIEW_DATE}>{new Date(RESOURCE_REVIEW_DATE + "T12:00:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}</time></p>
+        <p className="text-xs text-muted-foreground">Written and reviewed by the Appraisal Software team · <time dateTime={reviewed}>{new Date(reviewed + "T12:00:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}</time></p>
         <nav aria-label="On this page" className="mt-5 max-w-3xl border-t border-border pt-5">
           <p className="text-sm font-semibold">On this page</p>
           <ul className="mt-3 flex flex-wrap gap-x-6 gap-y-2 text-sm">{resource.sections.map((section, index) => <li key={section.title}><a className="underline underline-offset-4 hover:text-primary" href={`#${sectionId(section, index)}`}>{section.title}</a></li>)}</ul>
@@ -66,7 +67,11 @@ export function ResourcePage({ resource }: { resource: ResourceContent }) {
             <blockquote className="mt-3 leading-relaxed text-foreground">“{example.quote}”</blockquote>
             {example.note ? <p className="mt-3 border-t border-border pt-3 text-sm leading-relaxed text-muted-foreground">{example.note}</p> : null}
           </div>)}</div> : null}
-          {section.table ? <div className="overflow-x-auto rounded-xl border border-border">
+          {section.table ? <ul className="space-y-3 sm:hidden" aria-label={section.table.caption}>{section.table.rows.map((row) => <li key={row.join("|")} className="rounded-xl border border-border bg-card p-4">
+            <p className="font-medium text-foreground">{row[0]}</p>
+            <dl className="mt-3 space-y-2 text-sm">{row.slice(1).map((cell, cellIndex) => <div key={cellIndex}><dt className="text-xs font-semibold uppercase tracking-[0.1em] text-muted-foreground">{section.table!.headers[cellIndex + 1]}</dt><dd className="mt-1 leading-relaxed text-muted-foreground">{cell}</dd></div>)}</dl>
+          </li>)}</ul> : null}
+          {section.table ? <div className="hidden overflow-x-auto rounded-xl border border-border sm:block">
             <table className="w-full min-w-[32rem] border-collapse text-left text-sm">
               <caption className="sr-only">{section.table.caption}</caption>
               <thead className="bg-surface/70"><tr>{section.table.headers.map((header) => <th key={header} scope="col" className="px-4 py-3 font-semibold text-foreground">{header}</th>)}</tr></thead>
