@@ -38,7 +38,7 @@ Each page was assessed for audience, primary intent and unique material before d
 | `/appraisal-objectives` | Employees and managers agreeing work outcomes | Measurable result examples with support and deadlines; development plan remains separate |
 | `/360-degree-feedback` | Facilitators learning the method | Purpose, reviewer choice, privacy expectations and limitations |
 | `/360-feedback-questions` | Facilitators choosing prompts | Behaviour and relationship question bank; links to ready-to-use form |
-| `/360-feedback-examples` | Reviewers and facilitators interpreting feedback | Fictional comments, summary and development action; no actual product report |
+| `/360-feedback-examples` | Retired 24 Oct 2026 — 301 to `/360-feedback-template#examples` | Examples, summary report and development action now live on the template page |
 | `/templates` | Visitors finding blank forms | Concise discovery hub, not another long guide |
 | `/resources` | Visitors finding task-based guidance | Groups process, writing and 360 resources |
 | `/how-it-works` | Prospective users evaluating product flow | Illustrated employee/manager and 360 workflows |

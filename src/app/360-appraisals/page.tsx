@@ -89,7 +89,7 @@ export default function Page() {
             <p>A 360 degree appraisal gathers feedback from people who work with someone in different ways. A manager sees progress against expectations. Peers see collaboration. Direct reports experience their leadership and support.</p>
             <p>Also called a 360 review or multi-rater feedback, it helps bring those observations into a development conversation. Use it for leadership development, team relationships or a broader view of how someone works.</p>
             <p>It complements an <TextLink href={ROUTES.employeeAppraisalSoftware}>annual appraisal</TextLink>. An average rating is a starting point for discussion, rather than a verdict on someone’s performance.</p>
-            <Link href={ROUTES.feedback360Examples} className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">See 360 feedback examples <ArrowRight className="size-4" aria-hidden /></Link>
+            <Link href={`${ROUTES.feedback360Template}#examples`} className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">See 360 feedback examples <ArrowRight className="size-4" aria-hidden /></Link>
           </div>
         </div>
       </section>
@@ -142,8 +142,8 @@ export default function Page() {
       <Reviews />
       <PricingPreview />
       <RelatedLinks title="Prepare your first 360 appraisal" links={[
-        { href: ROUTES.feedback360Examples, label: "360 feedback examples", copy: "See how to write specific comments and discuss feedback." },
-        { href: ROUTES.feedback360Template, label: "360 feedback template", copy: "Copy or print a form to plan your appraisal." },
+        { href: ROUTES.feedback360Template, label: "360 feedback template and examples", copy: "Copy or print a form, with worked comments for each reviewer relationship." },
+        { href: ROUTES.personalDevelopmentPlanTemplate, label: "Personal development plan template", copy: "Turn the feedback themes into practical development actions." },
       ]} />
       <FaqSection items={[
         { question: "What is a 360 appraisal?", answer: "A 360 appraisal collects observations from several people who work with the subject, such as managers, peers and direct reports. It gives a broader starting point for discussing strengths and development needs." },

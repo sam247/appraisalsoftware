@@ -78,11 +78,12 @@ describe("marketing routes and indexability", () => {
     }
     expect(PRIMARY_CTA_LABEL).toBe("Start Free");
   });
-  it("consolidates both retired commercial pages directly with 301 redirects", async () => {
+  it("consolidates retired pages directly with 301 redirects", async () => {
     const redirects = await nextConfig.redirects!();
     for (const [source, destination] of [
       ["/annual-appraisal-software", "/employee-appraisal-software"],
       ["/360-feedback-software", "/360-appraisals"],
+      ["/360-feedback-examples", "/360-feedback-template"],
     ]) {
       expect(redirects).toContainEqual({ source, destination, statusCode: 301 });
       expect(sitemap().map((entry) => entry.url)).not.toContain(absoluteUrl(source));
@@ -93,13 +94,38 @@ describe("marketing routes and indexability", () => {
     );
   });
   it("preserves the proven answer and 360 template content and intent", () => {
-    for (const [slug, digest] of [
-      ["appraisal-answers", "5accc5d95c2ee5d24757183066e737e46011561371a4da6b0da7fe73364902aa"],
-      ["360-feedback-template", "c664974b855d20d63170970d60e23e3adda9941d1c134e07180a6bf66a6822f8"],
-    ]) {
+    // Pages with proven traffic may gain sections, but their title, description,
+    // intent, form and original sections stay exactly as they were.
+    const sha = (value: unknown) => createHash("sha256").update(JSON.stringify(value)).digest("hex");
+    const preserved: Record<string, { core: string; sections: string[] }> = {
+      "appraisal-answers": {
+        core: "fbb1660e7a8219c72ac10f6dfdf1f6499fd41239890193308e598edd5373ce7f",
+        sections: [
+          "320b9ea18056c161b1f8808ae9b70ba83df93fbe4368f7fa16e4bb99446de54c",
+          "6d0778011e4059f898581a5f796bfb31d411aaa8499c4fc401f2190ee6804145",
+          "1d9ccf4a3a51452c1ae4357dabc174468ded81d773e40c9793f4e3dd4c68e985",
+          "9c94e3552e7e47ebd0d5597ffa927c3ca6cb3f4284c43e53e9e87545c218f391",
+          "f4cda4011c9b7b242634ce0af9d558a792aaa72de5d40c78d4788181f932617f",
+          "0103e9ed0ca6fd9d3bc49b070036bd7f45688d287193852fb1c2c3e0fa64f97a",
+        ],
+      },
+      "360-feedback-template": {
+        core: "4eafa3d70add91271b3d829e2dcb292f87dd7dc77b625c0eff17dd62996e6b2a",
+        sections: [
+          "5a6538827f6af8286de1710c9f4c4d9e1e26f02ec18ff681c1a57f73d351030c",
+          "effbfa21666c1956510b055bf3fa026a008b4644a2467262d82dc203c0b3eec5",
+          "189ac066a82b97c2bc2dce620d57332cfc99cdda06c584e641ac3261bc27c2d8",
+          "f8f9892539f4cdf59efb0ceaf89523fbbdad912508180f06fe762d603d2503d1",
+        ],
+      },
+    };
+    for (const [slug, expected] of Object.entries(preserved)) {
       const resource = resources.find((entry) => entry.slug === slug)!;
-      const content = { title: resource.title, description: resource.description, intent: resource.intent, sections: resource.sections, template: resource.template ?? null };
-      expect(createHash("sha256").update(JSON.stringify(content)).digest("hex")).toBe(digest);
+      expect(sha({ title: resource.title, description: resource.description, intent: resource.intent, template: resource.template ?? null })).toBe(expected.core);
+      const sectionDigests = resource.sections.map(sha);
+      const positions = expected.sections.map((digest) => sectionDigests.indexOf(digest));
+      expect(positions).not.toContain(-1);
+      expect([...positions].sort((a, b) => a - b)).toEqual(positions);
       expect(INDEXABLE_PATHS).toContain(`/${slug}`);
     }
   });

@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
     return [
       { source: "/annual-appraisal-software", destination: "/employee-appraisal-software", statusCode: 301 },
       { source: "/360-feedback-software", destination: "/360-appraisals", statusCode: 301 },
+      { source: "/360-feedback-examples", destination: "/360-feedback-template", statusCode: 301 },
     ];
   },
 };

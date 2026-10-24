@@ -3,7 +3,8 @@ import { ContentSection, CtaBand, PageHero, RelatedLinks, homeCrumb } from "@/co
 import { JsonLd } from "@/components/seo/JsonLd";
 import { TemplateActions } from "@/components/resources/TemplateActions";
 import { ResourceVisual } from "@/components/resources/ResourceVisual";
-import { RESOURCE_REVIEW_DATE, resources, type ResourceContent } from "@/lib/resource-content";
+import { ResourceFigureView } from "@/components/resources/ResourceFigureView";
+import { RESOURCE_REVIEW_DATE, resources, type ResourceContent, type ResourceSection } from "@/lib/resource-content";
 import { articleSchema, breadcrumbSchema } from "@/lib/schema";
 import Link from "next/link";
 import { PRIMARY_CTA_LABEL, PRIMARY_CTA_URL } from "@/lib/links";
@@ -12,6 +13,10 @@ const commercialLinks: Record<string, { label: string; copy: string }> = {
   "employee-appraisal-software": { label: "Employee appraisal software", copy: "Prepare employee and manager responses in one place." },
   "360-appraisals": { label: "360 appraisals", copy: "Run anonymous multi-rater campaigns with combined results after closure." },
 };
+
+function sectionId(section: ResourceSection, index: number) {
+  return section.id ?? `section-${index + 1}`;
+}
 
 export function ResourcePage({ resource }: { resource: ResourceContent }) {
   const path = `/${resource.slug}`;
@@ -50,13 +55,27 @@ export function ResourcePage({ resource }: { resource: ResourceContent }) {
         <p className="text-xs text-muted-foreground">Written and reviewed by the Appraisal Software team · <time dateTime={RESOURCE_REVIEW_DATE}>{new Date(RESOURCE_REVIEW_DATE + "T12:00:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}</time></p>
         <nav aria-label="On this page" className="mt-5 max-w-3xl border-t border-border pt-5">
           <p className="text-sm font-semibold">On this page</p>
-          <ul className="mt-3 flex flex-wrap gap-x-6 gap-y-2 text-sm">{resource.sections.map((section, index) => <li key={section.title}><a className="underline underline-offset-4 hover:text-primary" href={`#section-${index + 1}`}>{section.title}</a></li>)}</ul>
+          <ul className="mt-3 flex flex-wrap gap-x-6 gap-y-2 text-sm">{resource.sections.map((section, index) => <li key={section.title}><a className="underline underline-offset-4 hover:text-primary" href={`#${sectionId(section, index)}`}>{section.title}</a></li>)}</ul>
         </nav>
       </div>
       <div className={resource.template ? "template-support" : ""}>
-        {resource.sections.map((section, index) => <ContentSection key={section.title} id={`section-${index + 1}`} title={section.title}>
+        {resource.sections.map((section, index) => <ContentSection key={section.title} id={sectionId(section, index)} title={section.title}>
           {section.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+          {section.examples ? <div className="space-y-4">{section.examples.map((example) => <div key={example.quote} className="rounded-xl border border-border bg-card p-5 sm:p-6">
+            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-primary">{example.label}</p>
+            <blockquote className="mt-3 leading-relaxed text-foreground">“{example.quote}”</blockquote>
+            {example.note ? <p className="mt-3 border-t border-border pt-3 text-sm leading-relaxed text-muted-foreground">{example.note}</p> : null}
+          </div>)}</div> : null}
+          {section.table ? <div className="overflow-x-auto rounded-xl border border-border">
+            <table className="w-full min-w-[32rem] border-collapse text-left text-sm">
+              <caption className="sr-only">{section.table.caption}</caption>
+              <thead className="bg-surface/70"><tr>{section.table.headers.map((header) => <th key={header} scope="col" className="px-4 py-3 font-semibold text-foreground">{header}</th>)}</tr></thead>
+              <tbody className="divide-y divide-border">{section.table.rows.map((row) => <tr key={row.join("|")}>{row.map((cell, cellIndex) => cellIndex === 0 ? <th key={cellIndex} scope="row" className="px-4 py-3 align-top font-medium text-foreground">{cell}</th> : <td key={cellIndex} className="px-4 py-3 align-top leading-relaxed text-muted-foreground">{cell}</td>)}</tr>)}</tbody>
+            </table>
+          </div> : null}
           {section.items ? <ul className="list-disc space-y-2 pl-5">{section.items.map((item) => <li key={item}>{item}</li>)}</ul> : null}
+          {section.callout ? <aside className="rounded-xl border-l-4 border-primary bg-accent/60 p-5"><p className="font-semibold text-foreground">{section.callout.title}</p><p className="mt-2 text-sm leading-relaxed text-muted-foreground">{section.callout.copy}</p></aside> : null}
+          {section.figure ? <ResourceFigureView figure={section.figure} /> : null}
         </ContentSection>)}
         {resource.sources ? <ContentSection title="Further reading"><ul className="list-disc space-y-2 pl-5">{resource.sources.map((source) => <li key={source.href}><a className="underline underline-offset-4" href={source.href}>{source.label}</a></li>)}</ul></ContentSection> : null}
       </div>

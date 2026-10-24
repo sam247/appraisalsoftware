@@ -4,8 +4,8 @@ import { pageMetadata } from "@/lib/metadata";
 
 const resource = resourceBySlug("360-feedback-template");
 export const metadata = pageMetadata({
-  title: `${resource.title} | Appraisal Software`,
-  description: resource.description,
+  title: resource.seoTitle ?? `${resource.title} | Appraisal Software`,
+  description: resource.seoDescription ?? resource.description,
   path: `/${resource.slug}`,
 });
 

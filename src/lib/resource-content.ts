@@ -1,4 +1,27 @@
-export type ResourceSection = { title: string; paragraphs: string[]; items?: string[] };
+/** In-product graphics rendered from real Appraisal Software components. */
+export type AppGraphic =
+  | "self-appraisal-form"
+  | "self-vs-manager"
+  | "campaign-progress"
+  | "probation-form"
+  | "objectives-form"
+  | "feedback-360-summary";
+export type ResourceFigure =
+  | { type: "app"; graphic: AppGraphic; caption: string }
+  /** Shown as a briefed placeholder until public/resources/photos/{id}.jpg exists. */
+  | { type: "photo"; id: string; brief: string; alt: string; caption?: string };
+export type ResourceExample = { label: string; quote: string; note?: string };
+export type ResourceSection = {
+  title: string;
+  paragraphs: string[];
+  items?: string[];
+  /** Stable anchor, for sections other pages link to. */
+  id?: string;
+  examples?: ResourceExample[];
+  table?: { caption: string; headers: string[]; rows: string[][] };
+  callout?: { title: string; copy: string };
+  figure?: ResourceFigure;
+};
 export type ResourceContent = {
   slug: string; title: string; description: string; audience: string; intent: string;
   kind: "guide" | "template"; sections: ResourceSection[]; related: string[];
@@ -435,11 +458,117 @@ export const resources: ResourceContent[] = [
           "Keep “not observed” separate from a low score. Look for repeated themes and relevant examples rather than treating an average as a final judgement. Small reviewer groups and recognisable incidents can reveal identities even when names are omitted.",
           "Discuss one strength to keep and one or two changes to try. Agree a follow-up date so the exercise leads to development rather than simply producing a report."
         ]
+      },
+      {
+        "id": "examples",
+        "title": "360 feedback examples by relationship",
+        "paragraphs": [
+          "Each reviewer sees a different part of someone’s work, so a useful comment comes from what that relationship can actually observe. The structure is the same each time: the situation, the behaviour, its effect on the work and what should continue or change. Do not diagnose personality or assume a motive.",
+          "Names, comments and scores in these examples are fictional — they are not an assessment result or a product report."
+        ],
+        "examples": [
+          {
+            "label": "Peer · a strength",
+            "quote": "During the last two launch handovers, Casey listed dependencies and confirmed who owned each action. That helped our team plan without repeated clarification. Please keep using that structure.",
+            "note": "The reviewer describes a recent situation and a practice that can be repeated. It is more actionable than “Casey is a great team player”."
+          },
+          {
+            "label": "Direct report · a development area",
+            "quote": "When priorities changed in April, I understood the new deadline but not which existing tasks could wait. A short explanation of the trade-off would help me plan. The weekly check-in would be a useful place to confirm it.",
+            "note": "This raises a gap without guessing why the manager acted that way. It includes a practical request rather than just expressing frustration."
+          },
+          {
+            "label": "Manager · recognising progress",
+            "quote": "Taylor now raises project risks before they affect the delivery date. In the last project, that gave us time to move the testing slot. The next step is to explain the proposed options alongside the risk.",
+            "note": "Recognition and development can sit together. Keep the next step specific so it does not cancel out the positive observation."
+          },
+          {
+            "label": "Self · comparing views",
+            "quote": "I rated my communication as a 3 because I know some updates went out late during the spring launch. I would like to understand which updates people found most useful, so I can keep doing those and fix the gaps.",
+            "note": "A self-review is not a confession or a sales pitch. It gives the conversation a starting point and shows where the person’s view may differ from others’."
+          }
+        ]
+      },
+      {
+        "title": "Giving feedback to your manager",
+        "paragraphs": [
+          "Upward feedback is often the hardest to write, because the reviewer worries about how it will land. Keep it specific, practical and about the work. Include a strength where it is genuine; it makes the development point easier to act on.",
+          "The example describes a situation and a practical request. It does not label the manager’s character or claim to know their motives. Use your own evidence, include a strength where relevant, and avoid private details that unnecessarily identify another person. Written comments may still reveal their author even when the report omits names."
+        ],
+        "examples": [
+          {
+            "label": "Direct report · upward feedback",
+            "quote": "When project priorities changed in May, the update named the new deadline but not which tasks could wait. I spent time on the original task before learning it was no longer urgent. It would help if future updates listed the immediate priority and what to pause."
+          }
+        ]
+      },
+      {
+        "title": "Weak comments and how to strengthen them",
+        "paragraphs": [
+          "Most unhelpful 360 comments fail in one of three ways: they are too general to act on, they judge character rather than behaviour, or they describe a single incident as a permanent trait. A small rewrite usually fixes them."
+        ],
+        "table": {
+          "caption": "Weak 360 feedback comments compared with stronger versions",
+          "headers": [
+            "Weak comment",
+            "Stronger version",
+            "Why it is better"
+          ],
+          "rows": [
+            [
+              "“Great team player.”",
+              "“Shares the handover checklist before each shift change, so the evening team starts with the open issues.”",
+              "Names a repeatable behaviour and its effect."
+            ],
+            [
+              "“Needs to communicate more.”",
+              "“When the deadline moved in April, I found out at the stand-up. A message on the day it changed would have given me time to re-plan.”",
+              "Describes a situation and a practical request."
+            ],
+            [
+              "“Can be negative in meetings.”",
+              "“In the last two planning meetings, risks were raised without a suggested option. Bringing one proposal alongside the risk would help us decide faster.”",
+              "Avoids a character label and suggests what to do instead."
+            ],
+            [
+              "“Always late with reports.”",
+              "“Three of the last five monthly reports arrived after the Friday deadline, which delayed the board pack.”",
+              "Replaces “always” with evidence that can be discussed."
+            ]
+          ]
+        }
+      },
+      {
+        "title": "Example summary report",
+        "paragraphs": [
+          "Example communication ratings on a five-point scale: self 3.0; manager 4.0; peers 3.5. Use them to practise interpretation, not as a benchmark.",
+          "Theme: reviewers value clear handovers, while some want earlier explanation when priorities change. The self-rating is lower than other perspectives, which is a prompt to discuss what the subject was considering.",
+          "Do not conclude that the subject is underconfident from the gap alone. Check the examples, review period and differences in what each group observed. Keep “not observed” responses out of rating calculations."
+        ],
+        "figure": {
+          "type": "app",
+          "graphic": "feedback-360-summary",
+          "caption": "In Appraisal Software, 360 results unlock after the campaign closes and at least five reviewers have responded. Ratings are combined and names are not shown."
+        }
+      },
+      {
+        "title": "Turn the summary into an action",
+        "paragraphs": [
+          "Agreed action: for the next six weeks, Casey will include the reason for a priority change and the tasks affected in the weekly update. Manager support: review the first two updates together. Follow-up: ask the team whether priorities are clearer.",
+          "Share only what your explained process allows. Small groups and distinctive incidents can reveal identities even in a summary without names.",
+          "Keep the development conversation separate from any pay or formal performance decision. People give more candid feedback when they trust that it will be used to help, not to rank."
+        ],
+        "figure": {
+          "type": "photo",
+          "id": "360-feedback-conversation",
+          "brief": "A manager and employee in a relaxed one-to-one, reviewing printed or on-screen feedback together. Warm, natural light; a UK office or meeting room; faces not the focus.",
+          "alt": "A manager and employee discussing 360 feedback results together"
+        }
       }
     ],
     "related": [
-      "360-feedback-examples",
-      "360-appraisals"
+      "360-appraisals",
+      "personal-development-plan-template"
     ],
     "bridge": {
       "title": "Run this as an anonymous 360 campaign",
@@ -482,6 +611,14 @@ export const resources: ResourceContent[] = [
           "One practical suggestion for the next period:",
           "Anything you could not observe or assess:"
         ]
+      }
+    ],
+    "seoTitle": "360 Feedback Template & Examples – Free Form (UK)",
+    "seoDescription": "Free 360 feedback form with a rating scale, questions for managers, peers and direct reports, and worked feedback examples. Copy, print or save as PDF.",
+    "sources": [
+      {
+        "label": "Center for Creative Leadership: understanding 360 results",
+        "href": "https://www.ccl.org/articles/leading-effectively-articles/360-assessment-results-meaning/"
       }
     ]
   },
@@ -689,79 +826,6 @@ export const resources: ResourceContent[] = [
       {
         "label": "Acas: setting fair, measurable objectives",
         "href": "https://www.acas.org.uk/performance-management"
-      }
-    ]
-  },
-  {
-    "slug": "360-feedback-examples",
-    "title": "360 Feedback Examples",
-    "description": "Example 360 feedback comments and a summary report, showing how to describe behaviours, compare perspectives and agree development actions.",
-    "audience": "Reviewers writing comments and facilitators summarising themes",
-    "intent": "Completed comments and report interpretation, distinct from blank questions",
-    "kind": "guide",
-    "sections": [
-      {
-        "title": "A useful comment names behaviour and effect",
-        "paragraphs": [
-          "Describe what you saw, the situation and the effect on the work. Then suggest what should continue or change. Do not diagnose personality or assume a motive.",
-          "Names, comments and scores on this page are examples — not an assessment result or a product report."
-        ]
-      },
-      {
-        "title": "Peer example: a strength",
-        "paragraphs": [
-          "“During the last two launch handovers, Casey listed dependencies and confirmed who owned each action. That helped our team plan without repeated clarification. Please keep using that structure.”",
-          "The reviewer describes a recent situation and a practice that can be repeated. It is more actionable than “Casey is a great team player”."
-        ]
-      },
-      {
-        "title": "Direct report example: a development area",
-        "paragraphs": [
-          "“When priorities changed in April, I understood the new deadline but not which existing tasks could wait. A short explanation of the trade-off would help me plan. The weekly check-in would be a useful place to confirm it.”",
-          "This raises a gap without guessing why the manager acted that way. It includes a practical request rather than just expressing frustration."
-        ]
-      },
-      {
-        "title": "Manager example: recognising progress",
-        "paragraphs": [
-          "“Taylor now raises project risks before they affect the delivery date. In the last project, that gave us time to move the testing slot. The next step is to explain the proposed options alongside the risk.”",
-          "Recognition and development can sit together. Keep the next step specific so it does not cancel out the positive observation."
-        ]
-      },
-      {
-        "title": "Example summary report",
-        "paragraphs": [
-          "Example communication ratings on a five-point scale: self 3.0; manager 4.0; peers 3.5. Use them to practise interpretation, not as a benchmark.",
-          "Theme: reviewers value clear handovers, while some want earlier explanation when priorities change. The self-rating is lower than other perspectives, which is a prompt to discuss what the subject was considering.",
-          "Do not conclude that the subject is underconfident from the gap alone. Check the examples, review period and differences in what each group observed. Keep “not observed” responses out of rating calculations."
-        ]
-      },
-      {
-        "title": "Turn the summary into an action",
-        "paragraphs": [
-          "Agreed action: for the next six weeks, Casey will include the reason for a priority change and the tasks affected in the weekly update. Manager support: review the first two updates together. Follow-up: ask the team whether priorities are clearer.",
-          "Share only what your explained process allows. Small groups and distinctive incidents can reveal identities even in a summary without names."
-        ]
-      }
-      ,{
-        "title": "Giving feedback to your manager",
-        "paragraphs": [
-          "Describe an observable decision or behaviour and its effect on the work. An example: ‘When project priorities changed in May, the update named the new deadline but not which tasks could wait. I spent time on the original task before learning it was no longer urgent. It would help if future updates listed the immediate priority and what to pause.’",
-          "The example describes a situation and a practical request. It does not label the manager’s character or claim to know their motives. Use your own evidence, include a strength where relevant, and avoid private details that unnecessarily identify another person. Written comments may still reveal their author even when the report omits names."
-        ]
-      }
-    ],
-    "related": [
-      "360-feedback-template"
-    ],
-    "bridge": {
-      "title": "See how themes appear after a live 360",
-      "copy": "Appraisal Software combines anonymous reviewer responses after closure. Use these examples to prepare the conversation before you send invitations."
-    },
-    "sources": [
-      {
-        "label": "Center for Creative Leadership: understanding 360 results",
-        "href": "https://www.ccl.org/articles/leading-effectively-articles/360-assessment-results-meaning/"
       }
     ]
   }

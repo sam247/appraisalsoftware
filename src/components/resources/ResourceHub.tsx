@@ -35,7 +35,16 @@ const templateCompleters: Record<string, string> = {
   "probation-review-template": "Employee and manager",
   "personal-development-plan-template": "Employee and supporting manager",
 };
-const learningPaths = [
+const learningPaths: {
+  id: string;
+  title: string;
+  copy: string;
+  slugs: string[];
+  template?: string;
+  templateLabel?: string;
+  commercial: string;
+  commercialLabel: string;
+}[] = [
   {
     id: "employee-appraisals",
     title: "Employee Appraisals",
@@ -50,9 +59,7 @@ const learningPaths = [
     id: "360-appraisals",
     title: "360 Appraisals",
     copy: "Understand multi-rater feedback, choose questions people can answer and prepare a useful development conversation.",
-    slugs: ["360-feedback-examples"],
-    template: ROUTES.feedback360Template,
-    templateLabel: "Need a form? Start with the 360 feedback template",
+    slugs: ["360-feedback-template"],
     commercial: ROUTES.feedback360Software,
     commercialLabel: "Explore 360 appraisals",
   },
@@ -120,11 +127,11 @@ export function ResourceHub({ templates = false }: { templates?: boolean }) {
             <ul className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {journey.slugs.map((slug) => {
                 const resource = resourceListings.find((entry) => entry.slug === slug)!;
-                return <li key={slug}><Link href={`/${slug}`} className="marketing-card block h-full rounded-xl border border-border bg-card p-6 hover:border-primary/40"><h3 className="text-lg font-semibold">{resource.title}</h3><p className="mt-3 text-sm leading-relaxed text-muted-foreground">{resource.description}</p><span className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-primary">Read the guidance<ArrowRight className="size-4" aria-hidden /></span></Link></li>;
+                return <li key={slug}><Link href={`/${slug}`} className="marketing-card block h-full rounded-xl border border-border bg-card p-6 hover:border-primary/40"><h3 className="text-lg font-semibold">{resource.title}</h3><p className="mt-3 text-sm leading-relaxed text-muted-foreground">{resource.description}</p><span className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-primary">{resource.kind === "template" ? "See the template and examples" : "Read the guidance"}<ArrowRight className="size-4" aria-hidden /></span></Link></li>;
               })}
             </ul>
             <div className="mt-8 flex flex-col gap-4 border-t border-border pt-6 sm:items-start">
-              <TextLink href={journey.template}>{journey.templateLabel}</TextLink>
+              {journey.template ? <TextLink href={journey.template}>{journey.templateLabel}</TextLink> : null}
               <Link href={journey.commercial} className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">{journey.commercialLabel}<ArrowRight className="size-4" aria-hidden /></Link>
             </div>
           </div>

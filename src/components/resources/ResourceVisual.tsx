@@ -297,22 +297,6 @@ export function ResourceVisual({ resource }: { resource: ResourceContent }) {
     );
   }
 
-  if (resource.slug === "360-feedback-examples") {
-    return (
-      <EvidencePattern
-        eyebrow="Read the example carefully"
-        title="A useful feedback theme connects behaviour to an action"
-        copy="The examples show structure, not a score or a product report. Look for the behaviour, its effect and the practical next step."
-        steps={[
-          "Behaviour observed",
-          "Effect on shared work",
-          "Perspective or context",
-          "Agreed development action",
-        ]}
-      />
-    );
-  }
-
 return (
     <section
       className={shellClassName}

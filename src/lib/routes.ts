@@ -16,7 +16,6 @@ export const ROUTES = {
   appraisalAnswers: "/appraisal-answers",
   appraisalObjectives: "/appraisal-objectives",
   personalDevelopmentPlanTemplate: "/personal-development-plan-template",
-  feedback360Examples: "/360-feedback-examples",
   probationReviewTemplate: "/probation-review-template",
 } as const;
 
