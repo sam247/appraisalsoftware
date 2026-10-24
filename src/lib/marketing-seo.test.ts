@@ -113,7 +113,9 @@ describe("marketing routes and indexability", () => {
     }
     expect(guidance).toContain('id="employee-appraisals"');
     expect(guidance).toContain('id="360-appraisals"');
-    expect(guidance).toContain('href="/blog/when-self-and-manager-ratings-differ"');
+    // The blog is a separate archive: the learning hub links to guides, not articles
+    // (the site footer still links to the blog index).
+    expect(guidance.slice(guidance.indexOf("<main>"), guidance.indexOf("</main>"))).not.toContain('href="/blog');
     expect(catalogue).toContain("not automatically imported");
     const ownership = readFileSync("docs/seo/url-ownership.md", "utf8");
     for (const entry of sitemap()) {
