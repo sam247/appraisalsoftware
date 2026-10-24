@@ -100,7 +100,7 @@ export default function EmployeeAppraisalSoftwarePage() {
             </div>
             <figure className="min-w-0">
               <div className="photo-frame mr-3 mb-3 sm:mr-4 sm:mb-4"><div className="relative aspect-[5/4] overflow-hidden rounded-2xl bg-surface-2">
-                <Image src="/marketing/one-to-one.jpg" alt="An employee and manager talking through a review together" fill preload sizes="(min-width: 1152px) 410px, (min-width: 1024px) 38vw, calc(100vw - 40px)" className="object-cover" />
+                <Image src="/marketing/appraisal-meeting.jpg" alt="An employee and manager talking through a review together" fill preload sizes="(min-width: 1152px) 410px, (min-width: 1024px) 38vw, calc(100vw - 40px)" className="object-cover" />
               </div></div>
               <div className="relative mx-3 -mt-[70px] rounded-2xl border border-border bg-card p-5 shadow-[0_24px_55px_-40px_rgb(21_38_29_/_0.5)] sm:mx-6 sm:p-6">
                 <div className="flex items-center justify-between gap-2">

@@ -48,7 +48,7 @@ export default function Page() {
             </div>
             <figure className="min-w-0">
               <div className="photo-frame mr-3 mb-3 sm:mr-4 sm:mb-4"><div className="relative aspect-[5/4] overflow-hidden rounded-2xl bg-surface-2">
-                <Image src="/marketing/team-conversation.jpg" alt="Three colleagues sharing perspectives around a table" fill priority sizes="(min-width: 1152px) 410px, (min-width: 1024px) 38vw, calc(100vw - 40px)" className="object-cover" />
+                <Image src="/marketing/peer-perspectives.jpg" alt="Three colleagues sharing perspectives in an informal huddle" fill priority sizes="(min-width: 1152px) 410px, (min-width: 1024px) 38vw, calc(100vw - 40px)" className="object-cover" />
               </div></div>
               <div className="relative mx-3 -mt-[70px] rounded-2xl border border-border bg-card p-5 shadow-[0_24px_55px_-40px_rgb(21_38_29_/_0.5)] sm:mx-6 sm:p-6">
                 <div className="flex items-center justify-between gap-2">
@@ -127,7 +127,7 @@ export default function Page() {
           </div>
           <div className="mt-10 grid items-center gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:gap-20">
             <div className="photo-frame mx-auto w-full max-w-xl"><div className="relative aspect-[3/2] w-full overflow-hidden rounded-2xl bg-surface-2">
-              <Image src="/marketing/one-to-one.jpg" alt="Two colleagues listening and sharing thoughts over a notebook" fill sizes="(min-width: 1152px) 456px, (min-width: 1024px) 38vw, (min-width: 640px) 576px, calc(100vw - 40px)" className="object-cover" />
+              <Image src="/marketing/private-feedback-chat.jpg" alt="Two colleagues in a quiet conversation about development feedback" fill sizes="(min-width: 1152px) 456px, (min-width: 1024px) 38vw, (min-width: 640px) 576px, calc(100vw - 40px)" className="object-cover" />
             </div></div>
             <div className="space-y-5 leading-relaxed text-muted-foreground">
               <p>Results unlock after campaign closure and at least five completed reviewer responses. Each displayed question also needs five valid answers; questions below that threshold are suppressed.</p>

@@ -10,8 +10,8 @@ export function HumanStory() {
         <div className="photo-frame mr-3 mb-3 sm:mr-4 sm:mb-4">
           <div className="relative aspect-[4/3] overflow-hidden rounded-2xl">
             <Image
-              src="/marketing/team-conversation.jpg"
-              alt="Three colleagues listening and talking together around a table"
+              src="/marketing/review-preparation.jpg"
+              alt="An employee preparing notes at a desk before a review conversation"
               fill
               sizes="(min-width: 1024px) 48vw, 100vw"
               className="object-cover"
