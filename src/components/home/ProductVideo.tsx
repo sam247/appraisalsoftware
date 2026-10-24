@@ -24,10 +24,12 @@ export function ProductVideo() {
           <VideoPlayer />
 
           <div className="flex flex-col border-t border-border p-7 sm:p-8 lg:border-t-0 lg:border-l">
-            <p className="font-display text-5xl font-semibold tracking-[-0.04em] text-foreground">
-              {PRODUCT_VIDEO.durationLabel}
+            <h3 className="font-display text-[1.75rem] font-semibold leading-[1.15] tracking-[-0.03em] text-foreground">
+              See how it works.
+            </h3>
+            <p className="mt-3 leading-relaxed text-muted-foreground">
+              From your first campaign to meaningful feedback, all in one place.
             </p>
-            <p className="mt-2 text-muted-foreground">from template to tracked responses</p>
 
             <div className="my-6 h-px bg-border" />
 
