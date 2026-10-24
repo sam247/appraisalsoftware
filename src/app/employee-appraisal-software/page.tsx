@@ -21,6 +21,8 @@ import {
   softwareApplicationSchema,
 } from "@/lib/schema";
 import { RespondentProof } from "@/components/product-marketing/RespondentProof";
+import { FeatureVideo } from "@/components/marketing/FeatureVideo";
+import { EMPLOYEE_APPRAISAL_VIDEO, productVideoSchema } from "@/lib/video";
 
 const TITLE = "Employee Appraisal Software for UK Teams | Appraisal Software";
 const DESCRIPTION =
@@ -77,6 +79,7 @@ export default function EmployeeAppraisalSoftwarePage() {
         })}
       />
       <JsonLd data={faqPageSchema(faqs)} />
+      <JsonLd data={productVideoSchema(EMPLOYEE_APPRAISAL_VIDEO)} />
       <JsonLd
         data={breadcrumbSchema([
           { name: "Home", path: ROUTES.home },
@@ -115,6 +118,18 @@ export default function EmployeeAppraisalSoftwarePage() {
           </div>
         </div>
       </section>
+
+      <FeatureVideo
+        video={EMPLOYEE_APPRAISAL_VIDEO}
+        eyebrow="See it in action"
+        title="Watch an employee appraisal in action."
+        copy="Employees reflect in a focused self-appraisal, managers add their view, and both perspectives stay together for the review conversation."
+        points={[
+          "A clear self-appraisal for every employee",
+          "Manager responses kept alongside",
+          "Completed and outstanding forms at a glance",
+        ]}
+      />
 
       <section className="border-y border-border bg-surface/50 px-5 py-20 sm:py-24 lg:px-8">
         <div className="mx-auto grid max-w-content gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:gap-20">

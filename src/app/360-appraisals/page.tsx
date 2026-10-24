@@ -6,12 +6,14 @@ import { SiteChrome } from "@/components/layout/SiteChrome";
 import { PricingPreview } from "@/components/home/HomeBands";
 import { CtaBand, FaqSection, RelatedLinks, TextLink } from "@/components/marketing/PageSections";
 import { JsonLd } from "@/components/seo/JsonLd";
+import { FeatureVideo } from "@/components/marketing/FeatureVideo";
 import { Button } from "@/components/ui/button";
 import { PRIMARY_CTA_LABEL, PRIMARY_CTA_URL } from "@/lib/links";
 import { marketingType } from "@/lib/marketing-typography";
 import { pageMetadata } from "@/lib/metadata";
 import { ROUTES } from "@/lib/routes";
 import { breadcrumbSchema, softwareApplicationSchema } from "@/lib/schema";
+import { FEEDBACK_360_VIDEO, productVideoSchema } from "@/lib/video";
 
 const description = "Run anonymous 360 appraisals for UK teams on Pro at £39.99/month. Invite managers, peers and direct reports, collect anonymous feedback and turn combined results into a useful development conversation.";
 export const metadata = pageMetadata({
@@ -32,6 +34,7 @@ export default function Page() {
     <SiteChrome>
       <JsonLd data={breadcrumbSchema([{ name: "Home", path: "/" }, { name: "360 Appraisals", path: ROUTES.feedback360Software }])} />
       <JsonLd data={softwareApplicationSchema({ path: ROUTES.feedback360Software, name: "360 Appraisals", description })} />
+      <JsonLd data={productVideoSchema(FEEDBACK_360_VIDEO)} />
       <section className="overflow-hidden pb-16 pt-12 sm:pb-24 sm:pt-16 lg:pt-20">
         <div className="mx-auto max-w-6xl px-5 lg:px-8">
           <div className="grid items-center gap-12 lg:grid-cols-[3fr_2fr] lg:gap-16">
@@ -66,6 +69,18 @@ export default function Page() {
           </div>
         </div>
       </section>
+
+      <FeatureVideo
+        video={FEEDBACK_360_VIDEO}
+        eyebrow="See it in action"
+        title="Watch a 360 appraisal come together."
+        copy="Build the feedback form, choose who is being reviewed and who gives feedback, then send the invitations and follow completion in one campaign."
+        points={[
+          "Anonymous feedback from managers, peers and direct reports",
+          "Invitations and completion tracked in one place",
+          "Combined results released once the campaign closes",
+        ]}
+      />
 
       <section className="border-y border-border bg-surface/50 px-5 py-20 sm:py-24 lg:px-8">
         <div className="mx-auto grid max-w-content gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:gap-20">
